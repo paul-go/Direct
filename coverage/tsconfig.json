@@ -1,0 +1,12 @@
+{
+	"extends": "../tsconfig.standard.json",
+	"compilerOptions": {
+		"outFile": "../index.coverage.js"
+	},
+	"include": [
+		"**/*.ts"
+	],
+	"references": [
+		{ "path": "../core" }
+	]
+}
