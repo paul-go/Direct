@@ -19,5 +19,8 @@ The purpose of this project is to introduce the concept of a network of "Social 
 
 A "Social Media Micro-Platform" is a social media platform that only has a single user, and this user is the sole owner, operator, and manager of the platform.
 
-This platform is a location where the user can quickly and easily post the kinds of content that dominates social media: captioned images, short video clips, and concise text posts. Each of these posts have their own URL which can be shared, and potentially discovered by search engines.
+Of course, with this description, a reasonable objection could be: "how is this different from a blog?"
+
+The most visible difference is that today's blogging engines (WordPress, Ghost) are purpose built for high-effort, long-form articles. While this is certainly of value, this isn't the kind of content that dominates social media: captioned images, short video clips, and concise text posts.
+
 
