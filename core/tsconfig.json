@@ -1,10 +1,11 @@
 {
 	"extends": "../tsconfig.standard.json",
 	"compilerOptions": {
-		"outFile": "../index.js"
+		"outFile": "../build/index.js"
 	},
 	"include": [
 		"../lib/*.ts",
+		"./ui/*.ts",
 		"**/*.ts",
 		"**/*.tsx",
 	]

@@ -1,33 +1,40 @@
 
-interface NNode extends EventTarget {
-    /** Returns node's node document's document base URL. */
-    readonly baseURI: string;
+/**
+ * This is a necessary CSS property that appears to be missing from the
+ * standard set of type definitions. This should be removed this once this 
+ * is added upstream.
+ */
+interface CSSStyleDeclaration
+{
+	backdropFilter: string;
 }
 
 /**
  * 
  */
-namespace Html { {} }
+namespace Htx { { } }
 
 {
-	const proxy = new Proxy(Html, {
-		get(target: typeof Html, property: keyof typeof Html)
+	const proxy = new Proxy(Htx, {
+		get(target: typeof Htx, name: keyof typeof Htx)
 		{
-			if (typeof property !== "string" || property.toLowerCase() !== property)
-				return target[property];
+			switch (name)
+			{
+				case "on": return on;
+				case "from": return from;
+				case "defer": return defer;
+				case "css": return css;
+			}
 			
-			if (property === "on")
-				return on;
-			
-			return (...params: Html.Param[]) => create(property, params);
+			return (...params: Htx.Param[]) => create(name, params);
 		}
 	});
 	
 	//@ts-ignore
-	Html = proxy;
+	Htx = proxy;
 	
 	/** */
-	class HtmlEvent
+	class HtxEvent
 	{
 		constructor(
 			readonly eventName: string,
@@ -39,26 +46,40 @@ namespace Html { {} }
 	/** */
 	function on(eventName: string, handler: () => void, options?: AddEventListenerOptions)
 	{
-		return new HtmlEvent(eventName, handler, options);
+		return new HtxEvent(eventName, handler, options);
 	}
 	
 	/** */
-	function create(tagName: string, params: Html.Param[])
+	function from(element: Element)
 	{
-		const e = document.createElement(tagName);
-		
+		return (...params: Htx.Param[]) => apply(element, params);
+	}
+	
+	/** */
+	function create(tagName: string, params: Htx.Param[])
+	{
+		return apply(document.createElement(tagName), params);
+	}
+	
+	/** */
+	function apply(e: Element, params: Htx.Param[])
+	{
 		for (const param of params)
 		{
-			if (param === false)
+			if (!param)
 				continue;
 			
-			if (param instanceof HtmlEvent)
+			if (param instanceof HtxEvent)
 			{
 				e.addEventListener(param.eventName, param.handler, param.options);
 			}
-			else if (param instanceof Node || typeof param === "string")
+			else if (param instanceof Node)
 			{
 				e.append(param);
+			}
+			else if (typeof param === "string")
+			{
+				e.classList.add(param);
 			}
 			else if (typeof param === "object" && param.constructor === Object)
 			{
@@ -67,21 +88,119 @@ namespace Html { {} }
 					if (name in e)
 						(e as any)[name] = value;
 					else
-						e.style.setProperty(name, value.toString());
+						(e as any).style[name] = value.toString();
 				}
 			}
 		}
+		
+		return e;
 	}
+	
+	/**
+	 * Invokes the specified callback function when the specified HTMLElement
+	 * is inserted into the DOM. If the element is already connected to the DOM,
+	 * the callback function is invoked immediately.
+	 */
+	function defer(e: Element, callbackFn: () => void)
+	{
+		if (e.isConnected)
+			return void callbackFn();
+		
+		if (!hasSetupAwaitInsert)
+		{
+			let css = `keyframes ${insertName} { from { widows: 1; } to { widows: 1; } }`;
+			css = ["@", "@-webkit-", "@-moz-"].map(s => s + css).join(" ");
+			css += 
+				"." + insertName + 
+				"{" +
+					["", "-webkit", "-moz"]
+						.map(s => 
+							s + "animation-duration: 0.1ms; " + 
+							s + "animation-name: " + insertName + ";")
+						.join("") +
+				"}";
+			
+			document.head.append(Htx.style(new Text(css)));
+			
+			const listener = (ev: AnimationEvent) =>
+			{
+				if (ev.animationName === insertName && ev.target instanceof HTMLElement)
+				{
+					const fnList = callbackMap.get(ev.target);
+					if (fnList)
+					{
+						callbackMap.delete(ev.target);
+						ev.target.classList.remove(insertName);
+						
+						for (const fn of fnList)
+							fn();
+					}
+				}
+			};
+			
+			document.addEventListener("animationstart", listener);
+			document.addEventListener("webkitAnimationStart", listener as any);
+			document.addEventListener("mozAnimationStart", listener as any);
+			hasSetupAwaitInsert = true;
+		}
+		
+		e.classList.add(insertName);
+		
+		const callbacks = callbackMap.get(e) || [];
+		callbacks.push(callbackFn);
+		callbackMap.set(e, callbacks);
+	}
+	
+	let callbackMap = new WeakMap<Element, (() => void)[]>();
+	let insertName = "__track_insert";
+	let hasSetupAwaitInsert = false;
+	
+	(window as any).callbackMap = callbackMap;
+	
+	/** */
+	function css(cssRuleText: string)
+	{
+		let classNameForRule = cssTextMap.get(cssRuleText);
+		if (classNameForRule)
+			return classNameForRule;
+		
+		if (!globalSheet)
+		{
+			const style = Htx.style();
+			document.head.append(style);
+			globalSheet = style.sheet!;
+		}
+		
+		let cssClass = "";
+		
+		const firstChar = cssRuleText.trimStart().slice(0, 1);
+		if (firstChar === "@")
+		{
+			globalSheet.insertRule(cssRuleText);
+		}
+		else 
+		{
+			cssClass = "c" + (index++);
+			globalSheet.insertRule("." + cssClass + cssRuleText);
+		}
+		
+		cssTextMap.set(cssRuleText, cssClass);
+		return cssClass;
+	}
+	
+	const cssTextMap = new Map<string, string>();
+	let globalSheet: CSSStyleSheet | null = null;
+	let index = 0;
 }
 
-namespace Html
+namespace Htx
 {
 	/**
 	 * Fake node class, which is compatible with the actual Node interface,
 	 * but done with minimal properties in order to not negatively affect
 	 * the quality of the autocompletion experience.
 	 */
-	export interface HtmlNode
+	export interface NodeLike
 	{
 		readonly DOCUMENT_TYPE_NODE: number;
 	}
@@ -242,23 +361,24 @@ namespace Html
 	{
 		id: string;
 		class: string;
-		ahref: string;
+		href: string;
 		src: string;
+		contentEditable: string;
 	}
 	
 	/** */
+	export type Style = Partial<CSSStyleDeclaration>;
+	
+	/** */
 	export type Param =
-		// Text content
+		// Single class name
 		string |
-		// Class names
-		string[] |
 		// Event connections
 		Event |
 		// Conditional elements
-		false |
-		HtmlNode |
-		Partial<CSSStyleDeclaration> |
-		Partial<NumericStyleDeclaration> |
+		false | undefined | null | void |
+		NodeLike |
+		Style |
 		Partial<ElementAttribute>;
 	
 	export declare function a(...params: Param[]): HTMLAnchorElement;
@@ -402,4 +522,23 @@ namespace Html
 		
 		private readonly undefined: undefined;
 	}
+	
+	/** */
+	export declare function from(e: Element): (...params: Param[]) => void;
+	
+	/**
+	 * Invokes the specified callback function when the specified HTMLElement
+	 * is inserted into the DOM. If the element is already connected to the DOM,
+	 * the callback function is invoked immediately.
+	 */
+	export declare function defer(e: Element, callbackFn: () => void): void;
+	
+	/** */
+	export declare function css(cssRuleText: string): string;
+}
+
+if (typeof module === "object")
+{
+	Object.assign(module.exports, { Html: Htx });
+	global["Htx"] = Htx;
 }

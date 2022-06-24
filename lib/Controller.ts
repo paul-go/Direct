@@ -58,6 +58,31 @@ namespace Controller
 	}
 	
 	/**
+	 * Scans upward through the DOM, starting at the specified Node, 
+	 * looking for the first element whose controller matches the specified type.
+	 */
+	export function over<T extends IController>(
+		via: Node | IController,
+		type: Constructor<T>)
+	{
+		let current: Node | null = via instanceof Node ? via : via.root;
+		
+		while (current instanceof Node)
+		{
+			if (current instanceof Element)
+			{
+				const ctrl = Controller.get(current, type);
+				if (ctrl)
+					return ctrl;
+			}
+				
+			current = current.parentElement;
+		}
+		
+		throw new Error("Controller not found.");
+	}
+	
+	/**
 	 * Returns an array of Controllers of the specified type,
 	 * which are extracted from the specified array of elements.
 	 */
@@ -65,8 +90,6 @@ namespace Controller
 		elements: Element[],
 		type: Constructor<T>): T[]
 	{
-		const x = elements.map(e => get(e, type));
-		
 		return elements
 			.map(e => get(e, type))
 			.filter((o): o is T => o instanceof type);
@@ -187,5 +210,13 @@ namespace Controller
 			
 			return -1;
 		}
+		
+		/** */
+		get length()
+		{
+			return childrenOf(this.parentElement).length;
+		}
 	}
+	
+	
 }

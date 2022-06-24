@@ -1,7 +1,7 @@
 {
 	"extends": "../tsconfig.standard.json",
 	"compilerOptions": {
-		"outFile": "../index.coverage.js"
+		"outFile": "../build/index.coverage.js"
 	},
 	"include": [
 		"**/*.ts"

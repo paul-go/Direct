@@ -15,12 +15,3 @@ if (typeof DEBUG === "undefined")
 
 if (typeof ELECTRON === "undefined")
 	Object.assign(globalThis, { ELECTRON: typeof screen + typeof require === "objectfunction" });
-
-namespace Grassroots
-{
-	if (DEBUG && typeof module === "object")
-	{
-		Object.assign(module.exports, { Grassroots });
-		global["Grassroots"] = Grassroots;
-	}
-}
