@@ -20,9 +20,3 @@ This project is an exploration of the idea that the problems with social media c
 A "Social Media Micro-Platform" is a social media platform that only has a single user, and this user is the sole owner, operator, and manager of the platform.
 
 There are important differences between this model and a blog. Today's blogging engines (WordPress, Ghost) are purpose built for high-effort, long-form articles. While this is certainly an important niche, this isn't the kind of content that dominates social media: captioned images, short video clips, and concise text posts. Social media micro-platforms would be geared towards posting this kind of content.
-
-
-Years ago, a technology briefly grazed the earth that allowed for the decentralized following of content creators without any centralized middle-man. This technology was known as RSS.
-
-RSS wasn't a perfect technology. It would be impossible to replicate the features of today's social media platforms using the RSS protocol. But the foundational concepts are sound: Move the complexity to an application that runs on the users device, rather than on a remote server
-
