@@ -26,3 +26,21 @@ namespace Turf
 	}
 }
 
+
+// Temporary startup function
+if (DEBUG && !ELECTRON)
+{
+	setTimeout(() =>
+	{
+		Turf.startup();
+			
+		const pv = new Turf.PatchView();
+		const bv1 = new Turf.CaptionedBladeView();
+		pv.blades.insert(bv1);
+		
+		const bv2 = new Turf.CaptionedBladeView();
+		pv.blades.insert(bv2);
+		
+		Turf.apex.root.append(pv.root);
+	});
+}
