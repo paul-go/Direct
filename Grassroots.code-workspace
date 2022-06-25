@@ -143,11 +143,11 @@
 				"problemMatcher": []
 			},
 			{
-				"label": "Create Bundle",
+				"label": "Copy Resources",
 				"type": "shell",
-				"command": "ts-node create-bundle.ts ${input:bundleName}",
+				"command": "ts-node build.ts 'copyResources()'",
 				"problemMatcher": []
-			}
+			},
 		]
 	}
 }
