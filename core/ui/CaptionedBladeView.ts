@@ -1,6 +1,6 @@
 
 /** */
-namespace Grassroots
+namespace Turf
 {
 	/** */
 	export class CaptionedBladeView extends BladeView

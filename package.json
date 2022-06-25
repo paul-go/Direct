@@ -1,5 +1,5 @@
 {
-	"name": "grassroots",
+	"name": "turf",
 	"version": "0.1.0",
 	"description": "",
 	"author": "Paul Go",
@@ -7,13 +7,13 @@
 	"keywords": [],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/paul-go/Grassroots"
+		"url": "https://github.com/paul-go/Turf"
 	},
 	"bugs": {
-		"url": "https://github.com/paul-go/Grassroots/issues"
+		"url": "https://github.com/paul-go/Turf/issues"
 	},
 	"scripts": {},
-	"main": "grassroots.js",
+	"main": "turf.js",
 	"devDependencies": {
 		"@types/lokijs": "^1.5.7",
 		"@types/node": "^17.0.34",

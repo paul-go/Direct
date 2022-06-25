@@ -26,7 +26,7 @@
 	"launch": {
 		"configurations": [
 			{
-				"name": "Debug Grassroots Application",
+				"name": "Debug Turf Application",
 				"type": "chrome",
 				"request": "launch",
 				"cwd": "${workspaceRoot}",
@@ -84,7 +84,7 @@
 		],
 		"tasks": [
 			{
-				"label": "Compile Grassroots",
+				"label": "Compile Turf",
 				"type": "shell",
 				"command": "tsc",
 				"args": [

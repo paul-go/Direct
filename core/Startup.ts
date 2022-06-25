@@ -1,11 +1,11 @@
 /// <reference path="./ui/ApexView.ts" />
 
-namespace Grassroots
+namespace Turf
 {
 	if (DEBUG && typeof module === "object")
 	{
-		Object.assign(module.exports, { Grassroots });
-		global["Grassroots"] = Grassroots;
+		Object.assign(module.exports, { Turf });
+		global["Turf"] = Turf;
 	}
 	
 	export const apex = new ApexView();
@@ -13,7 +13,7 @@ namespace Grassroots
 	/** */
 	export function startup()
 	{
-		Grassroots.installCss();
+		Turf.installCss();
 		
 		Htx.from(document.body)({
 			margin: "0",
