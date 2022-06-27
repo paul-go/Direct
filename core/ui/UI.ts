@@ -63,6 +63,38 @@ namespace Turf
 		}
 		
 		/** */
+		export function anchorLeft(amount = 0)
+		{
+			return <Htx.Style>{
+				position: "absolute",
+				top: amount + "px",
+				left: amount + "px",
+				bottom: amount + "px",
+			};
+		}
+		
+		/** */
+		export function anchorRight(amount = 0)
+		{
+			return <Htx.Style>{
+				position: "absolute",
+				top: amount + "px",
+				right: amount + "px",
+				bottom: amount + "px",
+			};
+		}
+		
+		/** */
+		export function anchorTopLeft(x = 0, y = 0)
+		{
+			return <Htx.Style>{
+				position: "absolute",
+				top: y + "px",
+				left: x + "px",
+			};
+		}
+		
+		/** */
 		export function anchorTopRight(x = 0, y = 0)
 		{
 			return <Htx.Style>{
@@ -155,9 +187,17 @@ namespace Turf
 				"dripper",
 				CssClass.hide,
 				UI.anchor(),
+				UI.flexCenter,
 				{
 					margin: "auto",
 					zIndex: "9",
+					
+					backgroundColor: UI.color({ l: 20, a: 0.85 }),
+					border: "3px solid " + UI.color({ l: 20 }),
+					borderRadius: UI.borderRadius.default,
+					fontSize: "40px",
+					fontWeight: "700",
+					color: "white"
 				},
 				Htx.on("dragleave", ev =>
 				{
@@ -166,12 +206,18 @@ namespace Turf
 				}),
 				Htx.on("dragend", ev =>
 				{
-					ev.preventDefault();
 					dripper.classList.add(CssClass.hide);
 				}),
 				Htx.on("dragover", ev =>
 				{
 					ev.preventDefault();
+				}),
+				Htx.on("drop", ev =>
+				{
+					dripper.classList.add(CssClass.hide);
+					
+					if (!ev.dataTransfer)
+						ev.stopImmediatePropagation();
 				}),
 				...params
 			);
