@@ -8,6 +8,9 @@ namespace Cover
 		
 		const pv = new Turf.PatchView();
 		
+		const pbv = new Turf.ProseBladeView();
+		pv.blades.insert(pbv);
+		
 		const gbv = new Turf.GalleryBladeView();
 		pv.blades.insert(gbv);
 		

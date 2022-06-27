@@ -16,6 +16,7 @@
 	"main": "turf.js",
 	"devDependencies": {
 		"@types/lokijs": "^1.5.7",
+		"@types/medium-editor": "^5.0.5",
 		"@types/node": "^17.0.34",
 		"electron": "^18.2.4",
 		"moduless": "^2.1.25",

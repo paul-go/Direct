@@ -6,6 +6,7 @@ namespace Turf
 	{
 		dragOverScreen = "drag-over-screen",
 		hide = "hide",
+		proseContainer = "prose-container",
 	}
 	
 	/** */
@@ -23,15 +24,16 @@ namespace Turf
 	/** */
 	export function installCss()
 	{
-		document.head.append(Htx.style(new Text(createCss())));
+		const css = createGeneralCss() + createEditorCss();
+		document.head.append(Htx.style(new Text(css)));
 	}
 	
 	/**
-	 * Creates the CSS that is used in both the editor as well as the player.
+	 * 
 	 */
-	export function createCss()
+	export function createGeneralCss()
 	{
-		const css = `
+		return `
 			*
 			{
 				position: relative;
@@ -43,6 +45,28 @@ namespace Turf
 				-webkit-font-smoothing: antialiased;
 				font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
 			}
+			.${CssClass.proseContainer} H2:not(:first-child),
+			.${CssClass.proseContainer} P:not(:first-child)
+			{
+				margin-top: 5vmin;
+			}
+			.${CssClass.proseContainer} H2
+			{
+				font-size: 5vmin;
+			}
+			.${CssClass.proseContainer} P
+			{
+				font-size: 3vmin;
+			}
+		`;
+	}
+	
+	/**
+	 * Creates the CSS that is used in both the editor as well as the player.
+	 */
+	export function createEditorCss()
+	{
+		return `
 			HTML, BODY
 			{
 				height: 100%;
@@ -88,8 +112,14 @@ namespace Turf
 			{
 				background-color: black;
 			}
+			.${CssClass.proseContainer}
+			{
+				padding: 50px;
+			}
+			.${CssClass.proseContainer}:focus
+			{
+				outline: 0;
+			}
 		`;
-		
-		return css;
 	}
 }

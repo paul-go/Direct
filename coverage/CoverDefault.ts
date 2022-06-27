@@ -42,10 +42,10 @@ namespace Cover
 	/** */
 	export async function coverLoki()
 	{
-		await Fn.include("/lib/lokijs.js");
-		await Fn.include("/lib/loki-indexed-adapter.js");
-		await Fn.include("/lib/loki-incremental-adapter.js");
-		await Fn.include("/lib/incremental-indexeddb-adapter.js");
+		await Turf.Util.include("/lib/lokijs.js");
+		await Turf.Util.include("/lib/loki-indexed-adapter.js");
+		await Turf.Util.include("/lib/loki-incremental-adapter.js");
+		await Turf.Util.include("/lib/incremental-indexeddb-adapter.js");
 		
 		const db = new loki("test", {
 			
