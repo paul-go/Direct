@@ -1,5 +1,7 @@
 
-**Note - This project is super early. I'm working on this full-time at the moment, but it's not at a point where anything actually runs. Check back in a few days.**
+# Note: This project is super early. 
+
+It's not in a usable state at this point. Though I'm working on this full-time, and it's moving ahead at a fast pace. Having said that, you can see an online demo of Turf (here)[https://app.turf.cx].
 
 # Preface
 
