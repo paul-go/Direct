@@ -26,7 +26,6 @@ namespace Turf
 	}
 }
 
-
 // Temporary startup function
 if (DEBUG && !ELECTRON)
 {
