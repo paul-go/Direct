@@ -1,102 +1,102 @@
-/// <reference path="../../lib/Back.ts" />
 
 namespace Turf
 {
 	/** */
-	export class UserData extends Back.Instance
+	export interface UserData
 	{
-		turfs = new Back.Array<TurfData>();
-		email = "";
-		password = "";
-		s3AccessKey = "";
-		s3SecretKey = "";
+		turfs: TurfData[];
+		email: string;
+		password: string;
+		s3AccessKey: string;
+		s3SecretKey: string;
 	}
 	
 	/** */
-	export class TurfData extends Back.Instance
+	export interface TurfData
 	{
+		id: string;
 		colorScheme: unknown;
-		font = "";
-		htmlHeader = "";
-		htmlFooter = "";
-		readonly patches = new Back.Array<PatchData>();
+		font: string;
+		htmlHeader: string;
+		htmlFooter: string;
+		readonly patches: PatchData[];
 	}
 	
 	/** */
-	export class PatchData
+	export interface PatchData
 	{
-		title = "";
-		description = "";
-		slug = "";
-		htmlHeader = "";
-		htmlFooter = "";
-		readonly blades = new Back.Array<BladeData>();
+		title: string;
+		description: string;
+		slug: string;
+		htmlHeader: string;
+		htmlFooter: string;
+		readonly blades: BladeData[];
 	}
 	
 	/** */
-	export class BladeData extends Back.Instance
+	export interface BladeData
 	{
-		transition = BladeTransition.scroll;
+		transition: BladeTransition;
 	}
 	
 	/** */
-	export class CaptionedBladeData extends BladeData
+	export interface CaptionedBladeData extends BladeData
 	{
-		textContrast = 0;
-		textEffect = TextEffect.scrollAlignCenter;
-		readonly titles = new Back.Array<TitleData>();
-		readonly paragraphs = new Back.Array<ParagraphData>();
-		readonly backgrounds = new Back.Array<BackgroundData>();
+		textContrast: number;
+		textEffect: TextEffect;
+		readonly titles: TitleData[];
+		readonly paragraphs: ParagraphData[];
+		readonly backgrounds: BackgroundData[];
 	}
 	
 	/** */
-	export class TitleData extends BladeData
+	export interface TitleData extends BladeData
 	{
-		text = "";
-		size = 0;
-		weight = 0;
+		text: string;
+		size: number;
+		weight: number;
 	}
 	
 	/** */
-	export class ParagraphData extends BladeData
+	export interface ParagraphData extends BladeData
 	{
-		text = "";
+		text: string;
 	}
 	
 	/** */
-	export class BackgroundData
+	export interface BackgroundData
 	{
-		mediaObject = "";
-		crop: [number, number, number, number] = [0, 0, 0, 0];
-		position: [number, number] = [0, 0];
+		mediaObject: string;
+		crop: [number, number, number, number];
+		position: [number, number];
 	}
 	
 	/** */
-	export class ProseBladeData extends BladeData
+	export interface ProseBladeData extends BladeData
 	{
-		html = "";
-		backgroundColor = 0;
+		html: string;
+		backgroundColor: number;
 	}
 	
 	/** */
-	export class VideoBladeData extends BladeData
+	export interface VideoBladeData extends BladeData
 	{
-		style: "cover" | "contain" = "cover";
-		mediaObject = "";
+		style: "cover" | "contain";
+		mediaObject: string;
 	}
 	
 	/** */
-	export class GalleryBladeData extends BladeData
+	export interface GalleryBladeData extends BladeData
 	{
-		readonly items = new Back.Array<GalleryItemData>();
+		readonly items: GalleryItemData[];
 	}
 	
 	/** */
-	export class GalleryItemData
+	export interface GalleryItemData
 	{
-		captionLine1 = "";
-		captionLine2 = "";
-		textContrast = 0;
+		captionLine1: string;
+		captionLine2: string;
+		textContrast: number;
 	}
 	
 	/** */
