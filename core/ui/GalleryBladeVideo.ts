@@ -117,12 +117,6 @@ namespace Turf
 					),
 				)
 			);
-			
-			setInterval(() =>
-			{
-				console.log(this.getVisibleImage());
-			},
-			500);
 		}
 		
 		private readonly galleryContainer: HTMLElement;
