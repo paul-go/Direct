@@ -7,11 +7,15 @@ namespace Cover
 		Turf.startup();
 		
 		const pv = new Turf.PatchView();
-		const bv1 = new Turf.CaptionedBladeView();
-		pv.blades.insert(bv1);
 		
-		const bv2 = new Turf.CaptionedBladeView();
-		pv.blades.insert(bv2);
+		const gbv = new Turf.GalleryBladeView();
+		pv.blades.insert(gbv);
+		
+		const cbv = new Turf.CaptionedBladeView();
+		pv.blades.insert(cbv);
+		
+		const vbv = new Turf.VideoBladeView();
+		pv.blades.insert(vbv);
 		
 		Turf.apex.root.append(pv.root);
 	}
@@ -32,14 +36,12 @@ namespace Cover
 				Htx.on("dragenter", ev =>
 				{
 					ev.preventDefault();
-					
 				},
 				{ capture: true }),
 				
 				Htx.on("dragleave", ev =>
 				{
 					ev.preventDefault();
-					
 				},
 				{ capture: true }),
 				

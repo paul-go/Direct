@@ -21,5 +21,24 @@ namespace Turf
 		}
 		
 		readonly root;
+		
+		/** */
+		get currentUser()
+		{
+			return this._currentUser;
+		}
+		private _currentUser: UserData | null = null;
+		
+		/** */
+		get currentMediaStore()
+		{
+			if (!this._currentMediaStore)
+			{
+				this._currentMediaStore = new MediaStore("temp-turf-name");
+			}
+			
+			return this._currentMediaStore;
+		}
+		private _currentMediaStore: MediaStore | null = null;
 	}
 }

@@ -9,11 +9,125 @@ namespace Turf
 		{
 			super();
 			
-			this.root = Htx.div(
+			Htx.from(this.sceneContainer)(
+				UI.flexCenter,
+				UI.clickable,
+				...UI.dripper(
+					new Text("Drop video here"),
+					Htx.on("drop", ev =>
+					{
+						const dt = ev.dataTransfer!;
+						if (dt.files.length === 0)
+							return;
+						
+						const file = dt.files[0];
+						const mediaObject = this.apex.currentMediaStore.add(file);
+						this.setMedia(mediaObject);
+					})
+				),
+				Htx.on("click", () =>
+				{
+					
+				}),
 				
+				this.videoContainer = Htx.div(
+					{
+						width: "100%",
+						height: "100%",
+						overflow: "hidden",
+						borderRadius: "inherit",
+						backgroundColor: "rgb(70, 70, 70)",
+					},
+					Htx.div(
+						"no-media-label",
+						UI.anchor(),
+						UI.flexCenter,
+						UI.visibleWhenAlone(),
+						new Text("Click to add a video."),
+					)
+				)
+			);
+			
+			this.controlsContainer.append(
+				this.createBladeButton("Cover", () => {}),
+				this.createBladeButton("Contain", () => {}),
 			);
 		}
 		
-		readonly root;
+		private readonly videoContainer: HTMLElement;
+		
+		/** */
+		get mediaKey()
+		{
+			return this._mediaKey;
+		}
+		set mediaKey(value: string)
+		{
+			this._mediaKey = value;
+		}
+		private _mediaKey = "";
+		
+		/** */
+		setMedia(mediaObject: IMediaObject)
+		{
+			this.videoTag?.remove();
+			this.videoTag = Htx.video(
+				{
+					src: mediaObject.url,
+					type: mediaObject.type,
+					playsInline: true,
+					controls: true,
+					width: "100%",
+					height: "100%",
+					objectFit: "contain",
+				}
+			);
+			
+			const blur = 40;
+			
+			const fillerVideoTag = Htx.video(
+				{
+					src: mediaObject.url,
+					type: mediaObject.type,
+					controls: false,
+					playsInline: true,
+					
+					objectFit: "fill",
+					position: "absolute",
+					top: -(blur * 4) + "px",
+					left: -(blur * 4) + "px",
+					width: `calc(100% + ${blur * 8}px)`,
+					height: `calc(100% + ${blur * 8}px)`,
+					filter: `blur(${blur}px)`,
+					zIndex: "-1",
+				}
+			);
+			
+			this.videoTag.onplay = () =>
+			{
+				fillerVideoTag.play();
+			};
+			
+			this.videoTag.onpause = () => fillerVideoTag.pause();
+			this.videoTag.onstalled = () => fillerVideoTag.pause();
+			this.videoTag.onended = () => fillerVideoTag.pause();
+			
+			this.videoTag.onseeked = () =>
+			{
+				fillerVideoTag.currentTime = this.videoTag?.currentTime || 0;
+			};
+			
+			this.videoTag.onseeking = () =>
+			{
+				fillerVideoTag.currentTime = this.videoTag?.currentTime || 0;
+			}
+			
+			this.videoContainer.append(fillerVideoTag, this.videoTag);
+		}
+		
+		private videoTag: HTMLVideoElement | null = null;
+		
+		/** */
+		
 	}
 }

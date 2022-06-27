@@ -5,6 +5,12 @@ namespace Turf
 	export abstract class BladeView
 	{
 		/** */
+		private static fromJSON(json: object)
+		{
+			
+		}
+		
+		/** */
 		constructor()
 		{
 			this.root = Htx.div(
@@ -37,10 +43,13 @@ namespace Turf
 						new Text("+"),
 						Htx.on(UI.click, () => this.handleAdd())
 					),
-					...this.createDripper("Add Here", dt =>
-					{
-						debugger;
-					})
+					...UI.dripper(
+						new Text("Add Here"),
+						Htx.on("drop", ev =>
+						{
+							
+						})
+					)
 				),
 				
 				//
@@ -64,6 +73,7 @@ namespace Turf
 							fontWeight: "900",
 							borderRadius: "100%",
 							backgroundColor: UI.gray(0.5),
+							zIndex: "1",
 						},
 						Htx.on(UI.click, () => this.root.remove())
 					),
@@ -88,6 +98,12 @@ namespace Turf
 		readonly root: HTMLDivElement;
 		readonly sceneContainer;
 		readonly controlsContainer;
+		
+		/** */
+		protected get apex()
+		{
+			return Controller.over(this, ApexView);
+		}
 		
 		/** */
 		private readonly buttonStyle: Htx.Style = {
@@ -161,10 +177,20 @@ namespace Turf
 				},
 				Htx.on("drop", ev =>
 				{
+					(ev.target as HTMLElement)?.remove();
+					
 					if (ev.dataTransfer)
 						dropFn(ev.dataTransfer);
 				})
 			);
+		}
+		
+		/** */
+		private toJSON()
+		{
+			return {
+				transition: this.transition
+			}
 		}
 	}
 }
