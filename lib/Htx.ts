@@ -64,6 +64,9 @@ namespace Htx { { } }
 	/** */
 	function apply(e: Element, params: Htx.Param[])
 	{
+		if (cssPropertySet === null)
+			cssPropertySet = new Set(Object.keys(document.documentElement.style));
+		
 		for (const param of params)
 		{
 			if (!param)
@@ -83,18 +86,26 @@ namespace Htx { { } }
 			}
 			else if (typeof param === "object" && param.constructor === Object)
 			{
+				const el = e as any;
+				
 				for (const [name, value] of Object.entries(param))
 				{
-					if (name in e)
-						(e as any)[name] = value;
-					else
-						(e as any).style[name] = value.toString();
+					// Width and height properties are special cased.
+					// They are interpreted as CSS properties rather
+					// than HTML attributes.
+					if (name in e && name !== "width" && name !== "height")
+						el[name] = value;
+					
+					else if (cssPropertySet.has(name))
+						el.style[name] = value.toString();
 				}
 			}
 		}
 		
 		return e;
 	}
+	
+	let cssPropertySet: Set<string> | null = null;
 	
 	/**
 	 * Invokes the specified callback function when the specified HTMLElement
@@ -362,15 +373,37 @@ namespace Htx
 		id: string;
 		class: string;
 		href: string;
-		src: string;
 		contentEditable: string;
+	}
+	
+	/** */
+	export interface InputElementAttribute extends ElementAttribute
+	{
+		type: string;
+	}
+	
+	/** */
+	export interface ImageElementAttribute extends ElementAttribute
+	{
+		src: string;
+	}
+	
+	/** */
+	export interface VideoElementAttribute extends ElementAttribute
+	{
+		src: string;
+		type: string;
+		autoplay: boolean;
+		loop: boolean;
+		playsInline: boolean;
+		controls: boolean;
 	}
 	
 	/** */
 	export type Style = Partial<CSSStyleDeclaration>;
 	
 	/** */
-	export type Param =
+	export type Param<T = ElementAttribute> =
 		// Single class name
 		string |
 		// Event connections
@@ -379,7 +412,7 @@ namespace Htx
 		false | undefined | null | void |
 		NodeLike |
 		Style |
-		Partial<ElementAttribute>;
+		Partial<T>;
 	
 	export declare function a(...params: Param[]): HTMLAnchorElement;
 	export declare function abbr(...params: Param[]): HTMLElement;
@@ -436,7 +469,7 @@ namespace Htx
 	export declare function html(...params: Param[]): HTMLHtmlElement;
 	export declare function i(...params: Param[]): HTMLElement;
 	export declare function iframe(...params: Param[]): HTMLIFrameElement;
-	export declare function img(...params: Param[]): HTMLImageElement;
+	export declare function img(...params: Param<ImageElementAttribute>[]): HTMLImageElement;
 	export declare function input(...params: Param[]): HTMLInputElement;
 	export declare function ins(...params: Param[]): HTMLModElement;
 	export declare function kbd(...params: Param[]): HTMLElement;
@@ -495,7 +528,7 @@ namespace Htx
 	export declare function track(...params: Param[]): HTMLTrackElement;
 	export declare function u(...params: Param[]): HTMLElement;
 	export declare function ul(...params: Param[]): HTMLUListElement;
-	export declare function video(...params: Param[]): HTMLVideoElement;
+	export declare function video(...params: Param<VideoElementAttribute>[]): HTMLVideoElement;
 	export declare function wbr(...params: Param[]): HTMLElement;
 	
 	export declare function div(...params: Param[]): HTMLDivElement;
