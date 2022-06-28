@@ -5,21 +5,47 @@ namespace Cover
 	export function coverPatchView()
 	{
 		Turf.startup();
-		
 		const pv = new Turf.PatchView();
-		
-		const pbv = new Turf.ProseBladeView();
-		pv.blades.insert(pbv);
-		
-		const gbv = new Turf.GalleryBladeView();
-		pv.blades.insert(gbv);
-		
-		const cbv = new Turf.CaptionedBladeView();
-		pv.blades.insert(cbv);
-		
-		const vbv = new Turf.VideoBladeView();
-		pv.blades.insert(vbv);
-		
+		Turf.apex.root.append(pv.root);
+	}
+	
+	/** */
+	export function coverPatchViewWithCaptioned()
+	{
+		Turf.startup();
+		const pv = new Turf.PatchView();
+		const bv = new Turf.CaptionedBladeView();
+		pv.blades.insert(bv);
+		Turf.apex.root.append(pv.root);
+	}
+	
+	/** */
+	export function coverPatchViewWithGallery()
+	{
+		Turf.startup();
+		const pv = new Turf.PatchView();
+		const bv = new Turf.GalleryBladeView();
+		pv.blades.insert(bv);
+		Turf.apex.root.append(pv.root);
+	}
+	
+	/** */
+	export function coverPatchViewWithVideo()
+	{
+		Turf.startup();
+		const pv = new Turf.PatchView();
+		const bv = new Turf.VideoBladeView();
+		pv.blades.insert(bv);
+		Turf.apex.root.append(pv.root);
+	}
+	
+	/** */
+	export function coverPatchViewWithProse()
+	{
+		Turf.startup();
+		const pv = new Turf.PatchView();
+		const bv = new Turf.ProseBladeView();
+		pv.blades.insert(bv);
 		Turf.apex.root.append(pv.root);
 	}
 	

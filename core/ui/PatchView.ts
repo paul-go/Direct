@@ -4,15 +4,12 @@ namespace Turf
 	/** */
 	export class PatchView
 	{
-		get hydrate() { return "Asdf"; }
-		
 		/** */
 		constructor()
 		{
-			let bladesElement: HTMLElement;
-			
 			this.root = Htx.div(
 				"patch-view",
+				UI.flexColumn,
 				{
 					flex: "1 0",
 					width: UI.vsize(100),
@@ -20,9 +17,14 @@ namespace Turf
 					padding: "0 20px 60px",
 				},
 				
-				bladesElement = Htx.div(
+				this.bladesElement = Htx.div(
+					"blades-element",
 					UI.flexColumn,
+					{
+						flex: "1 0",
+					},
 					Htx.div(
+						"no-blades-message",
 						UI.visibleWhenAlone(),
 						UI.anchor(),
 						UI.flexCenter,
@@ -30,6 +32,7 @@ namespace Turf
 							zIndex: "1",
 						},
 						Htx.div(
+							"add-first-blade",
 							new Text("This patch has no blades."),
 							UI.actionButton("filled", 
 								{
@@ -37,9 +40,9 @@ namespace Turf
 								},
 								Htx.on(UI.click, async () =>
 								{
-									const view = await AddBladeView.show(this.root);
-									if (view)
-										this.root.append(view.root);
+									const bladeView = await AddBladeView.show(this.root);
+									if (bladeView)
+										this.bladesElement.append(bladeView.root);
 								}),
 								new Text("Add One"),
 							)
@@ -48,6 +51,7 @@ namespace Turf
 				),
 				
 				Htx.div(
+					"preview-button",
 					UI.actionButton("filled", 
 						new Text("Preview"),
 						Htx.on("click", () =>
@@ -57,13 +61,14 @@ namespace Turf
 					)
 				)
 			);
-			this.blades = new Controller.Array(bladesElement, BladeView);
+			this.blades = new Controller.Array(this.bladesElement, BladeView);
 			
 			Controller.set(this);
 		}
 		
 		readonly root;
 		readonly blades;
+		private readonly bladesElement;
 		
 		/** */
 		private toJSON()
