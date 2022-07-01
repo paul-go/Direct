@@ -1,10 +1,23 @@
+/// <reference path="Database.ts" />
 
 namespace Turf
 {
 	/** */
-	export interface UserData
+	export class MetaRecord extends Record
 	{
-		turfs: TurfData[];
+		static readonly table = "meta";
+		static readonly type = 1;
+		
+		user = {} as IUser;
+		colorScheme = "";
+		font = "";
+		htmlHeader = "";
+		htmlFooter = "";
+	}
+	
+	/** */
+	export interface IUser
+	{
 		email: string;
 		password: string;
 		s3AccessKey: string;
@@ -12,45 +25,44 @@ namespace Turf
 	}
 	
 	/** */
-	export interface TurfData
+	export class PatchRecord extends Record
 	{
-		id: string;
-		colorScheme: unknown;
-		font: string;
-		htmlHeader: string;
-		htmlFooter: string;
-		readonly patches: PatchData[];
+		static readonly table = "patches";
+		static readonly type = 2;
+		
+		title = "";
+		description = "";
+		slug = "";
+		htmlHeader = "";
+		htmlFooter = "";
+		draft = true;
+		dateCreated = 0;
+		datePublished = 0;
+		readonly blades = this.arrayOf(BladeRecord);
 	}
 	
 	/** */
-	export interface PatchData
+	export abstract class BladeRecord extends Record
 	{
-		title: string;
-		description: string;
-		slug: string;
-		htmlHeader: string;
-		htmlFooter: string;
-		readonly blades: BladeData[];
+		static readonly table = "blades";
+		
+		transition = BladeTransition.scroll;
 	}
 	
 	/** */
-	export interface BladeData
+	export class CaptionedBladeRecord extends BladeRecord
 	{
-		transition: BladeTransition;
+		static readonly type = 3;
+		
+		textContrast = 0;
+		textEffect = TextEffect.scrollAlignCenter;
+		readonly titles: ITitle[] = [];
+		readonly paragraphs: IParagraph[] = [];
+		readonly backgrounds: IBackground[] = [];
 	}
 	
 	/** */
-	export interface CaptionedBladeData extends BladeData
-	{
-		textContrast: number;
-		textEffect: TextEffect;
-		readonly titles: TitleData[];
-		readonly paragraphs: ParagraphData[];
-		readonly backgrounds: BackgroundData[];
-	}
-	
-	/** */
-	export interface TitleData extends BladeData
+	export interface ITitle
 	{
 		text: string;
 		size: number;
@@ -58,13 +70,13 @@ namespace Turf
 	}
 	
 	/** */
-	export interface ParagraphData extends BladeData
+	export interface IParagraph
 	{
 		text: string;
 	}
 	
 	/** */
-	export interface BackgroundData
+	export interface IBackground
 	{
 		mediaObject: string;
 		crop: [number, number, number, number];
@@ -72,27 +84,33 @@ namespace Turf
 	}
 	
 	/** */
-	export interface ProseBladeData extends BladeData
+	export class ProseBladeRecord extends BladeRecord
 	{
-		html: string;
-		backgroundColor: number;
+		static readonly type = 4;
+		
+		html = "";
+		backgroundColor = 0;
 	}
 	
 	/** */
-	export interface VideoBladeData extends BladeData
+	export class VideoBladeRecord extends BladeRecord
 	{
-		style: "cover" | "contain";
-		mediaObject: string;
+		static readonly type = 5;
+		
+		style: "cover" | "contain" = "cover";
+		mediaObject = "";
 	}
 	
 	/** */
-	export interface GalleryBladeData extends BladeData
+	export class GalleryBladeRecord extends BladeRecord
 	{
-		readonly items: GalleryItemData[];
+		static readonly type = 6;
+		
+		readonly items: IGalleryItem[] = [];
 	}
 	
 	/** */
-	export interface GalleryItemData
+	export interface IGalleryItem
 	{
 		captionLine1: string;
 		captionLine2: string;

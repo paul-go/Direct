@@ -27,7 +27,7 @@ namespace Turf
 		{
 			return this._currentUser;
 		}
-		private _currentUser: UserData | null = null;
+		private _currentUser: IUser | null = null;
 		
 		/** */
 		get currentMediaStore()

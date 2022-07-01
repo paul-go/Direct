@@ -147,14 +147,6 @@ namespace Turf
 			this.blobUrlTable.clear();
 			indexedDB.deleteDatabase(this.name);
 		}
-		
-		/*
-		const databaseName = (() =>
-		{
-			const lo = window.location;
-			const path = lo.pathname.split("/").filter(s => !!s)[0] || "";
-			return lo.protocol + lo.hostname + path;
-		})();*/
 	}
 	
 	const databases = new Map<string, IDBDatabase>();

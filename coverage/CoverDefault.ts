@@ -34,29 +34,5 @@ namespace Cover
 			sec.append(a);
 		},
 		400);
-		
-	}
-	
-	declare const loki: typeof import("lokijs");
-	
-	/** */
-	export async function coverLoki()
-	{
-		await Turf.Util.include("/lib/lokijs.js");
-		await Turf.Util.include("/lib/loki-indexed-adapter.js");
-		await Turf.Util.include("/lib/loki-incremental-adapter.js");
-		await Turf.Util.include("/lib/incremental-indexeddb-adapter.js");
-		
-		const db = new loki("test", {
-			
-		});
-		
-		db.collections[0]
-		
-		const users = db.addCollection("users", {
-			
-		});
-		
-		
 	}
 }

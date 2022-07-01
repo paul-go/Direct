@@ -2,6 +2,11 @@
 namespace Turf
 {
 	/** */
+	export type Constructor<T = any> = 
+		(abstract new (...args: any) => T) | 
+		(new (...args: any) => T);
+	
+	/** */
 	export interface FileLike extends Blob
 	{
 		readonly type: string;
@@ -10,6 +15,14 @@ namespace Turf
 	
 	export namespace Util
 	{
+		/**
+		 * Returns the constructor function of the specified object.
+		 */
+		export function constructorOf<T extends Object>(object: T): Constructor<T>
+		{
+			return (object as any).constructor;
+		}
+		
 		/**
 		 * Loads the specified JavaScript code file into the browser,
 		 * if it has not already done so.
@@ -27,7 +40,7 @@ namespace Turf
 				src = "file://" + path.join(__dirname, src);
 			}
 			
-			return new Promise<void>(resolve =>
+			return new Promise<boolean>(resolve =>
 			{
 				if (src.endsWith(".js"))
 				{
@@ -36,8 +49,13 @@ namespace Turf
 					script.onload = () =>
 					{
 						script.remove();
-						resolve();
+						resolve(true);
 					};
+					script.onerror = () =>
+					{
+						console.error("Failed to load: " + src);
+						resolve(false);
+					}
 					document.head.append(script);
 				}
 				else if (src.endsWith(".css"))
@@ -46,7 +64,8 @@ namespace Turf
 					link.rel = "stylesheet";
 					link.type = "text/css";
 					link.href = src;
-					link.onload = () => resolve();
+					link.onload = () => resolve(true);
+					link.onerror = () => resolve(false);
 					document.head.append(link);
 				}
 			});

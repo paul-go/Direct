@@ -144,12 +144,12 @@ namespace Controller
 	/**
 	 * 
 	 */
-	export class Array<TController extends IController>
+	export class Array<TController extends IController = IController>
 	{
 		/** */
 		constructor(
 			private readonly parentElement: Element,
-			private readonly controllerType: Constructor<IController>)
+			private readonly controllerType: Constructor<TController>)
 		{
 			this.marker = document.createComment("");
 			parentElement.append(this.marker);
@@ -158,20 +158,22 @@ namespace Controller
 		private readonly marker: Comment;
 		
 		/** */
+		toArray()
+		{
+			const controllers = childrenOf(this.parentElement);
+			return Controller.map(controllers, this.controllerType);
+		}
+		
+		/** */
 		at(index: number)
 		{
-			const children = childrenOf(this.parentElement);
-			const controllerChildren = Controller.map(children, this.controllerType);
-			const result = controllerChildren.at(index) || null;
-			return result as TController | null;
+			return this.toArray().at(index) || null;
 		}
 		
 		/** */
 		insert(controller: TController, index = Number.MAX_SAFE_INTEGER)
 		{
-			const children = childrenOf(this.parentElement);
-			const type = getControllerType(controller);
-			const controllers = Controller.map(children, type);
+			const controllers = this.toArray();
 			
 			if (controllers.length === 0)
 			{
@@ -216,7 +218,11 @@ namespace Controller
 		{
 			return childrenOf(this.parentElement).length;
 		}
+		
+		/** */
+		private toJSON()
+		{
+			return this.toArray();
+		}
 	}
-	
-	
 }
