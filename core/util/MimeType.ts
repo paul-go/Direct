@@ -4,6 +4,8 @@ namespace Turf
 	/** */
 	export enum MimeType
 	{
+		unknown = "",
+		
 		gif = "image/gif",
 		jpg = "image/jpeg",
 		png = "image/png",

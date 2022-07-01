@@ -3,7 +3,7 @@
 		"composite": true,
 		"module": "system",
 		"moduleResolution": "node",
-		"target": "es2017",
+		"target": "esnext",
 		"inlineSourceMap": true,
 		"inlineSources": true,
 		"strict": true,

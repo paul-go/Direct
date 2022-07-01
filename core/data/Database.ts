@@ -1,3 +1,4 @@
+/// <reference path="PrimitiveWeakMap.ts" />
 
 namespace Turf
 {
@@ -21,6 +22,7 @@ namespace Turf
 		constructor(id?: string)
 		{
 			this.id = id || Util.unique();
+			heap.set(this.id, this);
 		}
 		
 		readonly id: string;
@@ -109,6 +111,10 @@ namespace Turf
 		{
 			return new Promise<R | null>(resolve =>
 			{
+				const existing = heap.get(id);
+				if (existing)
+					return resolve(existing as R);
+				
 				const table = recordCtor.table;
 				const tx = this.idb.transaction(table, "readonly");
 				const store = tx.objectStore(table);
@@ -188,6 +194,12 @@ namespace Turf
 		}
 		
 		/** */
+		async peek()
+		{
+			throw "Not implemented";
+		}
+		
+		/** */
 		private async constructRecord<R extends Record>(
 			recordCtor: RecordCtor<R>,
 			rawRecord: RawRecord<R>): Promise<R>
@@ -199,8 +211,12 @@ namespace Turf
 			if (sub)
 				this.getCtor(sub);
 			
-			const typedRecord = 
-				new recordCtor(id);
+			const typedRecord = heap.get(id) || (() =>
+			{
+				const rec = new recordCtor(id);
+				heap.set(id, rec);
+				return rec as R;
+			})();
 			
 			for (const [key, value] of Object.entries(typedRecord))
 			{
@@ -220,11 +236,11 @@ namespace Turf
 				}
 			}
 			
-			return Object.assign(typedRecord, rawRecord);
+			return Object.assign(typedRecord, rawRecord) as R;
 		}
 		
 		/** */
-		async set(...records: Record[])
+		async save(...records: Record[])
 		{
 			class TxInfo
 			{
@@ -335,4 +351,5 @@ namespace Turf
 	const databases = new Map<string, Database>();
 	const registrations = new Map<number, typeof Record>();
 	const typeProperty = "@";
+	const heap = new PrimitiveWeakMap<string, Record>();
 }

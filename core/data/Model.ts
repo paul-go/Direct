@@ -118,6 +118,29 @@ namespace Turf
 	}
 	
 	/** */
+	export class MediaRecord extends Record
+	{
+		static readonly table = "media";
+		static readonly type = 7;
+		
+		/**
+		 * A friendly name for the media object.
+		 * Typically the name of the file as it was sent in from the operating system.
+		 */
+		name = "";
+		
+		/**
+		 * The mime type of the media object.
+		 */
+		type = MimeType.unknown;
+		
+		/** 
+		 * A blob that stores the actual data of the media object.
+		 */
+		blob = new Blob();
+	}
+	
+	/** */
 	export const enum TextEffect
 	{
 		scrollAlignTopLeft,
@@ -142,5 +165,19 @@ namespace Turf
 		black = "Black",
 		brightness = "Brightness",
 		flash = "Flash",
+	}
+	
+	/** */
+	export function createDatabase(name: string)
+	{
+		return Turf.Database.new(name,
+			Turf.MetaRecord,
+			Turf.PatchRecord,
+			Turf.CaptionedBladeRecord,
+			Turf.ProseBladeRecord,
+			Turf.VideoBladeRecord,
+			Turf.GalleryBladeRecord,
+			Turf.MediaRecord,
+		);
 	}
 }
