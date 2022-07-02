@@ -57,7 +57,7 @@ namespace Turf
 		textContrast = 0;
 		textEffect = TextEffect.scrollAlignCenter;
 		readonly titles: ITitle[] = [];
-		readonly paragraphs: IParagraph[] = [];
+		readonly paragraphs: string[] = [];
 		readonly backgrounds: IBackground[] = [];
 	}
 	
@@ -67,12 +67,6 @@ namespace Turf
 		text: string;
 		size: number;
 		weight: number;
-	}
-	
-	/** */
-	export interface IParagraph
-	{
-		text: string;
 	}
 	
 	/** */
@@ -164,7 +158,15 @@ namespace Turf
 		cross = "Cross",
 		black = "Black",
 		brightness = "Brightness",
-		flash = "Flash",
+		wipeTopLeft = "WipeTop",
+		wipeTopRight = "WipeRight",
+		wipeRight = "WipeRight",
+		wipeLeft = "WipeLeft",
+		wipeBottomLeft = "WipeBottom",
+		wipeBottom = "WipeBottom",
+		wipeBottomRight = "WipeLeft",
+		wipeCircle = "WipeCircle",
+		colorBars = "ColorBars",
 	}
 	
 	/** */

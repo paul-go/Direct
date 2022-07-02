@@ -13,7 +13,6 @@ namespace Turf
 			this.paragraphView = new CaptionedParagraphView();
 			
 			this.buttonsContainer = Htx.div("buttons");
-			//this.root.append(this.buttonsContainer);
 			this.buttons = new Controller.Array(this.buttonsContainer, CaptionedButton);
 			
 			Htx.from(this.sceneContainer)(
