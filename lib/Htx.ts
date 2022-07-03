@@ -557,7 +557,7 @@ namespace Htx
 	}
 	
 	/** */
-	export declare function from(e: Element): (...params: Param[]) => void;
+	export declare function from<E extends Element>(e: E): (...params: Param[]) => E;
 	
 	/**
 	 * Invokes the specified callback function when the specified HTMLElement
