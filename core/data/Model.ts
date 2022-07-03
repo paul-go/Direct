@@ -9,10 +9,18 @@ namespace Turf
 		static readonly type = 1;
 		
 		user = {} as IUser;
-		colorScheme = "";
+		colorScheme: UI.IColor[] = [];
 		font = "";
 		htmlHeader = "";
 		htmlFooter = "";
+	}
+	
+	/** */
+	export namespace ColorIndex
+	{
+		export const black = -1;
+		export const white = -2;
+		export const transparent = -3;
 	}
 	
 	/** */
@@ -47,6 +55,7 @@ namespace Turf
 		static readonly table = "blades";
 		
 		transition = BladeTransition.scroll;
+		backgroundColorIndex: number = ColorIndex.black;
 	}
 	
 	/** */
@@ -56,6 +65,7 @@ namespace Turf
 		
 		textContrast = 0;
 		textEffect = TextEffect.scrollAlignCenter;
+		
 		readonly titles: ITitle[] = [];
 		readonly paragraphs: string[] = [];
 		readonly backgrounds: IBackground[] = [];
@@ -75,6 +85,7 @@ namespace Turf
 		mediaObject: string;
 		crop: [number, number, number, number];
 		position: [number, number];
+		zoom: -1 | 0 | 1;
 	}
 	
 	/** */
@@ -83,7 +94,6 @@ namespace Turf
 		static readonly type = 4;
 		
 		html = "";
-		backgroundColor = 0;
 	}
 	
 	/** */
@@ -158,15 +168,28 @@ namespace Turf
 		cross = "Cross",
 		black = "Black",
 		brightness = "Brightness",
-		wipeTopLeft = "WipeTop",
-		wipeTopRight = "WipeRight",
 		wipeRight = "WipeRight",
 		wipeLeft = "WipeLeft",
 		wipeBottomLeft = "WipeBottom",
 		wipeBottom = "WipeBottom",
 		wipeBottomRight = "WipeLeft",
 		wipeCircle = "WipeCircle",
+		wipeRectangle = "WipeRectangle",
 		colorBars = "ColorBars",
+	}
+	
+	/** */
+	export const enum Ninth
+	{
+		topLeft = 1,
+		top = 2,
+		topRight = 3,
+		left = 4,
+		center = 5,
+		right = 6,
+		bottomLeft = 7,
+		bottom = 8,
+		bottomRight = 9
 	}
 	
 	/** */

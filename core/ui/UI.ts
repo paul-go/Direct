@@ -7,7 +7,16 @@ namespace Turf
 		export const mul = "✕";
 		
 		/** */
-		export function color(values: { h?: number, s?: number, l?: number, a?: number })
+		export interface IColor
+		{
+			readonly h: number;
+			readonly s: number;
+			readonly l: number;
+			readonly a?: number;
+		}
+		
+		/** */
+		export function color(values: Partial<IColor>)
 		{
 			const h = values.h ?? 135;
 			const s = values.s ?? 50;

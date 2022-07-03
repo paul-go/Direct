@@ -13,7 +13,7 @@ namespace Turf
 	/** */
 	export function startup()
 	{
-		Turf.installCss();
+		Turf.appendCss();
 		
 		Htx.from(document.body)({
 			margin: "0",

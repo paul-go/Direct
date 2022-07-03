@@ -24,6 +24,20 @@ namespace Turf
 		}
 		
 		/**
+		 * Generates a short unique string value containing the base 36 character set.
+		 */
+		export function unique()
+		{
+			let now = Date.now() - 1648215698766;
+			if (now <= lastNow)
+				return (++lastNow).toString(36);
+			
+			lastNow = now;
+			return now.toString(36);
+		}
+		let lastNow = 0;
+		
+		/**
 		 * Loads the specified JavaScript code file into the browser,
 		 * if it has not already done so.
 		 */
@@ -73,17 +87,12 @@ namespace Turf
 		const includedScripts = new Set<string>();
 		
 		/**
-		 * Generates a short unique string value containing the base 36 character set.
+		 * Removes all child nodes from the specified Element.
 		 */
-		export function unique()
+		export function clear(e: Element)
 		{
-			let now = Date.now() - 1648215698766;
-			if (now <= lastNow)
-				return (++lastNow).toString(36);
-			
-			lastNow = now;
-			return now.toString(36);
+			for (let i = e.childNodes.length; i-- > 0;)
+				e.childNodes[i].remove();
 		}
-		let lastNow = 0;
 	}
 }

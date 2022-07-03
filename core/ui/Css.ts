@@ -7,6 +7,10 @@ namespace Turf
 		dragOverScreen = "drag-over-screen",
 		hide = "hide",
 		proseContainer = "prose-container",
+		
+		// Player classes
+		story = "story",
+		scene = "scene",
 	}
 	
 	/** */
@@ -22,9 +26,13 @@ namespace Turf
 	}
 	
 	/** */
-	export function installCss()
+	export function appendCss()
 	{
-		const css = createGeneralCss() + createEditorCss();
+		const css = [
+			...createGeneralCss(),
+			...createEditorCss()
+		].join("");
+		
 		document.head.append(Htx.style(new Text(css)));
 	}
 	
@@ -33,32 +41,41 @@ namespace Turf
 	 */
 	export function createGeneralCss()
 	{
-		return `
-			*
-			{
-				position: relative;
-				margin: 0;
-				padding: 0;
-				z-index: 0;
-				box-sizing: border-box;
-				-webkit-margin-collapse: separate;
-				-webkit-font-smoothing: antialiased;
-				font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif;
-			}
-			.${CssClass.proseContainer} H2:not(:first-child),
-			.${CssClass.proseContainer} P:not(:first-child)
-			{
-				margin-top: 5vmin;
-			}
-			.${CssClass.proseContainer} H2
-			{
-				font-size: 5vmin;
-			}
-			.${CssClass.proseContainer} P
-			{
-				font-size: 3vmin;
-			}
-		`;
+		return [
+			rule("*", {
+				"position": "relative",
+				"margin": "0",
+				"padding": "0",
+				"z-index": "0",
+				"box-sizing": "border-box",
+				"-webkit-margin-collapse": "separate",
+				"-webkit-font-smoothing": "antialiased",
+				"font-family": "-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif"
+			}),
+			rule(
+				"." + CssClass.proseContainer + " H2:not(:first-child)," +
+				"." + CssClass.proseContainer + " P:not(:first-child)", {
+				"margin-top": "5vmin",
+			}),
+			rule("." + CssClass.proseContainer + " H2", {
+				"font-size": "5vmin",
+			}),
+			rule("." + CssClass.proseContainer + " P", {
+				"font-size": "3vmin"
+			}),
+			
+			// Player CSS
+			
+			rule("." + CssClass.story, {
+				"scroll-snap-type": "y mandatory",
+				"overflow-x": "hidden",
+				"overflow-y": "auto",
+				"height": "100%",
+			}),
+			rule("." + CssClass.scene, {
+				"scroll-snap-align": "start"
+			})
+		];
 	}
 	
 	/**
@@ -66,60 +83,74 @@ namespace Turf
 	 */
 	export function createEditorCss()
 	{
-		return `
-			HTML, BODY
-			{
-				height: 100%;
-			}
-			.${CssClass.hide}
-			{
-				display: none !important;
-			}
-			.${CaptionedButtonClass.all}
-			{
-				width: 30em;
-				display: inline-block;
-				padding: 0.75em;
-				text-align: center;
-				color: black;
-				user-select: none;
-			}
-			.${CaptionedButtonClass.pillOutline}
-			{
-				border-radius: 100px;
-				border: 2px solid black;
-			}
-			.${CaptionedButtonClass.pillFilled}
-			{
-				border-radius: 100px;
-				background-color: black;
-			}
-			.${CaptionedButtonClass.roundedOutline}
-			{
-				border-radius: 8px;
-				border: 2px solid black;
-			}
-			.${CaptionedButtonClass.roundedFilled}
-			{
-				border-radius: 8px;
-				background-color: black;
-			}
-			.${CaptionedButtonClass.squareOutline}
-			{
-				border: 2px solid black;
-			}
-			.${CaptionedButtonClass.squareFilled}
-			{
-				background-color: black;
-			}
-			.${CssClass.proseContainer}
-			{
-				padding: 50px;
-			}
-			.${CssClass.proseContainer}:focus
-			{
-				outline: 0;
-			}
-		`;
+		return [
+			rule("HTML, BODY", {
+				height: "100%",
+			}),
+			rule("." + CssClass.hide, {
+				display: "none !important",
+			}),
+			rule("." + CaptionedButtonClass.all, {
+				"width": "30em",
+				"display": "inline-block",
+				"padding": "0.75em",
+				"text-align": "center",
+				"color": "black",
+				"user-select": "none",
+			}),
+			rule("." + CaptionedButtonClass.pillOutline, {
+				"border-radius": "100px",
+				"border": "2px solid black",
+			}),
+			rule("." + CaptionedButtonClass.pillFilled, {
+				"border-radius": "100px",
+				"background-color": "black",
+			}),
+			rule("." + CaptionedButtonClass.roundedOutline, {
+				"border-radius": "8px",
+				"border": "2px solid black",
+			}),
+			rule("." + CaptionedButtonClass.roundedFilled, {
+				"border-radius": "8px",
+				"background-color": "black",
+			}),
+			rule("." + CaptionedButtonClass.squareOutline, {
+				"border": "2px solid black",
+			}),
+			rule("." + CaptionedButtonClass.squareFilled, {
+				"background-color": "black",
+			}),
+			rule("." + CssClass.proseContainer, {
+				"padding": "50px",
+			}),
+			rule("." + CssClass.proseContainer + ":focus", {
+				"outline": "0",
+			}),
+		];
+	}
+	
+	/** */
+	function rule(selector: string, properties: { [property: string]: string; })
+	{
+		return new VirtualCssRule(selector, properties);
+	}
+	
+	/** */
+	class VirtualCssRule
+	{
+		constructor(
+			readonly selector: string,
+			readonly cssProperties: { [property: string]: string; })
+		{ }
+		
+		/** */
+		toString()
+		{
+			return this.selector +  "{" + 
+				Object.entries(this.cssProperties)
+					.map(([n, v]) => n + ":" + v)
+					.join(";") +
+			"}";
+		}
 	}
 }

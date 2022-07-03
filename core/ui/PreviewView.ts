@@ -8,7 +8,7 @@ namespace Turf
 		constructor()
 		{
 			this.root = Htx.div(
-				UI.fixed(20),
+				UI.fixed(0),
 				{
 					overflowX: "hidden",
 					overflowY: "auto",
@@ -21,9 +21,13 @@ namespace Turf
 		readonly root;
 		
 		/** */
-		render(patch: PatchRecord)
+		render(patch: PatchRecord, meta: MetaRecord)
 		{
-			
+			const renderer = new Renderer();
+			const renderRoot = renderer.render(patch, meta);
+			Util.clear(this.root);
+			this.root.append(renderRoot);
+			new Player.Story(renderRoot);
 		}
 	}
 }
