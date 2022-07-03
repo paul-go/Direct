@@ -12,6 +12,20 @@ namespace Turf
 	/** */
 	export type RecordCtor<R extends Record = Record> = typeof Record & Constructor<R>;
 	
+	let inspecting = false;
+	const fakeId = "?".repeat(10);
+	const referenceInfos = new Map<typeof Record, Map<string, typeof Record>>();
+	
+	/** */
+	function getReferenceType(
+		containingRecordType: typeof Record,
+		propertyName: string): typeof Record | null
+	{
+		return referenceInfos
+			.get(containingRecordType)
+			?.get(propertyName) || null;
+	}
+	
 	/** */
 	export class Record
 	{
@@ -22,7 +36,32 @@ namespace Turf
 		constructor(id?: string)
 		{
 			this.id = id || Util.unique();
-			heap.set(this.id, this);
+			
+			if (id !== fakeId)
+			{
+				heap.set(this.id, this);
+				const instantiatedType = new.target;
+				
+				let refInfo = referenceInfos.get(instantiatedType);
+				if (!refInfo)
+				{
+					let template: Record | null = null;
+					
+					try
+					{
+						inspecting = true;
+						template = new instantiatedType(fakeId);
+					}
+					finally
+					{
+						inspecting = false;
+					}
+					
+					const entries = Object.entries(template).filter(([, v]) => v instanceof RecordReference);
+					refInfo = new Map(entries);
+					referenceInfos.set(instantiatedType, refInfo);
+				}
+			}
 		}
 		
 		readonly id: string;
@@ -33,6 +72,12 @@ namespace Turf
 			const array: any[] = new RecordArray(type);
 			return array;
 		}
+		
+		/** */
+		protected referenceOf<T extends abstract new (...args: any[]) => Record>(type: T): InstanceType<T> | null
+		{
+			return inspecting ? new RecordReference(type) as any: null;
+		}
 	}
 	
 	/** */
@@ -42,6 +87,14 @@ namespace Turf
 		{
 			super();
 		}
+	}
+	
+	/**
+	 * A class for a temporary object used to inspect the data type of a property in a Record.
+	 */
+	class RecordReference<R extends Record>
+	{
+		constructor(readonly type: Constructor<R>) { }
 	}
 	
 	/** */
@@ -234,6 +287,14 @@ namespace Turf
 					}
 					else raw[key] = [];
 				}
+				else
+				{
+					const type = getReferenceType(recordCtor, key);
+					if (type !== null)
+					{
+						
+					}
+				}
 			}
 			
 			return Object.assign(typedRecord, rawRecord) as R;
@@ -259,6 +320,9 @@ namespace Turf
 			{
 				const ctor = Util.constructorOf(record) as typeof Record;
 				const table = ctor.table;
+				
+				if (!table)
+					throw "Constructor has no table name: " + ctor.name;
 				
 				let txInfo = organizer.get(table);
 				if (!txInfo)

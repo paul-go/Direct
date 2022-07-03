@@ -68,7 +68,7 @@ namespace Turf
 		
 		readonly titles: ITitle[] = [];
 		readonly paragraphs: string[] = [];
-		readonly backgrounds: IBackground[] = [];
+		readonly backgrounds = this.arrayOf(BackgroundRecord);
 	}
 	
 	/** */
@@ -80,12 +80,14 @@ namespace Turf
 	}
 	
 	/** */
-	export interface IBackground
+	export class BackgroundRecord extends Record
 	{
-		mediaObject: string;
-		crop: [number, number, number, number];
-		position: [number, number];
-		zoom: -1 | 0 | 1;
+		static readonly table = "background";
+		
+		media = this.referenceOf(MediaRecord);
+		crop?: [number, number, number, number];
+		position?: [number, number];
+		zoom: -1 | 0 | 1 = 0;
 	}
 	
 	/** */
@@ -102,7 +104,7 @@ namespace Turf
 		static readonly type = 5;
 		
 		style: "cover" | "contain" = "cover";
-		mediaObject = "";
+		media = this.referenceOf(MediaRecord);
 	}
 	
 	/** */
@@ -203,6 +205,7 @@ namespace Turf
 			Turf.VideoBladeRecord,
 			Turf.GalleryBladeRecord,
 			Turf.MediaRecord,
+			Turf.BackgroundRecord,
 		);
 	}
 }

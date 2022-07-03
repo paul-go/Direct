@@ -26,6 +26,36 @@ namespace Cover
 	}
 	
 	/** */
+	export async function coverInstance()
+	{
+		const dbName = "coverInstance";
+		await Turf.Database.delete(dbName);
+		const db = await Turf.createDatabase(dbName);
+		
+		const media = new Turf.MediaRecord();
+		media.name = "media.jpg";
+		media.type = Turf.MimeType.jpg;
+		media.blob = new Blob([new Uint8Array([1, 2])]);
+		
+		const bg = new Turf.BackgroundRecord();
+		bg.crop = [1, 2, 3, 4];
+		bg.position = [5, 6];
+		bg.zoom = 1;
+		bg.media = media;
+		
+		await db.save(media, bg);
+		
+		const bgOut = await db.get(Turf.BackgroundRecord, bg.id);
+		if (!bgOut)
+			return () => "Fail";
+		
+		return [
+			() => bg.id === bgOut.id,
+			() => bg.media && bgOut.media && bg.media.id === bgOut.media.id
+		];
+	}
+	
+	/** */
 	export async function coverMediaObject()
 	{
 		const dbName = "coverMediaObject";
