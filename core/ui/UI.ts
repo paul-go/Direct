@@ -31,9 +31,15 @@ namespace Turf
 		export const primaryColor = UI.color({ s: 60, l: 40 });
 		
 		/** */
-		export function gray(alpha = 0.5)
+		export function white(alpha = 1)
 		{
-			return `rgba(0, 0, 0, ${alpha})`;
+			return alpha === 1 ? "white" : `rgba(255, 255, 255, ${alpha})`;
+		}
+		
+		/** */
+		export function black(alpha = 1)
+		{
+			return alpha === 1 ? "black" : `rgba(0, 0, 0, ${alpha})`;
 		}
 		
 		/** */
@@ -148,6 +154,15 @@ namespace Turf
 			const reg = /([0-9\.]+)vmin/;
 			const matches = value.match(reg);
 			return Number(matches?.[1]) || 5;
+		}
+		
+		/** */
+		export function specificWeight(weight: number): Htx.Param
+		{
+			return {
+				fontWeight: weight.toString(),
+				fontVariationSettings: "'wght' " + weight,
+			};
 		}
 		
 		/** */

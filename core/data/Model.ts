@@ -54,7 +54,7 @@ namespace Turf
 	{
 		static readonly table = "blades";
 		
-		transition = BladeTransition.scroll;
+		transition = Transitions.slide;
 		backgroundColorIndex: number = ColorIndex.black;
 	}
 	
@@ -64,7 +64,8 @@ namespace Turf
 		static readonly type = 3;
 		
 		textContrast = 0;
-		textEffect = TextEffect.scrollAlignCenter;
+		effect = Effects.none;
+		origin = Ninth.center;
 		
 		readonly titles: ITitle[] = [];
 		readonly paragraphs: string[] = [];
@@ -144,7 +145,26 @@ namespace Turf
 		 * A blob that stores the actual data of the media object.
 		 */
 		blob = new Blob();
+		
+		/** */
+		getBlobUrl()
+		{
+			return blobUrls.get(this) || (() =>
+			{
+				const url = URL.createObjectURL(this.blob);
+				blobUrls.set(this, url);
+				return url;
+			})();
+		}
+		
+		/** */
+		getHttpUrl()
+		{
+			return this.name || "unnamed-file";
+		}
 	}
+	
+	const blobUrls = new WeakMap<MediaRecord, string>();
 	
 	/** */
 	export const enum TextEffect
@@ -161,23 +181,6 @@ namespace Turf
 		zoomBlur,
 		zoomExpand,
 		zoomBlurExpand,
-	}
-	
-	/** */
-	export const enum BladeTransition
-	{
-		scroll = "Scroll",
-		cross = "Cross",
-		black = "Black",
-		brightness = "Brightness",
-		wipeRight = "WipeRight",
-		wipeLeft = "WipeLeft",
-		wipeBottomLeft = "WipeBottom",
-		wipeBottom = "WipeBottom",
-		wipeBottomRight = "WipeLeft",
-		wipeCircle = "WipeCircle",
-		wipeRectangle = "WipeRectangle",
-		colorBars = "ColorBars",
 	}
 	
 	/** */

@@ -62,5 +62,15 @@ namespace Turf
 			
 			return MimeClass.other;
 		}
+		
+		/**
+		 * Parses the specified file name and returns the mime
+		 * type that is likely associated with it, based on the file extension.
+		 */
+		export function fromFileName(fileName: string)
+		{
+			const ext = fileName.split(".").slice(-1)[0] || "";
+			return mimes.get(ext) || "";
+		}
 	}
 }

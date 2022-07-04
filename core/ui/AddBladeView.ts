@@ -69,7 +69,7 @@ namespace Turf
 					padding: "10px",
 					borderRadius: UI.borderRadius.default,
 					border: "2px solid " + UI.color({ l: 33 }),
-					backgroundColor: UI.gray(0.5),
+					backgroundColor: UI.black(0.5),
 					textAlign: "center",
 				},
 				Htx.on(UI.click, () =>

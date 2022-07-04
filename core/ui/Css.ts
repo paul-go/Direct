@@ -2,30 +2,6 @@
 namespace Turf
 {
 	/** */
-	export const enum CssClass
-	{
-		dragOverScreen = "drag-over-screen",
-		hide = "hide",
-		proseContainer = "prose-container",
-		
-		// Player classes
-		story = "story",
-		scene = "scene",
-	}
-	
-	/** */
-	export const enum CaptionedButtonClass
-	{
-		all = "cb",
-		pillOutline = "cb-po",
-		pillFilled = "cb-pf",
-		roundedOutline = "cb-ro",
-		roundedFilled = "cb-rf",
-		squareOutline = "cb-so",
-		squareFilled = "cb-sf",
-	}
-	
-	/** */
 	export function appendCss()
 	{
 		const css = [
@@ -44,9 +20,9 @@ namespace Turf
 		return [
 			rule("*", {
 				"position": "relative",
-				"margin": "0",
-				"padding": "0",
-				"z-index": "0",
+				"margin": 0,
+				"padding": 0,
+				"z-index": 0,
 				"box-sizing": "border-box",
 				"-webkit-margin-collapse": "separate",
 				"-webkit-font-smoothing": "antialiased",
@@ -73,8 +49,24 @@ namespace Turf
 				"height": "100%",
 			}),
 			rule("." + CssClass.scene, {
-				"scroll-snap-align": "start"
-			})
+				"display": "flex",
+				"padding": "20px",
+				"min-height": "100vh",
+				"scroll-snap-align": "start",
+			}),
+			rule("." + CssClass.captionSceneBackground, {
+				"position": "absolute",
+				"top": 0,
+				"right": 0,
+				"bottom": 0,
+				"left": 0,
+				"background-repeat": "no-repeat",
+				"background-position": "50% 50%",
+				"background-size": "cover",
+			}),
+			rule("." + CssClass.captionSceneForeground, {
+				"max-width": "1000px",
+			}),
 		];
 	}
 	
@@ -124,13 +116,13 @@ namespace Turf
 				"padding": "50px",
 			}),
 			rule("." + CssClass.proseContainer + ":focus", {
-				"outline": "0",
+				"outline": 0,
 			}),
 		];
 	}
 	
 	/** */
-	function rule(selector: string, properties: { [property: string]: string; })
+	function rule(selector: string, properties: { [property: string]: string | number; })
 	{
 		return new VirtualCssRule(selector, properties);
 	}
@@ -140,7 +132,7 @@ namespace Turf
 	{
 		constructor(
 			readonly selector: string,
-			readonly cssProperties: { [property: string]: string; })
+			readonly cssProperties: { [property: string]: string | number; })
 		{ }
 		
 		/** */

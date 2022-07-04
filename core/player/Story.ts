@@ -5,20 +5,38 @@ namespace Player
 	export class Story
 	{
 		/** */
-		constructor(readonly root: HTMLElement)
+		constructor(root: HTMLElement | string)
 		{
 			// Needs to go through the root and create all the scenes.
 			
+			if (root instanceof HTMLElement)
+				this.root = root;
+			else
+				this.root = document.getElementById(root) as HTMLElement;
+			
 			const scenes: Scene[] = [];
 			
-			for (const child of Array.from(root.children))
-				if (child instanceof HTMLElement)
-					scenes.push(new Scene(child));
+			for (const child of Array.from(this.root.children))
+			{
+				if (!(child instanceof HTMLElement))
+					continue;
+				
+				const list = child.classList;
+				const scene = 
+					list.contains(CssClass.captionScene) ? new CaptionScene(child) :
+					list.contains(CssClass.videoScene) ? new VideoScene(child) :
+					list.contains(CssClass.proseScene) ? new ProseScene(child) :
+					list.contains(CssClass.galleryScene) ? new GalleryScene(child) : null!;
+				
+				scenes.push(scene);
+			}
 			
 			for (const scene of scenes)
 				scene.setup();
 			
 			
 		}
+		
+		readonly root: HTMLElement;
 	}
 }

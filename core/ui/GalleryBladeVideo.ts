@@ -70,7 +70,7 @@ namespace Turf
 										{
 											margin: "auto",
 											padding: "20px",
-											backgroundColor: UI.gray(0.75),
+											backgroundColor: UI.black(0.75),
 											color: "white",
 											maxWidth: "max-content",
 											maxHeight: "max-content",

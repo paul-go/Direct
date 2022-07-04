@@ -23,8 +23,7 @@ namespace Turf
 		/** */
 		render(patch: PatchRecord, meta: MetaRecord)
 		{
-			const renderer = new Renderer();
-			const renderRoot = renderer.render(patch, meta);
+			const renderRoot = Turf.renderPatchPreview(patch, meta);
 			Util.clear(this.root);
 			this.root.append(renderRoot);
 			new Player.Story(renderRoot);

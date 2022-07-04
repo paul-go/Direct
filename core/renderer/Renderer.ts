@@ -1,156 +1,266 @@
 
 namespace Turf
 {
-	/** */
-	export class Renderer
+	/**
+	 * 
+	 */
+	class Bundle<T extends BladeRecord = BladeRecord>
 	{
-		/** */
-		render(patch: PatchRecord, meta: MetaRecord)
-		{
-			return Htx.div(
-				"story",
-				...patch.blades.map(b => BladeRenderer.new(b, meta).render())
-			);
-		}
-	}
-	
-	/** */
-	abstract class BladeRenderer
-	{
-		/** */
-		static new(bladeRecord: BladeRecord, metaRecord: MetaRecord): BladeRenderer
-		{
-			if (bladeRecord instanceof CaptionedBladeRecord)
-				return new CaptionedBladeRenderer(bladeRecord, metaRecord);
-			
-			if (bladeRecord instanceof ProseBladeRecord)
-				return new ProseBladeRenderer(bladeRecord, metaRecord);
-			
-			if (bladeRecord instanceof GalleryBladeRecord)
-				return new GalleryBladeRenderer(bladeRecord, metaRecord);
-			
-			if (bladeRecord instanceof VideoBladeRecord)
-				return new VideoBladeRenderer(bladeRecord, metaRecord);
-			
-			throw "Unknown type";
-		}
-		
-		/** */
-		protected constructor(
-			protected readonly blade: BladeRecord,
-			protected readonly meta: MetaRecord)
+		constructor(
+			readonly blade: T,
+			readonly meta: MetaRecord,
+			readonly isPreview: boolean)
 		{ }
 		
 		/** */
-		render()
+		getMediaUrl(media: MediaRecord)
 		{
-			const backgroundColor = this.resolveColor(this.blade.backgroundColorIndex);
+			if (this.isPreview)
+				return media.getBlobUrl();
 			
-			return Htx.section(
-				"scene",
+			return media.getHttpUrl();
+		}
+		
+		/** */
+		useAnimation(transition: Animation)
+		{
+			this.usedTransitions.add(transition);
+			return transition.name;
+		}
+		
+		readonly usedTransitions = new Set<Animation>();
+	}
+	
+	/**
+	 * 
+	 */
+	export function renderPatchPreview(
+		patch: PatchRecord,
+		meta: MetaRecord)
+	{
+		return renderPatch(patch, meta, true);
+	}
+	
+	/**
+	 * 
+	 */
+	export function renderPatchFinal(
+		patch: PatchRecord,
+		meta: MetaRecord)
+	{
+		const patchHtml = renderPatch(patch, meta, true);
+		// convert the patch html to a string
+		return "";
+	}
+	
+	/**
+	 * 
+	 */
+	function renderPatch(
+		patch: PatchRecord,
+		meta: MetaRecord,
+		isPreview: boolean)
+	{
+		return Htx.div(
+			"story",
+			...patch.blades.map(blade => renderBlade(new Bundle(blade, meta, isPreview)))
+		);
+	}
+	
+	/**
+	 * 
+	 */
+	function renderBlade(bun: Bundle)
+	{
+		const foregroundColor = resolveForegroundColor(
+			bun.blade.backgroundColorIndex, 
+			bun.meta);
+		
+		const backgroundColor = resolveBackgroundColor(
+			bun.blade.backgroundColorIndex, 
+			bun.meta);
+		
+		return Htx.section(
+			"scene",
+			{
+				color: UI.color(foregroundColor),
+				backgroundColor: UI.color(backgroundColor),
+				data: {
+					[DataAttributes.transition]: bun.useAnimation(bun.blade.transition)
+				}
+			},
+			...(() =>
+			{
+				if (bun.blade instanceof CaptionedBladeRecord)
+					return renderCaptionedBlade(bun as Bundle<CaptionedBladeRecord>);
+				
+				if (bun.blade instanceof ProseBladeRecord)
+					return renderProseBlade(bun as Bundle<ProseBladeRecord>);
+				
+				if (bun.blade instanceof GalleryBladeRecord)
+					return renderGalleryBlade(bun as Bundle<GalleryBladeRecord>);
+				
+				if (bun.blade instanceof VideoBladeRecord)
+					return renderVideoBlade(bun as Bundle<VideoBladeRecord>);
+				
+				return [];
+			})()
+		);
+	}
+	
+	/**
+	 * 
+	 */
+	function renderCaptionedBlade(bun: Bundle<CaptionedBladeRecord>)
+	{
+		const blade = bun.blade;
+		const out: Htx.Param[] = [CssClass.captionScene];
+		
+		out.push({ 
+			justifyContent:
+				blade.origin % 3 === 1 ? "flex-start" :
+				blade.origin % 3 === 2 ? "center" :
+				blade.origin % 3 === 0 ? "flex-end" : "",
+			alignItems:
+				blade.origin < 4 ? "flex-start" :
+				blade.origin < 7 ? "center" : "flex-end",
+		});
+		
+		// Background
+		out.push(...blade.backgrounds.map(bg =>
+		{
+			if (bg.media)
+			{
+				return Htx.div(
+					CssClass.captionSceneBackground,
+					{
+						backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")"
+					}
+				);
+			}
+		}).filter(b => !!b));
+		
+		// Foreground
+		if (blade.titles.length > 0 || blade.paragraphs.length > 0)
+		{
+			const fg = Htx.div(
+				CssClass.captionSceneForeground,
 				{
-					minHeight: "100vh",
-					backgroundColor: UI.color(backgroundColor)
+					textAlign: 
+						blade.origin % 3 === 1 ? "left" :
+						blade.origin % 3 === 2 ? "center" :
+						blade.origin % 3 === 0 ? "right" : "",
+					data: {
+						[DataAttributes.transition]: bun.useAnimation(blade.effect)
+					},
 				}
 			);
+			
+			if (blade.titles.length > 0)
+			{
+				const h2 = Htx.h2();
+				
+				for (const title of blade.titles)
+				{
+					h2.append(Htx.div(
+						UI.specificWeight(title.weight),
+						{
+							fontSize: UI.vsize(title.size),
+						},
+						new Text(title.text)
+					));
+				}
+				
+				fg.append(h2);
+			}
+			
+			if (blade.paragraphs.length > 0)
+				for (const paragraph of blade.paragraphs)
+					fg.append(Htx.p(new Text(paragraph)));
+			
+			out.push(fg);
 		}
 		
-		/** */
-		protected resolveColor(color: number): UI.IColor
-		{
-			if (color === ColorIndex.black)
-				return { h: 0, s: 0, l: 0 };
-			
-			if (color === ColorIndex.white)
-				return { h: 0, s: 0, l: 100 };
-			
-			if (color === ColorIndex.transparent)
-				return { h: 0, s: 0, l: 0, a: 0 };
-			
-			if (color < 0 || color >= this.meta.colorScheme.length)
-				throw "Unknown color: " + color;
-			
-			return this.meta.colorScheme[color];
-		}
+		return out;
 	}
 	
-	/** */
-	class CaptionedBladeRenderer extends BladeRenderer
+	/**
+	 * 
+	 */
+	function renderGalleryBlade(bun: Bundle<GalleryBladeRecord>)
 	{
-		/** */
-		constructor(
-			protected readonly blade: CaptionedBladeRecord,
-			protected readonly meta: MetaRecord)
-		{
-			super(blade, meta);
-		}
-		
-		/** */
-		render()
-		{
-			return Htx.from(super.render())(
-				"captioned-scene"
-			);
-		}
+		return [
+			CssClass.galleryScene,
+			Htx.div(
+			)
+		];
 	}
 	
-	/** */
-	class ProseBladeRenderer extends BladeRenderer
+	/**
+	 * 
+	 */
+	function renderProseBlade(bun: Bundle<ProseBladeRecord>)
 	{
-		/** */
-		constructor(
-			protected readonly blade: ProseBladeRecord,
-			protected readonly meta: MetaRecord)
-		{
-			super(blade, meta);
-		}
-		
-		/** */
-		render()
-		{
-			return Htx.from(super.render())(
-				"prose-scene"
-			);
-		}
+		return [
+			CssClass.proseScene,
+			Htx.div(
+			)
+		];
 	}
 	
-	/** */
-	class GalleryBladeRenderer extends BladeRenderer
+	/**
+	 * 
+	 */
+	function renderVideoBlade(bun: Bundle<VideoBladeRecord>)
 	{
-		/** */
-		constructor(
-			protected readonly blade: GalleryBladeRecord,
-			protected readonly meta: MetaRecord)
-		{
-			super(blade, meta);
-		}
-		
-		/** */
-		render()
-		{
-			return Htx.from(super.render())(
-				"gallery-scene"
-			);
-		}
+		return [
+			CssClass.videoScene,
+			Htx.div(
+			)
+		];
 	}
 	
-	/** */
-	class VideoBladeRenderer extends BladeRenderer
+	/**
+	 * 
+	 */
+	function resolveForegroundColor(color: number, meta: MetaRecord): UI.IColor
 	{
-		/** */
-		constructor(
-			protected readonly blade: VideoBladeRecord,
-			protected readonly meta: MetaRecord)
-		{
-			super(blade, meta);
-		}
+		if (color === ColorIndex.black)
+			return white;
 		
-		/** */
-		render()
-		{
-			return Htx.from(super.render())(
-				"video-scene"
-			);
-		}
+		if (color === ColorIndex.white)
+			return black;
+		
+		if (color === ColorIndex.transparent)
+			return white;
+		
+		if (color < 0 || color >= meta.colorScheme.length)
+			throw "Unknown color: " + color;
+		
+		const lightness = meta.colorScheme[color].l;
+		return lightness < 50 ? white : black;
 	}
+	
+	/**
+	 * 
+	 */
+	function resolveBackgroundColor(color: number, meta: MetaRecord): UI.IColor
+	{
+		if (color === ColorIndex.black)
+			return black;
+		
+		if (color === ColorIndex.white)
+			return white;
+		
+		if (color === ColorIndex.transparent)
+			return { h: 0, s: 0, l: 0, a: 0 };
+		
+		if (color < 0 || color >= meta.colorScheme.length)
+			throw "Unknown color: " + color;
+		
+		return meta.colorScheme[color];
+	}
+	
+	const black = { h: 0, s: 0, l: 0 };
+	const white = { h: 0, s: 0, l: 255 };
 }

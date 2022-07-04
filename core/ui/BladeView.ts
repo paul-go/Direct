@@ -72,7 +72,7 @@ namespace Turf
 							height: "40px",
 							fontWeight: "900",
 							borderRadius: "100%",
-							backgroundColor: UI.gray(0.5),
+							backgroundColor: UI.black(0.5),
 							zIndex: "1",
 						},
 						Htx.on(UI.click, () => this.root.remove())
@@ -90,7 +90,7 @@ namespace Turf
 			);
 			
 			// Populate this with data in the future.
-			this._transition = BladeTransition.scroll;
+			this._transition = Transitions.slide;
 			
 			Controller.set(this);
 		}
@@ -137,12 +137,12 @@ namespace Turf
 		{
 			return this._transition;
 		}
-		set transition(value: BladeTransition)
+		set transition(value: Animation)
 		{
 			this._transition = value;
 			this.transitionAnchor.innerHTML = `Transition - <b>${value}</b>`;
 		}
-		private _transition: BladeTransition;
+		private _transition: Animation;
 		
 		private readonly transitionAnchor: HTMLAnchorElement;
 		
