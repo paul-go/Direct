@@ -90,10 +90,15 @@ namespace Htx { { } }
 				
 				for (const [name, value] of Object.entries(param))
 				{
+					if (name === "data")
+					{
+						for (const [attrName, attrValue] of Object.entries(value || {}))
+							e.setAttribute("data-" + attrName, String(attrValue));
+					}
 					// Width and height properties are special cased.
 					// They are interpreted as CSS properties rather
 					// than HTML attributes.
-					if (name in e && name !== "width" && name !== "height")
+					else if (name in e && name !== "width" && name !== "height")
 						el[name] = value;
 					
 					else if (cssPropertySet.has(name))
@@ -374,6 +379,7 @@ namespace Htx
 		class: string;
 		href: string;
 		contentEditable: string;
+		data: Record<string, string | number | boolean>;
 	}
 	
 	/** */
