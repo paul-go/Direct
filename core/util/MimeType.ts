@@ -70,7 +70,7 @@ namespace Turf
 		export function fromFileName(fileName: string)
 		{
 			const ext = fileName.split(".").slice(-1)[0] || "";
-			return mimes.get(ext) || "";
+			return (mimes.get(ext) || "") as MimeType;
 		}
 	}
 }

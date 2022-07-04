@@ -131,12 +131,30 @@ namespace Turf
 		{
 			if (bg.media)
 			{
-				return Htx.div(
-					CssClass.captionSceneBackground,
-					{
-						backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")"
-					}
-				);
+				const cls = MimeType.getClass(bg.media.type);
+				
+				if (cls === MimeClass.image)
+				{
+					return Htx.div(
+						CssClass.captionSceneBackgroundImage,
+						{
+							backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")"
+						}
+					);
+				}
+				else if (cls === MimeClass.video)
+				{
+					return Htx.video(
+						CssClass.captionSceneBackgroundVideo,
+						{
+							src: bun.getMediaUrl(bg.media),
+							autoplay: true,
+							controls: false,
+							loop: true,
+							playsInline: true,
+						}
+					);
+				}
 			}
 		}).filter(b => !!b));
 		

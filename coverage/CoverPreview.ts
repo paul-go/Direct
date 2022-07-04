@@ -40,11 +40,8 @@ namespace Cover
 		blade2.paragraphs.push("Blade 2 paragraph content.");
 		blade2.backgroundColorIndex = Turf.ColorIndex.white;
 		
-		const media = new Turf.MediaRecord();
-		media.blob = Cover.readSampleBlob("image-5.jpg");
-		
 		const background = new Turf.BackgroundRecord();
-		background.media = media;
+		background.media = Cover.readMedia("image-5.jpg");
 		background.zoom = 1;
 		
 		blade2.backgrounds.push(background);
@@ -206,9 +203,20 @@ namespace Cover
 		const { patch, meta } = setup();
 		const blade = new Turf.CaptionedBladeRecord();
 		const background = new Turf.BackgroundRecord();
-		const media = new Turf.MediaRecord();
-		media.blob = Cover.readSampleBlob("image-5.jpg");
-		background.media = media;
+		background.media = Cover.readMedia("image-5.jpg");
+		blade.backgrounds.push(background);
+		patch.blades.push(blade);
+		render(patch, meta);
+	}
+	
+	/** */
+	export async function coverPreviewCaptionedBackgroundVideo()
+	{
+		const { patch, meta } = setup();
+		const blade = new Turf.CaptionedBladeRecord();
+		blade.titles.push({ text: "Video", size: 20, weight: 900 });
+		const background = new Turf.BackgroundRecord();
+		background.media = Cover.readMedia("video-1.mp4");
 		blade.backgrounds.push(background);
 		patch.blades.push(blade);
 		render(patch, meta);
