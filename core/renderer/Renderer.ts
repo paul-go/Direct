@@ -213,15 +213,55 @@ namespace Turf
 				if (!frame.media)
 					return null;
 				
-				return Htx.div(
+				const src = bun.getMediaUrl(frame.media)
+				const frameDiv = Htx.div(
 					CssClass.galleryFrame,
 					Htx.img(
 						{
-							src: bun.getMediaUrl(frame.media),
+							src,
 							objectFit: frame.size
 						}
 					)
-				)
+				);
+				
+				if (frame.captionLine1 || frame.captionLine2)
+				{
+					const legend = Htx.div(
+						CssClass.galleryFrameLegend,
+						frame.captionLine1 && Htx.p(new Text(frame.captionLine1)),
+						frame.captionLine2 && Htx.p(new Text(frame.captionLine2)),
+					);
+					
+					if (frame.size === "contain")
+					{
+						(async () =>
+						{
+							const [width, height] = await new Promise<[number, number]>(r =>
+							{
+								document.body.append(Htx.img(
+									{
+										src,
+										position: "absolute",
+										left: "-1000000px",
+									},
+									Htx.on("load", ev =>
+									{
+										const img = ev.target as HTMLImageElement;
+										const [w, h] = [img.clientWidth, img.clientHeight];
+										img.remove();
+										r([w, h]);
+									})
+								));
+							});
+							
+							legend.style.aspectRatio = width + " / " + height;
+							frameDiv.append(legend);
+						})();
+					}
+					else frameDiv.append(legend);
+				}
+				
+				return frameDiv;
 			})
 		];
 	}

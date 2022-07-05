@@ -88,6 +88,7 @@ namespace Turf
 			rule("." + CssClass.galleryFrame, {
 				"display": "inline-block",
 				"scroll-snap-align": "start",
+				"scroll-snap-stop": "always",
 				"width": "100%",
 				"height": "100%",
 			}),
@@ -98,6 +99,34 @@ namespace Turf
 				"width": "100%",
 				"height": "100%",
 				"object-fit": "contain",
+			}),
+			rule("." + CssClass.galleryFrameLegend, {
+				"position": "absolute",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"display": "flex",
+				"flex-direction": "column",
+				"justify-content": "flex-end",
+				"margin": "auto",
+				"padding": "2vmin",
+				"max-width": "-webkit-fill-available",
+				"max-height": "-webkit-fill-available",
+				"pointer-events": "none",
+				"text-align": "right",
+			}),
+			rule("." + CssClass.galleryFrameLegend + " P", {
+				"text-align": "right",
+				"font-size": UI.vsize(4),
+				"pointer-events": "all",
+			}),
+			rule("." + CssClass.galleryFrameLegend + " :first-child", {
+				"font-weight": 700
+			}),
+			rule("." + CssClass.galleryFrameLegend + " :last-child", {
+				"margin-top": "0.25em",
+				"font-weight": 400
 			}),
 		];
 	}
@@ -177,4 +206,5 @@ namespace Turf
 			"}";
 		}
 	}
+	
 }

@@ -15,6 +15,7 @@ const enum CssClass
 	proseScene = "scene-prose",
 	galleryScene = "scene-gallery",
 	galleryFrame = "frame",
+	galleryFrameLegend = "frame-legend",
 	videoScene = "scene-video",
 }
 

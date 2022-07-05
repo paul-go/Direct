@@ -236,11 +236,11 @@ namespace Cover
 		
 		const frame2 = new Turf.FrameRecord();
 		frame2.media = Cover.readMedia("image-2.jpg");
-		frame2.captionLine1 = "Caption Line 1";
-		frame2.captionLine1 = "Caption Line 2";
 		
 		const frame3 = new Turf.FrameRecord();
 		frame3.media = Cover.readMedia("image-3.jpg");
+		frame3.captionLine1 = "Caption Line 1";
+		frame3.captionLine2 = "Caption Line 2";
 		
 		blade.frames.push(frame1, frame2, frame3);
 		patch.blades.push(blade);
