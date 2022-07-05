@@ -18,7 +18,7 @@ namespace Player
 			
 			for (const child of Array.from(this.root.children))
 			{
-				if (!(child instanceof HTMLElement))
+				if (!(child instanceof HTMLElement) || !child.classList.contains(CssClass.scene))
 					continue;
 				
 				const list = child.classList;
@@ -33,10 +33,9 @@ namespace Player
 			
 			for (const scene of scenes)
 				scene.setup();
-			
-			
 		}
 		
+		/** */
 		readonly root: HTMLElement;
 	}
 }

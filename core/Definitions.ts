@@ -13,10 +13,12 @@ const enum CssClass
 	captionSceneBackgroundImage = "bg",
 	captionSceneForeground = "fg",
 	proseScene = "scene-prose",
+	proseSceneForeground = "scene-prose-fg",
 	galleryScene = "scene-gallery",
 	galleryFrame = "frame",
 	galleryFrameLegend = "frame-legend",
 	videoScene = "scene-video",
+	snapFooter = "snap-footer",
 }
 
 /** */

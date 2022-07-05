@@ -58,6 +58,9 @@ namespace Turf
 				"width": "100%",
 				"height": "100%",
 			}),
+			rule("." + CssClass.snapFooter, {
+				"scroll-snap-align": "end",
+			}),
 			rule("." + CssClass.captionScene, {
 				"display": "flex",
 			}),
@@ -127,6 +130,30 @@ namespace Turf
 			rule("." + CssClass.galleryFrameLegend + " :last-child", {
 				"margin-top": "0.25em",
 				"font-weight": 400
+			}),
+			rule("." + CssClass.proseScene, {
+				"display": "flex",
+				"align-content": "center",
+				"align-items": "center",
+			}),
+			rule("." + CssClass.proseSceneForeground, {
+				"margin": "auto",
+				"max-width": "800px",
+				"padding-top": "12vmin",
+				"padding-bottom": "33vmin",
+			}),
+			rule("." + CssClass.proseScene + " H2", {
+				"font-size": "35px"
+			}),
+			rule("." + CssClass.proseScene + " * + H2", {
+				"margin-top": "1.5em"
+			}),
+			rule("." + CssClass.proseScene + " P", {
+				"font-size": "20px",
+				"line-height": "1.66",
+			}),
+			rule("." + CssClass.proseScene + " * + P", {
+				"margin-top": "1em"
 			}),
 		];
 	}

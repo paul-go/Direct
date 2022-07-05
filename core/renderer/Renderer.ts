@@ -63,7 +63,7 @@ namespace Turf
 	{
 		return Htx.div(
 			"story",
-			...patch.blades.map(blade => renderBlade(new Bundle(blade, meta, isPreview)))
+			...patch.blades.flatMap(blade => renderBlade(new Bundle(blade, meta, isPreview)))
 		);
 	}
 	
@@ -80,32 +80,41 @@ namespace Turf
 			bun.blade.backgroundColorIndex, 
 			bun.meta);
 		
-		return Htx.section(
-			"scene",
-			{
-				color: UI.color(foregroundColor),
-				backgroundColor: UI.color(backgroundColor),
-				data: {
-					[DataAttributes.transition]: bun.useAnimation(bun.blade.transition)
-				}
-			},
-			...(() =>
-			{
-				if (bun.blade instanceof CaptionedBladeRecord)
-					return renderCaptionedBlade(bun as Bundle<CaptionedBladeRecord>);
-				
-				if (bun.blade instanceof ProseBladeRecord)
-					return renderProseBlade(bun as Bundle<ProseBladeRecord>);
-				
-				if (bun.blade instanceof GalleryBladeRecord)
-					return renderGalleryBlade(bun as Bundle<GalleryBladeRecord>);
-				
-				if (bun.blade instanceof VideoBladeRecord)
-					return renderVideoBlade(bun as Bundle<VideoBladeRecord>);
-				
-				return [];
-			})()
-		);
+		let snapFooter: HTMLElement | null = null;
+		const addSnapFooter = () => snapFooter = Htx.div(CssClass.snapFooter);
+		
+		return [
+			Htx.section(
+				"scene",
+				{
+					color: UI.color(foregroundColor),
+					backgroundColor: UI.color(backgroundColor),
+					data: {
+						[DataAttributes.transition]: bun.useAnimation(bun.blade.transition)
+					}
+				},
+				...(() =>
+				{
+					if (bun.blade instanceof CaptionedBladeRecord)
+						return renderCaptionedBlade(bun as Bundle<CaptionedBladeRecord>);
+					
+					if (bun.blade instanceof ProseBladeRecord)
+					{
+						addSnapFooter();
+						return renderProseBlade(bun as Bundle<ProseBladeRecord>);
+					}
+					
+					if (bun.blade instanceof GalleryBladeRecord)
+						return renderGalleryBlade(bun as Bundle<GalleryBladeRecord>);
+					
+					if (bun.blade instanceof VideoBladeRecord)
+						return renderVideoBlade(bun as Bundle<VideoBladeRecord>);
+					
+					return [];
+				})()
+			),
+			snapFooter,
+		];
 	}
 	
 	/**
@@ -271,9 +280,14 @@ namespace Turf
 	 */
 	function renderProseBlade(bun: Bundle<ProseBladeRecord>)
 	{
+		const div = Htx.div();
+		div.innerHTML = bun.blade.html;
+		
 		return [
 			CssClass.proseScene,
 			Htx.div(
+				CssClass.proseSceneForeground,
+				...Array.from(div.childNodes)
 			)
 		];
 	}
@@ -316,7 +330,7 @@ namespace Turf
 			throw "Unknown color: " + color;
 		
 		const lightness = meta.colorScheme[color].l;
-		return lightness < 50 ? white : black;
+		return lightness < 55 ? white : black;
 	}
 	
 	/**

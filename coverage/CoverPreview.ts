@@ -248,6 +248,37 @@ namespace Cover
 	}
 	
 	/** */
+	export function coverPreviewProse()
+	{
+		const { patch, meta } = setup();
+		
+		const html = (n: number) => `
+			<h2>Heading ${n}</h2>
+			<p>
+				Social media platforms have done great work in facilitating new connections between people. However, they are increasingly transforming into parasitic entities. Their primary goal is to enrich the platforms themselves, as well as their direct corporate and buerocratic stakeholders, oftentimes at the expense of the users they are purported to serve.
+			</p>
+			<p>
+				Numerous solutions have been tabled to purportedly "fix social media". However, they range from complete technological digressions (blockchain-centric solutions), attempts to move the problem around rather than actually solve it (alternative social networks), and unscalable designs with unsolvable user experience issues (federated models).
+			</p>
+		`;
+		
+		const blade1 = new Turf.ProseBladeRecord();
+		blade1.html = html(1) + html(2) + html(3) + html(4) + html(5);
+		blade1.backgroundColorIndex = Turf.ColorIndex.white;
+		
+		const blade2 = new Turf.ProseBladeRecord();
+		blade2.html = html(1) + html(2) + html(3) + html(4) + html(5);
+		blade2.backgroundColorIndex = Turf.ColorIndex.black;
+		
+		const blade3 = new Turf.ProseBladeRecord();
+		blade3.html = html(1);
+		blade3.backgroundColorIndex = 1;
+		
+		patch.blades.push(blade1, blade2, blade3);
+		render(patch, meta);
+	}
+	
+	/** */
 	export function coverPreviewVideo()
 	{
 		const { patch, meta } = setup();
@@ -271,8 +302,8 @@ namespace Cover
 		
 		const meta = new Turf.MetaRecord();
 		meta.colorScheme = [
-			{ h: 215, s: 70, l: 50 },
-			{ h: 325, s: 70, l: 50 },
+			{ h: 215, s: 70, l: 30 },
+			{ h: 325, s: 70, l: 30 },
 		];
 		
 		const patch = new Turf.PatchRecord();
