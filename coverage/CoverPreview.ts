@@ -223,17 +223,42 @@ namespace Cover
 	}
 	
 	/** */
+	export function coverPreviewGallery()
+	{
+		const { patch, meta } = setup();
+		
+		const blade = new Turf.GalleryBladeRecord();
+		
+		const frame1 = new Turf.FrameRecord();
+		frame1.media = Cover.readMedia("image-1.jpg");
+		frame1.captionLine1 = "Caption Line 1";
+		frame1.size = "cover";
+		
+		const frame2 = new Turf.FrameRecord();
+		frame2.media = Cover.readMedia("image-2.jpg");
+		frame2.captionLine1 = "Caption Line 1";
+		frame2.captionLine1 = "Caption Line 2";
+		
+		const frame3 = new Turf.FrameRecord();
+		frame3.media = Cover.readMedia("image-3.jpg");
+		
+		blade.frames.push(frame1, frame2, frame3);
+		patch.blades.push(blade);
+		render(patch, meta);
+	}
+	
+	/** */
 	export function coverPreviewVideo()
 	{
 		const { patch, meta } = setup();
 		
 		const blade1 = new Turf.VideoBladeRecord();
 		blade1.media = Cover.readMedia("video-1.mp4");
-		blade1.style = "contain";
+		blade1.size = "contain";
 		
 		const blade2 = new Turf.VideoBladeRecord();
 		blade2.media = Cover.readMedia("video-1.mp4");
-		blade2.style = "cover";
+		blade2.size = "cover";
 		
 		patch.blades.push(blade1, blade2);
 		render(patch, meta);

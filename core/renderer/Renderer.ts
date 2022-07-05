@@ -208,8 +208,21 @@ namespace Turf
 	{
 		return [
 			CssClass.galleryScene,
-			Htx.div(
-			)
+			...bun.blade.frames.map(frame =>
+			{
+				if (!frame.media)
+					return null;
+				
+				return Htx.div(
+					CssClass.galleryFrame,
+					Htx.img(
+						{
+							src: bun.getMediaUrl(frame.media),
+							objectFit: frame.size
+						}
+					)
+				)
+			})
 		];
 	}
 	
@@ -239,7 +252,7 @@ namespace Turf
 					controls: true,
 					loop: false,
 					playsInline: true,
-					objectFit: bun.blade.style,
+					objectFit: bun.blade.size,
 				}
 			)
 		];

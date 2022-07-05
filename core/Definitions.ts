@@ -14,6 +14,7 @@ const enum CssClass
 	captionSceneForeground = "fg",
 	proseScene = "scene-prose",
 	galleryScene = "scene-gallery",
+	galleryFrame = "frame",
 	videoScene = "scene-video",
 }
 

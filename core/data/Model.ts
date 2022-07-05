@@ -104,7 +104,7 @@ namespace Turf
 	{
 		static readonly type = 5;
 		
-		style: "cover" | "contain" = "cover";
+		size: "cover" | "contain" = "cover";
 		media = this.referenceOf(MediaRecord);
 	}
 	
@@ -113,22 +113,27 @@ namespace Turf
 	{
 		static readonly type = 6;
 		
-		readonly items: IGalleryItem[] = [];
+		readonly frames = this.arrayOf(FrameRecord);
 	}
 	
 	/** */
-	export interface IGalleryItem
+	export class FrameRecord extends Record
 	{
-		captionLine1: string;
-		captionLine2: string;
-		textContrast: number;
+		static readonly table = "frames";
+		static readonly type = 7;
+		
+		captionLine1 = "";
+		captionLine2 = "";
+		textContrast = 0;
+		size: "cover" | "contain" = "contain";
+		media = this.referenceOf(MediaRecord);
 	}
 	
 	/** */
 	export class MediaRecord extends Record
 	{
 		static readonly table = "media";
-		static readonly type = 7;
+		static readonly type = 8;
 		
 		/**
 		 * A friendly name for the media object.
