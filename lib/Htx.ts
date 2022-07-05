@@ -105,6 +105,10 @@ namespace Htx { { } }
 						el.style[name] = value.toString();
 				}
 			}
+			else if (typeof param === "function")
+			{
+				defer(e as HTMLElement, param);
+			}
 		}
 		
 		return e;
@@ -117,10 +121,10 @@ namespace Htx { { } }
 	 * is inserted into the DOM. If the element is already connected to the DOM,
 	 * the callback function is invoked immediately.
 	 */
-	function defer(e: Element, callbackFn: () => void)
+	function defer(e: HTMLElement, callbackFn: (e: HTMLElement) => void)
 	{
 		if (e.isConnected)
-			return void callbackFn();
+			return void callbackFn(e);
 		
 		if (!hasSetupAwaitInsert)
 		{
@@ -149,7 +153,7 @@ namespace Htx { { } }
 						ev.target.classList.remove(insertName);
 						
 						for (const fn of fnList)
-							fn();
+							fn(ev.target);
 					}
 				}
 			};
@@ -167,7 +171,7 @@ namespace Htx { { } }
 		callbackMap.set(e, callbacks);
 	}
 	
-	let callbackMap = new WeakMap<Element, (() => void)[]>();
+	let callbackMap = new WeakMap<HTMLElement, ((e: HTMLElement) => void)[]>();
 	let insertName = "__track_insert";
 	let hasSetupAwaitInsert = false;
 	
@@ -414,6 +418,8 @@ namespace Htx
 		string |
 		// Event connections
 		Event |
+		// Defered closure
+		((e: HTMLElement) => void) |
 		// Conditional elements
 		false | undefined | null | void |
 		NodeLike |
