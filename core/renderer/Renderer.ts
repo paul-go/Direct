@@ -145,7 +145,6 @@ namespace Turf
 				else if (cls === MimeClass.video)
 				{
 					return Htx.video(
-						CssClass.captionSceneBackgroundVideo,
 						{
 							src: bun.getMediaUrl(bg.media),
 							autoplay: true,
@@ -231,9 +230,17 @@ namespace Turf
 	 */
 	function renderVideoBlade(bun: Bundle<VideoBladeRecord>)
 	{
-		return [
+		return !bun.blade.media ? [] : [
 			CssClass.videoScene,
-			Htx.div(
+			Htx.video(
+				{
+					src: bun.getMediaUrl(bun.blade.media),
+					autoplay: false,
+					controls: true,
+					loop: false,
+					playsInline: true,
+					objectFit: bun.blade.style,
+				}
 			)
 		];
 	}

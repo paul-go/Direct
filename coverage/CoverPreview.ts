@@ -198,7 +198,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPreviewCaptionedBackgroundImage()
+	export function coverPreviewCaptionedBackgroundImage()
 	{
 		const { patch, meta } = setup();
 		const blade = new Turf.CaptionedBladeRecord();
@@ -210,7 +210,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPreviewCaptionedBackgroundVideo()
+	export function coverPreviewCaptionedBackgroundVideo()
 	{
 		const { patch, meta } = setup();
 		const blade = new Turf.CaptionedBladeRecord();
@@ -219,6 +219,23 @@ namespace Cover
 		background.media = Cover.readMedia("video-1.mp4");
 		blade.backgrounds.push(background);
 		patch.blades.push(blade);
+		render(patch, meta);
+	}
+	
+	/** */
+	export function coverPreviewVideo()
+	{
+		const { patch, meta } = setup();
+		
+		const blade1 = new Turf.VideoBladeRecord();
+		blade1.media = Cover.readMedia("video-1.mp4");
+		blade1.style = "contain";
+		
+		const blade2 = new Turf.VideoBladeRecord();
+		blade2.media = Cover.readMedia("video-1.mp4");
+		blade2.style = "cover";
+		
+		patch.blades.push(blade1, blade2);
 		render(patch, meta);
 	}
 	

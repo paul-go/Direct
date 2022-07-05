@@ -50,9 +50,17 @@ namespace Turf
 			}),
 			rule("." + CssClass.scene, {
 				"display": "flex",
-				"padding": "20px",
 				"min-height": "100vh",
 				"scroll-snap-align": "start",
+			}),
+			rule("." + CssClass.scene + " VIDEO", {
+				"position": "absolute",
+				"object-fit": "cover",
+				"width": "100%",
+				"height": "100%",
+			}),
+			rule("." + CssClass.captionScene + ", ." + CssClass.proseScene, {
+				"padding": "20px",
 			}),
 			rule("." + CssClass.captionSceneBackgroundImage, {
 				"position": "absolute",
@@ -63,12 +71,6 @@ namespace Turf
 				"background-repeat": "no-repeat",
 				"background-position": "50% 50%",
 				"background-size": "cover",
-			}),
-			rule("." + CssClass.captionSceneBackgroundVideo, {
-				"position": "absolute",
-				"object-fit": "cover",
-				"width": "100%",
-				"height": "100%"
 			}),
 			rule("." + CssClass.captionSceneForeground, {
 				"max-width": "1000px",
