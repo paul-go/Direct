@@ -30,13 +30,17 @@ namespace Turf
 		}
 		
 		/** */
-		constructor(painter: PainterFn);
-		constructor(parameters: T, painter: PainterFn<T>);
-		constructor(a: any, b?: any)
+		constructor(label: string, painter: PainterFn);
+		constructor(label: string, parameters: T, painter: PainterFn<T>);
+		constructor(label: string, a: any, b?: any)
 		{
+			this.label = label;
 			this.parameters = b ? a : {};
 			this.painter = b || a;
 		}
+		
+		/** */
+		readonly label: string;
 		
 		/** */
 		readonly parameters: T;
@@ -73,19 +77,19 @@ namespace Turf
 	export namespace Transitions
 	{
 		/** */
-		export const slide = new Animation(data =>
+		export const slide = new Animation("None", data =>
 		{
 			
 		});
 		
 		/** */
-		export const curtain = new Animation(data =>
+		export const curtain = new Animation("Curtain", data =>
 		{
 			
 		});
 		
 		/** */
-		export const emerge = new Animation(data =>
+		export const emerge = new Animation("Emerge", data =>
 		{
 			
 		});
@@ -99,31 +103,31 @@ namespace Turf
 		};
 		
 		/** */
-		export const wipe = new Animation(wipeParameters, data =>
+		export const wipe = new Animation("Wipe", wipeParameters, data =>
 		{
 			
 		});
 		
 		/** */
-		export const cross = new Animation(data =>
+		export const cross = new Animation("Cross Fade", data =>
 		{
 				
 		});
 		
 		/** */
-		export const black = new Animation(data =>
+		export const black = new Animation("Fade Through Black", data =>
 		{
 			
 		});
 		
 		/** */
-		export const brightness = new Animation(data =>
+		export const brightness = new Animation("Fade Through Brightness", data =>
 		{
 			
 		});
 		
 		/** */
-		export const circle = new Animation(data =>
+		export const circle = new Animation("Circle Wipe", data =>
 		{
 			
 		});
@@ -133,7 +137,7 @@ namespace Turf
 	export namespace Effects
 	{
 		/** */
-		export const none = new Animation(data =>
+		export const none = new Animation("None", data =>
 		{
 			
 		});
@@ -145,19 +149,19 @@ namespace Turf
 		};
 		
 		/** */
-		export const fade = new Animation(fadeParameters, data =>
+		export const fade = new Animation("Fade", fadeParameters, data =>
 		{
 			
 		});
 		
 		/** */
-		export const blur = new Animation(data =>
+		export const blur = new Animation("Blur", data =>
 		{
 			
 		});
 		
 		/** */
-		export const expand = new Animation(data =>
+		export const expand = new Animation("Expand Letters", data =>
 		{
 			
 		});

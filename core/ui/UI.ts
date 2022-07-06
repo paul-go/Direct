@@ -43,8 +43,15 @@ namespace Turf
 		}
 		
 		/** */
+		export function gray(value = 128)
+		{
+			return `rgb(${value}, ${value}, ${value})`;
+		}
+		
+		/** */
 		export const borderRadius = {
-			default: "5px"
+			default: "5px",
+			max: "9999px",
 		} as const;
 		
 		/** */
@@ -135,6 +142,12 @@ namespace Turf
 		} as const;
 		
 		/** */
+		export const flexVCenter: Htx.Style = {
+			display: "flex",
+			alignItems: "center",
+		} as const;
+		
+		/** */
 		export function translateZ(z: number)
 		{
 			return `perspective(500px) translateZ(${z}px)`;
@@ -205,6 +218,43 @@ namespace Turf
 		}
 		
 		/** */
+		export function plusButton(clickFn: (ev: Event) => void, ...params: Htx.Param[])
+		{
+			const bar: Htx.Param = {
+				position: "absolute",
+				backgroundColor: "white",
+			};
+			
+			return Htx.div(
+				UI.clickable,
+				{
+					width: "25px",
+					height: "25px",
+				},
+				Htx.div(
+					bar,
+					{
+						width: "1px",
+						top: "0",
+						bottom: "0",
+						left: "50%",
+					}
+				),
+				Htx.div(
+					bar,
+					{
+						height: "1px",
+						left: "0",
+						right: "0",
+						top: "50%"
+					}
+				),
+				Htx.on(UI.click, clickFn),
+				...params,
+			);
+		}
+		
+		/** */
 		export function dripper(...params: Htx.Param[]): [HTMLElement, Htx.Event]
 		{
 			const dripper = Htx.div(
@@ -262,18 +312,19 @@ namespace Turf
 				UI.clickable,
 				{
 					textAlign: "center",
-					fontWeight: "500",
-					padding: "15px",
-					borderRadius: UI.borderRadius.default
+					fontWeight: "800",
+					padding: "25px",
+					fontSize: "25px",
+					borderRadius: UI.borderRadius.max
 				},
 				style === "filled" ?
 					{
-						backgroundColor: UI.primaryColor,
+						backgroundColor: UI.gray(40),
 						color: "white",
 					} :
 					{
-						border: "3px solid " + UI.primaryColor,
-						color: UI.primaryColor,
+						border: "3px solid " + UI.gray(40),
+						color: UI.white(),
 					},
 				...params
 			);

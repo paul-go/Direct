@@ -5,6 +5,7 @@ const enum CssClass
 	dragOverScreen = "drag-over-screen",
 	hide = "hide",
 	proseContainer = "prose-container",
+	appRoot = "app-root",
 	
 	// Player classes
 	story = "story",
@@ -39,3 +40,6 @@ const enum DataAttributes
 	transition = "t",
 	textEffect = "e",
 }
+
+/** */
+type SizeMethod = "cover" | "contain";

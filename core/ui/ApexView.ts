@@ -8,11 +8,8 @@ namespace Turf
 		constructor()
 		{
 			this.root = Htx.div(
-				"apex-view",
-				UI.flexColumn,
+				CssClass.appRoot,
 				{
-					maxWidth: "1000px",
-					margin: "auto",
 					minHeight: "100%",
 				}
 			);
@@ -33,9 +30,7 @@ namespace Turf
 		get currentMediaStore()
 		{
 			if (!this._currentMediaStore)
-			{
 				this._currentMediaStore = new MediaStore("temp-turf-name");
-			}
 			
 			return this._currentMediaStore;
 		}

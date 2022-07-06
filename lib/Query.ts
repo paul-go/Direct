@@ -42,6 +42,19 @@ namespace Query
 	}
 	
 	/**
+	 * Iterates over the element siblings of the specified element,
+	 * optionally with the specified type filter.
+	 */
+	export function siblings<T extends Element = HTMLElement>(
+		element: Element,
+		type?: Constructor<T>)
+	{
+		return element.parentElement ? 
+			Query.children(element.parentElement, type) :
+			[];
+	}
+	
+	/**
 	 * Returns the element ancestors of the specified node.
 	 */
 	export function ancestors(node: Node | EventTarget | null)

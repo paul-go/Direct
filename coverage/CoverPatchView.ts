@@ -2,7 +2,7 @@
 namespace Cover
 {
 	/** */
-	export function coverPatchView()
+	export function coverPatchViewEmpty()
 	{
 		Turf.startup();
 		const pv = new Turf.PatchView();
@@ -14,8 +14,10 @@ namespace Cover
 	{
 		Turf.startup();
 		const pv = new Turf.PatchView();
-		const bv = new Turf.CaptionedBladeView();
-		pv.blades.insert(bv);
+		const bv1 = new Turf.CaptionedBladeView();
+		const bv2 = new Turf.CaptionedBladeView();
+		pv.blades.insert(bv1);
+		pv.blades.insert(bv2);
 		Turf.apex.root.append(pv.root);
 	}
 	
@@ -33,6 +35,7 @@ namespace Cover
 	export function coverPatchViewWithVideo()
 	{
 		Turf.startup();
+		
 		const pv = new Turf.PatchView();
 		const bv = new Turf.VideoBladeView();
 		pv.blades.insert(bv);

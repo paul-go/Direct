@@ -16,32 +16,39 @@ namespace Turf
 			this.root = Htx.div(
 				"blade-view",
 				
+				// Hide the transition configurator for the first blade view
+				Htx.css(":first-of-type .transition-configurator { visibility: hidden; }"),
+				
 				// Controls header
 				Htx.div(
-					"controls-header",
-					UI.flexCenter,
+					"blade-header",
 					{
+						display: "flex",
 						height: "100px",
+						paddingLeft: "25px",
+						paddingRight: "25px",
 					},
-					Htx.a(
-						this.buttonStyle,
-						new Text("^"),
-						Htx.on(UI.click, () => this.handleMove())
+					Htx.div(
+						"transition-configurator",
+						{
+							display: "flex",
+							alignItems: "stretch",
+							flex: "1 0",
+						},
+						this.transitionAnchor = Htx.a(
+							UI.clickable,
+							{
+								fontSize: "25px",
+							},
+							UI.flexVCenter,
+							Htx.on(UI.click, () => this.handleTransition())
+						),
 					),
 					Htx.div(
-						{
-							textAlign: "center",
-							flex: "1 0"
-						},
-						new Text("Transition"),
-						this.transitionAnchor = Htx.a(
-							Htx.on(UI.click, () => this.handleTransition())
-						)
-					),
-					Htx.a(
-						this.buttonStyle,
-						new Text("+"),
-						Htx.on(UI.click, () => this.handleAdd())
+						UI.flexVCenter,
+						UI.plusButton(
+							() => this.handleAdd(),
+						),
 					),
 					...UI.dripper(
 						new Text("Add Here"),
@@ -56,48 +63,32 @@ namespace Turf
 				this.sceneContainer = Htx.div(
 					"scene-container",
 					{
-						height: UI.vsize(100),
-						borderRadius: UI.borderRadius.default,
-						backgroundColor: "gray",
+						height: UI.vsize(100), 
+						backgroundColor: UI.white(0.1),
 					},
-					// Close button
-					Htx.div(
-						"delete-button",
-						new Text(UI.mul),
-						UI.anchorTopRight(5, 5),
-						UI.flexCenter,
-						UI.clickable,
-						{
-							width: "40px",
-							height: "40px",
-							fontWeight: "900",
-							borderRadius: "100%",
-							backgroundColor: UI.black(0.5),
-							zIndex: "1",
-						},
-						Htx.on(UI.click, () => this.root.remove())
-					),
 				),
 				
 				//
-				this.controlsContainer = Htx.div(
-					"controls-container",
+				this.configContainer = Htx.div(
+					"config-container",
 					{
 						display: "flex",
-						justifyContent: "center"
+						justifyContent: "center",
+						paddingBottom: "20px",
+						color: "white",
 					}
 				),
 			);
 			
 			// Populate this with data in the future.
-			this._transition = Transitions.slide;
+			this.transition = Transitions.slide;
 			
 			Controller.set(this);
 		}
 		
 		readonly root: HTMLDivElement;
 		readonly sceneContainer;
-		readonly controlsContainer;
+		readonly configContainer;
 		
 		/** */
 		protected get apex()
@@ -106,17 +97,15 @@ namespace Turf
 		}
 		
 		/** */
-		private readonly buttonStyle: Htx.Style = {
-			width: "50px",
-			fontSize: "30px",
-			...UI.clickable,
-		};
-		
-		/** */
-		private handleMove()
+		protected setBladeButtons(...bladeButtons: BladeButtonView[])
 		{
-			
+			this.configContainer.append(
+				...bladeButtons.map(bb => bb.root),
+				this.moreButton.root
+			);
 		}
+		
+		private readonly moreButton = new BladeButtonView("•••");
 		
 		/** */
 		private async handleAdd()
@@ -140,26 +129,11 @@ namespace Turf
 		set transition(value: Animation)
 		{
 			this._transition = value;
-			this.transitionAnchor.innerHTML = `Transition - <b>${value}</b>`;
+			this.transitionAnchor.innerHTML = `<b>Transition</b>&nbsp;&#8212; ${value.label}`;
 		}
-		private _transition: Animation;
+		private _transition = Transitions.slide;
 		
 		private readonly transitionAnchor: HTMLAnchorElement;
-		
-		/** */
-		createBladeButton(text: string, clickFn: () => void)
-		{
-			return Htx.a(
-				UI.clickable,
-				{
-					display: "block",
-					whiteSpace: "nowrap",
-					padding: "10px",
-				},
-				Htx.on(UI.click, clickFn),
-				new Text(text)
-			);
-		}
 		
 		/** */
 		protected createDripper(title: string, dropFn: (dt: DataTransfer) => void)
@@ -182,6 +156,28 @@ namespace Turf
 					if (ev.dataTransfer)
 						dropFn(ev.dataTransfer);
 				})
+			);
+		}
+		
+		/** */
+		private closeButton()
+		{
+			// Close button
+			Htx.div(
+				"delete-button",
+				new Text(UI.mul),
+				UI.anchorTopRight(5, 5),
+				UI.flexCenter,
+				UI.clickable,
+				{
+					width: "40px",
+					height: "40px",
+					fontWeight: "900",
+					borderRadius: "100%",
+					backgroundColor: UI.black(0.5),
+					zIndex: "1",
+				},
+				Htx.on(UI.click, () => this.root.remove())
 			);
 		}
 		

@@ -5,7 +5,7 @@ namespace Turf
 	export class VideoBladeView extends BladeView
 	{
 		/** */
-		constructor()
+		constructor(readonly record = new VideoBladeRecord())
 		{
 			super();
 			
@@ -48,24 +48,28 @@ namespace Turf
 				)
 			);
 			
-			this.controlsContainer.append(
-				this.createBladeButton("Cover", () => {}),
-				this.createBladeButton("Contain", () => {}),
+			this.setBladeButtons(
+				this.coverButton,
+				this.containButton,
 			);
+			
+			this.size = record.size;
 		}
 		
 		private readonly videoContainer: HTMLElement;
-		
+		private readonly coverButton = new BladeButtonView("Cover").selectable();
+		private readonly containButton = new BladeButtonView("Contain").selectable();
+				
 		/** */
-		get mediaKey()
+		get size()
 		{
-			return this._mediaKey;
+			return this.containButton.selected ? "contain" : "cover";
 		}
-		set mediaKey(value: string)
+		set size(value: SizeMethod)
 		{
-			this._mediaKey = value;
+			if (value === "contain")
+				this.containButton.select();
 		}
-		private _mediaKey = "";
 		
 		/** */
 		setMedia(mediaObject: IMediaObject)
@@ -126,8 +130,5 @@ namespace Turf
 		}
 		
 		private videoTag: HTMLVideoElement | null = null;
-		
-		/** */
-		
 	}
 }

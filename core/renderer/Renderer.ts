@@ -245,24 +245,7 @@ namespace Turf
 					{
 						(async () =>
 						{
-							const [width, height] = await new Promise<[number, number]>(r =>
-							{
-								document.body.append(Htx.img(
-									{
-										src,
-										position: "absolute",
-										left: "-1000000px",
-									},
-									Htx.on("load", ev =>
-									{
-										const img = ev.target as HTMLImageElement;
-										const [w, h] = [img.clientWidth, img.clientHeight];
-										img.remove();
-										r([w, h]);
-									})
-								));
-							});
-							
+							const [width, height] = await RenderUtil.getAspectRatio(src);
 							legend.style.aspectRatio = width + " / " + height;
 							frameDiv.append(legend);
 						})();

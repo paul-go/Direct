@@ -5,25 +5,20 @@ namespace Turf
 	export class PatchView
 	{
 		/** */
-		constructor()
+		constructor(readonly record = new PatchRecord())
 		{
 			this.root = Htx.div(
 				"patch-view",
-				UI.flexColumn,
 				{
-					flex: "1 0",
-					width: UI.vsize(100),
-					margin: "auto",
-					padding: "0 20px 60px",
+					paddingBottom: "10px",
 				},
-				
 				this.bladesElement = Htx.div(
 					"blades-element",
 					UI.flexColumn,
 					{
 						flex: "1 0",
 					},
-					Htx.div(
+					Htx.p(
 						"no-blades-message",
 						UI.visibleWhenAlone(),
 						UI.anchor(),
@@ -51,7 +46,12 @@ namespace Turf
 				),
 				
 				Htx.div(
-					"preview-button",
+					"footer",
+					{
+						margin: "auto",
+						maxWidth: "400px",
+						padding: "20px",
+					},
 					UI.actionButton("filled", 
 						new Text("Preview"),
 						Htx.on("click", () =>

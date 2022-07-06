@@ -206,6 +206,9 @@ namespace Turf
 			rule("." + CssClass.proseContainer + ":focus", {
 				"outline": 0,
 			}),
+			rule("." + CssClass.appRoot + " B", {
+				"font-weight": 800
+			}),
 		];
 	}
 	

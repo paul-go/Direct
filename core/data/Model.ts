@@ -92,6 +92,14 @@ namespace Turf
 	}
 	
 	/** */
+	export class GalleryBladeRecord extends BladeRecord
+	{
+		static readonly type = 6;
+		
+		readonly frames = this.arrayOf(FrameRecord);
+	}
+	
+	/** */
 	export class ProseBladeRecord extends BladeRecord
 	{
 		static readonly type = 4;
@@ -104,16 +112,8 @@ namespace Turf
 	{
 		static readonly type = 5;
 		
-		size: "cover" | "contain" = "cover";
+		size: SizeMethod = "cover";
 		media = this.referenceOf(MediaRecord);
-	}
-	
-	/** */
-	export class GalleryBladeRecord extends BladeRecord
-	{
-		static readonly type = 6;
-		
-		readonly frames = this.arrayOf(FrameRecord);
 	}
 	
 	/** */
@@ -125,7 +125,7 @@ namespace Turf
 		captionLine1 = "";
 		captionLine2 = "";
 		textContrast = 0;
-		size: "cover" | "contain" = "contain";
+		size: SizeMethod = "contain";
 		media = this.referenceOf(MediaRecord);
 	}
 	

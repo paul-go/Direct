@@ -5,7 +5,8 @@ namespace Turf
 	/** */
 	export class CaptionedBladeView extends BladeView
 	{
-		constructor()
+		/** */
+		constructor(readonly record = new VideoBladeRecord())
 		{
 			super();
 			
@@ -24,11 +25,11 @@ namespace Turf
 				)
 			);
 			
-			this.controlsContainer.append(
-				this.createBladeButton("Add Button", () => this.addButton()),
-				this.createBladeButton("Effects", () => {}),
-				this.createBladeButton("Contrast", () => {}),
-				this.createBladeButton("Background", () => {}),
+			this.setBladeButtons(
+				this.animationButton,
+				this.contrastButton,
+				this.originButton,
+				this.backgroundsButton,
 			);
 			
 			//! Temporary
@@ -45,6 +46,11 @@ namespace Turf
 		private paragraphView;
 		private buttonsContainer;
 		private buttons;
+		
+		private readonly animationButton = new BladeButtonView("Animation");
+		private readonly contrastButton = new BladeButtonView("Contrast");
+		private readonly originButton = new BladeButtonView("Position");
+		private readonly backgroundsButton = new BladeButtonView("Backgrounds");
 		
 		/** */
 		private addButton()
