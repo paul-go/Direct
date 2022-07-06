@@ -13,11 +13,16 @@ namespace Turf
 		/** */
 		constructor()
 		{
+			const headerPadding = "25px";
+			
 			this.root = Htx.div(
 				"blade-view",
 				
 				// Hide the transition configurator for the first blade view
 				Htx.css(":first-of-type .transition-configurator { visibility: hidden; }"),
+				
+				// 
+				Htx.css(":not(:last-of-type) .final-add { display: none; }"),
 				
 				// Controls header
 				Htx.div(
@@ -25,8 +30,8 @@ namespace Turf
 					{
 						display: "flex",
 						height: "100px",
-						paddingLeft: "25px",
-						paddingRight: "25px",
+						paddingLeft: headerPadding,
+						paddingRight: headerPadding,
 					},
 					Htx.div(
 						"transition-configurator",
@@ -47,7 +52,7 @@ namespace Turf
 					Htx.div(
 						UI.flexVCenter,
 						UI.plusButton(
-							() => this.handleAdd(),
+							() => this.handleAdd("beforebegin"),
 						),
 					),
 					...UI.dripper(
@@ -78,6 +83,19 @@ namespace Turf
 						color: "white",
 					}
 				),
+				
+				// Final add
+				Htx.div(
+					"final-add",
+					{
+						direction: "rtl",
+						paddingRight: headerPadding,
+						paddingBottom: headerPadding,
+					},
+					UI.plusButton(
+						() => this.handleAdd("afterend"),
+					),
+				)
 			);
 			
 			// Populate this with data in the future.
@@ -110,11 +128,11 @@ namespace Turf
 		});
 		
 		/** */
-		private async handleAdd()
+		private async handleAdd(where: InsertPosition)
 		{
 			const view = await AddBladeView.show(this.root);
 			if (view)
-				this.root.insertAdjacentElement("beforebegin", view.root);
+				this.root.insertAdjacentElement(where, view.root);
 		}
 		
 		/** */

@@ -80,10 +80,6 @@ namespace Query
 		targetType: Constructor<T>): T | null
 	{
 		const elements = ancestors(targetNode);
-		
-		if (targetType instanceof HTMLElement)
-			return elements.find(e => e === targetType) as T;
-		
-		return elements.find(e => e instanceof ancestor) as T;
+		return elements.find(e => e instanceof targetType) as T;
 	}
 }

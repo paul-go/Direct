@@ -79,6 +79,8 @@ namespace Turf
 		{
 			if (value === "contain")
 				this.containButton.selected = true;
+			else
+				this.coverButton.selected = true;
 		}
 		
 		/** */

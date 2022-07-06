@@ -20,6 +20,8 @@ namespace Turf
 					padding: "30px 20px",
 					fontWeight: "600",
 					fontSize: "20px",
+					transitionDuration: "0.2s",
+					transitionProperty: "opacity",
 				},
 			);
 			
@@ -62,6 +64,23 @@ namespace Turf
 		}
 		
 		/** */
+		get enabled()
+		{
+			return this._enabled;
+		}
+		set enabled(value: boolean)
+		{
+			this._enabled = value;
+			const s = this.root.style;
+			s.pointerEvents = value ? "all" : "none";
+			s.opacity = value ? "1" : "0.33";
+			
+			if (this.indicator)
+				this.indicator.style.opacity = value ? "1" : "0";
+		}
+		private _enabled = true;
+		
+		/** */
 		get selected()
 		{
 			return this._selected;
@@ -79,50 +98,65 @@ namespace Turf
 			
 			(async () =>
 			{
-				let indicator = siblings.find(e => e.classList.contains(Class.indicator));
-				if (!indicator)
+				if (!this.indicator)
 				{
-					indicator = Htx.div(
-						Class.indicator,
-						{
-							position: "absolute",
-							top: "0",
-							height: "3px",
-							opacity: "0",
-							backgroundColor: "rgb(128, 128, 128)",
-							transitionProperty: "left, width, opacity",
-							transitionDuration: "0.2s",
-						}
-					);
+					this.indicator = siblings.find(e => e.classList.contains(Class.indicator)) || null;
+					if (!this.indicator)
+					{
+						this.indicator = Htx.div(
+							Class.indicator,
+							{
+								position: "absolute",
+								top: "0",
+								height: "3px",
+								opacity: "0",
+								backgroundColor: "rgb(128, 128, 128)",
+								transitionProperty: "left, width, opacity",
+								transitionDuration: "0.2s",
+							}
+						);
+					}
 					
-					this.root.parentElement?.prepend(indicator);
+					this.root.parentElement?.prepend(this.indicator);
 					
 					await new Promise<void>(r => setTimeout(() =>
 					{
-						indicator!.style.opacity = "1";
+						this.indicator!.style.opacity = "1";
 						r();
 					}));
 				}
 				
 				if (!wasSelected && value)
 				{
-					indicator.style.opacity = "1";
-					indicator.style.left = this.root.offsetLeft + "px";
-					indicator.style.width = this.root.offsetWidth + "px";
+					this.indicator.style.opacity = "1";
+					this.indicator.style.left = this.root.offsetLeft + "px";
+					this.indicator.style.width = this.root.offsetWidth + "px";
+					
+					for (const fn of this.selectedHandlers)
+						fn();
 				}
 				else if (wasSelected && !value)
 				{
-					indicator.style.opacity = "0";
+					this.indicator.style.opacity = "0";
 				}
 			})();
 		}
 		private _selected = false;
+		
+		private indicator: HTMLElement | null = null;
 		
 		/** */
 		setAction(fn: () => void)
 		{
 			
 		}
+		
+		/** */
+		onSelected(fn: () => void)
+		{
+			this.selectedHandlers.push(fn);
+		}
+		private readonly selectedHandlers: (() => void)[] = [];
 	}
 	
 	/** */
