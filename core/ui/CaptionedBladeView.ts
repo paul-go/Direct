@@ -12,7 +12,6 @@ namespace Turf
 			
 			this.titleView = new CaptionedTitleView();
 			this.paragraphView = new CaptionedParagraphView();
-			
 			this.buttonsContainer = Htx.div("buttons");
 			this.buttons = new Controller.Array(this.buttonsContainer, CaptionedButton);
 			

@@ -57,9 +57,19 @@ namespace Turf
 		}
 		
 		private readonly videoContainer: HTMLElement;
-		private readonly coverButton = new BladeButtonView("Cover").selectable();
-		private readonly containButton = new BladeButtonView("Contain").selectable();
-				
+		
+		/** */
+		private readonly coverButton = new BladeButtonView("Cover", {
+			selectable: true,
+			unselectable: false,
+		});
+		
+		/** */
+		private readonly containButton = new BladeButtonView("Contain", {
+			selectable: true,
+			unselectable: false,
+		});
+		
 		/** */
 		get size()
 		{
@@ -68,7 +78,7 @@ namespace Turf
 		set size(value: SizeMethod)
 		{
 			if (value === "contain")
-				this.containButton.select();
+				this.containButton.selected = true;
 		}
 		
 		/** */

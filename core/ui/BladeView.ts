@@ -105,7 +105,9 @@ namespace Turf
 			);
 		}
 		
-		private readonly moreButton = new BladeButtonView("•••");
+		private readonly moreButton = new BladeButtonView("•••", {
+			selectable: false,
+		});
 		
 		/** */
 		private async handleAdd()
