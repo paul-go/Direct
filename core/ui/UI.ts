@@ -43,14 +43,17 @@ namespace Turf
 		}
 		
 		/** */
-		export function gray(value = 128)
+		export function gray(value = 128, alpha = 1)
 		{
-			return `rgb(${value}, ${value}, ${value})`;
+			return alpha === 1 ?
+				`rgb(${value}, ${value}, ${value})` :
+				`rgba(${value}, ${value}, ${value}, ${alpha})`;
 		}
 		
 		/** */
 		export const borderRadius = {
 			default: "5px",
+			large: "15px",
 			max: "9999px",
 		} as const;
 		
@@ -328,6 +331,102 @@ namespace Turf
 					},
 				...params
 			);
+		}
+		
+		/** */
+		export function springMenu(
+			target: EventTarget | null,
+			menu: ObjectLiteral<string, () => void>)
+		{
+			const overlay = Htx.div(
+				UI.fixed(),
+				{
+					tabIndex: 0,
+					zIndex: "0",
+				},
+				Htx.on("pointerdown", ev =>
+				{
+					if (ev.target === overlay)
+						overlay.remove();
+					
+				}, { capture: true }),
+				
+				Htx.on("keydown", ev =>
+				{
+					if (ev.key === "Escape")
+						overlay.remove();
+					
+				}, { capture: true }),
+				
+				Htx.div(
+					{
+						tabIndex: 0,
+						position: "absolute",
+						minWidth: "200px",
+						backgroundColor: UI.gray(100, 0.5),
+						backdropFilter: "blur(15px)",
+						borderRadius: UI.borderRadius.large,
+						overflow: "hidden",
+						visibility: "hidden",
+						transformOrigin: "50% 100%",
+						//transform: "translateZ(-500px)",
+						perspective: "1000px",
+						transitionDuration: "0.2s",
+						transitionProperty: "transform"
+					},
+					
+					...Object.entries(menu).map(([label, callbackFn]) =>
+					{
+						return Htx.div(
+							{
+								borderBottom: "1px solid black",
+								padding: "20px",
+								color: "white",
+								fontSize: "22px",
+								fontWeight: "600",
+							},
+							Htx.css(":hover { background-color: #007cd3; }"),
+							UI.clickable,
+							Htx.on("click", () =>
+							{
+								callbackFn();
+								overlay.remove();
+							}),
+							new Text(label),
+						);
+					}),
+					
+					e =>
+					{
+						if (target instanceof Element)
+						{
+							const rect = target.getBoundingClientRect();
+							const rectCenterX = rect.left + rect.width / 2;
+							const rectCenterY = rect.top + rect.height / 2;
+							
+							e.style.left = (rectCenterX - e.offsetWidth / 2) + "px";
+							
+							if (rectCenterY > winCenterY)
+								e.style.bottom = (window.innerHeight - rect.top - 10) + "px";
+							else
+								e.style.top = (rect.bottom + 10) + "px";
+						}
+						else
+						{
+							e.style.top = (winCenterX - e.offsetWidth / 2) + "px";
+							e.style.left = (winCenterY - e.offsetHeight / 2) + "px";
+						}
+						
+						e.style.visibility = "visible";
+						e.focus();
+					}
+				)
+			);
+			
+			const winCenterX = window.innerWidth / 2;
+			const winCenterY = window.innerHeight / 2;
+			
+			document.body.append(overlay);
 		}
 	}
 }

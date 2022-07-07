@@ -15,6 +15,7 @@ namespace Turf
 			this.root = Htx.div(
 				UI.clickable,
 				{
+					tabIndex: 0,
 					display: "inline-block",
 					whiteSpace: "nowrap",
 					padding: "30px 20px",

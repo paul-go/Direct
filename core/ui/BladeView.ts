@@ -101,6 +101,14 @@ namespace Turf
 			// Populate this with data in the future.
 			this.transition = Transitions.slide;
 			
+			Htx.from(this.moreButton.root)(
+				Htx.on(UI.click, ev => UI.springMenu(ev.target, {
+					"Move Up": () => {},
+					"Move Down": () => {},
+					"Delete": () => this.root.remove(),
+				}))
+			);
+			
 			Controller.set(this);
 		}
 		

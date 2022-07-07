@@ -43,3 +43,6 @@ const enum DataAttributes
 
 /** */
 type SizeMethod = "cover" | "contain";
+
+/** */
+type ObjectLiteral<K extends keyof any, T> = { [P in K]: T; };

@@ -35,7 +35,6 @@ namespace Cover
 	export function coverPatchViewWithVideo()
 	{
 		Turf.startup();
-		
 		const pv = new Turf.PatchView();
 		const bv = new Turf.VideoBladeView();
 		pv.blades.insert(bv);

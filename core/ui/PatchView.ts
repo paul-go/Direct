@@ -7,28 +7,36 @@ namespace Turf
 		/** */
 		constructor(readonly record = new PatchRecord())
 		{
+			const minHeight: Htx.Param = { minHeight: "85vh" };
+			
 			this.root = Htx.div(
 				"patch-view",
 				{
 					paddingBottom: "10px",
 				},
+				minHeight,
 				this.bladesElement = Htx.div(
 					"blades-element",
-					UI.flexColumn,
-					{
-						flex: "1 0",
-					},
+					minHeight,
 					Htx.p(
 						"no-blades-message",
 						UI.visibleWhenAlone(),
 						UI.anchor(),
 						UI.flexCenter,
+						minHeight,
 						{
 							zIndex: "1",
 						},
 						Htx.div(
 							"add-first-blade",
-							new Text("This patch has no blades."),
+							Htx.div(
+								{
+									fontSize: "30px",
+									fontWeight: "600",
+									marginBottom: "30px",
+								},
+								new Text("This patch has no blades."),
+							),
 							UI.actionButton("filled", 
 								{
 									marginTop: "10px",
@@ -45,7 +53,7 @@ namespace Turf
 					),
 				),
 				
-				Htx.div(
+				this.footerElement = Htx.div(
 					"footer",
 					{
 						margin: "auto",
@@ -61,7 +69,12 @@ namespace Turf
 					)
 				)
 			);
+			
 			this.blades = new Controller.Array(this.bladesElement, BladeView);
+			this.blades.observe(() =>
+			{
+				this.footerElement.style.display = this.blades.length > 0 ? "block" : "none";
+			});
 			
 			Controller.set(this);
 		}
@@ -69,6 +82,7 @@ namespace Turf
 		readonly root;
 		readonly blades;
 		private readonly bladesElement;
+		private readonly footerElement;
 		
 		/** */
 		private toJSON()
