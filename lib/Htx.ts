@@ -383,6 +383,7 @@ namespace Htx
 		class: string;
 		href: string;
 		contentEditable: string;
+		tabIndex: number;
 		data: Record<string, string | number | boolean>;
 	}
 	
