@@ -138,8 +138,15 @@ namespace Controller
 		(ctrl as any).constructor;
 	
 	/** */
-	const childrenOf = (e: Element) => 
-		globalThis.Array.from(e.children);
+	const childrenOf = <T extends IController>(e: Element, controllerType?: Constructor<T>) =>
+	{
+		let children = globalThis.Array.from(e.children);
+		
+		if (controllerType)
+			children = children.filter(e => Controller.get(e, controllerType));
+		
+		return children;
+	}
 	
 	/**
 	 * 
@@ -160,7 +167,7 @@ namespace Controller
 		/** */
 		toArray()
 		{
-			const controllers = childrenOf(this.parentElement);
+			const controllers = childrenOf(this.parentElement, this.controllerType);
 			return Controller.map(controllers, this.controllerType);
 		}
 		
@@ -194,7 +201,7 @@ namespace Controller
 		/** */
 		move(fromIndex: number, toIndex: number)
 		{
-			const children = childrenOf(this.parentElement);
+			const children = childrenOf(this.parentElement, this.controllerType);
 			const target = children.at(toIndex);
 			const source = children.at(fromIndex);
 			
@@ -205,7 +212,7 @@ namespace Controller
 		/** */
 		indexOf(controller: TController)
 		{
-			const children = childrenOf(this.parentElement);
+			const children = childrenOf(this.parentElement, this.controllerType);
 			for (let i = -1; ++i < children.length;)
 				if (children[i] === controller.root)
 					return i;
@@ -216,8 +223,28 @@ namespace Controller
 		/** */
 		get length()
 		{
-			return childrenOf(this.parentElement).length;
+			return childrenOf(this.parentElement, this.controllerType).length;
 		}
+		
+		/** */
+		observe(callback: (mut: MutationRecord) => void)
+		{
+			if (this.observers.length === 0)
+			{
+				const mo = new MutationObserver(mutations =>
+				{
+					for (const mut of mutations)
+						for (const fn of this.observers)
+							fn(mut);
+				});
+				
+				mo.observe(this.parentElement, { childList: true });
+			}
+			
+			this.observers.push(callback);
+		}
+		
+		private readonly observers: ((mut: MutationRecord) => void)[] = [];
 		
 		/** */
 		private toJSON()
