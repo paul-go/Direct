@@ -8,7 +8,7 @@ namespace Turf
 		/** */
 		constructor(readonly record = new VideoBladeRecord())
 		{
-			super();
+			super(record);
 			
 			this.titleView = new CaptionedTitleView();
 			this.paragraphView = new CaptionedParagraphView();
@@ -37,8 +37,6 @@ namespace Turf
 				this.titleView.insertTitle("Title");
 				this.paragraphView.html = "This is <b>strong</b> text.";
 			});
-			
-			Controller.set(this);
 		}
 		
 		private titleView;

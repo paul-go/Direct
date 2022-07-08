@@ -5,11 +5,9 @@ namespace Turf
 	export class GalleryBladeView extends BladeView
 	{
 		/** */
-		constructor()
+		constructor(readonly record = new VideoBladeRecord())
 		{
-			super();
-			
-			
+			super(record);
 			
 			const dripperStyle: Htx.Style = {
 				pointerEvents: "none",
@@ -117,9 +115,26 @@ namespace Turf
 					),
 				)
 			);
+			
+			this.setBladeButtons(
+				this.coverButton,
+				this.containButton,
+			);
 		}
 		
 		private readonly galleryContainer: HTMLElement;
+		
+		/** */
+		private readonly coverButton = new BladeButtonView("Cover", {
+			selectable: true,
+			unselectable: false,
+		});
+		
+		/** */
+		private readonly containButton = new BladeButtonView("Contain", {
+			selectable: true,
+			unselectable: false,
+		});
 		
 		/** */
 		private getVisibleImage()

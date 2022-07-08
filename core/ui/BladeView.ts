@@ -11,7 +11,7 @@ namespace Turf
 		}
 		
 		/** */
-		constructor()
+		constructor(readonly record: BladeRecord)
 		{
 			const headerPadding = "25px";
 			
@@ -207,14 +207,6 @@ namespace Turf
 				},
 				Htx.on(UI.click, () => this.root.remove())
 			);
-		}
-		
-		/** */
-		private toJSON()
-		{
-			return {
-				transition: this.transition
-			}
 		}
 	}
 }

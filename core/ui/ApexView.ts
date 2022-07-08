@@ -27,6 +27,16 @@ namespace Turf
 		private _currentUser: IUser | null = null;
 		
 		/** */
+		get currentMeta()
+		{
+			if (this._currentMeta)
+				return this._currentMeta;
+			
+			return this._currentMeta = new MetaRecord();
+		}
+		private _currentMeta: MetaRecord | null = null;
+		
+		/** */
 		get currentMediaStore()
 		{
 			if (!this._currentMediaStore)

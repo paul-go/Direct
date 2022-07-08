@@ -7,9 +7,9 @@ namespace Turf
 	export class ProseBladeView extends BladeView
 	{
 		/** */
-		constructor()
+		constructor(readonly record = new VideoBladeRecord())
 		{
-			super();
+			super(record);
 			
 			Htx.from(this.sceneContainer)(
 				{
@@ -31,7 +31,7 @@ namespace Turf
 			
 			this.headingButton.onSelected(() =>
 			{
-				this.editor.execAction("heading");
+				
 			});
 		}
 		

@@ -316,9 +316,6 @@ namespace Cover
 		const blade = new Turf.CaptionedBladeRecord();
 		blade.titles.push({ text: "Done", size: 4, weight: 700 });
 		patch.blades.push(blade);
-		
-		const preview = new Turf.PreviewView();
-		document.body.append(preview.root);
-		preview.render(patch, meta);
+		new Turf.PreviewView(patch, meta);
 	}
 }

@@ -64,7 +64,9 @@ namespace Turf
 						new Text("Preview"),
 						Htx.on("click", () =>
 						{
-							
+							const apex = Controller.over(this, ApexView);
+							const meta = apex.currentMeta;
+							new PreviewView(record, meta);
 						})
 					)
 				)
@@ -74,6 +76,10 @@ namespace Turf
 			this.blades.observe(() =>
 			{
 				this.footerElement.style.display = this.blades.length > 0 ? "block" : "none";
+				
+				this.record.blades = this.blades
+					.toArray()
+					.map(view => view.record);
 			});
 			
 			Controller.set(this);
@@ -83,13 +89,5 @@ namespace Turf
 		readonly blades;
 		private readonly bladesElement;
 		private readonly footerElement;
-		
-		/** */
-		private toJSON()
-		{
-			return {
-				blades: this.blades
-			}
-		}
 	}
 }

@@ -7,7 +7,7 @@ namespace Turf
 		/** */
 		constructor(readonly record = new VideoBladeRecord())
 		{
-			super();
+			super(record);
 			
 			Htx.from(this.sceneContainer)(
 				UI.flexCenter,
