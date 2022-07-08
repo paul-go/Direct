@@ -64,6 +64,12 @@ namespace Turf
 		} as const;
 		
 		/** */
+		export const keyable: Htx.Param = {
+			tabIndex: 0,
+			outline: "0",
+		};
+		
+		/** */
 		export function fixed(amount = 0)
 		{
 			return <Htx.Style>{
@@ -253,6 +259,29 @@ namespace Turf
 					}
 				),
 				Htx.on(UI.click, clickFn),
+				...params,
+			);
+		}
+		
+		/** */
+		export function checkmark(...params: Htx.Param[])
+		{
+			return Htx.div(
+				{
+					width: "80px",
+					height: "80px",
+				},
+				Htx.div(
+					{
+						borderBottom: "8px solid white",
+						borderRight: "8px solid white",
+						transformOrigin: "50% 50%",
+						transform: "translateY(35%) rotate(40deg)",
+						width: "22px",
+						height: "40px",
+						margin: "auto",
+					},
+				),
 				...params,
 			);
 		}

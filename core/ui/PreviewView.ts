@@ -9,13 +9,13 @@ namespace Turf
 		{
 			this.root = Htx.div(
 				"preview-view",
-				UI.fixed(0),
+				UI.fixed(20),
+				UI.keyable,
 				{
-					tabIndex: 0,
-					overflowX: "hidden",
-					overflowY: "auto",
 					zIndex: "1",
 					backgroundColor: "black",
+					boxShadow: "0 0 0 100px " + UI.gray(128, 0.33),
+					borderRadius: UI.borderRadius.large
 				},
 				
 				Htx.on("keydown", ev =>
@@ -25,13 +25,41 @@ namespace Turf
 					
 				}, { capture: true }),
 				
-				() =>
-				{
-					Util.clear(this.root);
-					const renderRoot = Turf.renderPatchPreview(patch, meta);
-					this.root.append(renderRoot);
-					new Player.Story(renderRoot);
-				}
+				this.previewRoot = Htx.div(
+					"preview-root",
+					UI.anchor(),
+					{
+						overflowX: "hidden",
+						overflowY: "auto",
+						borderRadius: "inherit",
+					},
+					() =>
+					{
+						this.root.focus();
+						Util.clear(this.previewRoot);
+						const renderRoot = Turf.renderPatchPreview(patch, meta);
+						this.previewRoot.append(renderRoot);
+						new Player.Story(renderRoot);
+					}
+				),
+				
+				UI.checkmark(
+					UI.clickable,
+					{
+						position: "absolute",
+						bottom: "-17px",
+						left: "0",
+						right: "0",
+						margin: "auto",
+						backgroundColor: UI.gray(128, 0.33),
+						backdropFilter: "blur(10px)",
+						borderRadius: "100%"
+					},
+					Htx.on(UI.click, () =>
+					{
+						this.root.remove();
+					})
+				)
 			);
 			
 			document.body.append(this.root);
@@ -39,5 +67,7 @@ namespace Turf
 		}
 		
 		readonly root;
+		private readonly previewRoot;
+		
 	}
 }

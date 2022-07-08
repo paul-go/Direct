@@ -20,7 +20,7 @@ namespace Cover
 			weight: 700
 		});
 		
-		blade1.description.push("Blade 1 paragraph content.");
+		blade1.description = "Blade 1 paragraph content.";
 		blade1.backgroundColorIndex = Turf.ColorIndex.black;
 		
 		const blade2 = new Turf.CaptionedBladeRecord();
@@ -37,7 +37,7 @@ namespace Cover
 			weight: 700
 		});
 		
-		blade2.description.push("Blade 2 paragraph content.");
+		blade2.description = "Blade 2 paragraph content.";
 		blade2.backgroundColorIndex = Turf.ColorIndex.white;
 		
 		const background = new Turf.BackgroundRecord();
@@ -186,11 +186,11 @@ namespace Cover
 			weight: 700
 		});
 		
-		blade.description.push(`
+		blade.description = `
 			Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
 			Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
 			Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-		`);
+		`;
 		
 		blade.origin = Turf.Ninth.bottom;
 		patch.blades.push(blade);
