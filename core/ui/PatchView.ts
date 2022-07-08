@@ -64,6 +64,7 @@ namespace Turf
 						new Text("Preview"),
 						Htx.on("click", () =>
 						{
+							Saver.execute(this);
 							const apex = Controller.over(this, ApexView);
 							const meta = apex.currentMeta;
 							new PreviewView(record, meta);
@@ -76,18 +77,24 @@ namespace Turf
 			this.blades.observe(() =>
 			{
 				this.footerElement.style.display = this.blades.length > 0 ? "block" : "none";
-				
-				this.record.blades = this.blades
-					.toArray()
-					.map(view => view.record);
+				this.save();
 			});
 			
 			Controller.set(this);
+			Saver.set(this);
 		}
 		
 		readonly root;
 		readonly blades;
 		private readonly bladesElement;
 		private readonly footerElement;
+		
+		/** */
+		save()
+		{
+			this.record.blades = this.blades
+				.toArray()
+				.map(view => view.record);
+		}
 	}
 }

@@ -115,5 +115,12 @@ namespace Turf
 		}
 		
 		private editor: MediumEditor.MediumEditor = null!;
+		
+		/** */
+		save()
+		{
+			
+		}
 	}
+	
 }

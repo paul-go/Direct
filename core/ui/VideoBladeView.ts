@@ -142,5 +142,11 @@ namespace Turf
 		}
 		
 		private videoTag: HTMLVideoElement | null = null;
+		
+		/** */
+		save()
+		{
+			
+		}
 	}
 }

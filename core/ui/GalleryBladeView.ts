@@ -144,6 +144,12 @@ namespace Turf
 			const imageContainers = Query.find(Class.imageContainer, gc);
 			return imageContainers.length > 0 ? imageContainers[index] : null;
 		}
+		
+		/** */
+		save()
+		{
+			
+		}
 	}
 	
 	/** */

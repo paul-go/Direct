@@ -5,12 +5,6 @@ namespace Turf
 	export abstract class BladeView
 	{
 		/** */
-		private static fromJSON(json: object)
-		{
-			
-		}
-		
-		/** */
 		constructor(readonly record: BladeRecord)
 		{
 			const headerPadding = "25px";
@@ -110,6 +104,7 @@ namespace Turf
 			);
 			
 			Controller.set(this);
+			Saver.set(this);
 		}
 		
 		readonly root: HTMLDivElement;
@@ -208,5 +203,8 @@ namespace Turf
 				Htx.on(UI.click, () => this.root.remove())
 			);
 		}
+		
+		/** */
+		abstract save(): void;
 	}
 }

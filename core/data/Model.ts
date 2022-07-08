@@ -57,7 +57,7 @@ namespace Turf
 		effect = Effects.none.name;
 		origin = Ninth.center;
 		titles: ITitle[] = [];
-		paragraphs: string[] = [];
+		description: string = "";
 		backgrounds = Back.array(BackgroundRecord);
 	}
 	

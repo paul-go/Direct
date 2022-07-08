@@ -6,7 +6,7 @@ namespace Turf
 	export class CaptionedBladeView extends BladeView
 	{
 		/** */
-		constructor(readonly record = new VideoBladeRecord())
+		constructor(readonly record = new CaptionedBladeRecord())
 		{
 			super(record);
 			
@@ -37,6 +37,8 @@ namespace Turf
 				this.titleView.insertTitle("Title");
 				this.paragraphView.html = "This is <b>strong</b> text.";
 			});
+			
+			Saver.set(this);
 		}
 		
 		private titleView;
@@ -58,6 +60,13 @@ namespace Turf
 			// It's lame that this is in a setTimeout, but I don't care.
 			// It's not working otherwise.
 			setTimeout(() => cb.focus());
+		}
+		
+		/** */
+		save()
+		{
+			this.record.titles = this.titleView.getTitleData();
+			this.record.description = this.paragraphView.html;
 		}
 	}
 }

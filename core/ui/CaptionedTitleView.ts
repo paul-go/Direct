@@ -175,13 +175,21 @@ namespace Turf
 		}
 		
 		/** */
-		getHtml()
+		getTitleData()
 		{
-			// Getting the html right isn't a problem
+			const textBoxes = Controller.map(Query.children(this.root), TextBox);
+			const titles: ITitle[] = [];
 			
-			// Can't be done just yet because I don't have size and weight figured out.
+			for (let i = -1; ++i < textBoxes.length;)
+			{
+				titles.push({
+					text: textBoxes[i].text,
+					size: this.getFontSize(i),
+					weight: this.getFontWeight(i),
+				});
+			}
 			
-			return "";
+			return titles;
 		}
 	}
 }

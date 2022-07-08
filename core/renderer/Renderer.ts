@@ -168,7 +168,7 @@ namespace Turf
 		}).filter(b => !!b));
 		
 		// Foreground
-		if (blade.titles.length > 0 || blade.paragraphs.length > 0)
+		if (blade.titles.length > 0 || blade.description.length > 0)
 		{
 			const fg = Htx.div(
 				CssClass.captionSceneForeground,
@@ -201,14 +201,116 @@ namespace Turf
 				fg.append(h2);
 			}
 			
-			if (blade.paragraphs.length > 0)
-				for (const paragraph of blade.paragraphs)
-					fg.append(Htx.p(new Text(paragraph)));
+			if (blade.description.length > 0)
+				fg.append(...convertDescriptionToParagraphs(blade.description));
 			
 			out.push(fg);
 		}
 		
 		return out;
+	}
+	
+	/** */
+	function convertDescriptionToParagraphs(description: string)
+	{
+		interface IRegion { text: string, bold: boolean; href: string }
+		const regions: IRegion[] = [];
+		const empty: IRegion = { text: "", bold: false, href: "" };
+		const shim = Htx.div();
+		shim.innerHTML = description;
+		
+		const recurse = (e: Element, bold: boolean, href: string) =>
+		{
+			for (const node of Array.from(e.childNodes))
+			{
+				if (node instanceof Element)
+				{
+					if (node.tagName === "B")
+						recurse(node, true, href);
+					
+					else if (node.tagName === "A")
+						recurse(node, bold, node.getAttribute("href") || "");
+					
+					else if (node.tagName === "BR")
+						regions.push(empty);
+				}
+				else if (node instanceof Text)
+				{
+					if (regions.length > 0 && 
+						regions[regions.length - 1].bold === bold &&
+						regions[regions.length - 1].href === href)
+					{
+						regions[regions.length - 1].text += node.textContent || "";
+					}
+					else
+					{
+						regions.push({ text: node.textContent || "", bold, href });
+					}
+				}
+			}
+		};
+		
+		recurse(shim, false, "");
+		
+		for (let i = regions.length; i-- > 0;)
+		{
+			const region = regions[i];
+			region.text = region.text.replace("&nbsp;", " ");
+			
+			if (region !== empty)
+			{
+				if (region.text === "")
+					regions.splice(i, 1);
+			}
+			else if (i < regions.length - 1 && regions[i + 1] === empty)
+			{
+				regions.splice(i, 1);
+			}
+		}
+		
+		// Remove leading br's
+		for (;;)
+		{
+			if (regions.length === 0 || regions[0] !== empty)
+				break;
+			
+			regions.splice(0, 1);
+		}
+		
+		// Remove trailing br's
+		for (;;)
+		{
+			if (regions.length === 0 || regions.at(-1) !== empty)
+				break;
+			
+			regions.length--;
+		}
+		
+		const htmlParts: string[] = ["<p>"];
+		
+		for (const region of regions)
+		{
+			if (region !== empty)
+			{
+				let html = region.text;
+				
+				if (region.bold)
+					html = "<b>" + html + "</b>";
+				
+				if (region.href !== "")
+					html = `<a href="${region.href}">` + html + "</a>";
+				
+				htmlParts.push(html);
+			}
+			else htmlParts.push("</p><p>");
+		}
+		
+		htmlParts.push("</p>");
+		
+		const container = Htx.div();
+		container.innerHTML = htmlParts.join("");
+		
+		return Array.from(container.children) as HTMLParagraphElement[]
 	}
 	
 	/**
