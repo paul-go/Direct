@@ -132,10 +132,6 @@ namespace Controller
 	}
 	
 	const controllers = new WeakMap<Element, object[]>();
-
-	/** */
-	const getControllerType = (ctrl: IController): Constructor<IController> => 
-		(ctrl as any).constructor;
 	
 	/** */
 	const childrenOf = <T extends IController>(e: Element, controllerType?: Constructor<T>) =>
