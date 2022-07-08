@@ -65,12 +65,6 @@ namespace Turf
 			return "";
 		}
 		private _name: string = "";
-		
-		/** */
-		private toJSON()
-		{
-			return this.name;
-		}
 	}
 	
 	/** */

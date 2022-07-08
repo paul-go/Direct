@@ -22,10 +22,11 @@ namespace Turf
 		}
 		
 		/** */
-		useAnimation(transition: Animation)
+		useAnimation(animationName: string)
 		{
-			this.usedTransitions.add(transition);
-			return transition.name;
+			const animation = Animation.fromName(animationName);
+			this.usedTransitions.add(animation);
+			return animationName;
 		}
 		
 		readonly usedTransitions = new Set<Animation>();

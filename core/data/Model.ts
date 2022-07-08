@@ -1,13 +1,10 @@
-/// <reference path="Database.ts" />
+/// <reference path="Record.ts" />
 
 namespace Turf
 {
 	/** */
 	export class MetaRecord extends Record
 	{
-		static readonly table = "meta";
-		static readonly type = 1;
-		
 		user = {} as IUser;
 		colorScheme: UI.IColor[] = [];
 		font = "";
@@ -35,9 +32,6 @@ namespace Turf
 	/** */
 	export class PatchRecord extends Record
 	{
-		static readonly table = "patches";
-		static readonly type = 2;
-		
 		title = "";
 		description = "";
 		slug = "";
@@ -46,30 +40,25 @@ namespace Turf
 		draft = true;
 		dateCreated = 0;
 		datePublished = 0;
-		readonly blades = this.arrayOf(BladeRecord);
+		blades = Back.array(BladeRecord);
 	}
 	
 	/** */
 	export abstract class BladeRecord extends Record
 	{
-		static readonly table = "blades";
-		
-		transition = Transitions.slide;
+		transition = Transitions.slide.name;
 		backgroundColorIndex: number = ColorIndex.black;
 	}
 	
 	/** */
 	export class CaptionedBladeRecord extends BladeRecord
 	{
-		static readonly type = 3;
-		
 		textContrast = 0;
-		effect = Effects.none;
+		effect = Effects.none.name;
 		origin = Ninth.center;
-		
-		readonly titles: ITitle[] = [];
-		readonly paragraphs: string[] = [];
-		readonly backgrounds = this.arrayOf(BackgroundRecord);
+		titles: ITitle[] = [];
+		paragraphs: string[] = [];
+		backgrounds = Back.array(BackgroundRecord);
 	}
 	
 	/** */
@@ -83,58 +72,44 @@ namespace Turf
 	/** */
 	export class BackgroundRecord extends Record
 	{
-		static readonly table = "background";
-		
-		media = this.referenceOf(MediaRecord);
-		crop?: [number, number, number, number];
-		position?: [number, number];
+		media = Back.reference(MediaRecord);
+		crop: [number, number, number, number] = [0, 0, -1, -1];
+		position: [number, number] = [0, 0];
 		zoom: -1 | 0 | 1 = 0;
 	}
 	
 	/** */
 	export class GalleryBladeRecord extends BladeRecord
 	{
-		static readonly type = 6;
-		
-		readonly frames = this.arrayOf(FrameRecord);
+		frames = Back.array(FrameRecord);
 	}
 	
 	/** */
 	export class ProseBladeRecord extends BladeRecord
 	{
-		static readonly type = 4;
-		
 		html = "";
 	}
 	
 	/** */
 	export class VideoBladeRecord extends BladeRecord
 	{
-		static readonly type = 5;
-		
 		size: SizeMethod = "cover";
-		media = this.referenceOf(MediaRecord);
+		media = Back.reference(MediaRecord);
 	}
 	
 	/** */
 	export class FrameRecord extends Record
 	{
-		static readonly table = "frames";
-		static readonly type = 7;
-		
 		captionLine1 = "";
 		captionLine2 = "";
 		textContrast = 0;
 		size: SizeMethod = "contain";
-		media = this.referenceOf(MediaRecord);
+		media = Back.reference(MediaRecord);
 	}
 	
 	/** */
 	export class MediaRecord extends Record
 	{
-		static readonly table = "media";
-		static readonly type = 8;
-		
 		/**
 		 * A friendly name for the media object.
 		 * Typically the name of the file as it was sent in from the operating system.
@@ -205,15 +180,16 @@ namespace Turf
 	/** */
 	export function createDatabase(name: string)
 	{
-		return Turf.Database.new(name,
-			Turf.MetaRecord,
-			Turf.PatchRecord,
-			Turf.CaptionedBladeRecord,
-			Turf.ProseBladeRecord,
-			Turf.VideoBladeRecord,
-			Turf.GalleryBladeRecord,
-			Turf.MediaRecord,
-			Turf.BackgroundRecord,
+		return Turf.Back.new(name,
+			{ ctor: Turf.MetaRecord, stable: 1 },
+			{ ctor: Turf.PatchRecord, stable: 2 },
+			{ ctor: Turf.CaptionedBladeRecord, stable: 3 },
+			{ ctor: Turf.ProseBladeRecord, stable: 4 },
+			{ ctor: Turf.VideoBladeRecord, stable: 5 },
+			{ ctor: Turf.GalleryBladeRecord, stable: 6 },
+			{ ctor: Turf.FrameRecord, stable: 7 },
+			{ ctor: Turf.MediaRecord, stable: 8 },
+			{ ctor: Turf.BackgroundRecord, stable: 9 },
 		);
 	}
 }

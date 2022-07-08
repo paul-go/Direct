@@ -5,16 +5,17 @@ namespace Cover
 	export async function coverDatabase()
 	{
 		const dbName = "coverDatabase";
-		await Turf.Database.delete(dbName);
-		const db = await Turf.createDatabase(dbName);
+		await Turf.Back.delete(dbName);
+		const db1 = await Turf.createDatabase(dbName);
 		
 		const patch = new Turf.PatchRecord();
 		const blade1 = new Turf.CaptionedBladeRecord();
 		const blade2 = new Turf.ProseBladeRecord();
 		patch.blades.push(blade1, blade2);
-		await db.save(patch, blade1, blade2);
+		await db1.save(patch, blade1, blade2);
 		
-		const patchOut = await db.get(Turf.PatchRecord, patch.id);
+		const db2 = await Turf.createDatabase(dbName);
+		const patchOut = await db2.get<Turf.PatchRecord>(patch.id);
 		if (!patchOut)
 			return () => "Fail";
 		
@@ -29,8 +30,8 @@ namespace Cover
 	export async function coverInstance()
 	{
 		const dbName = "coverInstance";
-		await Turf.Database.delete(dbName);
-		const db = await Turf.createDatabase(dbName);
+		await Turf.Back.delete(dbName);
+		const db1 = await Turf.createDatabase(dbName);
 		
 		const media = new Turf.MediaRecord();
 		media.name = "media.jpg";
@@ -43,9 +44,10 @@ namespace Cover
 		bg.zoom = 1;
 		bg.media = media;
 		
-		await db.save(media, bg);
+		await db1.save(media, bg);
 		
-		const bgOut = await db.get(Turf.BackgroundRecord, bg.id);
+		const db2 = await Turf.createDatabase(dbName);
+		const bgOut = await db2.get<Turf.BackgroundRecord>(bg.id);
 		if (!bgOut)
 			return () => "Fail";
 		
@@ -59,7 +61,7 @@ namespace Cover
 	export async function coverMediaObject()
 	{
 		const dbName = "coverMediaObject";
-		await Turf.Database.delete(dbName);
+		await Turf.Back.delete(dbName);
 		const db = await Turf.createDatabase(dbName);
 		
 		const mo = new Turf.MediaRecord();
@@ -68,12 +70,46 @@ namespace Cover
 		mo.blob = blob;
 		await db.save(mo);
 		
-		const mout1 = await db.get(Turf.MediaRecord, mo.id);
-		const mout2 = await db.get(Turf.MediaRecord, mo.id);
+		const mout1 = await db.get<Turf.MediaRecord>(mo.id);
+		const mout2 = await db.get<Turf.MediaRecord>(mo.id);
 		
 		return [
 			() => mo === mout1,
 			() => mout1 === mout2,
+		];
+	}
+	
+	/** */
+	export async function coverArrayReassignment()
+	{
+		const dbName = "coverArrayReassignment";
+		await Turf.Back.delete(dbName);
+		const db1 = await Turf.createDatabase(dbName);
+		
+		const frame1 = new Turf.FrameRecord();
+		const gallery = new Turf.GalleryBladeRecord();
+		gallery.frames.push(frame1);
+		
+		await db1.save(gallery);
+		
+		const frame2 = new Turf.FrameRecord();
+		gallery.frames = [frame2];
+		
+		await db1.save(gallery);
+		
+		const db2 = await Turf.createDatabase(dbName);
+		const galleryOut = await db2.get<Turf.GalleryBladeRecord>(gallery.id);
+		
+		if (!galleryOut)
+			return () => !"Fail";
+		
+		const f0 = gallery.frames[0];
+		const outF0 = galleryOut.frames[0];
+		
+		return [
+			() => gallery.frames.length === 1,
+			() => galleryOut.frames.length === 1,
+			() => f0.id === outF0.id,
 		];
 	}
 }
