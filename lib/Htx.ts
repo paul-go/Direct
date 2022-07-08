@@ -479,7 +479,6 @@ namespace Htx
 	export declare function header(...params: Param[]): HTMLElement;
 	export declare function hgroup(...params: Param[]): HTMLElement;
 	export declare function hr(...params: Param[]): HTMLHRElement;
-	export declare function html(...params: Param[]): HTMLHtmlElement;
 	export declare function i(...params: Param[]): HTMLElement;
 	export declare function iframe(...params: Param[]): HTMLIFrameElement;
 	export declare function img(...params: Param<ImageElementAttribute>[]): HTMLImageElement;
@@ -543,8 +542,6 @@ namespace Htx
 	export declare function ul(...params: Param[]): HTMLUListElement;
 	export declare function video(...params: Param<VideoElementAttribute>[]): HTMLVideoElement;
 	export declare function wbr(...params: Param[]): HTMLElement;
-	
-	export declare function div(...params: Param[]): HTMLDivElement;
 	
 	/** */
 	export interface EventMap extends HTMLElementEventMap
