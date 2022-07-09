@@ -174,23 +174,32 @@ namespace Controller
 		}
 		
 		/** */
-		insert(controller: TController, index = Number.MAX_SAFE_INTEGER)
+		insert(...controllers: TController[]): void;
+		insert(index: number, ...controllers: TController[]): void;
+		insert(a: number | TController, ...newControllers: TController[])
 		{
-			const controllers = this.toArray();
+			const index = typeof a === "number" ? (a || 0) : Number.MAX_SAFE_INTEGER;
+			const existingControllers = this.toArray();
 			
-			if (controllers.length === 0)
+			if (typeof a === "object")
+				newControllers.unshift(a);
+			
+			if (newControllers.length === 0)
+				return;
+			
+			if (existingControllers.length === 0)
 			{
-				this.parentElement.insertBefore(controller.root, this.marker);
-			}
-			else if (index >= controllers.length)
-			{
-				const target = controllers.at(-1) as IController;
-				target.root.insertAdjacentElement("afterend", controller.root);
+				for (const controller of newControllers)
+					this.parentElement.insertBefore(controller.root, this.marker);
 			}
 			else
 			{
-				const target = controllers.at(index) as IController;
-				this.parentElement.insertBefore(controller.root, target.root);
+				const target = index >= existingControllers.length ? 
+					(existingControllers.at(index) as IController).root :
+					this.marker;
+				
+				for (const controller of newControllers)
+					this.parentElement.insertBefore(controller.root, target);
 			}
 		}
 		
