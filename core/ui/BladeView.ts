@@ -46,7 +46,7 @@ namespace Turf
 					Htx.div(
 						UI.flexVCenter,
 						UI.plusButton(
-							() => this.handleAdd("beforebegin"),
+							Htx.on(UI.click, () => this.handleAdd("beforebegin")),
 						),
 					),
 					...UI.dripper(
@@ -87,7 +87,7 @@ namespace Turf
 						paddingBottom: headerPadding,
 					},
 					UI.plusButton(
-						() => this.handleAdd("afterend"),
+						Htx.on(UI.click, () => this.handleAdd("afterend")),
 					),
 				)
 			);

@@ -1,6 +1,8 @@
 
 namespace Turf
 {
+	const homeDatabaseName = "home";
+	
 	/** */
 	export class ApexView
 	{
@@ -14,10 +16,25 @@ namespace Turf
 				}
 			);
 			
+			(async () =>
+			{
+				this._currentDatabase = await Turf.createDatabase(homeDatabaseName);
+			})();
+			
 			Controller.set(this);
 		}
 		
 		readonly root;
+		
+		/** */
+		get currentDatabase()
+		{
+			if (!this._currentDatabase)
+				throw "Database not loaded.";
+			
+			return this._currentDatabase;
+		}
+		private _currentDatabase: Back | null = null;
 		
 		/** */
 		get currentUser()

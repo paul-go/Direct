@@ -7,6 +7,9 @@ namespace Turf
 		export const mul = "✕";
 		
 		/** */
+		export const lineIconThickness = 3;
+		
+		/** */
 		export interface IColor
 		{
 			readonly h: number;
@@ -28,7 +31,7 @@ namespace Turf
 		}
 		
 		/** */
-		export const primaryColor = UI.color({ s: 60, l: 40 });
+		export const primaryColor = UI.color({ s: 70, l: 30 });
 		
 		/** */
 		export function white(alpha = 1)
@@ -94,6 +97,28 @@ namespace Turf
 		}
 		
 		/** */
+		export function anchorTop(amount = 0)
+		{
+			return <Htx.Style>{
+				position: "absolute",
+				top: amount + "px",
+				left: amount + "px",
+				right: amount + "px",
+			};
+		}
+		
+		/** */
+		export function anchorBottom(amount = 0)
+		{
+			return <Htx.Style>{
+				position: "absolute",
+				bottom: amount + "px",
+				left: amount + "px",
+				right: amount + "px",
+			};
+		}
+		
+		/** */
 		export function anchorLeft(amount = 0)
 		{
 			return <Htx.Style>{
@@ -116,7 +141,7 @@ namespace Turf
 		}
 		
 		/** */
-		export function anchorTopLeft(x = 0, y = 0)
+		export function anchorTopLeft(x = 0, y = x)
 		{
 			return <Htx.Style>{
 				position: "absolute",
@@ -126,12 +151,43 @@ namespace Turf
 		}
 		
 		/** */
-		export function anchorTopRight(x = 0, y = 0)
+		export function anchorTopRight(x = 0, y = x)
 		{
 			return <Htx.Style>{
 				position: "absolute",
 				top: y + "px",
 				right: x + "px",
+			};
+		}
+		
+		/** */
+		export function anchorBottomLeft(x = 0, y = x)
+		{
+			return <Htx.Style>{
+				position: "absolute",
+				bottom: y + "px",
+				left: x + "px",
+			};
+		}
+		
+		/** */
+		export function anchorBottomRight(x = 0, y = x)
+		{
+			return <Htx.Style>{
+				position: "absolute",
+				bottom: y + "px",
+				right: x + "px",
+			};
+		}
+		
+		/** */
+		export function anchorCenter(width: string | number, height: string | number = width)
+		{
+			return <Htx.Style>{
+				...anchor(),
+				margin: "auto",
+				width: typeof width === "number" ? width + "px" : width,
+				height: typeof height === "number" ? height + "px" : height,
 			};
 		}
 		
@@ -179,12 +235,24 @@ namespace Turf
 		}
 		
 		/** */
-		export function specificWeight(weight: number): Htx.Param
+		export function specificWeight(weight: number): Htx.Style
 		{
 			return {
-				fontWeight: weight.toString(),
+				fontWeight: (Math.round(weight / 100) * 100).toString(),
 				fontVariationSettings: "'wght' " + weight,
 			};
+		}
+		
+		/** */
+		export function text(size: number | bigint, weight: number, label?: string)
+		{
+			return [
+				{
+					fontSize: typeof size === "number" ? UI.vsize(size) : size + "px",
+					...UI.specificWeight(weight)
+				},
+				label ? new Text(label) : null
+			];
 		}
 		
 		/** */
@@ -227,7 +295,7 @@ namespace Turf
 		}
 		
 		/** */
-		export function plusButton(clickFn: (ev: Event) => void, ...params: Htx.Param[])
+		export function plusButton(...params: Htx.Param[])
 		{
 			const bar: Htx.Param = {
 				position: "absolute",
@@ -235,6 +303,10 @@ namespace Turf
 			};
 			
 			return Htx.div(
+				e =>
+				{
+					
+				},
 				UI.clickable,
 				{
 					width: "25px",
@@ -243,7 +315,7 @@ namespace Turf
 				Htx.div(
 					bar,
 					{
-						width: "1px",
+						width: UI.lineIconThickness + "px",
 						top: "0",
 						bottom: "0",
 						left: "50%",
@@ -252,14 +324,62 @@ namespace Turf
 				Htx.div(
 					bar,
 					{
-						height: "1px",
+						height: UI.lineIconThickness + "px",
 						left: "0",
 						right: "0",
-						top: "50%"
+						top: "50%",
 					}
 				),
-				Htx.on(UI.click, clickFn),
 				...params,
+			);
+		}
+		
+		/** */
+		export function settingsIcon(...params: Htx.Param[])
+		{
+			const circleSize = 14;
+			const fromEdge = Math.floor(circleSize / 2) - 1;
+			
+			const border = UI.lineIconThickness + "px solid white";
+			const circle = <Htx.Style>{
+				border,
+				borderRadius: "100%",
+				width: circleSize + "px",
+				height: circleSize + "px",
+			};
+			
+			const line = <Htx.Style>{
+				border,
+				borderWidth: UI.lineIconThickness + "px 0 0 0",
+			};
+			
+			return Htx.div(
+				"settings-icon",
+				Htx.div(
+					UI.anchorTopLeft(),
+					circle,
+				),
+				Htx.div(
+					UI.anchorBottomRight(),
+					circle,
+				),
+				Htx.div(
+					UI.anchorTop(),
+					{
+						top: fromEdge + "px",
+						left: (circleSize - UI.lineIconThickness) + "px",
+					},
+					line,
+				),
+				Htx.div(
+					UI.anchorBottom(),
+					{
+						bottom: fromEdge + "px",
+						right: (circleSize - UI.lineIconThickness) + "px",
+					},
+					line,
+				),
+				...params
 			);
 		}
 		
