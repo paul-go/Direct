@@ -8,8 +8,6 @@ namespace Turf
 		global["Turf"] = Turf;
 	}
 	
-	export const apex = new ApexView();
-	
 	/** */
 	export function startup()
 	{
@@ -40,6 +38,8 @@ namespace Turf
 			{ ctor: Turf.BackgroundRecord, stable: 9 },
 		);
 	}
+	
+	export const apex = new ApexView();
 }
 
 // Temporary startup function
