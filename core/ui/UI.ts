@@ -295,6 +295,27 @@ namespace Turf
 		}
 		
 		/** */
+		export async function lockBody(innerFn: () => Promise<void>)
+		{
+			document.body.style.overflow = "hidden";
+			document.body.style.pointerEvents = "none";
+			
+			try
+			{
+				const result = innerFn();
+				if (result instanceof Promise)
+					await result;
+			}
+			catch (e)
+			{
+				debugger;
+			}
+			
+			document.body.style.removeProperty("overflow");
+			document.body.style.removeProperty("pointer-events");
+		}
+		
+		/** */
 		export function plusButton(...params: Htx.Param[])
 		{
 			const bar: Htx.Param = {
@@ -402,6 +423,23 @@ namespace Turf
 						margin: "auto",
 					},
 				),
+				...params,
+			);
+		}
+		
+		/** */
+		export function chevron(...params: Htx.Param[])
+		{
+			return Htx.div(
+				{
+					width: "25px",
+					height: "25px",
+					border: UI.lineIconThickness + "px solid white",
+					borderTopWidth: "0",
+					borderRightWidth: "0",
+					transformOrigin: "50% 50%",
+					transform: "rotate(45deg)"
+				},
 				...params,
 			);
 		}

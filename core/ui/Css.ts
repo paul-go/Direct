@@ -209,6 +209,12 @@ namespace Turf
 			rule("." + CssClass.appRoot + " B", {
 				"font-weight": 800
 			}),
+			rule("." + CssClass.patchViewTransition, {
+				"transform-origin": "0 0 ",
+				"transform": "scale(0.33333)",
+				"width": "300%",
+				"z-index": "-1",
+			})
 		];
 	}
 	

@@ -9,12 +9,9 @@ namespace Turf
 		{
 			this.root = Htx.div(
 				"patches-view",
-				this.renderHeader(),
+				this.headerElement = this.renderHeader(),
 				this.patchesList = Htx.div(
 					"patches-list",
-					{
-						//paddingTop: headerHeight,
-					},
 					this.renderAddButton(),
 			 		() => this.populate()
 				)
@@ -22,6 +19,7 @@ namespace Turf
 		}
 		
 		readonly root;
+		private readonly headerElement;
 		private readonly patchesList;
 		
 		/** */
@@ -37,6 +35,8 @@ namespace Turf
 					borderRadius: "100%",
 					backgroundColor: UI.gray(64, 0.5),
 					backdropFilter: "blur(15px)",
+					transitionDuration,
+					transitionProperty: "transform",
 				},
 				UI.settingsIcon(
 					{
@@ -83,12 +83,12 @@ namespace Turf
 			{
 				const date = new Date(patch.dateCreated);
 				
+				let previewTransformable: HTMLElement;
+				let previewDisplay: HTMLElement;
+				
 				this.patchesList.append(Htx.div(
 					"patch-preview",
 					...this.defaultItemStyle,
-					{
-						backgroundImage: "linear-gradient(45deg, #222, black)",
-					},
 					patch.datePublished > 0 ? null : Htx.div(
 						UI.anchorTop(15),
 						{
@@ -103,28 +103,119 @@ namespace Turf
 						},
 						new Text("Draft"),
 					),
-					Htx.div(
+					previewTransformable = Htx.div(
+						"preview-transformable",
+						UI.anchor(),
 						{
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							width: "inherit",
-							height: "inherit",
-							textAlign: "center",
-							lineHeight: "1.66",
-							fontWeight: "700",
-							fontSize: "2.5vw",
+							transform: "scale(1)",
+							transitionDuration,
+							transitionProperty: "transform, height",
+							backgroundColor: "black",
+							overflow: "hidden",
 						},
-						new Text(date.toDateString()),
-						Htx.br(),
-						new Text(date.toLocaleTimeString()),
+						previewDisplay = Htx.div(
+							"preview-display",
+							UI.anchorTop(),
+							{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								textAlign: "center",
+								lineHeight: "1.66",
+								fontWeight: "700",
+								fontSize: "2.5vw",
+								backgroundImage: "linear-gradient(45deg, #222, black)",
+								aspectRatio: "1 / 1",
+								opacity: "1",
+								transitionProperty: "opacity",
+								transitionDuration,
+							},
+							new Text(date.toDateString()),
+							Htx.br(),
+							new Text(date.toLocaleTimeString()),
+						),
+						Htx.on(UI.click, ev =>
+						{
+							this.animatePatch(previewTransformable, previewDisplay, patch);
+						})
 					),
-					Htx.on(UI.click, () =>
-					{
-						
-					})
 				));
 			}
+		}
+		
+		/** */
+		private animatePatch(
+			transformable: HTMLElement,
+			previewDisplay: HTMLElement,
+			patch: PatchRecord)
+		{
+			const patchView = new PatchView(patch);
+			const parent = transformable.parentElement!;
+			parent.style.zIndex = "2";
+			
+			const index = Query.indexOf(parent);
+			const column = index % 3;
+			const bounds = transformable.getBoundingClientRect();
+			const transformOriginY = "0%";
+			const finalOffsetFromTop = bounds.top;
+			
+			const transformOriginX = 
+				column === 0 ? "0" :
+				column === 1 ? "50%" :
+				column === 2 ? "100%" : "";
+			
+			const scrollY = window.scrollY;
+			
+			UI.lockBody(async () =>
+			{
+				this.headerElement.style.transform = "translateY(-150%)";
+				
+				patchView.root.classList.add(CssClass.patchViewTransition);
+				transformable.style.height = (window.innerWidth / 3) + "px";
+				transformable.append(patchView.root);
+				
+				await new Promise<void>(r => setTimeout(r));
+				
+				transformable.style.zIndex = "1";
+				transformable.style.transformOrigin = transformOriginX + " " + transformOriginY;
+				transformable.style.transform = `scale(3) translateY(${-(finalOffsetFromTop / 3)}px)`;
+				transformable.style.height = (window.innerHeight / 3) + "px";
+				previewDisplay.style.opacity = "0";
+				
+				await new Promise<void>(r => transformable.addEventListener("transitionend", () => r()));
+				
+				Turf.apex.root.append(patchView.root);
+				patchView.root.classList.remove(CssClass.patchViewTransition);
+				this.patchesList.style.display = "none";
+			});
+			
+			patchView.setBackCallback(() =>
+			{
+				UI.lockBody(async () =>
+				{
+					this.headerElement.style.removeProperty("transform");
+					
+					transformable.style.transitionDuration = "0";
+					transformable.style.height = (window.innerHeight / 3) + "px";
+					this.patchesList.style.display = "block";
+					window.scroll(0, scrollY);
+					transformable.append(patchView.root);
+					patchView.root.classList.add(CssClass.patchViewTransition);
+					transformable.style.transitionDuration = transitionDuration;
+					
+					await new Promise<void>(r => setTimeout(r));
+					
+					transformable.style.height = (window.innerWidth / 3) + "px";
+					transformable.style.removeProperty("transform");
+					previewDisplay.style.opacity = "1";
+					
+					await new Promise<void>(r => transformable.addEventListener("transitionend", () => r()));
+					
+					transformable.style.removeProperty("z-index");
+					parent.style.removeProperty("z-index");
+					patchView.root.remove();
+				});
+			});
 		}
 		
 		/** */
@@ -150,4 +241,6 @@ namespace Turf
 			}
 		];
 	}
+	
+	const transitionDuration = "0.5s";
 }

@@ -11,6 +11,7 @@ namespace Turf
 			
 			this.root = Htx.div(
 				"patch-view",
+				UI.anchor(),
 				{
 					paddingBottom: "10px",
 				},
@@ -70,7 +71,12 @@ namespace Turf
 							new PreviewView(record, meta);
 						})
 					)
-				)
+				),
+				UI.chevron(
+					UI.clickable,
+					UI.anchorTopLeft(30),
+					Htx.on("click", () => this.backFn()),
+				),
 			);
 			
 			this.blades = new Controller.Array(this.bladesElement, BladeView);
@@ -96,5 +102,12 @@ namespace Turf
 				.toArray()
 				.map(view => view.record);
 		}
+		
+		/** */
+		setBackCallback(fn: () => void)
+		{
+			this.backFn = fn;
+		}
+		private backFn = () => {};
 	}
 }

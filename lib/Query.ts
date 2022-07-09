@@ -82,4 +82,21 @@ namespace Query
 		const elements = ancestors(targetNode);
 		return elements.find(e => e instanceof targetType) as T;
 	}
+	
+	/**
+	 * Returns the position of the specified node in it's container.
+	 */
+	export function indexOf(node: Node)
+	{
+		const parent = node.parentElement;
+		if (!parent)
+			return 0;
+		
+		const length = parent.children.length;
+		for (let i = -1; ++i < length;)
+			if (parent.children.item(i) === node)
+				return i;
+		
+		return -1;
+	}
 }
