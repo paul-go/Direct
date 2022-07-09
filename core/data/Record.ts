@@ -1,9 +1,9 @@
 
 namespace Turf
 {
-	//# Database Class
-	
 	export type RecordConstructor<R extends Record = Record> = new(id?: string) => R;
+	
+	export type GetBehavior = "get" | "peek";
 	
 	/** */
 	export interface IConfig
@@ -31,7 +31,10 @@ namespace Turf
 					const db = openRequest.result;
 					
 					if (!db.objectStoreNames.contains(objectTableName))
-						db.createObjectStore(objectTableName);
+					{
+						const store = db.createObjectStore(objectTableName);
+						store.createIndex(stableIndexName, stableProperty);
+					}
 				};
 				
 				openRequest.onerror = () =>
@@ -76,10 +79,15 @@ namespace Turf
 		/** */
 		get<R extends Record>(id: string)
 		{
-			if (!id)
-				throw "ID required";
-			
 			return this.inner.get<R>(id);
+		}
+		
+		/** */
+		each<R extends Record>(
+			type: RecordConstructor<R>,
+			behavior: "get" | "peek")
+		{
+			return this.inner.each(type, behavior);
 		}
 		
 		/** */
@@ -94,13 +102,46 @@ namespace Turf
 	{
 		/** */
 		constructor(
-			private readonly idb: IDBDatabase,
+			readonly idb: IDBDatabase,
 			private readonly configurations: IConfig[])
 		{ }
 		
 		/** */
+		async *each<R extends Record>(
+			type: RecordConstructor<R>,
+			behavior:GetBehavior )
+		{
+			const tx = this.idb.transaction(objectTableName, "readonly");
+			const store = tx.objectStore(objectTableName);
+			const index = store.index(stableIndexName);
+			const config = this.resolveConfig(type);
+			const cursor = index.openCursor(IDBKeyRange.only(config.stable));
+			
+			for (;;)
+			{
+				await new Promise<void>(r =>
+				{
+					if (cursor.readyState === "done")
+						cursor.result!.continue();
+					
+					cursor.onsuccess = () => r();
+				});
+				
+				if (!cursor.result)
+					break;
+				
+				const value = cursor.result.value;
+				const record = await this.constructRecord(value, behavior);
+				yield record as R;
+			}
+		}
+		
+		/** */
 		get<R extends Record>(id: string)
 		{
+			if (!id)
+				throw "ID required";
+			
 			return new Promise<R | null>(resolve =>
 			{
 				const existing = this.getFromHeap(id);
@@ -192,7 +233,8 @@ namespace Turf
 		
 		/** */
 		private async constructRecord<R extends Record>(
-			recordJson: RecordJson<R>): Promise<R>
+			recordJson: RecordJson<R>,
+			behavior: GetBehavior = "get"): Promise<R>
 		{
 			const id = recordJson.id;
 			const raw = recordJson as any;
@@ -209,7 +251,7 @@ namespace Turf
 				{
 					const ids = rawValue as string[];
 					
-					if (Array.isArray(ids))
+					if (behavior === "get" && Array.isArray(ids))
 					{
 						const records = await this.pick(ids);
 						recordAny[key] = records;
@@ -218,7 +260,7 @@ namespace Turf
 				}
 				else if (value.type instanceof ReferenceMarker)
 				{
-					if (rawValue === null)
+					if (behavior === "peek" || rawValue === null)
 						recordAny[key] = null;
 					else
 						recordAny[key] = await this.get(rawValue);
@@ -229,17 +271,24 @@ namespace Turf
 				}
 			}
 			
-			this.maybeAssociate(record);
-			this.putOnHeap(record);
+			if (behavior === "get")
+			{
+				this.maybeAssociate(record);
+				this.putOnHeap(record);
+			}
+			
 			return record as R;
 		}
 		
 		/** */
-		private resolveConfig(object: object)
+		resolveConfig(object: object)
 		{
-			if (object instanceof Record)
+			if (object instanceof Record || object instanceof Function)
 			{
-				const ctor = constructorOf(object);
+				const ctor = object instanceof Record ? 
+					constructorOf(object) :
+					object;
+				
 				const config = this.configurations.find(cfg => cfg.ctor === ctor);
 				if (config)
 					return config;
@@ -509,30 +558,41 @@ namespace Turf
 			}
 		}
 		
-		/**
-		 * 
-		 */
+		private readonly associations = new WeakMap<Record, Database>();
+		
+		/** */
 		private maybeSetId(record: Record)
 		{
 			if (record.id)
 				return;
 			
+			/*
 			const config = this.resolveConfig(record);
-			const id = config.stable + (() =>
-			{
-				let now = Date.now() - 1648215698766;
-				if (now <= this.lastNow)
-					return (++this.lastNow).toString(36);
-				
-				this.lastNow = now;
-				return now.toString(36);
-			})();
+			let id = "0".repeat(this.idUniqueLength) + (++this.nextId).toString(36);
+			id = id.slice(-this.idUniqueLength);
+			id = config.stable + id;
+			*/
 			
+			const id = (++this.nextId).toString(36);
 			Object.assign(record, { id });
 		}
-		private lastNow = 0;
 		
-		private readonly associations = new WeakMap<Record, Database>();
+		private nextId = 0;
+		
+		/** * /
+		getIdBounds(record: RecordConstructor)
+		{
+			const config = this.resolveConfig(record);
+			const stable = config.stable;
+			
+			return {
+				lower: stable + "0".repeat(this.idUniqueLength),
+				upper: stable + "z".repeat(this.idUniqueLength),
+			};
+		}
+		
+		private readonly idUniqueLength = 8;
+		*/
 		
 		/** */
 		private definePrimitiveProperty(database: Database, record: any, memberName: string)
@@ -619,7 +679,8 @@ namespace Turf
 	}
 	
 	const objectTableName = "objects";
-	const stableProperty = "@";
+	const stableIndexName = "stable";
+	const stableProperty = "_";
 	
 	//# Record Class
 	

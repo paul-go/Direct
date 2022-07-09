@@ -24,6 +24,22 @@ namespace Turf
 		
 		document.body.append(apex.root);
 	}
+	
+	/** */
+	export function createDatabase(name: string)
+	{
+		return Turf.Back.new(name,
+			{ ctor: Turf.MetaRecord, stable: 1 },
+			{ ctor: Turf.PatchRecord, stable: 2 },
+			{ ctor: Turf.CaptionedBladeRecord, stable: 3 },
+			{ ctor: Turf.ProseBladeRecord, stable: 4 },
+			{ ctor: Turf.VideoBladeRecord, stable: 5 },
+			{ ctor: Turf.GalleryBladeRecord, stable: 6 },
+			{ ctor: Turf.FrameRecord, stable: 7 },
+			{ ctor: Turf.MediaRecord, stable: 8 },
+			{ ctor: Turf.BackgroundRecord, stable: 9 },
+		);
+	}
 }
 
 // Temporary startup function
