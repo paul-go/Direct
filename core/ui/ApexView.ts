@@ -16,10 +16,10 @@ namespace Turf
 				}
 			);
 			
-			(async () =>
+			setTimeout(async () =>
 			{
 				this._currentDatabase = await Turf.createDatabase(homeDatabaseName);
-			})();
+			});
 			
 			Controller.set(this);
 		}
