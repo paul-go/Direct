@@ -31,6 +31,7 @@ namespace Turf
 						Htx.div(
 							"add-first-blade",
 							Htx.div(
+								UI.presentational,
 								{
 									fontSize: "30px",
 									fontWeight: "600",

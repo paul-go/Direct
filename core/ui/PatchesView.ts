@@ -50,13 +50,12 @@ namespace Turf
 		/** */
 		private renderAddButton()
 		{
-			return Htx.div(
-				"new-patch",
-				...this.defaultItemStyle,
+			return this.renderTile(new PatchRecord(), [
 				{
 					backgroundColor: UI.primaryColor,
 				},
 				Htx.div(
+					UI.presentational,
 					UI.anchorCenter("max-content"),
 					UI.plusButton(
 						{
@@ -64,16 +63,13 @@ namespace Turf
 							width: "3.3vw",
 							height: "3.3vw",
 						},
-						Htx.on("click", ev =>
-						{
-							
-						}),
 					),
 					Htx.div(
 						...UI.text(2.5, 600, "Add Patch"),
 					),
-				)
-			);
+				),
+				
+			]);
 		}
 		
 		/** */
@@ -83,12 +79,10 @@ namespace Turf
 			{
 				const date = new Date(patch.dateCreated);
 				
-				let previewTransformable: HTMLElement;
-				let previewDisplay: HTMLElement;
-				
-				this.patchesList.append(Htx.div(
-					"patch-preview",
-					...this.defaultItemStyle,
+				this.patchesList.append(this.renderTile(patch, [
+					{
+						backgroundImage: "linear-gradient(45deg, #222, black)",
+					},
 					patch.datePublished > 0 ? null : Htx.div(
 						UI.anchorTop(15),
 						{
@@ -103,48 +97,69 @@ namespace Turf
 						},
 						new Text("Draft"),
 					),
-					previewTransformable = Htx.div(
-						"preview-transformable",
-						UI.anchor(),
-						{
-							transform: "scale(1)",
-							transitionDuration,
-							transitionProperty: "transform, height",
-							backgroundColor: "black",
-							overflow: "hidden",
-						},
-						previewDisplay = Htx.div(
-							"preview-display",
-							UI.anchorTop(),
-							{
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								textAlign: "center",
-								lineHeight: "1.66",
-								fontWeight: "700",
-								fontSize: "2.5vw",
-								backgroundImage: "linear-gradient(45deg, #222, black)",
-								aspectRatio: "1 / 1",
-								opacity: "1",
-								transitionProperty: "opacity",
-								transitionDuration,
-							},
-							new Text(date.toDateString()),
-							Htx.br(),
-							new Text(date.toLocaleTimeString()),
-						),
-						Htx.on(UI.click, () =>
-						{
-							this.animatePatch(previewTransformable, previewDisplay, patch);
-						})
-					),
-				));
+					new Text(date.toDateString()),
+					Htx.br(),
+					new Text(date.toLocaleTimeString()),
+				]));
 			}
 		}
 		
 		/** */
-		private animatePatch(
+		private renderTile(
+			patch: PatchRecord,
+			previewDisplayParams: Htx.Param[]
+		)
+		{
+			let previewTransformable: HTMLElement;
+			let previewDisplay: HTMLElement;
+			
+			return Htx.div(
+				"patch-preview",
+				UI.clickable,
+				{
+					display: "inline-block",
+					verticalAlign: "top",
+					width: "33.333vw",
+					height: "33.333vw",
+				},
+				previewTransformable = Htx.div(
+					"preview-transformable",
+					UI.anchor(),
+					{
+						transform: "scale(1)",
+						transitionDuration,
+						transitionProperty: "transform, height",
+						backgroundColor: "black",
+						overflow: "hidden",
+					},
+					previewDisplay = Htx.div(
+						"preview-display",
+						UI.anchorTop(),
+						{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							textAlign: "center",
+							lineHeight: "1.66",
+							fontWeight: "700",
+							fontSize: "2.5vw",
+							aspectRatio: "1 / 1",
+							opacity: "1",
+							transitionProperty: "opacity",
+							transitionDuration,
+						},
+						...previewDisplayParams
+					),
+					Htx.on(UI.click, () =>
+					{
+						this.animateTile(previewTransformable, previewDisplay, patch);
+					})
+				),
+			)
+		}
+		
+		/** */
+		private animateTile(
 			transformable: HTMLElement,
 			previewDisplay: HTMLElement,
 			patch: PatchRecord)
@@ -217,29 +232,6 @@ namespace Turf
 				});
 			});
 		}
-		
-		/** */
-		private gotoNewPatch()
-		{
-			
-		}
-		
-		/** */
-		private gotoPatch(patch: PatchRecord)
-		{
-			
-		}
-		
-		/** */
-		private readonly defaultItemStyle: Readonly<Htx.Param[]> = [
-			UI.clickable,
-			{
-				display: "inline-block",
-				verticalAlign: "top",
-				width: "33.333vw",
-				height: "33.333vw",
-			}
-		];
 	}
 	
 	const transitionDuration = "0.5s";

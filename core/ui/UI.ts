@@ -61,10 +61,17 @@ namespace Turf
 		} as const;
 		
 		/** */
-		export const clickable = {
+		export const clickable: Htx.Style = {
 			userSelect: "none",
 			cursor: "pointer"
 		} as const;
+		
+		/** */
+		export const presentational: Htx.Style = {
+			pointerEvents: "none",
+			cursor: "default",
+			userSelect: "none",
+		};
 		
 		/** */
 		export const keyable: Htx.Param = {
