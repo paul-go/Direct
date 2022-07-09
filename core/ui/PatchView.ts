@@ -5,8 +5,11 @@ namespace Turf
 	export class PatchView
 	{
 		/** */
-		constructor(readonly record = new PatchRecord())
+		constructor(record?: PatchRecord)
 		{
+			this.isNewRecord = !record;
+			this.record = record || new PatchRecord();
+			
 			const minHeight: Htx.Param = { minHeight: "85vh" };
 			
 			this.root = Htx.div(
@@ -69,7 +72,7 @@ namespace Turf
 							Saver.execute(this);
 							const apex = Controller.over(this, ApexView);
 							const meta = apex.currentMeta;
-							new PreviewView(record, meta);
+							new PreviewView(this.record, meta);
 						})
 					)
 				),
@@ -81,7 +84,7 @@ namespace Turf
 			);
 			
 			this.blades = new Controller.Array(this.bladesElement, BladeView);
-			this.blades.insert(...record.blades.map(b => BladeView.new(b)));
+			this.blades.insert(...this.record.blades.map(b => BladeView.new(b)));
 			this.blades.observe(() =>
 			{
 				this.footerElement.style.display = this.blades.length > 0 ? "block" : "none";
@@ -96,6 +99,8 @@ namespace Turf
 		readonly blades;
 		private readonly bladesElement;
 		private readonly footerElement;
+		private readonly record;
+		private isNewRecord: boolean;
 		
 		/** */
 		save()
@@ -103,7 +108,17 @@ namespace Turf
 			this.record.blades = this.blades
 				.toArray()
 				.map(view => view.record);
+			
+			if (this.isNewRecord)
+				this.newlySavedFn(this.record);
 		}
+		
+		/** */
+		setNewlySavedCallback(fn: (patch: PatchRecord) => void)
+		{
+			this.newlySavedFn = fn;
+		}
+		private newlySavedFn = (patch: PatchRecord) => {};
 		
 		/** */
 		setBackCallback(fn: () => void)

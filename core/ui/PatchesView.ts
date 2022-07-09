@@ -12,7 +12,7 @@ namespace Turf
 				this.headerElement = this.renderHeader(),
 				this.patchesList = Htx.div(
 					"patches-list",
-					this.renderAddButton(),
+					this.addPatchButton = this.renderAddPatchButton(),
 			 		() => this.populate()
 				)
 			);
@@ -21,6 +21,7 @@ namespace Turf
 		readonly root;
 		private readonly headerElement;
 		private readonly patchesList;
+		private readonly addPatchButton;
 		
 		/** */
 		private renderHeader()
@@ -48,9 +49,9 @@ namespace Turf
 		}
 		
 		/** */
-		private renderAddButton()
+		private renderAddPatchButton()
 		{
-			return this.renderTile(new PatchRecord(), [
+			return this.renderTile([
 				{
 					backgroundColor: UI.primaryColor,
 				},
@@ -68,7 +69,6 @@ namespace Turf
 						...UI.text(2.5, 600, "Add Patch"),
 					),
 				),
-				
 			]);
 		}
 		
@@ -76,39 +76,44 @@ namespace Turf
 		private async populate()
 		{
 			for await (const patch of this.db.each(PatchRecord, "peek"))
-			{
-				const date = new Date(patch.dateCreated);
-				
-				this.patchesList.append(this.renderTile(patch, [
+				this.patchesList.append(this.renderPatchTile(patch));
+		}
+		
+		/** */
+		private renderPatchTile(patch: PatchRecord)
+		{
+			const date = new Date(patch.dateCreated);
+			
+			const params: Htx.Param[] = [
+				{
+					backgroundImage: "linear-gradient(45deg, #222, black)",
+				},
+				patch.datePublished > 0 ? null : Htx.div(
+					UI.anchorTop(15),
 					{
-						backgroundImage: "linear-gradient(45deg, #222, black)",
+						width: "max-content",
+						margin: "auto",
+						borderRadius: UI.borderRadius.max,
+						color: "white",
+						fontSize: "max(16px, 1vw)",
+						fontWeight: "700",
+						backgroundColor: UI.primaryColor,
+						padding: "0.5vw 1.5vw",
 					},
-					patch.datePublished > 0 ? null : Htx.div(
-						UI.anchorTop(15),
-						{
-							width: "max-content",
-							margin: "auto",
-							borderRadius: UI.borderRadius.max,
-							color: "white",
-							fontSize: "max(16px, 1vw)",
-							fontWeight: "700",
-							backgroundColor: UI.primaryColor,
-							padding: "0.5vw 1.5vw",
-						},
-						new Text("Draft"),
-					),
-					new Text(date.toDateString()),
-					Htx.br(),
-					new Text(date.toLocaleTimeString()),
-				]));
-			}
+					new Text("Draft"),
+				),
+				new Text(date.toDateString()),
+				Htx.br(),
+				new Text(date.toLocaleTimeString()),
+			];
+			
+			return this.renderTile(params, patch);
 		}
 		
 		/** */
 		private renderTile(
-			patch: PatchRecord,
-			previewDisplayParams: Htx.Param[]
-		)
+			previewDisplayParams: Htx.Param[],
+			patch?: PatchRecord)
 		{
 			let previewTransformable: HTMLElement;
 			let previewDisplay: HTMLElement;
@@ -162,7 +167,7 @@ namespace Turf
 		private animateTile(
 			transformable: HTMLElement,
 			previewDisplay: HTMLElement,
-			patch: PatchRecord)
+			patch?: PatchRecord)
 		{
 			const patchView = new PatchView(patch);
 			const parent = transformable.parentElement!;
@@ -204,6 +209,15 @@ namespace Turf
 				this.patchesList.style.display = "none";
 			});
 			
+			let listChanged = false;
+			
+			patchView.setNewlySavedCallback(patchRecord =>
+			{
+				listChanged = true;
+				const patchTileElement = this.renderPatchTile(patchRecord);
+				this.addPatchButton.insertAdjacentElement("afterend", patchTileElement);
+			});
+			
 			patchView.setBackCallback(() =>
 			{
 				UI.lockBody(async () =>
@@ -213,7 +227,10 @@ namespace Turf
 					transformable.style.transitionDuration = "0";
 					transformable.style.height = (window.innerHeight / 3) + "px";
 					this.patchesList.style.display = "block";
-					window.scroll(0, scrollY);
+					
+					if (!listChanged)
+						window.scroll(0, scrollY);
+					
 					transformable.append(patchView.root);
 					patchView.root.classList.add(CssClass.patchViewTransition);
 					transformable.style.transitionDuration = transitionDuration;
