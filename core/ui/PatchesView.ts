@@ -134,7 +134,7 @@ namespace Turf
 							Htx.br(),
 							new Text(date.toLocaleTimeString()),
 						),
-						Htx.on(UI.click, ev =>
+						Htx.on(UI.click, () =>
 						{
 							this.animatePatch(previewTransformable, previewDisplay, patch);
 						})

@@ -6,6 +6,7 @@ const enum CssClass
 	hide = "hide",
 	proseContainer = "prose-container",
 	appRoot = "app-root",
+	patchViewTransition = "patch-view-transition",
 	
 	// Player classes
 	story = "story",

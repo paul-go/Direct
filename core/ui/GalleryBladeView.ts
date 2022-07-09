@@ -5,7 +5,7 @@ namespace Turf
 	export class GalleryBladeView extends BladeView
 	{
 		/** */
-		constructor(readonly record = new VideoBladeRecord())
+		constructor(readonly record = new GalleryBladeRecord())
 		{
 			super(record);
 			

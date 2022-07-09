@@ -80,6 +80,9 @@ namespace Turf
 			);
 			
 			this.blades = new Controller.Array(this.bladesElement, BladeView);
+			const views = record.blades.map(b => BladeView.new(b));
+			this.blades.insert(...views);
+			
 			this.blades.observe(() =>
 			{
 				this.footerElement.style.display = this.blades.length > 0 ? "block" : "none";
@@ -106,6 +109,7 @@ namespace Turf
 		/** */
 		setBackCallback(fn: () => void)
 		{
+			this.save();
 			this.backFn = fn;
 		}
 		private backFn = () => {};

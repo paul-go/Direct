@@ -7,7 +7,7 @@ namespace Turf
 	export class ProseBladeView extends BladeView
 	{
 		/** */
-		constructor(readonly record = new VideoBladeRecord())
+		constructor(readonly record = new ProseBladeRecord())
 		{
 			super(record);
 			

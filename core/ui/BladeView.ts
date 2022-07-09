@@ -5,6 +5,24 @@ namespace Turf
 	export abstract class BladeView
 	{
 		/** */
+		static new(record: BladeRecord)
+		{
+			if (record instanceof CaptionedBladeRecord)
+				return new CaptionedBladeView(record);
+			
+			if (record instanceof GalleryBladeRecord)
+				return new GalleryBladeView(record);
+			
+			if (record instanceof ProseBladeRecord)
+				return new ProseBladeView(record);
+			
+			if (record instanceof VideoBladeRecord)
+				return new VideoBladeView(record);
+			
+			throw "Unknown record type.";
+		}
+		
+		/** */
 		constructor(readonly record: BladeRecord)
 		{
 			const headerPadding = "25px";
