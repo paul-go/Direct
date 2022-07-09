@@ -112,4 +112,38 @@ namespace Cover
 			() => f0.id === outF0.id,
 		];
 	}
+	
+	/** */
+	export async function coverIteration()
+	{
+		const dbName = "coverIteration";
+		await Turf.Back.delete(dbName);
+		const db1 = await Turf.createDatabase(dbName);
+		
+		const media = new Turf.MediaRecord();
+		
+		const frame1 = new Turf.FrameRecord();
+		frame1.captionLine1 = "Frame1";
+		
+		const frame2 = new Turf.FrameRecord();
+		frame2.captionLine1 = "Frame2";
+		
+		const frame3 = new Turf.FrameRecord();
+		frame3.captionLine1 = "Frame3";
+		
+		await db1.save(media, frame1, frame2, frame3);
+		
+		const db2 = await Turf.createDatabase(dbName);
+		const frames: Turf.FrameRecord[] = [];
+		
+		for await (const record of db2.each(Turf.FrameRecord, "peek"))
+			frames.push(record);
+		
+		return [
+			() => frames.length === 3,
+			() => frames[0].captionLine1 === frame1.captionLine1,
+			() => frames[1].captionLine1 === frame2.captionLine1,
+			() => frames[2].captionLine1 === frame3.captionLine1,
+		];
+	}
 }
