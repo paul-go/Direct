@@ -381,7 +381,6 @@ namespace Turf
 					
 					putResult.onsuccess = () =>
 					{
-						console.log("Wrote: " + record.id);
 						maybeResolve();
 					}
 				}
