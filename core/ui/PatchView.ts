@@ -79,7 +79,34 @@ namespace Turf
 				UI.chevron(
 					UI.clickable,
 					UI.anchorTopLeft(30),
-					Htx.on("click", () => this.backFn()),
+					Htx.on("click", async () =>
+					{
+						if (this.isNewRecord)
+						{
+							this.save();
+							this.newlySavedFn(this.record);
+							this.backFn();
+							
+							Htx.from(this.root)({
+								opacity: "1",
+								transitionProperty: "transform, opacity",
+								transitionDuration: "0.5s",
+								transformOrigin: "50% 0",
+								transform: "scale(0.3333)",
+							});
+							
+							await UI.wait();
+							
+							Htx.from(this.root)({
+								opacity: "0",
+							});
+							
+							await UI.waitTransitionEnd(this.root);
+							
+							this.root.remove();
+						}
+						else this.backFn();
+					}),
 				),
 			);
 			
@@ -108,9 +135,6 @@ namespace Turf
 			this.record.blades = this.blades
 				.toArray()
 				.map(view => view.record);
-			
-			if (this.isNewRecord)
-				this.newlySavedFn(this.record);
 		}
 		
 		/** */
@@ -123,7 +147,6 @@ namespace Turf
 		/** */
 		setBackCallback(fn: () => void)
 		{
-			this.save();
 			this.backFn = fn;
 		}
 		private backFn = () => {};

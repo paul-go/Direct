@@ -233,19 +233,19 @@ namespace Turf
 					
 					transformable.append(patchView.root);
 					patchView.root.classList.add(CssClass.patchViewTransition);
-					transformable.style.transitionDuration = transitionDuration;
+					!listChanged && (transformable.style.transitionDuration = transitionDuration);
 					
-					await new Promise<void>(r => setTimeout(r));
+					!listChanged && await UI.wait();
 					
 					transformable.style.height = (window.innerWidth / 3) + "px";
 					transformable.style.removeProperty("transform");
 					previewDisplay.style.opacity = "1";
 					
-					await new Promise<void>(r => transformable.addEventListener("transitionend", () => r()));
+					!listChanged && await UI.waitTransitionEnd(transformable);
 					
 					transformable.style.removeProperty("z-index");
 					parent.style.removeProperty("z-index");
-					patchView.root.remove();
+					!listChanged && patchView.root.remove();
 				});
 			});
 		}
