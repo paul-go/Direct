@@ -57,13 +57,16 @@ namespace Query
 	/**
 	 * Returns the element ancestors of the specified node.
 	 */
-	export function ancestors(node: Node | EventTarget | null)
+	export function ancestors(node: Node | EventTarget | null, until?: Element)
 	{
 		const ancestors: Node[] = [];
 		let current = node;
 		
 		while (current instanceof Node)
 		{
+			if (until && current === until)
+				break;
+			
 			ancestors.push(current);
 			current = current.parentElement;
 		}
@@ -92,11 +95,25 @@ namespace Query
 		if (!parent)
 			return 0;
 		
-		const length = parent.children.length;
+		const length = parent.childNodes.length;
 		for (let i = -1; ++i < length;)
-			if (parent.children.item(i) === node)
+			if (parent.childNodes.item(i) === node)
 				return i;
 		
 		return -1;
+	}
+	
+	/** */
+	export function * recurse(parent: Node)
+	{
+		function * recurse(node: Node): IterableIterator<Node>
+		{
+			yield node;
+			
+			for (const child of Array.from(node.childNodes))
+				yield * recurse(child);
+		}
+		
+		yield * recurse(parent);
 	}
 }

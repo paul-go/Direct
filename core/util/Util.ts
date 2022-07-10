@@ -94,5 +94,20 @@ namespace Turf
 			for (let i = e.childNodes.length; i-- > 0;)
 				e.childNodes[i].remove();
 		}
+		
+		/**
+		 * Returns the two specified Node instances in DOM order.
+		 */
+		export function orderElements<T extends Node>(nodeA: T, nodeB: T): [T, T]
+		{
+			const cmp = nodeA.compareDocumentPosition(nodeB);
+			const following = window.Node.DOCUMENT_POSITION_FOLLOWING;
+			const forward = cmp === 0 || (cmp & following) === following;
+			
+			return [
+				forward ? nodeA : nodeB,
+				forward ? nodeB : nodeA
+			];
+		}
 	}
 }

@@ -263,6 +263,18 @@ namespace Turf
 		}
 		
 		/** */
+		export async function wait()
+		{
+			return new Promise(r => setTimeout(r));
+		}
+		
+		/** */
+		export async function waitTransitionEnd(e: Element)
+		{
+			await new Promise<void>(r => e.addEventListener("transitionend", () => r()));
+		}
+		
+		/** */
 		export function disconnectAfterTransition(e: HTMLElement)
 		{
 			e.addEventListener("transitionend", () =>
@@ -346,7 +358,7 @@ namespace Turf
 						width: UI.lineIconThickness + "px",
 						top: "0",
 						bottom: "0",
-						left: "50%",
+						left: `calc(50% - ${UI.lineIconThickness / 2}px)`,
 					}
 				),
 				Htx.div(
@@ -355,7 +367,7 @@ namespace Turf
 						height: UI.lineIconThickness + "px",
 						left: "0",
 						right: "0",
-						top: "50%",
+						top: `calc(50% - ${UI.lineIconThickness / 2}px)`,
 					}
 				),
 				...params,

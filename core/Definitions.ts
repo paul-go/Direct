@@ -2,9 +2,9 @@
 /** */
 const enum CssClass
 {
+	// Editor classes
 	dragOverScreen = "drag-over-screen",
 	hide = "hide",
-	proseContainer = "prose-container",
 	appRoot = "app-root",
 	patchViewTransition = "patch-view-transition",
 	

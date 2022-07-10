@@ -28,17 +28,6 @@ namespace Turf
 				"-webkit-font-smoothing": "antialiased",
 				"font-family": "-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif"
 			}),
-			rule(
-				"." + CssClass.proseContainer + " H2:not(:first-child)," +
-				"." + CssClass.proseContainer + " P:not(:first-child)", {
-				"margin-top": "5vmin",
-			}),
-			rule("." + CssClass.proseContainer + " H2", {
-				"font-size": "5vmin",
-			}),
-			rule("." + CssClass.proseContainer + " P", {
-				"font-size": "3vmin"
-			}),
 			
 			// Player CSS
 			
@@ -138,17 +127,19 @@ namespace Turf
 			}),
 			rule("." + CssClass.proseSceneForeground, {
 				"margin": "auto",
+				"width": "100%",
 				"max-width": "800px",
 				"padding-top": "12vmin",
 				"padding-bottom": "33vmin",
 			}),
 			rule("." + CssClass.proseScene + " H2", {
-				"font-size": "35px"
+				"font-size": "40px",
+				"font-weight": "700",
 			}),
 			rule("." + CssClass.proseScene + " * + H2", {
 				"margin-top": "1.5em"
 			}),
-			rule("." + CssClass.proseScene + " P", {
+			rule("." + CssClass.proseScene, {
 				"font-size": "20px",
 				"line-height": "1.66",
 			}),
@@ -200,15 +191,6 @@ namespace Turf
 			rule("." + CaptionedButtonClass.squareFilled, {
 				"background-color": "black",
 			}),
-			rule("." + CssClass.proseContainer, {
-				"padding": "50px",
-			}),
-			rule("." + CssClass.proseContainer + ":focus", {
-				"outline": 0,
-			}),
-			rule("." + CssClass.appRoot + " B", {
-				"font-weight": 800
-			}),
 			rule("." + CssClass.patchViewTransition, {
 				"transform-origin": "0 0 ",
 				"transform": "scale(0.33333)",
@@ -242,5 +224,4 @@ namespace Turf
 			"}";
 		}
 	}
-	
 }

@@ -37,10 +37,12 @@ namespace Turf
 			{
 				if (ev.key === "Enter")
 				{
-					if (this.isMultiLine)
-						document.execCommand("insertLineBreak");
-					
 					ev.preventDefault();
+					
+					if (this.isMultiLine)
+					{
+						document.execCommand("insertLineBreak");
+					}
 				}
 			});
 			
@@ -159,6 +161,146 @@ namespace Turf
 			}
 			
 			this.editableElement.focus(options);
+		}
+		
+		/**
+		 * Wraps the current text region in a tag with the specified name.
+		 * Unwraps the current text region if an empty string is provided.
+		 */
+		setCurrentBlockElement(tagName: string)
+		{
+			const sel = window.getSelection();
+			if (!sel)
+				return;
+			
+			if (sel.anchorNode !== sel.focusNode)
+				return;
+			
+			if (!(sel.anchorNode instanceof Text))
+			{
+				debugger;
+				return;
+			}
+			
+			if (!(sel.focusNode instanceof Text))
+			{
+				debugger;
+				return;
+			}
+			
+			const focusRootNode = this.getTopNodeOf(sel.focusNode);
+			
+			if (!tagName)
+			{
+				if (this.isBlockElement(focusRootNode))
+				{
+					// Do the unwrapping here.
+				}
+				return;
+			}
+			
+			const topNodes = Array.from(this.editableElement.childNodes);
+			
+			const focusRootIndex = Query.indexOf(focusRootNode);
+			let startingIndex = focusRootIndex;
+			let endingIndex = focusRootIndex;
+			
+			for (startingIndex = focusRootIndex; startingIndex > 0; startingIndex--)
+			{
+				const node = topNodes[startingIndex - 1];
+				if (this.isBlockElement(node))
+				{
+					// Scoop up the leading <br> if it exists, so that it
+					// will get replaced with the coming block element.
+					if (node instanceof HTMLBRElement)
+						startingIndex--;
+					
+					break;
+				}
+			}
+			
+			for (endingIndex = focusRootIndex; endingIndex < topNodes.length - 1; endingIndex++)
+			{
+				const node = topNodes[endingIndex + 1];
+				if (this.isBlockElement(node))
+				{
+					if (node instanceof HTMLBRElement)
+						endingIndex++;
+					
+					break;
+				}
+			}
+			
+			let startingNode = topNodes[startingIndex];
+			let endingNode = topNodes[endingIndex];
+			
+			// Set the selection so that it gets replaced by the
+			// following call to document.execCommand.
+			const range = document.createRange();
+			range.setStartBefore(startingNode);
+			range.setEndAfter(endingNode);
+			sel.removeAllRanges();
+			sel.addRange(range);
+			
+			const nodes = topNodes.slice(startingIndex, endingIndex + 1).map(n => n.cloneNode(true));
+			
+			if (nodes.length > 0 && nodes[0] instanceof HTMLBRElement)
+				nodes.shift();
+			
+			const temp = Htx.div(...nodes);
+			const html = `<${tagName}>${temp.innerHTML}</${tagName}>`;
+			document.execCommand("insertHTML", false, html);
+		}
+		
+		/**
+		 * Returns the block-level element that contains the caret.
+		 * Returns null if the caret is not contained by an element (if it is top-level text), 
+		 */
+		getSelectedRoots()
+		{
+			const sel = window.getSelection();
+			if (!sel)
+				return [];
+			
+			if (!sel.anchorNode || !sel.focusNode)
+				return [];
+			
+			const anchorTopNode = this.getTopNodeOf(sel.anchorNode);
+			const focusTopNode = this.getTopNodeOf(sel.focusNode);
+			const anchorIndex = Query.indexOf(anchorTopNode);
+			const focusIndex = Query.indexOf(focusTopNode);
+			const topNodes = Array.from(this.editableElement.childNodes);
+			return topNodes.slice(anchorIndex, focusIndex + 1);
+		}
+		
+		/** */
+		getBlockElementOf(node: Node)
+		{
+			const ancestors = Query.ancestors(node, this.editableElement);
+			if (ancestors.length === 0)
+				return null;
+			
+			const e = ancestors.at(-1) as HTMLElement;
+			return this.isBlockElement(e) ? e : null;
+		}
+		
+		/** */
+		private getTopNodeOf(node: Node)
+		{
+			const ancestors = Query.ancestors(node, this.editableElement);
+			return ancestors.length === 0 ?
+				node :
+				ancestors.at(-1)!;
+		}
+		
+		/** */
+		private isBlockElement(node: Node)
+		{
+			if (node instanceof Element)
+				if (!["B", "STRONG", "EM", "I", "A", "U"].includes(node.tagName))
+					return true;
+			
+			return false;
 		}
 		
 		/** */

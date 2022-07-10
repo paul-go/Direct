@@ -30,8 +30,9 @@ namespace Turf
 			
 			if (this.isSelectable)
 			{
-				this.root.addEventListener(UI.click, () =>
+				this.root.addEventListener(UI.click, ev =>
 				{
+					ev.preventDefault();
 					this.selected = this.isUnselectable ? !this.selected : true;
 				});
 			}
