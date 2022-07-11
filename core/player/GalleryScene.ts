@@ -1,19 +1,14 @@
+/// <reference path="Scene.ts" />
 
 namespace Player
 {
 	/** */
-	export abstract class Scene
+	export class GalleryScene extends Scene
 	{
 		/** */
 		constructor(readonly root: HTMLElement)
 		{
-			
-		}
-		
-		/** */
-		setup()
-		{
-			
+			super(root);
 		}
 	}
 }
