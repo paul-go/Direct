@@ -1,40 +1,35 @@
 
 namespace Turf
 {
-	const homeDatabaseName = "home";
-	
 	/** */
-	export class ApexView
+	export class AppContainer
 	{
 		/** */
-		constructor()
+		constructor(
+			readonly root: HTMLElement,
+			database: Back | null)
 		{
-			this.root = Htx.div(
+			Htx.from(root)(
 				CssClass.appRoot,
 				{
 					minHeight: "100%",
 				}
 			);
 			
-			setTimeout(async () =>
-			{
-				this._currentDatabase = await Turf.createDatabase(homeDatabaseName);
-			});
+			this._database = database;
 			
 			Controller.set(this);
 		}
 		
-		readonly root;
-		
 		/** */
-		get currentDatabase()
+		get database()
 		{
-			if (!this._currentDatabase)
+			if (!this._database)
 				throw "Database not loaded.";
 			
-			return this._currentDatabase;
+			return this._database;
 		}
-		private _currentDatabase: Back | null = null;
+		private _database: Back | null = null;
 		
 		/** */
 		get currentUser()

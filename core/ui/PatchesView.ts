@@ -204,7 +204,7 @@ namespace Turf
 				
 				await new Promise<void>(r => transformable.addEventListener("transitionend", () => r()));
 				
-				Turf.apex.root.append(patchView.root);
+				Controller.over(this, AppContainer).root.append(patchView.root);
 				patchView.root.classList.remove(CssClass.patchViewTransition);
 				this.patchesList.style.display = "none";
 			});

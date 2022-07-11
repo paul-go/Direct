@@ -15,4 +15,10 @@ namespace Cover
 		media.type = Turf.MimeType.fromFileName(path);
 		return media;
 	}
+	
+	/** */
+	export function display(controller: Controller.IController)
+	{
+		Query.find(CssClass.appRoot)[0].append(controller.root);
+	}
 }

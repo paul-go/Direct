@@ -1,5 +1,11 @@
 
 /** */
+const enum ConstS
+{
+	homeDatabaseName = "home"
+}
+
+/** */
 const enum CssClass
 {
 	// Editor classes

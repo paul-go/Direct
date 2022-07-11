@@ -263,9 +263,9 @@ namespace Turf
 		}
 		
 		/** */
-		export async function wait()
+		export async function wait(ms = 0)
 		{
-			return new Promise(r => setTimeout(r));
+			return new Promise(r => setTimeout(r, ms));
 		}
 		
 		/** */

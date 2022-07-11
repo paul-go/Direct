@@ -5,7 +5,7 @@
 	const Proc = require("child_process") as typeof import("child_process");
 	const Terser = require("terser") as typeof import("terser");
 	const fetch = require("node-fetch") as typeof window.fetch;
-
+	
 	/** */
 	function copyResources()
 	{

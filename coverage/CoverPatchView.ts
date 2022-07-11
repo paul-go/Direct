@@ -2,57 +2,57 @@
 namespace Cover
 {
 	/** */
-	export function coverPatchViewEmpty()
+	export async function coverPatchViewEmpty()
 	{
-		Turf.startup();
+		await Turf.createApp({ shell: true });
 		const pv = new Turf.PatchView();
-		Turf.apex.root.append(pv.root);
+		Cover.display(pv);
 	}
 	
 	/** */
-	export function coverPatchViewWithCaptioned()
+	export async function coverPatchViewWithCaptioned()
 	{
-		Turf.startup();
+		await Turf.createApp({ shell: true });
 		const pv = new Turf.PatchView();
 		const bv1 = new Turf.CaptionedBladeView();
 		const bv2 = new Turf.CaptionedBladeView();
 		pv.blades.insert(bv1);
 		pv.blades.insert(bv2);
-		Turf.apex.root.append(pv.root);
+		Cover.display(pv);
 	}
 	
 	/** */
-	export function coverPatchViewWithGallery()
+	export async function coverPatchViewWithGallery()
 	{
-		Turf.startup();
+		await Turf.createApp({ shell: true });
 		const pv = new Turf.PatchView();
 		const bv = new Turf.GalleryBladeView();
 		pv.blades.insert(bv);
-		Turf.apex.root.append(pv.root);
+		Cover.display(pv);
 	}
 	
 	/** */
-	export function coverPatchViewWithVideo()
+	export async function coverPatchViewWithVideo()
 	{
-		Turf.startup();
+		await Turf.createApp({ shell: true });
 		const pv = new Turf.PatchView();
 		const bv = new Turf.VideoBladeView();
 		pv.blades.insert(bv);
-		Turf.apex.root.append(pv.root);
+		Cover.display(pv);
 	}
 	
 	/** */
-	export function coverPatchViewWithProse()
+	export async function coverPatchViewWithProse()
 	{
-		Turf.startup();
+		await Turf.createApp({ shell: true });
 		const pv = new Turf.PatchView();
 		const bv = new Turf.ProseBladeView();
 		pv.blades.insert(bv);
-		Turf.apex.root.append(pv.root);
+		Cover.display(pv);
 	}
 	
 	/** */
-	export function coverDrag()
+	export async function coverDrag()
 	{
 		document.body.append(
 			Htx.div(

@@ -12,9 +12,15 @@
 	"bugs": {
 		"url": "https://github.com/paul-go/Turf/issues"
 	},
-	"scripts": {},
+	"scripts": {
+		"tauri": "tauri"
+	},
 	"main": "turf.js",
+	"dependencies": {
+		"@tauri-apps/api": "^1.0.1"
+	},
 	"devDependencies": {
+		"@tauri-apps/cli": "^1.0.0",
 		"@types/medium-editor": "^5.0.5",
 		"@types/node": "^17.0.34",
 		"electron": "^18.2.4",

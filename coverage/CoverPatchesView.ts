@@ -4,7 +4,7 @@ namespace Cover
 	/** */
 	export async function coverPatchesView()
 	{
-		Turf.startup();
+		await Turf.createApp({ shell: true });
 		
 		const db = await Turf.createDatabase("coverPatchesView");
 		
@@ -21,8 +21,6 @@ namespace Cover
 		}
 		
 		await db.save(...patches);
-		const patchesView = new Turf.PatchesView(db);
-		
-		Turf.apex.root.append(patchesView.root);
+		Cover.display(new Turf.PatchesView(db));
 	}
 }

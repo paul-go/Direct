@@ -1,26 +1,39 @@
-/// <reference path="./ui/ApexView.ts" />
+/// <reference path="./ui/AppContainer.ts" />
 
 namespace Turf
 {
-	if (DEBUG && typeof module === "object")
+	/** */
+	export interface IStartOptions
 	{
-		Object.assign(module.exports, { Turf });
-		global["Turf"] = Turf;
+		databaseName?: string;
+		appContainer?: HTMLElement;
+		skipAppInit?: boolean;
 	}
 	
 	/** */
-	export function startup()
+	export interface ICreateAppOptions
 	{
+		database?: string;
+		container?: HTMLElement;
+		shell?: boolean;
+	}
+	
+	/** */
+	export async function createApp(options?: ICreateAppOptions)
+	{
+		const database = await createDatabase(options?.database ? 
+			options.database :
+			ConstS.homeDatabaseName);
+		
 		Turf.appendCss();
+		const container = options?.container ?? document.body;
+		const app = new AppContainer(container, database);
 		
-		Htx.from(document.body)({
-			margin: "0",
-			padding: "0",
-			color: "white",
-			backgroundColor: "black",
-		});
-		
-		document.body.append(apex.root);
+		if (options?.shell !== true)
+		{
+			const view = new Turf.PatchesView(database);
+			app.root.append(view.root);
+		}
 	}
 	
 	/** */
@@ -39,23 +52,11 @@ namespace Turf
 		);
 	}
 	
-	export const apex = new ApexView();
-}
-
-// Temporary startup function
-if (DEBUG && !ELECTRON)
-{
-	setTimeout(() =>
+	if (document.documentElement.hasAttribute("data-autostart"))
 	{
-		Turf.startup();
-			
-		const pv = new Turf.PatchView();
-		const bv1 = new Turf.CaptionedBladeView();
-		pv.blades.insert(bv1);
-		
-		const bv2 = new Turf.CaptionedBladeView();
-		pv.blades.insert(bv2);
-		
-		Turf.apex.root.append(pv.root);
-	});
+		setTimeout(async () =>
+		{
+			createApp();
+		});
+	}
 }

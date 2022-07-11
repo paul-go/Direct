@@ -156,7 +156,11 @@ namespace Turf
 	{
 		return [
 			rule("HTML, BODY", {
-				height: "100%",
+				"margin": "0",
+				"padding": "0",
+				"height": "100%",
+				"background-color": "black",
+				"color": "white",
 			}),
 			rule("." + CssClass.hide, {
 				display: "none !important",

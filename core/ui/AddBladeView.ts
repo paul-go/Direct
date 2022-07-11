@@ -9,7 +9,7 @@ namespace Turf
 		{
 			return new Promise<BladeView | null>(r =>
 			{
-				const apex = Controller.over(via, ApexView);
+				const apex = Controller.over(via, AppContainer);
 				const view = new AddBladeView(r);
 				apex.root.append(view.root);
 			});
