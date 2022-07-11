@@ -93,6 +93,8 @@ namespace Turf
 						justifyContent: "center",
 						paddingBottom: "20px",
 						color: "white",
+						width: "max-content",
+						margin: "auto",
 					}
 				),
 				
@@ -132,7 +134,7 @@ namespace Turf
 		/** */
 		protected get apex()
 		{
-			return Controller.over(this, ApexView);
+			return Controller.over(this, AppContainer);
 		}
 		
 		/** */

@@ -366,14 +366,13 @@ namespace Turf
 	 */
 	function renderProseBlade(bun: Bundle<ProseBladeRecord>)
 	{
-		const div = Htx.div();
-		div.innerHTML = bun.blade.html;
+		const proseNodes = tempProseConverter(bun.blade.html);
 		
 		return [
 			CssClass.proseScene,
 			Htx.div(
 				CssClass.proseSceneForeground,
-				...Array.from(div.childNodes)
+				...proseNodes
 			)
 		];
 	}

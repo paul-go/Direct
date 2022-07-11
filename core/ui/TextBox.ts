@@ -38,11 +38,7 @@ namespace Turf
 				if (ev.key === "Enter")
 				{
 					ev.preventDefault();
-					
-					if (this.isMultiLine)
-					{
-						document.execCommand("insertLineBreak");
-					}
+					this.handleInsertLineBreak();
 				}
 			});
 			
@@ -163,6 +159,40 @@ namespace Turf
 			this.editableElement.focus(options);
 		}
 		
+		/** */
+		private handleInsertLineBreak()
+		{
+			if (!this.isMultiLine)
+				return;
+			
+			document.execCommand("insertLineBreak");
+			if (1) return;
+			
+			const sel = window.getSelection();
+			if (!sel)
+				return;
+			
+			// No line break insertion when there is a selection, for now
+			if (sel.anchorNode !== sel.focusNode || 
+				sel.focusOffset !== sel.anchorOffset)
+				return;
+			
+			const roots = this.getSelectedRoots();
+			const root = roots[0] as HTMLElement;
+			
+			if (this.isBlockElement(root))
+			{
+				const offset = sel.anchorOffset;
+				const ancestors = Query.ancestors(sel.anchorNode, root);
+				
+				// Can only insert <br>'s when the caret is at the beginning or end
+				if ((offset === 0 && ancestors.every(e => e.previousSibling === null)) ||
+					offset === (root.textContent || "").length)
+					document.execCommand("insertHTML", false, "<br>");
+			}
+			else document.execCommand("insertLineBreak");
+		}
+		
 		/**
 		 * Wraps the current text region in a tag with the specified name.
 		 * Unwraps the current text region if an empty string is provided.
@@ -195,6 +225,7 @@ namespace Turf
 				if (this.isBlockElement(focusRootNode))
 				{
 					// Do the unwrapping here.
+					debugger;
 				}
 				return;
 			}

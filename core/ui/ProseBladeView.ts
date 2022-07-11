@@ -28,13 +28,22 @@ namespace Turf
 				)
 			);
 			
-			this.textBox.html = "This is the html";
+			this.textBox.isMultiLine = true;
+			this.textBox.html = record.html;
 			
 			this.setBladeButtons(
+				/*
+				this.boldButton,
+				this.linkButton,
 				this.headingButton,
 				this.paragraphButton,
+				*/
 				this.backgroundButton,
 			);
+			
+			/*
+			this.boldButton.visible = false;
+			this.linkButton.visible = false;
 			
 			this.headingButton.onSelected(() =>
 			{
@@ -46,10 +55,16 @@ namespace Turf
 				this.textBox.setCurrentBlockElement("");
 			});
 			
+			this.boldButton.onSelected(() =>
+			{
+				document.execCommand("bold");
+			});
+			
 			document.addEventListener("selectionchange", () =>
 			{
 				this.updateBladeButtons();
 			});
+			*/
 		}
 		
 		private readonly textBox: TextBox;
@@ -70,12 +85,14 @@ namespace Turf
 		private readonly boldButton = new BladeButtonView("Bold", {
 			selectable: true,
 			unselectable: true,
+			independent: true,
 		});
 		
 		/** */
 		private readonly linkButton = new BladeButtonView("Link", {
 			selectable: true,
 			unselectable: true,
+			independent: true,
 		});
 		
 		/** */
@@ -177,8 +194,8 @@ namespace Turf
 						hasLink = false;
 				}
 				
-				this.boldButton.enabled = hasBold;
-				this.linkButton.enabled = hasLink;
+				this.boldButton.selected = hasBold;
+				this.linkButton.selected = hasLink;
 			}
 			// Update the type buttons
 			else
@@ -196,7 +213,7 @@ namespace Turf
 		/** */
 		save()
 		{
-			
+			this.record.html = this.textBox.editableElement.innerHTML;
 		}
 	}
 }
