@@ -65,7 +65,14 @@ namespace Htx { { } }
 	function apply(e: Element, params: Htx.Param[])
 	{
 		if (cssPropertySet === null)
-			cssPropertySet = new Set(Object.keys(document.documentElement.style));
+		{
+			const propertyNames: string[] = [];
+			
+			for (const key in document.documentElement.style)
+				propertyNames.push(key);
+			
+			cssPropertySet = new Set(propertyNames);
+		}
 		
 		for (const param of params)
 		{
