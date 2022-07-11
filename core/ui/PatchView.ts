@@ -14,9 +14,11 @@ namespace Turf
 			
 			this.root = Htx.div(
 				"patch-view",
-				UI.anchor(),
+				UI.anchorTop(),
 				{
+					minHeight: "100vh",
 					paddingBottom: "10px",
+					backgroundColor: "black",
 				},
 				minHeight,
 				this.bladesElement = Htx.div(
@@ -46,12 +48,7 @@ namespace Turf
 								{
 									marginTop: "10px",
 								},
-								Htx.on(UI.click, async () =>
-								{
-									const bladeView = await AddBladeView.show(this.root);
-									if (bladeView)
-										this.bladesElement.append(bladeView.root);
-								}),
+								Htx.on(UI.click, () => this.handleAddFirst()),
 								new Text("Add One"),
 							)
 						),
@@ -67,46 +64,13 @@ namespace Turf
 					},
 					UI.actionButton("filled", 
 						new Text("Preview"),
-						Htx.on("click", () =>
-						{
-							Saver.execute(this);
-							const apex = Controller.over(this, ApexView);
-							const meta = apex.currentMeta;
-							new PreviewView(this.record, meta);
-						})
+						Htx.on("click", () => this.handlePreview())
 					)
 				),
 				UI.chevron(
 					UI.clickable,
 					UI.anchorTopLeft(30),
-					Htx.on("click", async () =>
-					{
-						if (this.isNewRecord)
-						{
-							this.save();
-							this.newlySavedFn(this.record);
-							this.backFn();
-							
-							Htx.from(this.root)({
-								opacity: "1",
-								transitionProperty: "transform, opacity",
-								transitionDuration: "0.5s",
-								transformOrigin: "50% 0",
-								transform: "scale(0.3333)",
-							});
-							
-							await UI.wait();
-							
-							Htx.from(this.root)({
-								opacity: "0",
-							});
-							
-							await UI.waitTransitionEnd(this.root);
-							
-							this.root.remove();
-						}
-						else this.backFn();
-					}),
+					Htx.on("click", () => this.handleBack())
 				),
 			);
 			
@@ -138,11 +102,11 @@ namespace Turf
 		}
 		
 		/** */
-		setNewlySavedCallback(fn: (patch: PatchRecord) => void)
+		setKeepCallback(fn: (patch: PatchRecord) => void)
 		{
-			this.newlySavedFn = fn;
+			this.keepFn = fn;
 		}
-		private newlySavedFn = (patch: PatchRecord) => {};
+		private keepFn = (patch: PatchRecord) => {};
 		
 		/** */
 		setBackCallback(fn: () => void)
@@ -150,5 +114,33 @@ namespace Turf
 			this.backFn = fn;
 		}
 		private backFn = () => {};
+		
+		/** */
+		private handleBack()
+		{
+			this.save();
+			
+			if (this.isNewRecord && this.blades.length > 0)
+				this.keepFn(this.record);
+			
+			this.backFn();
+		}
+		
+		/** */
+		private async handleAddFirst()
+		{
+			const bladeView = await AddBladeView.show(this.root);
+			if (bladeView)
+				this.bladesElement.append(bladeView.root);
+		}
+		
+		/** */
+		private handlePreview()
+		{
+			Saver.execute(this);
+			const apex = Controller.over(this, ApexView);
+			const meta = apex.currentMeta;
+			new PreviewView(this.record, meta);
+		}
 	}
 }

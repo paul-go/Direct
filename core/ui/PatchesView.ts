@@ -209,13 +209,16 @@ namespace Turf
 				this.patchesList.style.display = "none";
 			});
 			
-			let listChanged = false;
+			let doingKeep = false;
 			
-			patchView.setNewlySavedCallback(patchRecord =>
+			patchView.setKeepCallback(patch =>
 			{
-				listChanged = true;
-				const patchTileElement = this.renderPatchTile(patchRecord);
-				this.addPatchButton.insertAdjacentElement("afterend", patchTileElement);
+				doingKeep = true;
+				this.addPatchButton.remove();
+				
+				this.patchesList.prepend(
+					this.renderAddPatchButton(),
+					this.renderPatchTile(patch));
 			});
 			
 			patchView.setBackCallback(() =>
@@ -223,29 +226,46 @@ namespace Turf
 				UI.lockBody(async () =>
 				{
 					this.headerElement.style.removeProperty("transform");
-					
-					transformable.style.transitionDuration = "0";
-					transformable.style.height = (window.innerHeight / 3) + "px";
 					this.patchesList.style.display = "block";
 					
-					if (!listChanged)
+					if (doingKeep)
+					{
+						const s = patchView.root.style;
+						s.transitionDuration = "0";
+						await UI.wait();
+						s.opacity = "1";
+						s.transformOrigin = "50% 0";
+						await UI.wait();
+						s.transitionDuration = transitionDuration;
+						await UI.wait();
+						s.transform = "scale(0.3333)";
+						s.opacity = "0";
+						await UI.waitTransitionEnd(patchView.root);
+						patchView.root.remove();
+					}
+					else
+					{
+						transformable.style.transitionDuration = "0";
+						transformable.style.height = (window.innerHeight / 3) + "px";
+						
 						window.scroll(0, scrollY);
-					
-					transformable.append(patchView.root);
-					patchView.root.classList.add(CssClass.patchViewTransition);
-					!listChanged && (transformable.style.transitionDuration = transitionDuration);
-					
-					!listChanged && await UI.wait();
-					
-					transformable.style.height = (window.innerWidth / 3) + "px";
-					transformable.style.removeProperty("transform");
-					previewDisplay.style.opacity = "1";
-					
-					!listChanged && await UI.waitTransitionEnd(transformable);
-					
-					transformable.style.removeProperty("z-index");
-					parent.style.removeProperty("z-index");
-					!listChanged && patchView.root.remove();
+						
+						transformable.append(patchView.root);
+						patchView.root.classList.add(CssClass.patchViewTransition);
+						transformable.style.transitionDuration = transitionDuration;
+						
+						await UI.wait();
+						
+						transformable.style.height = (window.innerWidth / 3) + "px";
+						transformable.style.removeProperty("transform");
+						previewDisplay.style.opacity = "1";
+						
+						await UI.waitTransitionEnd(transformable);
+						
+						transformable.style.removeProperty("z-index");
+						parent.style.removeProperty("z-index");
+						patchView.root.remove();
+					}
 				});
 			});
 		}
