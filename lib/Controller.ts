@@ -178,7 +178,7 @@ namespace Controller
 		insert(index: number, ...controllers: TController[]): void;
 		insert(a: number | TController, ...newControllers: TController[])
 		{
-			const index = typeof a === "number" ? (a || 0) : Number.MAX_SAFE_INTEGER;
+			const index = typeof a === "number" ? (a || 0) : -1;
 			const existingControllers = this.toArray();
 			
 			if (typeof a === "object")
