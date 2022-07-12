@@ -97,10 +97,13 @@ namespace Turf
 					await UI.wait();
 				}
 				
-				s.top = e.offsetTop + "px";
-				s.left = e.offsetLeft + "px";
-				s.width = e.offsetWidth + "px";
-				s.height = e.offsetHeight + "px";
+				const overlayRect = this.overlay.getBoundingClientRect();
+				const targetRect = e.getBoundingClientRect();
+				
+				s.top = (targetRect.top - overlayRect.top - expand) + "px";
+				s.left = (targetRect.left - overlayRect.left - expand) + "px";
+				s.width = (targetRect.width + expand * 2) + "px";
+				s.height = (targetRect.height + expand * 2) + "px";
 				
 				if (transition)
 				{
@@ -133,4 +136,6 @@ namespace Turf
 			this.overlay.remove();
 		}
 	}
+	
+	const expand = 6;
 }

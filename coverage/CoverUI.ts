@@ -30,7 +30,8 @@ namespace Cover
 					width: "100px",
 					height: "3vw",
 					margin: "20px",
-				}
+				},
+				Htx.div("inner", Turf.UI.anchor()),
 			),
 			element2 = Htx.div(
 				"e2",
@@ -39,7 +40,8 @@ namespace Cover
 					width: "200px",
 					height: "50px",
 					margin: "20px auto",
-				}
+				},
+				Htx.div("inner", Turf.UI.anchor()),
 			),
 			element3 = Htx.div(
 				"e3",
@@ -49,7 +51,8 @@ namespace Cover
 					height: "100px",
 					margin: "20px",
 					marginLeft: "100px",
-				}
+				},
+				Htx.div("inner", Turf.UI.anchor()),
 			),
 		);
 		
