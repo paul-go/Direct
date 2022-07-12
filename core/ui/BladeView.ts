@@ -80,14 +80,15 @@ namespace Turf
 				this.sceneContainer = Htx.div(
 					"scene-container",
 					{
+						overflow: "hidden",
 						height: UI.vsize(100), 
 						backgroundColor: UI.white(0.1),
 					},
 				),
 				
 				//
-				this.configContainer = Htx.div(
-					"config-container",
+				this.configuratorButtonsContainer = Htx.div(
+					"config-buttons-container",
 					{
 						display: "flex",
 						justifyContent: "center",
@@ -98,13 +99,21 @@ namespace Turf
 					}
 				),
 				
+				//
+				(this.configuratorContainer = new HeightBox(
+					"config-container",
+					{
+						padding: "0 30px 30px"
+					}
+				)).root,
+				
 				// Final add
 				Htx.div(
 					"final-add",
 					{
 						direction: "rtl",
-						paddingRight: headerPadding,
-						paddingBottom: headerPadding,
+						padding: headerPadding,
+						paddingLeft: "0",
 					},
 					UI.plusButton(
 						Htx.on(UI.click, () => this.handleAdd("afterend")),
@@ -129,18 +138,13 @@ namespace Turf
 		
 		readonly root: HTMLDivElement;
 		readonly sceneContainer;
-		readonly configContainer;
-		
-		/** */
-		protected get apex()
-		{
-			return Controller.over(this, AppContainer);
-		}
+		readonly configuratorButtonsContainer;
+		readonly configuratorContainer;
 		
 		/** */
 		protected setBladeButtons(...bladeButtons: BladeButtonView[])
 		{
-			this.configContainer.append(
+			this.configuratorButtonsContainer.append(
 				...bladeButtons.map(bb => bb.root),
 				this.moreButton.root
 			);
@@ -149,6 +153,12 @@ namespace Turf
 		private readonly moreButton = new BladeButtonView("•••", {
 			selectable: false,
 		});
+		
+		/** */
+		protected setBladeConfigurator(e: HTMLElement)
+		{
+			this.configuratorContainer.setItem(e);
+		}
 		
 		/** */
 		private async handleAdd(where: InsertPosition)
@@ -203,25 +213,48 @@ namespace Turf
 		}
 		
 		/** */
-		private closeButton()
+		protected createMediaRecord(ev: DragEvent)
 		{
-			// Close button
-			Htx.div(
-				"delete-button",
-				new Text(UI.mul),
-				UI.anchorTopRight(5, 5),
-				UI.flexCenter,
-				UI.clickable,
-				{
-					width: "40px",
-					height: "40px",
-					fontWeight: "900",
-					borderRadius: "100%",
-					backgroundColor: UI.black(0.5),
-					zIndex: "1",
-				},
-				Htx.on(UI.click, () => this.root.remove())
-			);
+			const dt = ev.dataTransfer!;
+			if (dt.files.length === 0)
+				return null;
+			
+			const file = dt.files[0];
+			const mimeType = MimeType.from(file.type);
+			if (!mimeType)
+				return null;
+			
+			const record = new MediaRecord();
+			record.blob = new Blob([file]);
+			record.name = file.name;
+			record.type = mimeType;
+			return record;
+		}
+		
+		/**
+		 * A number between -1 (fully black) and 1 (fully white) that
+		 * indicates the amount of contrast to render with.
+		 * A value of 0 removes the text contrast from the element.
+		 */
+		protected setContrast(e: HTMLElement, amount: number)
+		{
+			e.classList.remove(
+				CssClass.textContrast,
+				CssClass.textContrastDark,
+				CssClass.textContrastLight);
+			
+			e.style.removeProperty(ConstS.textContrastProperty);
+			
+			if (amount !== 0)
+			{
+				e.classList.add(
+					CssClass.textContrast,
+					amount > 0 ?
+						CssClass.textContrastDark : 
+						CssClass.textContrastLight);
+				
+				e.style.setProperty(ConstS.textContrastProperty, Math.abs(amount).toString());
+			}
 		}
 		
 		/** */

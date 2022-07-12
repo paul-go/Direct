@@ -17,10 +17,29 @@ namespace Turf
 			
 			Htx.from(this.sceneContainer)(
 				UI.flexCenter,
+				...UI.dripper(
+					Htx.div(
+						UI.dripperStyle("top"),
+						new Text("Add Content Image")
+					),
+					Htx.div(
+						UI.dripperStyle("bottom"),
+						new Text("Add Background Image")
+					),
+					Htx.on("drop", ev => this.handleMediaDrop(ev)),
+				),
+				this.backgroundsContainer = Htx.div(
+					"backgrounds-container",
+					UI.anchor()
+				),
 				Htx.div(
-					this.titleView.root,
-					this.paragraphView.root,
-					this.buttonsContainer,
+					this.contentImage = Htx.div(),
+					this.textContainer = Htx.div(
+						"text-container",
+						this.titleView.root,
+						this.paragraphView.root,
+						this.buttonsContainer,
+					)
 				)
 			);
 			
@@ -30,6 +49,13 @@ namespace Turf
 				this.originButton,
 				this.backgroundsButton,
 			);
+			
+			this.contrastButton.onSelected(() =>
+			{
+				this.renderContrastConfigurator();
+			});
+			
+			this.renderBackgrounds();
 			
 			//! Temporary
 			Htx.defer(this.root, () =>
@@ -41,10 +67,14 @@ namespace Turf
 			Saver.set(this);
 		}
 		
-		private titleView;
-		private paragraphView;
-		private buttonsContainer;
-		private buttons;
+		private readonly textContainer;
+		private readonly contentImage;
+		private readonly titleView;
+		private readonly paragraphView;
+		private readonly buttonsContainer;
+		private readonly buttons;
+		private readonly backgroundsContainer;
+		private readonly backgrounds: BackgroundRecord[] = [];
 		
 		private readonly animationButton = new BladeButtonView("Animation");
 		private readonly contrastButton = new BladeButtonView("Contrast");
@@ -63,10 +93,80 @@ namespace Turf
 		}
 		
 		/** */
+		private handleMediaDrop(ev: DragEvent)
+		{
+			const dt = ev.dataTransfer!;
+			if (dt.files.length === 0)
+				return;
+			
+			const mediaRecord = this.createMediaRecord(ev);
+			if (!mediaRecord)
+				return;
+			
+			const { y } = UI.getLayerCoords(this.sceneContainer, ev);
+			const isBackground = y > this.sceneContainer.offsetHeight / 2;
+			
+			if (isBackground)
+			{
+				const backgroundRecord = new BackgroundRecord();
+				backgroundRecord.media = mediaRecord;
+				this.backgrounds.push(backgroundRecord);
+				this.renderBackgrounds();
+			}
+			else
+			{
+				Util.clear(this.contentImage);
+				this.contentImage.append(Htx.img({
+					src: mediaRecord.getBlobUrl(),
+					display: "block",
+					margin: "0 auto 30px",
+					maxWidth: "70%",
+					maxHeight: "100px",
+				}));
+			}
+		}
+		
+		/** */
+		private renderBackgrounds()
+		{
+			Util.clear(this.backgroundsContainer);
+			
+			for (const backgroundRecord of this.backgrounds)
+			{
+				if (!backgroundRecord.media)
+					continue;
+				
+				this.backgroundsContainer.append(Htx.div(
+					UI.anchor(),
+					{
+						backgroundImage: backgroundRecord.media.getBlobCssUrl(),
+						backgroundPosition: "50% 50%",
+						backgroundSize: "cover",
+					}
+				));
+			}
+		}
+		
+		/** */
+		private renderContrastConfigurator()
+		{
+			const slider = new Slider(this.record.textContrast);
+			this.setBladeConfigurator(slider.root);
+			
+			slider.positionChangeFn = () =>
+			{
+				const amount = ((slider.position * 2) - 100) / 100;
+				this.setContrast(this.textContainer, amount);
+				this.record.textContrast = amount;
+			};
+		}
+		
+		/** */
 		save()
 		{
 			this.record.titles = this.titleView.getTitleData();
 			this.record.description = this.paragraphView.html;
+			this.record.backgrounds = this.backgrounds;
 		}
 	}
 }

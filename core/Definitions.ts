@@ -2,7 +2,8 @@
 /** */
 const enum ConstS
 {
-	homeDatabaseName = "home"
+	homeDatabaseName = "home",
+	textContrastProperty = "--text-contrast",
 }
 
 /** */
@@ -27,6 +28,9 @@ const enum CssClass
 	galleryFrameLegend = "frame-legend",
 	videoScene = "scene-video",
 	snapFooter = "snap-footer",
+	textContrast = "text-contrast",
+	textContrastDark = "text-contrast-dark",
+	textContrastLight = "text-contrast-light",
 }
 
 /** */

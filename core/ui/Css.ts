@@ -146,6 +146,26 @@ namespace Turf
 			rule("." + CssClass.proseScene + " * + P", {
 				"margin-top": "1em"
 			}),
+			
+			rule("." + CssClass.textContrast + ":before", {
+				"content": `""`,
+				"position": "absolute",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"z-index": "-1",
+				"transform-origin": "50% 50%",
+				"transform": "scaleX(3) scaleY(3.5)",
+				"background-size": "100% 100%",
+				"opacity": `var(${ConstS.textContrastProperty})`,
+			}),
+			rule("." + CssClass.textContrastDark + ":before", {
+				"background-image": Util.createCssUrl("res.blur-black.png"),
+			}),
+			rule("." + CssClass.textContrastLight + ":before", {
+				"background-image": Util.createCssUrl("res.blur-white.png"),
+			}),
 		];
 	}
 	
