@@ -138,8 +138,7 @@ namespace Turf
 		private handlePreview()
 		{
 			Saver.execute(this);
-			const apex = Controller.over(this, AppContainer);
-			const meta = apex.currentMeta;
+			const meta = AppContainer.of(this).currentMeta;
 			new PreviewView(this.record, meta);
 		}
 	}

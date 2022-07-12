@@ -9,23 +9,16 @@ namespace Turf
 		{
 			super(record);
 			
-			const dripperStyle: Htx.Style = {
-				pointerEvents: "none",
-				width: "50%",
-				...UI.flexCenter,
-			};
-			
 			Htx.from(this.sceneContainer)(
 				
 				...UI.dripper(
 					Htx.div(
-						UI.anchorLeft(),
-						dripperStyle,
+						UI.dripperStyle("left"),
 						new Text("Left"),
 					),
 					Htx.div(
 						UI.anchorRight(),
-						dripperStyle,
+						UI.dripperStyle("right"),
 						new Text("Right"),
 					),
 					Htx.on("drop", ev =>
@@ -39,7 +32,7 @@ namespace Turf
 							return;
 						
 						const isLeft = ev.offsetX < window.innerWidth / 2;
-						const ms = this.apex.currentMediaStore;
+						const ms = AppContainer.of(this).currentMediaStore;
 						const mediaObjects = imageFiles.map(file => ms.add(file));
 						const visibleImage = this.getVisibleImage();
 						

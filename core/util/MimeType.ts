@@ -41,6 +41,16 @@ namespace Turf
 			.filter(([k, v]) => typeof v === "string") as [string, string][]);
 		
 		/** */
+		export function from(mimeString: string)
+		{
+			for (const mime of mimes.values())
+				if (mime === mimeString)
+					return mime as MimeType;
+			
+			return null;
+		}
+		
+		/** */
 		export function getExtension(mimeType: MimeType)
 		{
 			for (const [ext, mime] of mimes)

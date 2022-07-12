@@ -138,6 +138,12 @@ namespace Turf
 		}
 		
 		/** */
+		getBlobCssUrl()
+		{
+			return `url(${this.getBlobUrl()})`;
+		}
+		
+		/** */
 		getHttpUrl()
 		{
 			return this.name || "unnamed-file";

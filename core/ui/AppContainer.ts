@@ -5,6 +5,12 @@ namespace Turf
 	export class AppContainer
 	{
 		/** */
+		static of(target: Element | Controller.IController)
+		{
+			return Controller.over(target, AppContainer);
+		}
+		
+		/** */
 		constructor(
 			readonly root: HTMLElement,
 			database: Back | null)

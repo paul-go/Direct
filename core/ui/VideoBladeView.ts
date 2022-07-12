@@ -21,7 +21,7 @@ namespace Turf
 							return;
 						
 						const file = dt.files[0];
-						const mediaObject = this.apex.currentMediaStore.add(file);
+						const mediaObject = AppContainer.of(this).currentMediaStore.add(file);
 						this.setMedia(mediaObject);
 					})
 				),

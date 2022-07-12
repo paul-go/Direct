@@ -263,6 +263,21 @@ namespace Turf
 		}
 		
 		/** */
+		export function dripperStyle(position: "top" | "right" | "bottom" | "left")
+		{
+			return <Htx.Style>{
+				pointerEvents: "none",
+				...UI.flexCenter,
+				...(position === "top" || position === "bottom" ? { height: "50%" } : {}),
+				...(position === "left" || position === "right" ? { width: "50%" } : {}),
+				...(position === "top" ? UI.anchorTop() : {}),
+				...(position === "right" ? UI.anchorRight() : {}),
+				...(position === "bottom" ? UI.anchorBottom() : {}),
+				...(position === "left" ? UI.anchorLeft() : {}),
+			};
+		}
+		
+		/** */
 		export async function wait(ms = 0)
 		{
 			return new Promise(r => setTimeout(r, ms));
@@ -311,6 +326,15 @@ namespace Turf
 					
 				}).observe(contingent.parentElement, { childList: true });
 			})();
+		}
+		
+		/** */
+		export function getLayerCoords(target: HTMLElement, ev: DragEvent | MouseEvent)
+		{
+			const box = target.getBoundingClientRect();
+			const x = ev.clientX - box.left;
+			const y = ev.clientY - box.top;
+			return { x, y };
 		}
 		
 		/** */

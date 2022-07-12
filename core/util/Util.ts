@@ -109,5 +109,21 @@ namespace Turf
 				forward ? nodeB : nodeA
 			];
 		}
+		
+		/**
+		 * Returns a CSS url() value which is compatible with the
+		 * testing environment.
+		 */
+		export function createCssUrl(url: string)
+		{
+			if (DEBUG && ELECTRON)
+			{
+				const path = require("path") as typeof import("path");
+				const val = path.join(__dirname, url);
+				return `url(${val})`;
+			}
+			
+			return `url(${url})`;
+		}
 	}
 }
