@@ -67,7 +67,12 @@ namespace Turf
 				"background-size": "cover",
 			}),
 			rule("." + CssClass.captionSceneForeground, {
+				"display": "flex",
+				"width": "100%",
+				"min-height": "100%",
 				"max-width": "1000px",
+				"padding": ConstN.foregroundEdgeVmin + "vmin",
+				"margin": "auto",
 			}),
 			rule("." + CssClass.galleryScene, {
 				"height": "100%",
@@ -146,7 +151,6 @@ namespace Turf
 			rule("." + CssClass.proseScene + " * + P", {
 				"margin-top": "1em"
 			}),
-			
 			rule("." + CssClass.textContrast + ":before", {
 				"content": `""`,
 				"position": "absolute",
@@ -165,6 +169,51 @@ namespace Turf
 			}),
 			rule("." + CssClass.textContrastLight + ":before", {
 				"background-image": Util.createCssUrl("res.blur-white.png"),
+			}),
+			rule("." + Origin.topLeft, {
+				"text-align": "left",
+				"align-items": "flex-start",
+				"justify-content": "flex-start",
+			}),
+			rule("." + Origin.top, {
+				"text-align": "center",
+				"align-items": "flex-start",
+				"justify-content": "center",
+			}),
+			rule("." + Origin.topRight, {
+				"text-align": "right",
+				"align-items": "flex-start",
+				"justify-content": "flex-end",
+			}),
+			rule("." + Origin.left, {
+				"text-align": "left",
+				"align-items": "center",
+				"justify-content": "flex-start",
+			}),
+			rule("." + Origin.center, {
+				"text-align": "center",
+				"align-items": "center",
+				"justify-content": "center",
+			}),
+			rule("." + Origin.right, {
+				"text-align": "right",
+				"align-items": "center",
+				"justify-content": "flex-end",
+			}),
+			rule("." + Origin.bottomLeft, {
+				"text-align": "left",
+				"align-items": "flex-end",
+				"justify-content": "flex-start",
+			}),
+			rule("." + Origin.bottom, {
+				"text-align": "center",
+				"align-items": "flex-end",
+				"justify-content": "center",
+			}),
+			rule("." + Origin.bottomRight, {
+				"text-align": "right",
+				"align-items": "flex-end",
+				"justify-content": "flex-end",
 			}),
 		];
 	}

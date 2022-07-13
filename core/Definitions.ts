@@ -7,6 +7,12 @@ const enum ConstS
 }
 
 /** */
+const enum ConstN
+{
+	foregroundEdgeVmin = 4
+}
+
+/** */
 const enum CssClass
 {
 	// Editor classes
@@ -31,6 +37,20 @@ const enum CssClass
 	textContrast = "text-contrast",
 	textContrastDark = "text-contrast-dark",
 	textContrastLight = "text-contrast-light",
+}
+
+/** */
+enum Origin
+{
+	topLeft = "origin-tl",
+	top = "origin-t",
+	topRight = "origin-tr",
+	left = "origin-l",
+	center = "origin-c",
+	right = "origin-r",
+	bottomLeft = "origin-bl",
+	bottom = "origin-b",
+	bottomRight = "origin-br",
 }
 
 /** */

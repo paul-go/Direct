@@ -100,7 +100,7 @@ namespace Cover
 			});
 		}
 		
-		blade.origin = Turf.Ninth.center;
+		blade.origin = Origin.center;
 		patch.blades.push(blade);
 		render(patch, meta);
 	}
@@ -111,15 +111,15 @@ namespace Cover
 		const { patch, meta } = setup();
 		
 		const origins = [
-			Turf.Ninth.topLeft,
-			Turf.Ninth.top,
-			Turf.Ninth.topRight,
-			Turf.Ninth.left,
-			Turf.Ninth.center,
-			Turf.Ninth.right,
-			Turf.Ninth.bottomLeft,
-			Turf.Ninth.bottom,
-			Turf.Ninth.bottomRight,
+			Origin.topLeft,
+			Origin.top,
+			Origin.topRight,
+			Origin.left,
+			Origin.center,
+			Origin.right,
+			Origin.bottomLeft,
+			Origin.bottom,
+			Origin.bottomRight,
 		];
 		
 		for (const origin of origins)
@@ -192,7 +192,7 @@ namespace Cover
 			Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
 		`;
 		
-		blade.origin = Turf.Ninth.bottom;
+		blade.origin = Origin.bottom;
 		patch.blades.push(blade);
 		render(patch, meta);
 	}

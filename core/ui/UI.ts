@@ -368,13 +368,13 @@ namespace Turf
 		{
 			const prefix = prefixes.get(enumType) || (() =>
 			{
-				const keys = Object.keys(enumType);
-				const shortest = keys.sort((a, b) => a.length < b.length ? 1 : -1)[0];
+				const values = Object.values(enumType);
+				const shortest = values.sort((a, b) => a.length < b.length ? 1 : -1)[0];
 				let prefix = "";
 				
 				for (let i = -1; ++i < shortest.length;)
 				{
-					if (!keys.every(k => k.startsWith(shortest[i])))
+					if (!values.every(k => k.startsWith(prefix + shortest[i])))
 						break;
 					
 					prefix += shortest[i];
@@ -539,20 +539,20 @@ namespace Turf
 		}
 		
 		/** */
-		export function chevron(ninth: Ninth, ...params: Htx.Param[])
+		export function chevron(origin: Origin, ...params: Htx.Param[])
 		{
 			const b = { borderLeftWidth: "0", borderTopWidth: "0" };
 			const r = (deg: number) => <Htx.Style>{ transform: `rotate(${deg}deg)` };
 			
 			const css: Htx.Style = 
-				ninth === Ninth.topLeft ? { borderRightWidth: "0", borderBottomWidth: "0" } :
-				ninth === Ninth.topRight ? { borderLeftWidth: "0", borderBottomWidth: "0" } :
-				ninth === Ninth.bottomLeft ? { borderRightWidth: "0", borderTopWidth: "0" } :
-				ninth === Ninth.bottomRight ? b :
-				ninth === Ninth.top ? { ...b, ...r(225) } :
-				ninth === Ninth.right ? { ...b, ...r(325) } :
-				ninth === Ninth.bottom ? { ...b, ...r(45) } :
-				ninth === Ninth.left ? { ...b, ...r(135) } : {};
+				origin === Origin.topLeft ? { borderRightWidth: "0", borderBottomWidth: "0" } :
+				origin === Origin.topRight ? { borderLeftWidth: "0", borderBottomWidth: "0" } :
+				origin === Origin.bottomLeft ? { borderRightWidth: "0", borderTopWidth: "0" } :
+				origin === Origin.bottomRight ? b :
+				origin === Origin.top ? { ...b, ...r(225) } :
+				origin === Origin.right ? { ...b, ...r(325) } :
+				origin === Origin.bottom ? { ...b, ...r(45) } :
+				origin === Origin.left ? { ...b, ...r(135) } : {};
 			
 			return Htx.div(
 				"chevron",

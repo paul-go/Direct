@@ -2,13 +2,13 @@
 namespace Turf
 {
 	/** */
-	export class NinthPicker
+	export class OriginPicker
 	{
 		/** */
 		constructor(...params: Htx.Param[])
 		{
-			const renderSlice = (ninth: Ninth) => Htx.div(
-				"ninth-picker",
+			const renderSlice = (origin: Origin) => Htx.div(
+				"origin-picker",
 				UI.clickable,
 				{
 					width: "33.333%",
@@ -17,28 +17,28 @@ namespace Turf
 					borderRadius: UI.borderRadius.default,
 				},
 				Htx.css(`:hover { background-color: ${UI.white(0.1)}; }`),
-				Htx.on(UI.click, async () =>
+				Htx.on(UI.click, () =>
 				{
-					await UI.removeWithFade(this.root);
-					this.selectedFn(ninth);
+					this.selectedFn(origin);
+					UI.removeWithFade(this.root);
 				}),
 				Htx.div(
 					UI.anchorCenter("30px"),
-					UI.chevron(ninth),
+					UI.chevron(origin),
 				)
 			);
 			
 			this.root = Htx.div(
 				UI.anchor(),
-				renderSlice(Ninth.topLeft),
-				renderSlice(Ninth.top),
-				renderSlice(Ninth.topRight),
-				renderSlice(Ninth.left),
-				renderSlice(Ninth.center),
-				renderSlice(Ninth.right),
-				renderSlice(Ninth.bottomLeft),
-				renderSlice(Ninth.bottom),
-				renderSlice(Ninth.bottomRight),
+				renderSlice(Origin.topLeft),
+				renderSlice(Origin.top),
+				renderSlice(Origin.topRight),
+				renderSlice(Origin.left),
+				renderSlice(Origin.center),
+				renderSlice(Origin.right),
+				renderSlice(Origin.bottomLeft),
+				renderSlice(Origin.bottom),
+				renderSlice(Origin.bottomRight),
 				...params,
 				
 				() => this.root.focus(),
@@ -49,11 +49,11 @@ namespace Turf
 		readonly root;
 		
 		/** */
-		setSelectedFn(fn: (ninth: Ninth | null) => void)
+		setSelectedFn(fn: (origin: Origin | null) => void)
 		{
 			this.selectedFn = fn;
 		}
-		private selectedFn = (ninth: Ninth | null) => {};
+		private selectedFn = (origin: Origin | null) => {};
 		
 		/** */
 		remove()

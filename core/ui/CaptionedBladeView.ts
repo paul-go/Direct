@@ -16,7 +16,6 @@ namespace Turf
 			this.buttons = new Controller.Array(this.buttonsContainer, CaptionedButton);
 			
 			Htx.from(this.sceneContainer)(
-				UI.flexCenter,
 				...UI.dripper(
 					Htx.div(
 						UI.dripperStyle("top"),
@@ -32,7 +31,9 @@ namespace Turf
 					"backgrounds-container",
 					UI.anchor()
 				),
-				Htx.div(
+				this.foregroundContainer = Htx.div(
+					CssClass.captionSceneForeground,
+					this.record.origin,
 					this.contentImageContainer = Htx.div(),
 					this.textContainer = Htx.div(
 						"text-container",
@@ -65,6 +66,7 @@ namespace Turf
 			Saver.set(this);
 		}
 		
+		private readonly foregroundContainer;
 		private readonly textContainer;
 		private readonly contentImageContainer;
 		private contentImage: HTMLImageElement | null = null;
@@ -77,7 +79,7 @@ namespace Turf
 		
 		private sizePicker: ElementPicker | null = null;
 		private weightPicker: ElementPicker | null = null;
-		private originPicker: NinthPicker | null = null;
+		private originPicker: OriginPicker | null = null;
 		
 		private readonly animationButton = new BladeButtonView("Animation");
 		private readonly sizeButton = new BladeButtonView("Size");
@@ -250,7 +252,7 @@ namespace Turf
 						return;
 					
 					const titleData = titleDatas[idx];
-					slider.max = 30;
+					slider.max = 50;
 					slider.progress = titleData.size;
 				}
 			};
@@ -376,15 +378,18 @@ namespace Turf
 		/** */
 		private renderOriginConfigurator()
 		{
-			this.originPicker = new NinthPicker({
+			this.originPicker = new OriginPicker({
 				backdropFilter: "blur(5px)",
 				backgroundColor: UI.black(0.333),
 			});
 			
-			this.originPicker.setSelectedFn(ninth =>
+			this.originPicker.setSelectedFn(origin =>
 			{
-				if (ninth !== null)
-					this.record.origin = ninth;
+				if (origin !== null)
+				{
+					this.record.origin = origin;
+					UI.toggleEnumClass(this.foregroundContainer, Origin, origin);
+				}
 				
 				this.originButton.selected = false;
 				this.handleSelectionChange();

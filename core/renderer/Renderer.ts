@@ -124,17 +124,10 @@ namespace Turf
 	function renderCaptionedBlade(bun: Bundle<CaptionedBladeRecord>)
 	{
 		const blade = bun.blade;
-		const out: Htx.Param[] = [CssClass.captionScene];
-		
-		out.push({ 
-			justifyContent:
-				blade.origin % 3 === 1 ? "flex-start" :
-				blade.origin % 3 === 2 ? "center" :
-				blade.origin % 3 === 0 ? "flex-end" : "",
-			alignItems:
-				blade.origin < 4 ? "flex-start" :
-				blade.origin < 7 ? "center" : "flex-end",
-		});
+		const out: Htx.Param[] = [
+			CssClass.captionScene,
+			blade.origin
+		];
 		
 		// Background
 		out.push(...blade.backgrounds.map(bg =>
@@ -173,10 +166,6 @@ namespace Turf
 			const fg = Htx.div(
 				CssClass.captionSceneForeground,
 				{
-					textAlign: 
-						blade.origin % 3 === 1 ? "left" :
-						blade.origin % 3 === 2 ? "center" :
-						blade.origin % 3 === 0 ? "right" : "",
 					data: {
 						[DataAttributes.transition]: bun.useAnimation(blade.effect)
 					},

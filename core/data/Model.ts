@@ -55,7 +55,7 @@ namespace Turf
 	{
 		textContrast = 50;
 		effect = Effects.none.name;
-		origin = Ninth.center;
+		origin = Origin.center;
 		contentImage = Back.reference(MediaRecord);
 		contentImageWidth = 50;
 		titles: ITitle[] = [];
@@ -170,19 +170,5 @@ namespace Turf
 		zoomBlur,
 		zoomExpand,
 		zoomBlurExpand,
-	}
-	
-	/** */
-	export const enum Ninth
-	{
-		topLeft = 1,
-		top = 2,
-		topRight = 3,
-		left = 4,
-		center = 5,
-		right = 6,
-		bottomLeft = 7,
-		bottom = 8,
-		bottomRight = 9
 	}
 }

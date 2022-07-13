@@ -98,10 +98,10 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverNinthPicker()
+	export async function coverOriginPicker()
 	{
 		Turf.appendCss();
-		const np = new Turf.NinthPicker();
+		const np = new Turf.OriginPicker();
 		document.body.append(np.root);
 	}
 }
