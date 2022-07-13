@@ -68,6 +68,7 @@ namespace Turf
 					)
 				),
 				UI.chevron(
+					Ninth.left,
 					UI.clickable,
 					UI.anchorTopLeft(30),
 					Htx.on("click", () => this.handleBack())

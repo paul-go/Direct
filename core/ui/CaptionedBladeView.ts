@@ -74,8 +74,10 @@ namespace Turf
 		private readonly buttons;
 		private readonly backgroundsContainer;
 		private readonly backgrounds: BackgroundRecord[] = [];
+		
 		private sizePicker: ElementPicker | null = null;
 		private weightPicker: ElementPicker | null = null;
+		private originPicker: NinthPicker | null = null;
 		
 		private readonly animationButton = new BladeButtonView("Animation");
 		private readonly sizeButton = new BladeButtonView("Size");
@@ -169,10 +171,15 @@ namespace Turf
 			if (this.contrastButton.selected)
 				this.renderContrastConfigurator();
 			
-			if (!this.bladeButtons.some(bb => bb.selected))
+			if (this.originButton.selected)
 			{
+				this.renderOriginConfigurator();
 				this.setBladeConfigurator(null);
 			}
+			else this.originPicker?.remove();
+			
+			if (!this.bladeButtons.some(bb => bb.selected))
+				this.setBladeConfigurator(null);
 		}
 		
 		/** */
@@ -346,6 +353,7 @@ namespace Turf
 				const weight = Math.round(slider.progress);
 				titleData.weight = weight;
 				this.titleView.setFontWeight(idx, weight);
+				this.record.titles = titleDatas;
 			};
 		}
 		
@@ -363,6 +371,26 @@ namespace Turf
 				this.setContrast(this.textContainer, amount);
 				this.record.textContrast = slider.progress;
 			};
+		}
+		
+		/** */
+		private renderOriginConfigurator()
+		{
+			this.originPicker = new NinthPicker({
+				backdropFilter: "blur(5px)",
+				backgroundColor: UI.black(0.333),
+			});
+			
+			this.originPicker.setSelectedFn(ninth =>
+			{
+				if (ninth !== null)
+					this.record.origin = ninth;
+				
+				this.originButton.selected = false;
+				this.handleSelectionChange();
+			});
+			
+			this.sceneContainer.append(this.originPicker.root);
 		}
 		
 		/** */

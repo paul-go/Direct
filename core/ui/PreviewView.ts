@@ -18,12 +18,7 @@ namespace Turf
 					borderRadius: UI.borderRadius.large
 				},
 				
-				Htx.on("keydown", ev =>
-				{
-					if (ev.key === "Escape")
-						this.root.remove();
-					
-				}, { capture: true }),
+				...UI.removeOnEscape(),
 				
 				this.previewRoot = Htx.div(
 					"preview-root",

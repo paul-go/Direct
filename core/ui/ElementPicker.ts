@@ -134,16 +134,9 @@ namespace Turf
 		private _removedFn = () => {};
 		
 		/** */
-		async remove()
+		remove()
 		{
-			const s = this.overlay.style;
-			s.opacity = "1";
-			s.transitionDuration = "0.2s";
-			s.transitionProperty = "opacity";
-			await UI.wait();
-			s.opacity = "0";
-			await UI.waitTransitionEnd(this.overlay);
-			this.overlay.remove();
+			return UI.removeWithFade(this.overlay);
 		}
 		
 		/** */

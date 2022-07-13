@@ -96,4 +96,12 @@ namespace Cover
 		picker.registerElement(element2);
 		picker.registerElement(element3);
 	}
+	
+	/** */
+	export async function coverNinthPicker()
+	{
+		Turf.appendCss();
+		const np = new Turf.NinthPicker();
+		document.body.append(np.root);
+	}
 }

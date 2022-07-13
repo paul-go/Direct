@@ -245,8 +245,8 @@ namespace Turf
 		export function specificWeight(weight: number): Htx.Style
 		{
 			return {
-				fontWeight: (Math.round(weight / 100) * 100).toString(),
-				fontVariationSettings: "'wght' " + weight,
+				fontWeight: weight.toString(),
+				...(weight % 100 === 0 ? {} : { fontVariationSettings: "'wght' " + weight })
 			};
 		}
 		
@@ -326,6 +326,38 @@ namespace Turf
 					
 				}).observe(contingent.parentElement, { childList: true });
 			})();
+		}
+		
+		/** */
+		export async function removeWithFade(e: HTMLElement)
+		{
+			const s = e.style;
+			s.opacity = "1";
+			s.transitionDuration = "0.2s";
+			s.transitionProperty = "opacity";
+			await UI.wait();
+			s.opacity = "0";
+			await UI.waitTransitionEnd(e);
+			e.remove();
+		}
+		
+		/** */
+		export function removeOnEscape(removedFn?: () => void): Htx.Param[]
+		{
+			return [
+				{
+					tabIndex: 0,
+					outline: "0",
+				},
+				Htx.on("keydown", async ev =>
+				{
+					if (ev.key === "Escape")
+					{
+						await UI.removeWithFade(ev.currentTarget as HTMLElement);
+						removedFn?.();
+					}
+				}, { capture: true })
+			];
 		}
 		
 		/** */
@@ -471,18 +503,30 @@ namespace Turf
 		}
 		
 		/** */
-		export function chevron(...params: Htx.Param[])
+		export function chevron(ninth: Ninth, ...params: Htx.Param[])
 		{
+			const b = { borderLeftWidth: "0", borderTopWidth: "0" };
+			const r = (deg: number) => <Htx.Style>{ transform: `rotate(${deg}deg)` };
+			
+			const css: Htx.Style = 
+				ninth === Ninth.topLeft ? { borderRightWidth: "0", borderBottomWidth: "0" } :
+				ninth === Ninth.topRight ? { borderLeftWidth: "0", borderBottomWidth: "0" } :
+				ninth === Ninth.bottomLeft ? { borderRightWidth: "0", borderTopWidth: "0" } :
+				ninth === Ninth.bottomRight ? b :
+				ninth === Ninth.top ? { ...b, ...r(225) } :
+				ninth === Ninth.right ? { ...b, ...r(325) } :
+				ninth === Ninth.bottom ? { ...b, ...r(45) } :
+				ninth === Ninth.left ? { ...b, ...r(135) } : {};
+			
 			return Htx.div(
+				"chevron",
 				{
 					width: "25px",
 					height: "25px",
 					border: UI.lineIconThickness + "px solid white",
-					borderTopWidth: "0",
-					borderRightWidth: "0",
 					transformOrigin: "50% 50%",
-					transform: "rotate(45deg)"
 				},
+				css,
 				...params,
 			);
 		}

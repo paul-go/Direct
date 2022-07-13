@@ -163,13 +163,9 @@ namespace Turf
 			const tb = this.getTextBox(index);
 			if (tb)
 			{
-				const last = tb.root.style.fontFeatureSettings.split(" ").at(-1) || "";
-				if (last)
-				{
-					const n = Number(last);
-					if (n)
-						return n;
-				}
+				const n = Number(tb.root.style.fontWeight);
+				if (n)
+					return n;
 			}
 			
 			return 400;
