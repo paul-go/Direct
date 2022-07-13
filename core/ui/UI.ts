@@ -361,6 +361,42 @@ namespace Turf
 		}
 		
 		/** */
+		export function toggleEnumClass<T extends ObjectLiteral<string, string>>(
+			e: HTMLElement,
+			enumType: T,
+			enumValue: string)
+		{
+			const prefix = prefixes.get(enumType) || (() =>
+			{
+				const keys = Object.keys(enumType);
+				const shortest = keys.sort((a, b) => a.length < b.length ? 1 : -1)[0];
+				let prefix = "";
+				
+				for (let i = -1; ++i < shortest.length;)
+				{
+					if (!keys.every(k => k.startsWith(shortest[i])))
+						break;
+					
+					prefix += shortest[i];
+				}
+				
+				if (prefix === "")
+					throw "Cannot flip this class. All members of enum need a common prefix.";
+				
+				prefixes.set(enumType, prefix);
+				return prefix;
+			})();
+			
+			for (const cls of Array.from(e.classList))
+				if (cls.startsWith(prefix))
+					e.classList.remove(cls);
+			
+			e.classList.add(enumValue);
+		}
+		
+		const prefixes = new Map<ObjectLiteral<string, string>, string>();
+		
+		/** */
 		export function getLayerCoords(target: HTMLElement, ev: DragEvent | MouseEvent)
 		{
 			const box = target.getBoundingClientRect();
