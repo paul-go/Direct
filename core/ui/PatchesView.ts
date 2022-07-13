@@ -44,7 +44,11 @@ namespace Turf
 						width: "30px",
 						height: "30px",
 					}
-				)
+				),
+				Htx.on(UI.click, () =>
+				{
+					AppContainer.of(this).root.append(new SettingsView().root);
+				})
 			);
 		}
 		

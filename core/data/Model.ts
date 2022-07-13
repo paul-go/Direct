@@ -6,7 +6,7 @@ namespace Turf
 	export class MetaRecord extends Record
 	{
 		user = {} as IUser;
-		colorScheme: UI.IColor[] = [];
+		colorScheme = ColorScheme.default.colors;
 		font = "";
 		htmlHeader = "";
 		htmlFooter = "";

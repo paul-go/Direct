@@ -45,7 +45,7 @@ namespace Turf
 		private _currentUser: IUser | null = null;
 		
 		/** */
-		get currentMeta()
+		get meta()
 		{
 			if (this._currentMeta)
 				return this._currentMeta;

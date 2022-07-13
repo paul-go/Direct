@@ -61,6 +61,11 @@ namespace Turf
 		} as const;
 		
 		/** */
+		export const shadow = {
+			window: { boxShadow: `0 20px 70px 20px ` + UI.black(0.5) }
+		};
+		
+		/** */
 		export const clickable: Htx.Style = {
 			userSelect: "none",
 			cursor: "pointer"
@@ -356,8 +361,23 @@ namespace Turf
 						await UI.removeWithFade(ev.currentTarget as HTMLElement);
 						removedFn?.();
 					}
-				}, { capture: true })
+				}, { capture: true }),
+				e => e.focus()
 			];
+		}
+		
+		/** */
+		export function removeOnClick(removedFn?: () => void)
+		{
+			return Htx.on(UI.click, async ev =>
+			{
+				if (ev.target === ev.currentTarget)
+				{
+					await UI.removeWithFade(ev.currentTarget as HTMLElement);
+					removedFn?.();
+				}
+				
+			}, { capture: true });
 		}
 		
 		/** */

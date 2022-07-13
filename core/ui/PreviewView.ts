@@ -30,7 +30,6 @@ namespace Turf
 					},
 					() =>
 					{
-						this.root.focus();
 						Util.clear(this.previewRoot);
 						const renderRoot = Turf.renderPatchPreview(patch, meta);
 						this.previewRoot.append(renderRoot);

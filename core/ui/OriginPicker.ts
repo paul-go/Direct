@@ -41,7 +41,6 @@ namespace Turf
 				renderSlice(Origin.bottomRight),
 				...params,
 				
-				() => this.root.focus(),
 				...UI.removeOnEscape(() => this.selectedFn(null))
 			);
 		}

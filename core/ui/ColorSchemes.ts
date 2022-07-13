@@ -51,6 +51,21 @@ namespace Turf
 		] as const;
 		
 		/** */
+		static readonly default = this.all[0];
+		
+		/** */
+		static fromJson(schemeJson: readonly UI.IColor[])
+		{
+			const schemeStr = JSON.stringify(schemeJson);
+			
+			for (const scheme of this.all)
+				if (JSON.stringify(scheme.colors) === schemeStr)
+					return scheme;
+			
+			return null;
+		}
+		
+		/** */
 		constructor(
 			readonly name: string,
 			...colors: UI.IColor[])
@@ -59,6 +74,6 @@ namespace Turf
 		}
 		
 		/** */
-		readonly colors: UI.IColor[];
+		readonly colors: readonly UI.IColor[];
 	}
 }

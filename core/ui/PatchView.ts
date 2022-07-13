@@ -139,7 +139,7 @@ namespace Turf
 		private handlePreview()
 		{
 			Saver.execute(this);
-			const meta = AppContainer.of(this).currentMeta;
+			const meta = AppContainer.of(this).meta;
 			new PreviewView(this.record, meta);
 		}
 	}
