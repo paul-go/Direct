@@ -32,6 +32,10 @@ namespace Turf
 			this.textBox.html = record.html;
 			
 			this.setBladeButtons(
+				() =>
+				{
+					
+				},
 				/*
 				this.boldButton,
 				this.linkButton,

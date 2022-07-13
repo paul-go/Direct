@@ -49,6 +49,10 @@ namespace Turf
 			);
 			
 			this.setBladeButtons(
+				() =>
+				{
+					
+				},
 				this.coverButton,
 				this.containButton,
 			);

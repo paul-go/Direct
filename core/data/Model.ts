@@ -53,11 +53,14 @@ namespace Turf
 	/** */
 	export class CaptionedBladeRecord extends BladeRecord
 	{
-		textContrast = 0;
+		textContrast = 50;
 		effect = Effects.none.name;
 		origin = Ninth.center;
+		contentImage = Back.reference(MediaRecord);
+		contentImageWidth = 50;
 		titles: ITitle[] = [];
-		description: string = "";
+		description = "";
+		descriptionSize = 3;
 		backgrounds = Back.array(BackgroundRecord);
 	}
 	

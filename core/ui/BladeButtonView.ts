@@ -44,9 +44,8 @@ namespace Turf
 					const wasSelected = this.selected;
 					this.selected = this.isUnselectable ? !this.selected : true;
 					
-					if (this.selected && !wasSelected)
-						for (const fn of this.selectedHandlers)
-							fn();
+					if (this.selected !== wasSelected)
+						this.selectedChangedFn();
 				});
 			}
 			
@@ -77,7 +76,6 @@ namespace Turf
 		set visible(visible: boolean)
 		{
 			this.root.style.display = visible ? "block" : "none";
-			this.fadeIndicator(visible);
 		}
 		
 		/** */
@@ -91,7 +89,6 @@ namespace Turf
 			const s = this.root.style;
 			s.pointerEvents = value ? "all" : "none";
 			s.opacity = value ? "1" : "0.33";
-			this.fadeIndicator(value);
 		}
 		private _enabled = true;
 		
@@ -113,15 +110,18 @@ namespace Turf
 			
 			const indicator = this.getIndicator();
 			
-			if (!wasSelected && value)
+			if (wasSelected)
+			{
+				indicator.style.opacity = "0";
+			}
+			else
 			{
 				const left = this.isIndependent ? 0 : this.root.offsetLeft;
 				const width = this.root.offsetWidth;
 				indicator.style.left = left + "px";
 				indicator.style.width = width + "px";
+				indicator.style.opacity = "1";
 			}
-			
-			this.fadeIndicator(value);
 		}
 		private _selected = false;
 		
@@ -144,13 +144,6 @@ namespace Turf
 			}
 			
 			return this._indicator;
-		}
-		
-		/** */
-		private fadeIndicator(value: boolean)
-		{
-			if (this._indicator && this._selected)
-				this._indicator.style.opacity = value ? "1" : "0";
 		}
 		
 		/** */
@@ -179,11 +172,11 @@ namespace Turf
 		}
 		
 		/** */
-		onSelected(fn: () => void)
+		setSelectedChangedFn(fn: () => void)
 		{
-			this.selectedHandlers.push(fn);
+			this.selectedChangedFn = fn;
 		}
-		private readonly selectedHandlers: (() => void)[] = [];
+		private selectedChangedFn = () => {};
 	}
 	
 	/** */

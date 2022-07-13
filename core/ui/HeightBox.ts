@@ -24,11 +24,13 @@ namespace Turf
 		private currentItem: HTMLElement | null = null;
 		
 		/** */
-		async setItem(e: HTMLElement)
+		async setItem(e: HTMLElement | null)
 		{
 			this.currentItem?.remove();
 			this.currentItem = e;
-			this.root.append(e);
+			
+			if (e)
+				this.root.append(e);
 			
 			/*
 			const s = this.root.style;

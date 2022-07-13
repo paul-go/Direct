@@ -5,9 +5,39 @@ namespace Cover
 	export function coverSlider()
 	{
 		Turf.appendCss();
-		const slider = new Turf.Slider();
-		document.body.append(slider.root);
+		
+		const slider1 = new Turf.Slider();
+		
+		const slider2 = new Turf.Slider();
+		slider2.max = 30;
+		slider2.progress = 10;
+		
+		const slider3 = new Turf.Slider();
+		slider3.max = 1000;
+		slider3.progress = 100;
+		
+		const slider4 = new Turf.Slider();
+		slider4.max = 10;
+		slider4.progress = 5;
+		
 		document.body.style.padding = "30px";
+		document.body.append(
+			slider1.root,
+			Htx.br(),
+			slider2.root,
+			Htx.br(),
+			slider3.root,
+			Htx.br(),
+			slider4.root,
+			Htx.br(),
+			Htx.a(
+				Htx.on("click", () =>
+				{
+					slider4.max = 60;
+				}),
+				new Text("Change")
+			)
+		);
 	}
 	
 	/** */

@@ -90,12 +90,15 @@ namespace Turf
 				this.configuratorButtonsContainer = Htx.div(
 					"config-buttons-container",
 					{
-						display: "flex",
-						justifyContent: "center",
-						paddingBottom: "20px",
-						color: "white",
 						width: "max-content",
+						maxWidth: "100%",
 						margin: "auto",
+						paddingBottom: "20px",
+						overflowX: "auto",
+						overflowY: "scroll",
+						color: "white",
+						textAlign: "center",
+						whiteSpace: "nowrap",
 					}
 				),
 				
@@ -142,20 +145,37 @@ namespace Turf
 		readonly configuratorContainer;
 		
 		/** */
-		protected setBladeButtons(...bladeButtons: BladeButtonView[])
+		protected setBladeButtons(
+			changedFn: () => void,
+			...bladeButtons: BladeButtonView[])
 		{
+			this._bladeButtons = bladeButtons;
+			
+			for (const bb of bladeButtons)
+			{
+				this.configuratorButtonsContainer.append(bb.root);
+				bb.setSelectedChangedFn(changedFn);
+			}	
+			
 			this.configuratorButtonsContainer.append(
 				...bladeButtons.map(bb => bb.root),
 				this.moreButton.root
 			);
 		}
 		
+		/** */
+		get bladeButtons(): readonly BladeButtonView[]
+		{
+			return this._bladeButtons;
+		}
+		private _bladeButtons: BladeButtonView[] = [];
+		
 		private readonly moreButton = new BladeButtonView("•••", {
 			selectable: false,
 		});
 		
 		/** */
-		protected setBladeConfigurator(e: HTMLElement)
+		protected setBladeConfigurator(e: HTMLElement | null)
 		{
 			this.configuratorContainer.setItem(e);
 		}

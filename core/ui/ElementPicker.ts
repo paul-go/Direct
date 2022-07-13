@@ -10,7 +10,6 @@ namespace Turf
 			this.overlay = Htx.div(
 				UI.anchor(),
 				{
-					backgroundColor: UI.black(0.2),
 					zIndex: "9"
 				},
 				Htx.on("pointerdown", ev =>
@@ -69,10 +68,10 @@ namespace Turf
 				return null;
 			})();
 			
-			if (!pickedElement)
-				return;
-			
-			this.pickElement(pickedElement);
+			if (pickedElement)
+				this.pickElement(pickedElement);
+			else
+				this.innerRemove();
 		}
 		
 		/** */
@@ -80,7 +79,7 @@ namespace Turf
 		{
 			this._pickedElement = e;
 			await this.updateIndicator("transition");
-			this.pickChangedFn();
+			this._pickChangedFn();
 		}
 		
 		/** */
@@ -121,7 +120,18 @@ namespace Turf
 		private _pickedElement: HTMLElement | null = null;
 		
 		/** */
-		pickChangedFn = () => {};
+		setPickChangedFn(fn: () => void)
+		{
+			this._pickChangedFn = fn;
+		}
+		private _pickChangedFn = () => {};
+		
+		/** */
+		setRemovedFn(fn: () => void)
+		{
+			this._removedFn = fn;
+		}
+		private _removedFn = () => {};
 		
 		/** */
 		async remove()
@@ -134,6 +144,13 @@ namespace Turf
 			s.opacity = "0";
 			await UI.waitTransitionEnd(this.overlay);
 			this.overlay.remove();
+		}
+		
+		/** */
+		private async innerRemove()
+		{
+			await this.remove();
+			this._removedFn();
 		}
 	}
 	

@@ -33,7 +33,7 @@ namespace Turf
 					UI.anchor()
 				),
 				Htx.div(
-					this.contentImage = Htx.div(),
+					this.contentImageContainer = Htx.div(),
 					this.textContainer = Htx.div(
 						"text-container",
 						this.titleView.root,
@@ -44,16 +44,14 @@ namespace Turf
 			);
 			
 			this.setBladeButtons(
+				() => this.handleSelectionChange(),
 				this.animationButton,
+				this.sizeButton,
+				this.weightButton,
 				this.contrastButton,
 				this.originButton,
 				this.backgroundsButton,
 			);
-			
-			this.contrastButton.onSelected(() =>
-			{
-				this.renderContrastConfigurator();
-			});
 			
 			this.renderBackgrounds();
 			
@@ -68,15 +66,20 @@ namespace Turf
 		}
 		
 		private readonly textContainer;
-		private readonly contentImage;
+		private readonly contentImageContainer;
+		private contentImage: HTMLImageElement | null = null;
 		private readonly titleView;
 		private readonly paragraphView;
 		private readonly buttonsContainer;
 		private readonly buttons;
 		private readonly backgroundsContainer;
 		private readonly backgrounds: BackgroundRecord[] = [];
+		private sizePicker: ElementPicker | null = null;
+		private weightPicker: ElementPicker | null = null;
 		
 		private readonly animationButton = new BladeButtonView("Animation");
+		private readonly sizeButton = new BladeButtonView("Size");
+		private readonly weightButton = new BladeButtonView("Bold");
 		private readonly contrastButton = new BladeButtonView("Contrast");
 		private readonly originButton = new BladeButtonView("Position");
 		private readonly backgroundsButton = new BladeButtonView("Backgrounds");
@@ -115,14 +118,17 @@ namespace Turf
 			}
 			else
 			{
-				Util.clear(this.contentImage);
-				this.contentImage.append(Htx.img({
+				Util.clear(this.contentImageContainer);
+				
+				this.contentImage = Htx.img({
 					src: mediaRecord.getBlobUrl(),
 					display: "block",
 					margin: "0 auto 30px",
 					maxWidth: "70%",
 					maxHeight: "100px",
-				}));
+				});
+				
+				this.contentImageContainer.append(this.contentImage);
 			}
 		}
 		
@@ -148,16 +154,214 @@ namespace Turf
 		}
 		
 		/** */
-		private renderContrastConfigurator()
+		private handleSelectionChange()
 		{
-			const slider = new Slider(this.record.textContrast);
+			if (this.sizeButton.selected)
+				this.renderSizeConfigurator();
+			else
+				this.sizePicker?.remove();
+			
+			if (this.weightButton.selected)
+				this.renderWeightConfigurator();
+			else
+				this.weightPicker?.remove();
+			
+			if (this.contrastButton.selected)
+				this.renderContrastConfigurator();
+			
+			if (!this.bladeButtons.some(bb => bb.selected))
+			{
+				this.setBladeConfigurator(null);
+			}
+		}
+		
+		/** */
+		private renderSizeConfigurator()
+		{
+			type TPickable = 
+				HTMLImageElement |
+				ITitle |
+				CaptionedParagraphView;
+			
+			const picker = this.sizePicker = new ElementPicker(this.sceneContainer);
+			const pickMap = new Map<HTMLElement, TPickable>();
+			
+			picker.setRemovedFn(() =>
+			{
+				this.sizeButton.selected = false;
+				this.handleSelectionChange();
+			});
+			
+			if (this.contentImage)
+			{
+				picker.registerElement(this.contentImage);
+				pickMap.set(this.contentImage, this.contentImage);
+			}
+			
+			const titleTextBoxes = this.titleView.getTextBoxes();
+			const titleDatas = this.titleView.getTitleData();
+			
+			for (let i = -1; ++i < titleDatas.length;)
+			{
+				const e = titleTextBoxes[i].editableElement;
+				picker.registerElement(e);
+				pickMap.set(e, titleDatas[i]);
+			}
+			
+			if (this.paragraphView.html)
+			{
+				const e = this.paragraphView.root;
+				picker.registerElement(e);
+				pickMap.set(e, this.paragraphView);
+			}
+			
+			const slider = new Slider();
 			this.setBladeConfigurator(slider.root);
 			
-			slider.positionChangeFn = () =>
+			const updatePick = () =>
 			{
-				const amount = ((slider.position * 2) - 100) / 100;
+				if (!picker.pickedElement)
+					return;
+				
+				const pickable = pickMap.get(picker.pickedElement);
+				if (!pickable)
+					return;
+				
+				if (pickable instanceof HTMLImageElement)
+				{
+					slider.progress = this.record.descriptionSize;
+				}
+				else if (pickable instanceof CaptionedParagraphView)
+				{
+					slider.progress = this.record.descriptionSize;
+					slider.max = 10;
+				}
+				else
+				{
+					const idx = titleDatas.indexOf(pickable);
+					if (idx < 0)
+						return;
+					
+					const titleData = titleDatas[idx];
+					slider.max = 30;
+					slider.progress = titleData.size;
+				}
+			};
+			
+			picker.setPickChangedFn(updatePick);
+			updatePick();
+			
+			slider.progressChangeFn = () =>
+			{
+				if (!picker.pickedElement)
+					return;
+				
+				const pickable = pickMap.get(picker.pickedElement);
+				if (!pickable)
+					return;
+				
+				if (pickable instanceof HTMLImageElement)
+				{
+					this.contentImage!.style.width = UI.vsize(slider.progress);
+					this.record.contentImageWidth = slider.progress;
+				}
+				else if (pickable instanceof CaptionedParagraphView)
+				{
+					this.paragraphView.fontSize = slider.progress;
+					this.record.descriptionSize = slider.progress;
+				}
+				else
+				{
+					const idx = titleDatas.indexOf(pickable);
+					if (idx < 0)
+						return;
+					
+					const titleData = titleDatas[idx];
+					titleData.size = slider.progress;
+					this.titleView.setFontSize(idx, titleData.size);
+				}
+			};
+		}
+		
+		/** */
+		private renderWeightConfigurator()
+		{
+			const picker = this.weightPicker = new ElementPicker(this.sceneContainer);
+			const pickMap = new Map<HTMLElement, ITitle>();
+			
+			picker.setRemovedFn(() =>
+			{
+				this.weightButton.selected = false;
+				this.handleSelectionChange();
+			});
+			
+			const titleTextBoxes = this.titleView.getTextBoxes();
+			const titleDatas = this.titleView.getTitleData();
+			
+			for (let i = -1; ++i < titleDatas.length;)
+			{
+				const e = titleTextBoxes[i].editableElement;
+				picker.registerElement(e);
+				pickMap.set(e, titleDatas[i]);
+			}
+			
+			const slider = new Slider();
+			this.setBladeConfigurator(slider.root);
+			
+			const updatePick = () =>
+			{
+				if (!picker.pickedElement)
+					return;
+				
+				const pickable = pickMap.get(picker.pickedElement);
+				if (!pickable)
+					return;
+				
+				const idx = titleDatas.indexOf(pickable);
+				if (idx < 0)
+					return;
+				
+				const titleData = titleDatas[idx];
+				slider.max = 900;
+				slider.progress = titleData.weight;
+			};
+			
+			picker.setPickChangedFn(updatePick);
+			updatePick();
+			
+			slider.progressChangeFn = () =>
+			{
+				if (!picker.pickedElement)
+					return;
+				
+				const pickable = pickMap.get(picker.pickedElement);
+				if (!pickable)
+					return;
+				
+				const idx = titleDatas.indexOf(pickable);
+				if (idx < 0)
+					return;
+				
+				const titleData = titleDatas[idx];
+				const weight = Math.round(slider.progress);
+				titleData.weight = weight;
+				this.titleView.setFontWeight(idx, weight);
+			};
+		}
+		
+		/** */
+		private renderContrastConfigurator()
+		{
+			const slider = new Slider();
+			slider.max = 100;
+			slider.progress = this.record.textContrast;
+			this.setBladeConfigurator(slider.root);
+			
+			slider.progressChangeFn = () =>
+			{
+				const amount = ((slider.progress * 2) - 100) / 100;
 				this.setContrast(this.textContainer, amount);
-				this.record.textContrast = amount;
+				this.record.textContrast = slider.progress;
 			};
 		}
 		

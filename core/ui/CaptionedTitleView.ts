@@ -137,6 +137,12 @@ namespace Turf
 		}
 		
 		/** */
+		getTextBoxes()
+		{
+			return Controller.map(Query.children(this.root), TextBox);
+		}
+		
+		/** */
 		getFontSize(index: number)
 		{
 			const tb = this.getTextBox(index);
@@ -155,7 +161,18 @@ namespace Turf
 		getFontWeight(index: number)
 		{
 			const tb = this.getTextBox(index);
-			return tb ? Number(tb.root.style.fontWeight) || 400 : 400;
+			if (tb)
+			{
+				const last = tb.root.style.fontFeatureSettings.split(" ").at(-1) || "";
+				if (last)
+				{
+					const n = Number(last);
+					if (n)
+						return n;
+				}
+			}
+			
+			return 400;
 		}
 		
 		/** */
@@ -163,8 +180,7 @@ namespace Turf
 		{
 			const tb = this.getTextBox(index);
 			if (tb)
-				//tb.root.style.fontWeight = weight.toString();
-				tb.root.style.fontFeatureSettings = "'wght' " + weight.toString();
+				Htx.from(tb.root)(UI.specificWeight(weight));
 		}
 		
 		/** */
@@ -178,18 +194,18 @@ namespace Turf
 		getTitleData()
 		{
 			const textBoxes = Controller.map(Query.children(this.root), TextBox);
-			const titles: ITitle[] = [];
+			const data: ITitle[] = [];
 			
 			for (let i = -1; ++i < textBoxes.length;)
 			{
-				titles.push({
+				data.push({
 					text: textBoxes[i].text,
 					size: this.getFontSize(i),
 					weight: this.getFontWeight(i),
 				});
 			}
 			
-			return titles;
+			return data;
 		}
 	}
 }

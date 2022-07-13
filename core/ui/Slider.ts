@@ -5,7 +5,7 @@ namespace Turf
 	export class Slider
 	{
 		/** */
-		constructor(defaultPosition = 50)
+		constructor()
 		{
 			this.root = Htx.div(
 				{
@@ -26,9 +26,11 @@ namespace Turf
 				{
 					if (ev.buttons === 1)
 						if (ev.movementX !== 0)
-							this.updateThumb(ev.movementX);
+							this.moveThumb(ev.movementX);
+					
+					this.root.style.cursor = ev.buttons === 1 ? "pointer" : "default";
 				}),
-				Htx.div(
+				this.slideArea = Htx.div(
 					"slide-area",
 					UI.anchor(),
 					{
@@ -54,34 +56,58 @@ namespace Turf
 				)
 			);
 			
-			this._position = defaultPosition;
-			setTimeout(() => this.updateThumb(0));
+			setTimeout(() => this.updateThumb());
 			Controller.set(this);
 		}
 		
 		readonly root;
+		private readonly slideArea;
 		private readonly thumb;
 		
 		/** */
-		get position()
+		get max()
 		{
-			return this._position;
+			return this._max;
 		}
-		private _position: number;
+		set max(value: number)
+		{
+			this._max = value;
+			this.updateThumb();
+		}
+		private _max = 100;
 		
 		/** */
-		private updateThumb(deltaX: number)
+		get progress()
+		{
+			return this._progress;
+		}
+		set progress(value: number)
+		{
+			this._progress = Math.max(0, Math.min(this.max, value));
+			this.updateThumb();
+		}
+		private _progress = 50;
+		
+		/** */
+		private moveThumb(deltaX: number)
 		{
 			const pctLeft = parseFloat(this.thumb.style.left);
-			const pctMovement = (deltaX / this.root.offsetWidth) * 100;
-			const pctUpdate = pctMovement + pctLeft;
-			this._position = Math.max(0, Math.min(100, pctUpdate));
-			this.thumb.style.left = this._position + "%";
-			this.thumb.textContent = (Math.round(this._position * 10) / 10).toString();
-			this.positionChangeFn();
+			const pctMovement = (deltaX / this.slideArea.offsetWidth || 0) * 100;
+			const position = Math.max(0, Math.min(100, pctLeft + pctMovement));
+			this._progress = (position / 100 || 0) * this.max;
+			this.updateThumb();
+			this.progressChangeFn();
 		}
 		
-		positionChangeFn = () => {};
+		/** */
+		private updateThumb()
+		{
+			const amount = (this._progress / this._max) * 100;
+			this.thumb.style.left = amount + "%";
+			this.thumb.textContent = (Math.round(this._progress * 10) / 10).toString();
+		}
+		
+		progressChangeFn = () => {};
 	}
 	
 	const thumbSize = 60;
