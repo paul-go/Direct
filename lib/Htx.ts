@@ -50,9 +50,13 @@ namespace Htx { { } }
 	}
 	
 	/** */
-	function from(element: Element)
+	function from(...elements: Element[])
 	{
-		return (...params: Htx.Param[]) => apply(element, params);
+		return (...params: Htx.Param[]) =>
+		{
+			elements.forEach(e => apply(e, params));
+			return elements.length ? elements[0] : null;
+		};
 	}
 	
 	/** */
@@ -574,7 +578,7 @@ namespace Htx
 	}
 	
 	/** */
-	export declare function from<E extends Element>(e: E): (...params: Param[]) => E;
+	export declare function from<E extends Element>(e: E, ...others: HTMLElement[]): (...params: Param[]) => E;
 	
 	/**
 	 * Invokes the specified callback function when the specified HTMLElement
