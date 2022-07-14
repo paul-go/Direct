@@ -174,8 +174,8 @@ namespace Controller
 		}
 		
 		/** */
-		insert(...controllers: TController[]): void;
-		insert(index: number, ...controllers: TController[]): void;
+		insert(...controllers: TController[]): number;
+		insert(index: number, ...controllers: TController[]): number;
 		insert(a: number | TController, ...newControllers: TController[])
 		{
 			const index = typeof a === "number" ? (a || 0) : -1;
@@ -189,8 +189,7 @@ namespace Controller
 			
 			if (existingControllers.length === 0)
 			{
-				for (const controller of newControllers)
-					this.parentElement.insertBefore(controller.root, this.marker);
+				this.parentElement.prepend(...newControllers.map(c => c.root));
 			}
 			else
 			{
@@ -201,6 +200,8 @@ namespace Controller
 				for (const controller of newControllers)
 					this.parentElement.insertBefore(controller.root, target);
 			}
+			
+			return index < 0 ? existingControllers.length + newControllers.length : index;
 		}
 		
 		/** */
