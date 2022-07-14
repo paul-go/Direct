@@ -5,7 +5,7 @@ namespace Turf
 	export class Slider
 	{
 		/** */
-		constructor()
+		constructor(...params: Htx.Param[])
 		{
 			this.root = Htx.div(
 				{
@@ -14,21 +14,17 @@ namespace Turf
 					outline: "5px solid " + UI.white(0.15),
 					borderRadius: "1000px",
 				},
-				Htx.on("pointerdown", ev =>
+				Htx.on("pointerdown", () =>
 				{
 					this.root.setPointerCapture(1);
 				}),
-				Htx.on("pointerup", ev =>
+				Htx.on("pointerup", () =>
 				{
 					this.root.releasePointerCapture(1);
 				}),
 				Htx.on("pointermove", ev =>
 				{
-					if (ev.buttons === 1)
-						if (ev.movementX !== 0)
-							this.moveThumb(ev.movementX);
-					
-					this.root.style.cursor = ev.buttons === 1 ? "pointer" : "default";
+					this.handlePointerMove(ev);
 				}),
 				this.slideArea = Htx.div(
 					"slide-area",
@@ -38,6 +34,7 @@ namespace Turf
 						right: (thumbSize / 2 + thumbPadding) + "px",
 					},
 					this.thumb = Htx.div(
+						"thumb",
 						UI.clickable,
 						UI.flexCenter,
 						{
@@ -53,7 +50,8 @@ namespace Turf
 							fontWeight: "900",
 						}
 					)
-				)
+				),
+				...params
 			);
 			
 			setTimeout(() => this.updateThumb());
@@ -89,12 +87,18 @@ namespace Turf
 		private _progress = 50;
 		
 		/** */
-		private moveThumb(deltaX: number)
+		private handlePointerMove(ev: PointerEvent)
 		{
+			this.root.style.cursor = ev.buttons === 1 ? "pointer" : "default";
+					
+			if (ev.buttons !== 1 || ev.movementX === 0)
+				return;
+			
 			const pctLeft = parseFloat(this.thumb.style.left);
-			const pctMovement = (deltaX / this.slideArea.offsetWidth || 0) * 100;
+			const pctMovement = (ev.movementX / this.slideArea.offsetWidth || 0) * 100;
 			const position = Math.max(0, Math.min(100, pctLeft + pctMovement));
 			this._progress = (position / 100 || 0) * this.max;
+			
 			this.updateThumb();
 			this.progressChangeFn();
 		}
@@ -107,7 +111,12 @@ namespace Turf
 			this.thumb.textContent = (Math.round(this._progress * 10) / 10).toString();
 		}
 		
-		progressChangeFn = () => {};
+		/** */
+		setProgressChangeFn(fn: () => void)
+		{
+			this.progressChangeFn = fn;
+		}
+		private progressChangeFn = () => {};
 	}
 	
 	const thumbSize = 60;
