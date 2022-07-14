@@ -21,7 +21,7 @@ namespace Cover
 		});
 		
 		blade1.description = "Blade 1 paragraph content.";
-		blade1.backgroundColorIndex = Turf.ColorIndex.black;
+		blade1.backgroundColorIndex = Turf.ColorScheme.blackIndex;
 		
 		const blade2 = new Turf.CaptionedBladeRecord();
 		
@@ -38,7 +38,7 @@ namespace Cover
 		});
 		
 		blade2.description = "Blade 2 paragraph content.";
-		blade2.backgroundColorIndex = Turf.ColorIndex.white;
+		blade2.backgroundColorIndex = Turf.ColorScheme.whiteIndex;
 		
 		const background = new Turf.BackgroundRecord();
 		background.media = Cover.readMedia("image-5.jpg");
@@ -152,7 +152,7 @@ namespace Cover
 			weight: 900
 		});
 		
-		blade1.backgroundColorIndex = Turf.ColorIndex.black;
+		blade1.backgroundColorIndex = Turf.ColorScheme.blackIndex;
 		
 		const blade2 = new Turf.CaptionedBladeRecord();
 		
@@ -162,7 +162,7 @@ namespace Cover
 			weight: 900
 		});
 		
-		blade2.backgroundColorIndex = Turf.ColorIndex.white;
+		blade2.backgroundColorIndex = Turf.ColorScheme.whiteIndex;
 		
 		patch.blades.push(blade1, blade2);
 		render(patch, meta);
@@ -264,11 +264,11 @@ namespace Cover
 		
 		const blade1 = new Turf.ProseBladeRecord();
 		blade1.html = html(1) + html(2) + html(3) + html(4) + html(5);
-		blade1.backgroundColorIndex = Turf.ColorIndex.white;
+		blade1.backgroundColorIndex = Turf.ColorScheme.whiteIndex;
 		
 		const blade2 = new Turf.ProseBladeRecord();
 		blade2.html = html(1) + html(2) + html(3) + html(4) + html(5);
-		blade2.backgroundColorIndex = Turf.ColorIndex.black;
+		blade2.backgroundColorIndex = Turf.ColorScheme.blackIndex;
 		
 		const blade3 = new Turf.ProseBladeRecord();
 		blade3.html = html(1);

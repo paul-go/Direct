@@ -11,8 +11,6 @@ namespace Turf
 	/** */
 	export class BladeButtonView
 	{
-		static readonly auxiliary = "•••";
-		
 		/** */
 		constructor(text: string, options?: IBladeButtonViewOptions)
 		{
@@ -20,15 +18,12 @@ namespace Turf
 			this.isUnselectable = options?.unselectable ?? true;
 			this.isIndependent = options?.independent ?? false;
 			
-			this.root = Htx.div(
-				UI.clickable,
+			this.root = UI.clickLabel(
 				{
 					tabIndex: 0,
 					display: "inline-block",
 					whiteSpace: "nowrap",
 					padding: "30px 20px",
-					fontWeight: "600",
-					fontSize: "20px",
 					transitionDuration: "0.2s",
 					transitionProperty: "opacity",
 				},

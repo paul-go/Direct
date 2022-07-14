@@ -13,14 +13,6 @@ namespace Turf
 	}
 	
 	/** */
-	export namespace ColorIndex
-	{
-		export const black = -1;
-		export const white = -2;
-		export const transparent = -3;
-	}
-	
-	/** */
 	export interface IUser
 	{
 		email: string;
@@ -47,7 +39,7 @@ namespace Turf
 	export abstract class BladeRecord extends Record
 	{
 		transition = Transitions.slide.name;
-		backgroundColorIndex: number = ColorIndex.black;
+		backgroundColorIndex = 0;
 	}
 	
 	/** */
@@ -76,8 +68,10 @@ namespace Turf
 	export class BackgroundRecord extends Record
 	{
 		media = Back.reference(MediaRecord);
-		crop: [number, number, number, number] = [0, 0, -1, -1];
-		position: [number, number] = [0, 0];
+		
+		/** Stores the size of the background in vmin units. A value of -1 indicates "cover" */
+		size = -1;
+		position: [number, number] = [50, 50];
 		zoom: -1 | 0 | 1 = 0;
 	}
 	

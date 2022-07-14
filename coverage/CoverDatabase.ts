@@ -39,7 +39,7 @@ namespace Cover
 		media.blob = new Blob([new Uint8Array([1, 2])]);
 		
 		const bg = new Turf.BackgroundRecord();
-		bg.crop = [1, 2, 3, 4];
+		bg.size = 10;
 		bg.position = [5, 6];
 		bg.zoom = 1;
 		bg.media = media;

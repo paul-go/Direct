@@ -73,11 +73,11 @@ namespace Turf
 	 */
 	function renderBlade(bun: Bundle)
 	{
-		const foregroundColor = resolveForegroundColor(
+		const foregroundColor = RenderUtil.resolveForegroundColor(
 			bun.blade.backgroundColorIndex, 
 			bun.meta);
 		
-		const backgroundColor = resolveBackgroundColor(
+		const backgroundColor = RenderUtil.resolveBackgroundColor(
 			bun.blade.backgroundColorIndex, 
 			bun.meta);
 		
@@ -337,7 +337,7 @@ namespace Turf
 					{
 						(async () =>
 						{
-							const [width, height] = await RenderUtil.getAspectRatio(src);
+							const [width, height] = await RenderUtil.getDimensions(src);
 							legend.style.aspectRatio = width + " / " + height;
 							frameDiv.append(legend);
 						})();
@@ -385,48 +385,4 @@ namespace Turf
 			)
 		];
 	}
-	
-	/**
-	 * 
-	 */
-	function resolveForegroundColor(color: number, meta: MetaRecord): UI.IColor
-	{
-		if (color === ColorIndex.black)
-			return white;
-		
-		if (color === ColorIndex.white)
-			return black;
-		
-		if (color === ColorIndex.transparent)
-			return white;
-		
-		if (color < 0 || color >= meta.colorScheme.length)
-			throw "Unknown color: " + color;
-		
-		const lightness = meta.colorScheme[color].l;
-		return lightness < 55 ? white : black;
-	}
-	
-	/**
-	 * 
-	 */
-	function resolveBackgroundColor(color: number, meta: MetaRecord): UI.IColor
-	{
-		if (color === ColorIndex.black)
-			return black;
-		
-		if (color === ColorIndex.white)
-			return white;
-		
-		if (color === ColorIndex.transparent)
-			return { h: 0, s: 0, l: 0, a: 0 };
-		
-		if (color < 0 || color >= meta.colorScheme.length)
-			throw "Unknown color: " + color;
-		
-		return meta.colorScheme[color];
-	}
-	
-	const black = { h: 0, s: 0, l: 0 };
-	const white = { h: 0, s: 0, l: 255 };
 }

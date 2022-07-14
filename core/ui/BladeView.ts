@@ -143,6 +143,7 @@ namespace Turf
 		readonly sceneContainer;
 		readonly configuratorButtonsContainer;
 		readonly configuratorContainer;
+		readonly backgroundChanged = new Force();
 		
 		/** */
 		protected setBladeButtons(

@@ -72,6 +72,21 @@ namespace Turf
 		} as const;
 		
 		/** */
+		export function clickLabel(...params: Htx.Param[])
+		{
+			return Htx.div(
+				UI.clickable,
+				{
+					display: "flex",
+					alignItems: "center",
+					fontWeight: "600",
+					fontSize: "20px",
+				},
+				...params
+			)
+		}
+		
+		/** */
 		export const presentational: Htx.Style = {
 			pointerEvents: "none",
 			cursor: "default",
@@ -97,14 +112,47 @@ namespace Turf
 		}
 		
 		/** */
-		export function anchor(amount = 0)
+		export function anchor(): Htx.Style;
+		export function anchor(all: number): Htx.Style;
+		export function anchor(v: number, h: number): Htx.Style;
+		export function anchor(top: number, h: number, bottom: number): Htx.Style;
+		export function anchor(top: number, right: number, bottom: number, left: number): Htx.Style;
+		export function anchor(...args: number[])
 		{
+			let top = 0;
+			let right = 0;
+			let bottom = 0;
+			let left = 0;
+			
+			if (args.length === 1)
+			{
+				top = right = bottom = left = args[0];
+			}
+			else if (args.length === 2)
+			{
+				top = bottom = args[0];
+				left = right = args[1];
+			}
+			else if (args.length === 3)
+			{
+				top = args[0];
+				left = right = args[1];
+				bottom = args[2];
+			}
+			else if (args.length === 4)
+			{
+				top = args[0];
+				right = args[1];
+				left = args[2];
+				bottom = args[3];
+			}
+			
 			return <Htx.Style>{
 				position: "absolute",
-				top: amount + "px",
-				right: amount + "px",
-				bottom: amount + "px",
-				left: amount + "px"
+				top: top + "px",
+				right: right + "px",
+				bottom: bottom + "px",
+				left: left + "px"
 			};
 		}
 		
@@ -669,9 +717,10 @@ namespace Turf
 			menu: ObjectLiteral<string, () => void>)
 		{
 			const overlay = Htx.div(
+				UI.removeOnClick(),
+				...UI.removeOnEscape(),
 				UI.fixed(),
 				{
-					tabIndex: 0,
 					zIndex: "0",
 				},
 				Htx.on("pointerdown", ev =>
@@ -690,7 +739,6 @@ namespace Turf
 				
 				Htx.div(
 					{
-						tabIndex: 0,
 						position: "absolute",
 						minWidth: "200px",
 						backgroundColor: UI.gray(100, 0.5),

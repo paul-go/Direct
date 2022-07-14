@@ -31,30 +31,34 @@ namespace Turf
 					"backgrounds-container",
 					UI.anchor()
 				),
-				this.foregroundContainer = Htx.div(
+				this.foregroundContainer = new ForegroundView(
+					this.record,
 					CssClass.captionSceneForeground,
 					this.record.origin,
-					this.contentImageContainer = Htx.div(),
 					this.textContainer = Htx.div(
 						"text-container",
+						this.contentImageContainer = Htx.div("content-image-container"),
 						this.titleView.root,
 						this.paragraphView.root,
 						this.buttonsContainer,
 					)
-				)
+				).root
 			);
 			
 			this.setBladeButtons(
 				() => this.handleSelectionChange(),
 				this.animationButton,
+				this.originButton,
 				this.sizeButton,
 				this.weightButton,
 				this.contrastButton,
-				this.originButton,
 				this.backgroundsButton,
 			);
 			
-			this.renderBackgrounds();
+			this.backgroundManager = new BackgroundManager({
+				record,
+				renderTarget: this.backgroundsContainer,
+			});
 			
 			//! Temporary
 			Htx.defer(this.root, () =>
@@ -75,17 +79,17 @@ namespace Turf
 		private readonly buttonsContainer;
 		private readonly buttons;
 		private readonly backgroundsContainer;
-		private readonly backgrounds: BackgroundRecord[] = [];
+		private readonly backgroundManager: BackgroundManager;
 		
 		private sizePicker: ElementPicker | null = null;
 		private weightPicker: ElementPicker | null = null;
 		private originPicker: OriginPicker | null = null;
 		
 		private readonly animationButton = new BladeButtonView("Animation");
+		private readonly originButton = new BladeButtonView("Position");
 		private readonly sizeButton = new BladeButtonView("Size");
 		private readonly weightButton = new BladeButtonView("Bold");
 		private readonly contrastButton = new BladeButtonView("Contrast");
-		private readonly originButton = new BladeButtonView("Position");
 		private readonly backgroundsButton = new BladeButtonView("Backgrounds");
 		
 		/** */
@@ -115,10 +119,7 @@ namespace Turf
 			
 			if (isBackground)
 			{
-				const backgroundRecord = new BackgroundRecord();
-				backgroundRecord.media = mediaRecord;
-				this.backgrounds.push(backgroundRecord);
-				this.renderBackgrounds();
+				this.backgroundManager.addBackground(mediaRecord);
 			}
 			else
 			{
@@ -133,27 +134,6 @@ namespace Turf
 				});
 				
 				this.contentImageContainer.append(this.contentImage);
-			}
-		}
-		
-		/** */
-		private renderBackgrounds()
-		{
-			Util.clear(this.backgroundsContainer);
-			
-			for (const backgroundRecord of this.backgrounds)
-			{
-				if (!backgroundRecord.media)
-					continue;
-				
-				this.backgroundsContainer.append(Htx.div(
-					UI.anchor(),
-					{
-						backgroundImage: backgroundRecord.media.getBlobCssUrl(),
-						backgroundPosition: "50% 50%",
-						backgroundSize: "cover",
-					}
-				));
 			}
 		}
 		
@@ -179,6 +159,19 @@ namespace Turf
 				this.setBladeConfigurator(null);
 			}
 			else this.originPicker?.remove();
+			
+			if (this.backgroundsButton.selected)
+			{
+				this.foregroundContainer.style.filter = "blur(3px)";
+				this.foregroundContainer.style.pointerEvents = "none";
+				this.setBladeConfigurator(this.backgroundManager.configuratorElement);
+			}
+			else
+			{
+				this.foregroundContainer.style.removeProperty("filter");
+				this.foregroundContainer.style.removeProperty("pointer-events");
+				this.backgroundManager.configuratorElement.remove();
+			}
 			
 			if (!this.bladeButtons.some(bb => bb.selected))
 				this.setBladeConfigurator(null);
@@ -260,7 +253,7 @@ namespace Turf
 			picker.setPickChangedFn(updatePick);
 			updatePick();
 			
-			slider.progressChangeFn = () =>
+			slider.setProgressChangeFn(() =>
 			{
 				if (!picker.pickedElement)
 					return;
@@ -289,7 +282,7 @@ namespace Turf
 					titleData.size = slider.progress;
 					this.titleView.setFontSize(idx, titleData.size);
 				}
-			};
+			});
 		}
 		
 		/** */
@@ -338,7 +331,7 @@ namespace Turf
 			picker.setPickChangedFn(updatePick);
 			updatePick();
 			
-			slider.progressChangeFn = () =>
+			slider.setProgressChangeFn(() =>
 			{
 				if (!picker.pickedElement)
 					return;
@@ -356,7 +349,7 @@ namespace Turf
 				titleData.weight = weight;
 				this.titleView.setFontWeight(idx, weight);
 				this.record.titles = titleDatas;
-			};
+			});
 		}
 		
 		/** */
@@ -367,12 +360,12 @@ namespace Turf
 			slider.progress = this.record.textContrast;
 			this.setBladeConfigurator(slider.root);
 			
-			slider.progressChangeFn = () =>
+			slider.setProgressChangeFn(() =>
 			{
 				const amount = ((slider.progress * 2) - 100) / 100;
 				this.setContrast(this.textContainer, amount);
 				this.record.textContrast = slider.progress;
-			};
+			});
 		}
 		
 		/** */
@@ -403,7 +396,8 @@ namespace Turf
 		{
 			this.record.titles = this.titleView.getTitleData();
 			this.record.description = this.paragraphView.html;
-			this.record.backgrounds = this.backgrounds;
+			
+			AppContainer.of(this).database.save(this.record);
 		}
 	}
 }

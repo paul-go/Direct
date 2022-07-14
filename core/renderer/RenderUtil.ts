@@ -11,8 +11,10 @@ namespace Turf.RenderUtil
 		
 	}
 	
-	/** */
-	export function getAspectRatio(src: string)
+	/**
+	 * Returns the aspect ratio of the specified image.
+	 */
+	export function getDimensions(src: string)
 	{
 		return new Promise<[number, number]>(r =>
 		{
@@ -31,5 +33,31 @@ namespace Turf.RenderUtil
 				})
 			));
 		});
+	}
+	
+	/**
+	 * 
+	 */
+	export function resolveForegroundColor(colorIndex: number, meta: MetaRecord): UI.IColor
+	{
+		if (colorIndex < 0 || colorIndex >= meta.colorScheme.length)
+			throw "Unknown color: " + colorIndex;
+		
+		const lightness = meta.colorScheme[colorIndex].l;
+		return lightness < 80 ? white : black;
+	}
+	
+	const black = { h: 0, s: 0, l: 0 };
+	const white = { h: 0, s: 0, l: 100 };
+	
+	/**
+	 * 
+	 */
+	export function resolveBackgroundColor(colorIndex: number, meta: MetaRecord): UI.IColor
+	{
+		if (colorIndex < 0 || colorIndex >= meta.colorScheme.length)
+			throw "Unknown color: " + colorIndex;
+		
+		return meta.colorScheme[colorIndex];
 	}
 }

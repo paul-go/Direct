@@ -54,6 +54,12 @@ namespace Turf
 		static readonly default = this.all[0];
 		
 		/** */
+		static readonly blackIndex = 0;
+		
+		/** */
+		static readonly whiteIndex = 1;
+		
+		/** */
 		static fromJson(schemeJson: readonly UI.IColor[])
 		{
 			const schemeStr = JSON.stringify(schemeJson);
@@ -70,7 +76,11 @@ namespace Turf
 			readonly name: string,
 			...colors: UI.IColor[])
 		{
-			this.colors = colors;
+			this.colors = [
+				{ h: 0, s: 0, l: 0 },
+				{ h: 0, s: 0, l: 100 },
+				...colors
+			];
 		}
 		
 		/** */
