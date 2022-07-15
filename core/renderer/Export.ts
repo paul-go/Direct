@@ -11,40 +11,39 @@ namespace Turf
 			baseFolder: string)
 		{
 			const storyDiv = renderPatchFinal(patch, meta);
-			const htmlExport = createHtmlFile(storyDiv);
-			const cssExport = createGeneralCssFile();
-			const jsExport = await createPlayerJsFile();
-			if (!jsExport)
-				throw "Could not fetch the index file.";
 			
-			await htmlExport.write(baseFolder);
-			await cssExport.write(baseFolder);
-			await jsExport.write(baseFolder);
+			await maybeCreateFolder(baseFolder);
+			
+			const promises: Promise<void>[] = [
+				writeHtmlFile(storyDiv, baseFolder),
+				writeGeneralCssFile(baseFolder),
+				writePlayerJsFile(baseFolder)
+			];
+			
+			for (const record of Util.eachDeepRecord(patch))
+				if (record instanceof MediaRecord)
+					promises.push(createMediaFile(record, baseFolder));
+			
+			await Promise.all(promises);
 		}
 		
 		/** */
-		function createHtmlFile(element: HTMLElement)
+		function writeHtmlFile(element: HTMLElement, folderName: string)
 		{
 			const htmlFile = new HtmlFile();
 			const htmlText = htmlFile.emit(element);
-			return new ExportFile(
-				htmlText,
-				MimeType.html,
-				ConstS.htmlFileName);
+			return writeFile(htmlText, MimeType.html, folderName, ConstS.htmlFileName);
 		}
 		
 		/** */
-		function createGeneralCssFile()
+		function writeGeneralCssFile(folderName: string)
 		{
 			const cssText = Turf.createGeneralCssText();
-			return new ExportFile(
-				cssText,
-				MimeType.css,
-				ConstS.cssFileNameGeneral);
+			return writeFile(cssText, MimeType.css, folderName, ConstS.cssFileNameGeneral);
 		}
 		
 		/** */
-		async function createPlayerJsFile()
+		async function writePlayerJsFile(folderName: string)
 		{
 			let jsFileText = "";
 			
@@ -63,49 +62,72 @@ namespace Turf
 				jsFileText = Electron.fs.readFileSync(path, "utf-8");
 			}
 			
-			return new ExportFile(
-				jsFileText,
-				MimeType.js,
-				ConstS.jsFileName);
+			return writeFile(jsFileText, MimeType.js, folderName, ConstS.jsFileName);
 		}
 		
 		/** */
-		function createMediaFile()
+		async function createMediaFile(record: MediaRecord, folderName: string)
 		{
+			const buffer = await record.blob.arrayBuffer();
+			return writeFile(buffer, record.type, folderName, record.name);
+		}
+		
+		/** */
+		async function writeFile(
+			data: string | ArrayBuffer,
+			mime: MimeType,
+			folderName: string,
+			fileName: string)
+		{
+			const path = await pathJoin(folderName, fileName);
 			
-		}
-	}
-	
-	/** */
-	class ExportFile
-	{
-		constructor(
-			readonly data: string | ArrayBuffer,
-			readonly mime: MimeType,
-			readonly fileName: string,
-			readonly folderName: string = "")
-		{ }
-		
-		/** */
-		async write(baseFolder: string)
-		{
 			if (TAURI)
 			{
-				const path = await Tauri.path.join(baseFolder, this.folderName, this.fileName);
-				
-				typeof this.data === "string" ?
-					await Tauri.fs.writeFile(path, this.data) :
-					await Tauri.fs.writeBinaryFile(path, this.data);
+				typeof data === "string" ?
+					await Tauri.fs.writeFile(path, data) :
+					await Tauri.fs.writeBinaryFile(path, data);
 			}
 			else if (ELECTRON)
 			{
-				const path = Electron.path.join(baseFolder, this.folderName, this.fileName);
-				const data = typeof this.data === "string" ?
-					this.data : 
-					Buffer.from(this.data);
+				const payload = typeof data === "string" ?
+					data : 
+					Buffer.from(data);
 				
-				Electron.fs.writeFileSync(path, data);
+				if (!Electron.fs.existsSync(folderName))
+					Electron.fs.mkdirSync(folderName);
+				
+				Electron.fs.writeFileSync(path, payload);
 			}
+		}
+		
+		/** */
+		async function maybeCreateFolder(folderName: string)
+		{
+			if (ELECTRON)
+			{
+				const containingDir = Electron.path.resolve(folderName, "..");
+				if (!Electron.fs.existsSync(containingDir))
+					Electron.fs.mkdirSync(containingDir);
+				
+				if (!Electron.fs.existsSync(folderName))
+					Electron.fs.mkdirSync(folderName);
+			}
+			else if (TAURI)
+			{
+				await Tauri.fs.createDir(folderName, { recursive: true });
+			}
+		}
+		
+		/** */
+		async function pathJoin(...parts: string[])
+		{
+			if (TAURI)
+				return await Tauri.path.join(...parts);
+			
+			if (ELECTRON)
+				return Electron.path.join(...parts);
+			
+			return parts.join("/");
 		}
 	}
 }

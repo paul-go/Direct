@@ -125,5 +125,28 @@ namespace Turf
 			
 			return `url(${url})`;
 		}
+		
+		/**
+		 * 
+		 */
+		export function * eachDeepRecord(via: Record)
+		{
+			function * recurse(record: Record): IterableIterator<Record>
+			{
+				yield record;
+				
+				for (const child of Object.values(record))
+				{
+					if (child instanceof Record)
+						yield * recurse(child);
+					
+					if (Array.isArray(child) && Array.length > 0 && child[0] instanceof Record)
+						for (const recordInArray of child)
+							yield * recurse(recordInArray);
+				}
+			}
+			
+			yield * recurse(via);
+		}
 	}
 }
