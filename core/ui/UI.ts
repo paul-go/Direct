@@ -429,7 +429,7 @@ namespace Turf
 		}
 		
 		/** */
-		export function toggleEnumClass<T extends ObjectLiteral<string, string>>(
+		export function toggleEnumClass<T extends Literal<string, string>>(
 			e: HTMLElement,
 			enumType: T,
 			enumValue: string)
@@ -462,7 +462,7 @@ namespace Turf
 			e.classList.add(enumValue);
 		}
 		
-		const prefixes = new Map<ObjectLiteral<string, string>, string>();
+		const prefixes = new Map<Literal<string, string>, string>();
 		
 		/** */
 		export function getLayerCoords(target: HTMLElement, ev: DragEvent | MouseEvent)
@@ -714,7 +714,7 @@ namespace Turf
 		/** */
 		export function springMenu(
 			target: EventTarget | null,
-			menu: ObjectLiteral<string, () => void>)
+			menu: Literal<string, () => void>)
 		{
 			const overlay = Htx.div(
 				UI.removeOnClick(),

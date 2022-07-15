@@ -4,6 +4,10 @@ const enum ConstS
 {
 	homeDatabaseName = "home",
 	textContrastProperty = "--text-contrast",
+	htmlFileName = "index.html",
+	cssFileNameGeneral = "index.general.css",
+	cssFileNameSpecific = "index.css",
+	jsFileName = "turf.js",
 }
 
 /** */
@@ -76,4 +80,4 @@ const enum DataAttributes
 type SizeMethod = "cover" | "contain";
 
 /** */
-type ObjectLiteral<K extends keyof any, T> = { [P in K]: T; };
+type Literal<K extends keyof any, T> = { [P in K]: T; };

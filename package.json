@@ -13,7 +13,8 @@
 		"url": "https://github.com/paul-go/Turf/issues"
 	},
 	"scripts": {
-		"tauri": "tauri"
+		"tauri": "tauri",
+		"run-native": "npm run tauri dev"
 	},
 	"main": "turf.js",
 	"dependencies": {

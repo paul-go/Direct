@@ -12,10 +12,20 @@ namespace Turf
 		document.head.append(Htx.style(new Text(css)));
 	}
 	
-	/**
-	 * 
-	 */
-	export function createGeneralCss()
+	/** */
+	export function createGeneralCssText(minify?: boolean)
+	{
+		const emitter = new Emitter(minify);
+		const rules = createGeneralCss()
+		
+		for (const rule of rules)
+			rule.emit(emitter);
+		
+		return emitter.toString();
+	}
+	
+	/** */
+	function createGeneralCss()
 	{
 		return [
 			rule("*", {
@@ -221,7 +231,7 @@ namespace Turf
 	/**
 	 * Creates the CSS that is used in both the editor as well as the player.
 	 */
-	export function createEditorCss()
+	function createEditorCss()
 	{
 		return [
 			rule("HTML, BODY", {
@@ -288,13 +298,16 @@ namespace Turf
 		{ }
 		
 		/** */
-		toString()
+		emit(emitter = new Emitter())
 		{
-			return this.selector +  "{" + 
-				Object.entries(this.cssProperties)
-					.map(([n, v]) => n + ":" + v)
-					.join(";") +
-			"}";
+			emitter.lines(this.selector, "{");
+			emitter.indent();
+			
+			for (const [n, v] of Object.entries(this.cssProperties))
+				emitter.line(n + ":" + emitter.space + v + ";");
+			
+			emitter.outdent();
+			emitter.line("}");
 		}
 	}
 }

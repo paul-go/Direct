@@ -1,14 +1,15 @@
 
 namespace Cover
 {
-	const Fs = require("fs") as typeof import("fs");
-	const Path = require("path") as typeof import("path");
-	
 	/** */
 	export function readMedia(sampleFileName: string)
 	{
-		const path = Path.join(__dirname, "../coverage/sample-media", sampleFileName);
-		const buffer =  Fs.readFileSync(path);
+		const path = Electron.path.join(
+			__dirname,
+			"../coverage/sample-media",
+			sampleFileName);
+		
+		const buffer =  Electron.fs.readFileSync(path);
 		const media = new Turf.MediaRecord();
 		media.blob = new Blob([buffer]);
 		media.name = path.split("/").slice(-1)[0];
@@ -20,5 +21,15 @@ namespace Cover
 	export function display(controller: Controller.IController)
 	{
 		Query.find(CssClass.appRoot)[0].append(controller.root);
+	}
+	
+	/** */
+	export function getExportsFolder(turfName = "default")
+	{
+		const path = Electron.path.join(__dirname, "..", "+exports", turfName);
+		if (!Electron.fs.existsSync(path))
+			Electron.fs.mkdirSync(path);
+		
+		return path;
 	}
 }

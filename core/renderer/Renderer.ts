@@ -4,6 +4,26 @@ namespace Turf
 	/**
 	 * 
 	 */
+	export function renderPatchPreview(
+		patch: PatchRecord,
+		meta: MetaRecord)
+	{
+		return renderPatch(patch, meta, true);
+	}
+	
+	/**
+	 * 
+	 */
+	export function renderPatchFinal(
+		patch: PatchRecord,
+		meta: MetaRecord)
+	{
+		return renderPatch(patch, meta, true);
+	}
+	
+	/**
+	 * 
+	 */
 	class Bundle<T extends BladeRecord = BladeRecord>
 	{
 		constructor(
@@ -30,28 +50,6 @@ namespace Turf
 		}
 		
 		readonly usedTransitions = new Set<Animation>();
-	}
-	
-	/**
-	 * 
-	 */
-	export function renderPatchPreview(
-		patch: PatchRecord,
-		meta: MetaRecord)
-	{
-		return renderPatch(patch, meta, true);
-	}
-	
-	/**
-	 * 
-	 */
-	export function renderPatchFinal(
-		patch: PatchRecord,
-		meta: MetaRecord)
-	{
-		const patchHtml = renderPatch(patch, meta, true);
-		// convert the patch html to a string
-		return "";
 	}
 	
 	/**
