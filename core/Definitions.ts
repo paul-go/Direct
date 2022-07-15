@@ -8,6 +8,7 @@ const enum ConstS
 	cssFileNameGeneral = "index.general.css",
 	cssFileNameSpecific = "index.css",
 	jsFileName = "turf.js",
+	jsFileNameMin = "turf.min.js",
 }
 
 /** */
