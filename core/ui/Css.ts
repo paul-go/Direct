@@ -309,5 +309,13 @@ namespace Turf
 			emitter.outdent();
 			emitter.line("}");
 		}
+		
+		/** */
+		toString()
+		{
+			const em = new Emitter(true);
+			this.emit(em);
+			return em.toString();
+		}
 	}
 }
