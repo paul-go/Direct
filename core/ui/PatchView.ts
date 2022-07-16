@@ -65,6 +65,18 @@ namespace Turf
 					UI.actionButton("filled", 
 						new Text("Preview"),
 						Htx.on("click", () => this.handlePreview())
+					),
+					Htx.div(
+						{
+							textAlign: "center",
+							margin: "20px",
+						},
+						UI.clickable,
+						Htx.on(UI.click, () =>
+						{
+							this.export();
+						}),
+						new Text("Export"),
 					)
 				),
 				UI.chevron(
@@ -141,6 +153,27 @@ namespace Turf
 			Saver.execute(this);
 			const meta = AppContainer.of(this).meta;
 			new PreviewView(this.record, meta);
+		}
+		
+		/** */
+		private async export()
+		{
+			const meta = AppContainer.of(this).meta;
+			let baseFolder = "";
+			
+			if (ELECTRON)
+			{
+				baseFolder = getExportsFolder();
+			}
+			else
+			{
+				
+			}
+			
+			await Export.single(this.record, meta, baseFolder);
+			
+			if (DEBUG)
+				console.log("Exported to: " + baseFolder);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 /** */
 const enum ConstS
 {
+	baseFolderPrefix = "patch-base-folder-",
 	homeDatabaseName = "home",
 	textContrastProperty = "--text-contrast",
 	htmlFileName = "index.html",
@@ -9,6 +10,7 @@ const enum ConstS
 	cssFileNameSpecific = "index.css",
 	jsFileName = "turf.js",
 	jsFileNameMin = "turf.min.js",
+	debugExportsFolderName = "+exports",
 }
 
 /** */

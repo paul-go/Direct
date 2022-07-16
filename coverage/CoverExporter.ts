@@ -16,8 +16,8 @@ namespace Cover
 		
 		patch.blades.push(blade);
 		
-		const folder = getExportsFolder("coverRender");
-		await Turf.Exporter.exportPatch(patch, meta, folder);
+		const folder = getExportsFolder();
+		await Turf.Export.single(patch, meta, folder);
 		console.log("Done");
 	}
 }

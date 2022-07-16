@@ -38,13 +38,6 @@ namespace Turf
 		private _database: Back | null = null;
 		
 		/** */
-		get currentUser()
-		{
-			return this._currentUser;
-		}
-		private _currentUser: IUser | null = null;
-		
-		/** */
 		get meta()
 		{
 			if (this._currentMeta)

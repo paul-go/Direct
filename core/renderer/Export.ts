@@ -2,16 +2,15 @@
 namespace Turf
 {
 	/** */
-	export namespace Exporter
+	export namespace Export
 	{
 		/** */
-		export async function exportPatch(
+		export async function single(
 			patch: PatchRecord,
 			meta: MetaRecord,
 			baseFolder: string)
 		{
 			const storyDiv = renderPatchFinal(patch, meta);
-			
 			await maybeCreateFolder(baseFolder);
 			
 			const promises: Promise<void>[] = [

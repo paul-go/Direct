@@ -22,14 +22,4 @@ namespace Cover
 	{
 		Query.find(CssClass.appRoot)[0].append(controller.root);
 	}
-	
-	/** */
-	export function getExportsFolder(turfName = "default")
-	{
-		const path = Electron.path.join(__dirname, "..", "+exports", turfName);
-		if (!Electron.fs.existsSync(path))
-			Electron.fs.mkdirSync(path);
-		
-		return path;
-	}
 }

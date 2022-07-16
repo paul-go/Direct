@@ -25,7 +25,7 @@
 		"@types/medium-editor": "^5.0.5",
 		"@types/node": "^17.0.34",
 		"electron": "^18.2.4",
-		"moduless": "^2.1.25",
+		"moduless": "^2.2",
 		"node-fetch": "^3.2.6",
 		"terser": "^5.12.1",
 		"ts-node": "^10.1.0",

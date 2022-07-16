@@ -2,6 +2,7 @@
 declare const DEBUG: boolean;
 declare const ELECTRON: boolean;
 declare const TAURI: boolean;
+declare const Moduless: { getRunningFunctionName(): string; }
 
 declare namespace Tauri
 {
@@ -21,6 +22,14 @@ declare namespace Tauri
 	export const tauri: typeof import("@tauri-apps/api").tauri;
 	export const updater: typeof import("@tauri-apps/api").updater;
 }
+
+/**
+ * Gets the name of a particular folder name in the exports directory.
+ * If the name argument is omitted, the name of the running cover function is used.
+ * The folder is created if it does not already exist.
+ * Only available in debugging mode.
+ */
+declare function getExportsFolder(turfName?: string): string;
 
 declare namespace Electron
 {
@@ -57,4 +66,20 @@ else if (ELECTRON)
 		fs: require("fs"),
 		path: require("path")
 	});
+	
+	g.getExportsFolder = (turfName?: string) =>
+	{
+		turfName ||= Moduless.getRunningFunctionName();
+		
+		const path = Electron.path.join(
+			__dirname,
+			"..",
+			ConstS.debugExportsFolderName,
+			turfName);
+		
+		if (!Electron.fs.existsSync(path))
+			Electron.fs.mkdirSync(path);
+		
+		return path;
+	};
 }

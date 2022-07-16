@@ -5,20 +5,16 @@ namespace Turf
 	/** */
 	export class MetaRecord extends Record
 	{
-		user = {} as IUser;
 		colorScheme = ColorScheme.default.colors;
 		font = "";
 		htmlHeader = "";
 		htmlFooter = "";
-	}
-	
-	/** */
-	export interface IUser
-	{
-		email: string;
-		password: string;
-		s3AccessKey: string;
-		s3SecretKey: string;
+		
+		// User-related members
+		userEmail = "";
+		userPassword = "";
+		userAccessKey = "";
+		userSecretKey = "";
 	}
 	
 	/** */
