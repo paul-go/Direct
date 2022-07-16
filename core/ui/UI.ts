@@ -359,6 +359,48 @@ namespace Turf
 		}
 		
 		/** */
+		export function visibleWhenEmpty(watchTarget: HTMLElement): Htx.Param
+		{
+			return e => installVisibilityObserver(e, watchTarget, true);
+		}
+		
+		/** */
+		export function visibleWhenNotAlone()
+		{
+			return Htx.css(":only-child { display: none !important; }");
+		}
+		
+		/** */
+		export function visibleWhenNotEmpty(watchTarget: HTMLElement): Htx.Param
+		{
+			return e => installVisibilityObserver(e, watchTarget, false);
+		}
+		
+		/** */
+		function installVisibilityObserver(
+			visibilityTarget: HTMLElement,
+			watchTarget: HTMLElement,
+			forEmpty: boolean)
+		{
+			const exec = () =>
+			{
+				const children = Query.children(watchTarget);
+				
+				if (forEmpty && children.length > 0)
+					visibilityTarget.classList.add(CssClass.hide);
+				
+				else if (!forEmpty && children.length === 0)
+					visibilityTarget.classList.add(CssClass.hide);
+				
+				else
+					visibilityTarget.classList.remove(CssClass.hide);
+			};
+			
+			exec();
+			new MutationObserver(() => exec()).observe(watchTarget, { childList: true });
+		}
+		
+		/** */
 		export function removeTogether(contingent: HTMLElement, target: HTMLElement)
 		{
 			(async () =>

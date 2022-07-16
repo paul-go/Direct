@@ -126,8 +126,33 @@ namespace Turf
 			return `url(${url})`;
 		}
 		
+		//# Record Related
+		
+		/**
+		 * Returns whether the specified PatchRecord is the home page.
+		 */
+		export function isHome(patch: PatchRecord)
+		{
+			return patch.slug === "";
+		}
+		
 		/**
 		 * 
+		 */
+		export function generatePatchSlug()
+		{
+			const date = new Date();
+			return (
+				date.getFullYear() + 
+				"-" + 
+				("0" + (date.getMonth() + 1)).slice(-2) + 
+				"-" +
+				("0" + (date.getDate() + 1)).slice(-2));
+		}
+		
+		/**
+		 * Performs a deep traversal on all Records that are descendents
+		 * of the record specified.
 		 */
 		export function * eachDeepRecord(via: Record)
 		{

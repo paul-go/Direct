@@ -25,19 +25,20 @@ namespace Query
 	 * optionally with the specified type filter.
 	 */
 	export function children<T extends Element = HTMLElement>(
-		element: Element,
+		target: Node,
 		type?: Constructor<T>)
 	{
-		const ctor: any = type || HTMLElement;
 		const children: T[] = [];
-		
-		for (let i = -1; ++i < element.children.length;)
-		{
-			const child = element.children[i];
-			if (child instanceof ctor)
-				children.push(child as T);
+		if (target instanceof Element)
+		{		
+			const ctor: any = type || HTMLElement;
+			for (let i = -1; ++i < target.children.length;)
+			{
+				const child = target.children[i];
+				if (child instanceof ctor)
+					children.push(child as T);
+			}
 		}
-		
 		return children;
 	}
 	

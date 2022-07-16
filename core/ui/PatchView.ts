@@ -8,7 +8,12 @@ namespace Turf
 		constructor(record?: PatchRecord)
 		{
 			this.isNewRecord = !record;
-			this.record = record || new PatchRecord();
+			this.record = record || (() =>
+			{
+				const r = new PatchRecord();
+				r.slug = Util.generatePatchSlug();
+				return r;
+			})();
 			
 			const minHeight: Htx.Param = { minHeight: "85vh" };
 			
@@ -24,39 +29,40 @@ namespace Turf
 				this.bladesElement = Htx.div(
 					"blades-element",
 					minHeight,
-					Htx.p(
-						"no-blades-message",
-						UI.visibleWhenAlone(),
-						UI.anchor(),
-						UI.flexCenter,
-						minHeight,
-						{
-							zIndex: "1",
-						},
+				),
+				Htx.p(
+					"no-blades-message",
+					UI.anchor(),
+					UI.flexCenter,
+					UI.visibleWhenEmpty(this.bladesElement),
+					minHeight,
+					{
+						zIndex: "1",
+					},
+					Htx.div(
+						"add-first-blade",
 						Htx.div(
-							"add-first-blade",
-							Htx.div(
-								UI.presentational,
-								{
-									fontSize: "30px",
-									fontWeight: "600",
-									marginBottom: "30px",
-								},
-								new Text("This patch has no blades."),
-							),
-							UI.actionButton("filled", 
-								{
-									marginTop: "10px",
-								},
-								Htx.on(UI.click, () => this.handleAddFirst()),
-								new Text("Add One"),
-							)
+							UI.presentational,
+							{
+								fontSize: "30px",
+								fontWeight: "600",
+								marginBottom: "30px",
+							},
+							new Text("This patch has no blades."),
 						),
+						UI.actionButton("filled", 
+							{
+								marginTop: "10px",
+							},
+							Htx.on(UI.click, () => this.handleAddFirst()),
+							new Text("Add One"),
+						)
 					),
 				),
 				
 				this.footerElement = Htx.div(
 					"footer",
+					UI.visibleWhenNotEmpty(this.bladesElement),
 					{
 						margin: "auto",
 						maxWidth: "400px",
@@ -83,6 +89,7 @@ namespace Turf
 					Origin.left,
 					UI.clickable,
 					UI.anchorTopLeft(30),
+					{ zIndex: "1" }, // Elevate the chevron so that it goes above the "no blades" message
 					Htx.on("click", () => this.handleBack())
 				),
 			);
@@ -167,7 +174,20 @@ namespace Turf
 			}
 			else
 			{
+				const key = ConstS.baseFolderPrefix + meta.id;
+				baseFolder = localStorage.getItem(key) || "";
 				
+				if (TAURI)
+				{
+					const choice = await Tauri.dialog.open({
+						recursive: true,
+						directory: true,
+						multiple: false,
+						defaultPath: "",
+					});
+				}
+				
+				localStorage.setItem(key, baseFolder);
 			}
 			
 			await Export.single(this.record, meta, baseFolder);

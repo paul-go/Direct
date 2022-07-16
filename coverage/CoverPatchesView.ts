@@ -5,9 +5,7 @@ namespace Cover
 	export async function coverPatchesView()
 	{
 		await Turf.createApp({ shell: true });
-		
 		const db = await Turf.createDatabase("coverPatchesView");
-		
 		const patches: Turf.PatchRecord[] = [];
 		
 		for (let i = -1; ++i < 20;)
