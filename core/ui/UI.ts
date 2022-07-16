@@ -330,6 +330,27 @@ namespace Turf
 			};
 		}
 		
+		/**
+		 * Returns a placeholder DOM Node that is replaced with the contents
+		 * of the specified function, when the attached element is connected
+		 * to the DOM.
+		 */
+		export function spaceFor(fn: () => HTMLElement | void): Htx.Param[]
+		{
+			const comment = document.createComment("pending");
+			return [
+				comment,
+				() =>
+				{
+					const returnedElement = fn();
+					if (returnedElement)
+						comment.replaceWith(returnedElement);
+					else
+						comment.remove();
+				}
+			];
+		}
+		
 		/** */
 		export async function wait(ms = 0)
 		{
