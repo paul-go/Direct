@@ -4,6 +4,8 @@ namespace Turf
 	/** */
 	export abstract class BladeView
 	{
+		static readonly headerHeight = "100px";
+		
 		/** */
 		static new(record: BladeRecord)
 		{
@@ -41,7 +43,7 @@ namespace Turf
 					"blade-header",
 					{
 						display: "flex",
-						height: "100px",
+						height: BladeView.headerHeight,
 						paddingLeft: headerPadding,
 						paddingRight: headerPadding,
 					},

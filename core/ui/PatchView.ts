@@ -19,6 +19,9 @@ namespace Turf
 			
 			this.root = Htx.div(
 				"patch-view",
+				
+				Htx.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
+				
 				UI.anchorTop(),
 				{
 					minHeight: "100vh",
@@ -85,12 +88,26 @@ namespace Turf
 						new Text("Export"),
 					)
 				),
-				UI.chevron(
-					Origin.left,
+				
+				this.headerScreen = Htx.div(
+					"header-screen",
+					{
+						position: "fixed",
+						top: "0",
+						left: "0",
+						borderBottomRightRadius: UI.borderRadius.large,
+						height: BladeView.headerHeight,
+						transitionDuration: "0.33s",
+						transitionProperty: "background-color",
+						padding: "35px",
+						// Elevate the chevron so that it goes above the "no blades" message
+						zIndex: "1",
+					},
 					UI.clickable,
-					UI.anchorTopLeft(30),
-					{ zIndex: "1" }, // Elevate the chevron so that it goes above the "no blades" message
-					Htx.on("click", () => this.handleBack())
+					Htx.on("click", () => this.handleBack()),
+					UI.chevron(
+						Origin.left,
+					),
 				),
 			);
 			
@@ -103,11 +120,13 @@ namespace Turf
 			});
 			
 			Controller.set(this);
+			console.log(this.root);
 			Saver.set(this);
 		}
 		
 		readonly root;
 		readonly blades;
+		private readonly headerScreen;
 		private readonly bladesElement;
 		private readonly footerElement;
 		private readonly record;
@@ -134,6 +153,14 @@ namespace Turf
 			this.backFn = fn;
 		}
 		private backFn = () => {};
+		
+		/** */
+		private toggleHeader(visible: boolean)
+		{
+			const s = this.headerScreen;
+			s.style.backgroundColor = visible ? UI.gray(128, 0.25) : "transparent";
+			s.style.backdropFilter = visible ? "blur(8px)" : "none";
+		}
 		
 		/** */
 		private handleBack()
