@@ -37,6 +37,7 @@ namespace Htx { { } }
 	class HtxEvent
 	{
 		constructor(
+			readonly target: Node | null,
 			readonly eventName: string,
 			readonly handler: (ev: Event) => void,
 			readonly options: AddEventListenerOptions = {})
@@ -44,9 +45,23 @@ namespace Htx { { } }
 	}
 	
 	/** */
-	function on(eventName: string, handler: () => void, options?: AddEventListenerOptions)
+	function on(...args: any[])
 	{
-		return new HtxEvent(eventName, handler, options);
+		/*
+		
+		Actual argument structure looks like:
+			target?: Node,
+			eventName: string,
+			handler: () => void,
+			options?: Htx.EventListenerOptions)
+		
+		*/
+		
+		const target: Node | null = typeof args[0] === "string" ? null : args[0];
+		const eventName: string = typeof args[0] === "string" ? args[0] : args[1];
+		const handler = typeof args[1] === "function" ? args[1] : args[2];
+		const options: AddEventListenerOptions = typeof args.at(-1) === "function" ? {} : args.at(-1);
+		return new HtxEvent(target, eventName, handler, options);
 	}
 	
 	/** */
@@ -85,7 +100,25 @@ namespace Htx { { } }
 			
 			if (param instanceof HtxEvent)
 			{
-				e.addEventListener(param.eventName, param.handler, param.options);
+				const node = param.target;
+				if (node)
+				{
+					let handler: (ev: Event) => void;
+					node.addEventListener(param.eventName, handler = (ev: Event) =>
+					{
+						if (e.isConnected)
+							param.handler(ev as any);
+						else
+							node.removeEventListener(param.eventName, handler);
+					});
+				}
+				else
+				{
+					e.addEventListener(
+						param.eventName,
+						param.handler,
+						param.options);
+				}
 			}
 			else if (param instanceof Node)
 			{
@@ -564,7 +597,13 @@ namespace Htx
 	export declare function on<K extends keyof HTMLElementEventMap>(
 		type: K,
 		listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
-		options?: boolean | AddEventListenerOptions): Event;
+		options?: boolean | EventListenerOptions): Event;
+	/** */
+	export declare function on<K extends keyof HTMLElementEventMap>(
+		contingent: Node | Window,
+		type: K,
+		listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+		options?: boolean | EventListenerOptions): Event;
 	
 	/** */
 	export declare class Event
@@ -572,7 +611,7 @@ namespace Htx
 		constructor(
 			eventName: string,
 			handler: (ev: Event) => void,
-			options?: AddEventListenerOptions)
+			options?: EventListenerOptions)
 		
 		private readonly undefined: undefined;
 	}
