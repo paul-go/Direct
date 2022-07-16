@@ -98,60 +98,66 @@ namespace Htx { { } }
 			if (!param)
 				continue;
 			
-			if (param instanceof HtxEvent)
+			if (param instanceof Node)
 			{
-				const node = param.target;
-				if (node)
+				e.append(param as Node);
+			}
+			// This code is performance critical. It uses constructor checks 
+			// instead of instanceof and typeof for performance reasons.
+			else switch (param.constructor)
+			{
+				case HtxEvent:
 				{
-					let handler: (ev: Event) => void;
-					node.addEventListener(param.eventName, handler = (ev: Event) =>
+					const evt = param as HtxEvent;
+					const node = evt.target;
+					if (node)
 					{
-						if (e.isConnected)
-							param.handler(ev as any);
-						else
-							node.removeEventListener(param.eventName, handler);
-					});
-				}
-				else
-				{
-					e.addEventListener(
-						param.eventName,
-						param.handler,
-						param.options);
-				}
-			}
-			else if (param instanceof Node)
-			{
-				e.append(param);
-			}
-			else if (typeof param === "string")
-			{
-				e.classList.add(param);
-			}
-			else if (typeof param === "object" && param.constructor === Object)
-			{
-				const el = e as any;
-				
-				for (const [name, value] of Object.entries(param))
-				{
-					if (name === "data")
-					{
-						for (const [attrName, attrValue] of Object.entries(value || {}))
-							e.setAttribute("data-" + attrName, String(attrValue));
+						let handler: (ev: Event) => void;
+						node.addEventListener(evt.eventName, handler = (ev: Event) =>
+						{
+							if (e.isConnected)
+								evt.handler(ev as any);
+							else
+								node.removeEventListener(evt.eventName, handler);
+						});
 					}
-					// Width and height properties are special cased.
-					// They are interpreted as CSS properties rather
-					// than HTML attributes.
-					else if (name in e && name !== "width" && name !== "height")
-						el[name] = value;
-					
-					else if (cssPropertySet.has(name))
-						el.style[name] = value.toString();
+					else
+					{
+						e.addEventListener(
+							evt.eventName,
+							evt.handler,
+							evt.options);
+					}
 				}
-			}
-			else if (typeof param === "function")
-			{
-				defer(e as HTMLElement, param);
+				break; case String:
+				{
+					e.classList.add(param as string);
+				}
+				break; case Object:
+				{
+					const el = e as any;
+					
+					for (const [name, value] of Object.entries(param))
+					{
+						if (name === "data")
+						{
+							for (const [attrName, attrValue] of Object.entries(value || {}))
+								e.setAttribute("data-" + attrName, String(attrValue));
+						}
+						// Width and height properties are special cased.
+						// They are interpreted as CSS properties rather
+						// than HTML attributes.
+						else if (name in e && name !== "width" && name !== "height")
+							el[name] = value;
+						
+						else if (cssPropertySet.has(name))
+							el.style[name] = value.toString();
+					}
+				}
+				break; case Function:
+				{
+					defer(e as HTMLElement, param as (e: HTMLElement) => void);
+				}
 			}
 		}
 		
@@ -465,7 +471,7 @@ namespace Htx
 		Event |
 		// Defered closure
 		((e: HTMLElement) => void) |
-		// Conditional elements
+		// Conditionals
 		false | undefined | null | void |
 		NodeLike |
 		Style |
