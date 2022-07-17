@@ -7,13 +7,23 @@ namespace Turf
 		/** */
 		static of(target: Element | Controller.IController)
 		{
-			return Controller.over(target, AppContainer);
+			return Controller.over(target, AppContainer as any as new() => AppContainer);
 		}
 		
 		/** */
-		constructor(
+		static async new(root: HTMLElement, database: Back)
+		{
+			const container = new AppContainer(root, database);
+			const meta = await database?.first?.(MetaRecord) ?? new MetaRecord();
+			const homePatch = meta.homePatch || (meta.homePatch = new PatchRecord());
+			Object.assign(container, { meta, homePatch } as Partial<AppContainer>);
+			return container;
+		}
+		
+		/** */
+		private constructor(
 			readonly root: HTMLElement,
-			database: Back | null)
+			readonly database: Back)
 		{
 			Htx.from(root)(
 				CssClass.appRoot,
@@ -22,30 +32,14 @@ namespace Turf
 				}
 			);
 			
-			this._database = database;
-			
 			Controller.set(this);
 		}
 		
 		/** */
-		get database()
-		{
-			if (!this._database)
-				throw "Database not loaded.";
-			
-			return this._database;
-		}
-		private _database: Back | null = null;
+		readonly meta: MetaRecord = {} as any;
 		
 		/** */
-		get meta()
-		{
-			if (this._currentMeta)
-				return this._currentMeta;
-			
-			return this._currentMeta = new MetaRecord();
-		}
-		private _currentMeta: MetaRecord | null = null;
+		readonly homePatch: PatchRecord = {} as any;
 		
 		/** */
 		get currentMediaStore()

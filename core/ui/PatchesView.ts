@@ -5,23 +5,24 @@ namespace Turf
 	export class PatchesView
 	{
 		/** */
-		constructor(private readonly db: Back)
+		constructor()
 		{
 			this.root = Htx.div(
-				"patches-view",
+				CssClass.patchesView,
 				this.headerElement = this.renderHeader(),
 				this.patchesList = Htx.div(
 					"patches-list",
+					...UI.spaceFor(() => this.renderHomePatchButton()),
 					this.addPatchButton = this.renderAddPatchButton(),
-			 		() => this.populate()
+					() => this.populatePatches()
 				)
 			);
 		}
 		
 		readonly root;
 		private readonly headerElement;
-		private readonly patchesList;
 		private readonly addPatchButton;
+		private readonly patchesList;
 		
 		/** */
 		private renderHeader()
@@ -53,6 +54,33 @@ namespace Turf
 		}
 		
 		/** */
+		private renderHomePatchButton()
+		{
+			const homePatch = AppContainer.of(this).homePatch;
+			
+			return this.renderTile([
+				{
+					backgroundImage: "linear-gradient(45deg, #222, black)",
+				},
+				homePatch.datePublished > 0 ? null : Htx.div(
+					UI.anchorTop(15),
+					{
+						width: "max-content",
+						margin: "auto",
+						borderRadius: UI.borderRadius.max,
+						color: "white",
+						fontSize: "max(16px, 1vw)",
+						fontWeight: "700",
+						backgroundColor: UI.primaryColor,
+						padding: "0.5vw 1.5vw",
+					},
+					new Text("Draft"),
+				),
+				new Text("Home"),
+			], homePatch);
+		}
+		
+		/** */
 		private renderAddPatchButton()
 		{
 			return this.renderTile([
@@ -77,9 +105,11 @@ namespace Turf
 		}
 		
 		/** */
-		private async populate()
+		private async populatePatches()
 		{
-			for await (const patch of this.db.each(PatchRecord, "peek"))
+			const db = AppContainer.of(this).database;
+			
+			for await (const patch of db.each(PatchRecord, "peek"))
 				this.patchesList.append(this.renderPatchTile(patch));
 		}
 		
@@ -218,9 +248,7 @@ namespace Turf
 			patchView.setKeepCallback(patch =>
 			{
 				doingKeep = true;
-				this.addPatchButton.remove();
-				
-				this.patchesList.prepend(
+				this.addPatchButton.replaceWith(
 					this.renderAddPatchButton(),
 					this.renderPatchTile(patch));
 			});
@@ -238,7 +266,7 @@ namespace Turf
 						s.transitionDuration = "0";
 						await UI.wait();
 						s.opacity = "1";
-						s.transformOrigin = "50% 0";
+						s.transformOrigin = "100% 0";
 						await UI.wait();
 						s.transitionDuration = transitionDuration;
 						await UI.wait();

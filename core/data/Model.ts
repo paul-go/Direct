@@ -15,6 +15,8 @@ namespace Turf
 		userPassword = "";
 		userAccessKey = "";
 		userSecretKey = "";
+		
+		homePatch = Back.reference(PatchRecord);
 	}
 	
 	/** */

@@ -4,17 +4,22 @@ namespace Turf
 	/** */
 	export class PatchView
 	{
-		/** */
+		/**
+		 * Creates a new PatchView instance, which is populated with data
+		 * from the specified PatchRecord. If the PatchRecord argument is
+		 * omitted, this indicates that this PatchView should create it a new, 
+		 * unsaved record.
+		 */
 		constructor(record?: PatchRecord)
 		{
-			this.isNewRecord = !record;
 			this.record = record || (() =>
 			{
-				const r = new PatchRecord();
-				r.slug = Util.generatePatchSlug();
-				return r;
+				const patch = new PatchRecord();
+				patch.slug = Util.generatePatchSlug();
+				return patch;
 			})();
 			
+			this.isNewRecord = !record;
 			const minHeight: Htx.Param = { minHeight: "85vh" };
 			
 			this.root = Htx.div(
@@ -27,6 +32,11 @@ namespace Turf
 					minHeight: "100vh",
 					paddingBottom: "10px",
 					backgroundColor: "black",
+					
+					transitionDuration: "0.5s",
+					transitionProperty: "transform, opacity",
+					transformOrigin: "0 0",
+					opacity: "1",
 				},
 				minHeight,
 				this.bladesElement = Htx.div(
@@ -126,11 +136,11 @@ namespace Turf
 		
 		readonly root;
 		readonly blades;
+		private readonly record;
 		private readonly headerScreen;
 		private readonly bladesElement;
 		private readonly footerElement;
-		private readonly record;
-		private isNewRecord: boolean;
+		private readonly isNewRecord: boolean;
 		
 		/** */
 		save()
@@ -163,14 +173,32 @@ namespace Turf
 		}
 		
 		/** */
-		private handleBack()
+		private async handleBack()
 		{
 			this.save();
 			
-			if (this.isNewRecord && this.blades.length > 0)
-				this.keepFn(this.record);
-			
-			this.backFn();
+			// If there is no PatchesView sitting behind this PatchView, its because
+			// the application launched directly into a PatchView for editing the
+			// home page, and so we need to insert a new PatchesView.
+			if (Query.find(CssClass.patchesView, AppContainer.of(this).root).length === 0)
+			{
+				const patchesView = new PatchesView();
+				const app = AppContainer.of(this);
+				app.root.prepend(patchesView.root);
+				await UI.wait();
+				const s = this.root.style;
+				s.opacity = "0";
+				s.transform = "scale(0.3333)";
+				await UI.waitTransitionEnd(this.root);
+				this.root.remove();
+			}
+			else
+			{
+				if (this.isNewRecord && this.blades.length > 0)
+					this.keepFn(this.record);
+				
+				this.backFn();
+			}
 		}
 		
 		/** */

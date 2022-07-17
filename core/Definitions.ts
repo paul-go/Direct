@@ -26,6 +26,7 @@ const enum CssClass
 	dragOverScreen = "drag-over-screen",
 	hide = "hide",
 	appRoot = "app-root",
+	patchesView = "patches-view",
 	patchViewTransition = "patch-view-transition",
 	
 	// Player classes

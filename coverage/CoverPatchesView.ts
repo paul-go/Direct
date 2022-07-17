@@ -19,6 +19,6 @@ namespace Cover
 		}
 		
 		await db.save(...patches);
-		Cover.display(new Turf.PatchesView(db));
+		Cover.display(new Turf.PatchesView());
 	}
 }

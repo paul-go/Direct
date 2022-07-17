@@ -4,9 +4,7 @@ namespace Cover
 	/** */
 	export async function coverDatabase()
 	{
-		const dbName = "coverDatabase";
-		await Turf.Back.delete(dbName);
-		const db1 = await Turf.createDatabase(dbName);
+		const [db1, dbName] = await setup();
 		
 		const patch = new Turf.PatchRecord();
 		const blade1 = new Turf.CaptionedBladeRecord();
@@ -29,9 +27,7 @@ namespace Cover
 	/** */
 	export async function coverInstance()
 	{
-		const dbName = "coverInstance";
-		await Turf.Back.delete(dbName);
-		const db1 = await Turf.createDatabase(dbName);
+		const [db1, dbName] = await setup();
 		
 		const media = new Turf.MediaRecord();
 		media.name = "media.jpg";
@@ -60,9 +56,7 @@ namespace Cover
 	/** */
 	export async function coverMediaObject()
 	{
-		const dbName = "coverMediaObject";
-		await Turf.Back.delete(dbName);
-		const db = await Turf.createDatabase(dbName);
+		const [db] = await setup();
 		
 		const mo = new Turf.MediaRecord();
 		const array = new Uint8Array([0, 1, 2, 3]);
@@ -82,9 +76,7 @@ namespace Cover
 	/** */
 	export async function coverArrayReassignment()
 	{
-		const dbName = "coverArrayReassignment";
-		await Turf.Back.delete(dbName);
-		const db1 = await Turf.createDatabase(dbName);
+		const [db1, dbName] = await setup();
 		
 		const frame1 = new Turf.FrameRecord();
 		const gallery = new Turf.GalleryBladeRecord();
@@ -116,9 +108,7 @@ namespace Cover
 	/** */
 	export async function coverIteration()
 	{
-		const dbName = "coverIteration";
-		await Turf.Back.delete(dbName);
-		const db1 = await Turf.createDatabase(dbName);
+		const [db1, dbName] = await setup();
 		
 		const media = new Turf.MediaRecord();
 		
@@ -145,5 +135,14 @@ namespace Cover
 			() => frames[1].captionLine1 === frame2.captionLine1,
 			() => frames[2].captionLine1 === frame3.captionLine1,
 		];
+	}
+	
+	/** */
+	async function setup()
+	{
+		const dbName = Moduless.getRunningFunctionName();
+		await Turf.Back.delete(dbName);
+		const db = await Turf.createDatabase(dbName);
+		return [db, dbName] as [Turf.Back, string];
 	}
 }

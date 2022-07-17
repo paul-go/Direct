@@ -4,16 +4,16 @@ namespace Cover
 	/** */
 	export async function coverPatchViewEmpty()
 	{
-		await Turf.createApp({ shell: true });
-		const pv = new Turf.PatchView();
+		const app = await Turf.createApp({ shell: true });
+		const pv = new Turf.PatchView(app.homePatch);
 		Cover.display(pv);
 	}
 	
 	/** */
 	export async function coverPatchViewWithCaptioned()
 	{
-		await Turf.createApp({ shell: true });
-		const pv = new Turf.PatchView();
+		const app = await Turf.createApp({ shell: true });
+		const pv = new Turf.PatchView(app.homePatch);
 		const bv1 = new Turf.CaptionedBladeView();
 		const bv2 = new Turf.CaptionedBladeView();
 		pv.blades.insert(bv1);
@@ -24,8 +24,8 @@ namespace Cover
 	/** */
 	export async function coverPatchViewWithGallery()
 	{
-		await Turf.createApp({ shell: true });
-		const pv = new Turf.PatchView();
+		const app = await Turf.createApp({ shell: true });
+		const pv = new Turf.PatchView(app.homePatch);
 		const bv = new Turf.GalleryBladeView();
 		pv.blades.insert(bv);
 		Cover.display(pv);
@@ -34,8 +34,8 @@ namespace Cover
 	/** */
 	export async function coverPatchViewWithVideo()
 	{
-		await Turf.createApp({ shell: true });
-		const pv = new Turf.PatchView();
+		const app = await Turf.createApp({ shell: true });
+		const pv = new Turf.PatchView(app.homePatch);
 		const bv = new Turf.VideoBladeView();
 		pv.blades.insert(bv);
 		Cover.display(pv);
@@ -44,8 +44,8 @@ namespace Cover
 	/** */
 	export async function coverPatchViewWithProse()
 	{
-		await Turf.createApp({ shell: true });
-		const pv = new Turf.PatchView();
+		const app = await Turf.createApp({ shell: true });
+		const pv = new Turf.PatchView(app.homePatch);
 		const bv = new Turf.ProseBladeView();
 		pv.blades.insert(bv);
 		Cover.display(pv);

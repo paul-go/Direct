@@ -27,13 +27,15 @@ namespace Turf
 		
 		Turf.appendCss();
 		const container = options?.container ?? document.body;
-		const app = new AppContainer(container, database);
+		const app = await AppContainer.new(container, database);
 		
 		if (options?.shell !== true)
 		{
-			const view = new Turf.PatchesView(database);
+			const view = new Turf.PatchView(app.homePatch);
 			app.root.append(view.root);
 		}
+		
+		return app;
 	}
 	
 	/** */
@@ -53,10 +55,5 @@ namespace Turf
 	}
 	
 	if (document.documentElement.hasAttribute("data-autostart"))
-	{
-		setTimeout(async () =>
-		{
-			createApp();
-		});
-	}
+		setTimeout(() => createApp())
 }
