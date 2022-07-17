@@ -236,22 +236,29 @@ namespace Turf
 		}
 		
 		/** */
-		protected createMediaRecord(ev: DragEvent)
+		protected createMediaRecords(
+			ev: DragEvent,
+			accept: MimeClass[] = [MimeClass.image])
 		{
-			const dt = ev.dataTransfer!;
-			if (dt.files.length === 0)
-				return null;
+			const records: MediaRecord[] = [];
 			
-			const file = dt.files[0];
-			const mimeType = MimeType.from(file.type);
-			if (!mimeType)
-				return null;
-			
-			const record = new MediaRecord();
-			record.blob = new Blob([file]);
-			record.name = file.name;
-			record.type = mimeType;
-			return record;
+			for (const file of Array.from(ev.dataTransfer?.files || []))
+			{
+				const mimeType = MimeType.from(file.type);
+				if (!mimeType)
+					continue;
+				
+				if (!accept.includes(MimeType.getClass(file.type)))
+					continue;
+				
+				const record = new MediaRecord();
+				record.blob = new Blob([file]);
+				record.name = file.name;
+				record.type = mimeType;
+				records.push(record);
+			}
+		
+			return records;
 		}
 		
 		/**

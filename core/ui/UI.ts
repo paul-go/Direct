@@ -87,6 +87,20 @@ namespace Turf
 		}
 		
 		/** */
+		export function cueLabel(text: string)
+		{
+			return [
+				{
+					fontStyle: "italic",
+					fontWeight: "700",
+					fontSize: "25px",
+					color: UI.white(0.5),
+				},
+				new Text(text)
+			];
+		}
+		
+		/** */
 		export const presentational: Htx.Style = {
 			pointerEvents: "none",
 			cursor: "default",
@@ -418,7 +432,13 @@ namespace Turf
 			};
 			
 			exec();
-			new MutationObserver(() => exec()).observe(watchTarget, { childList: true });
+			UI.onChildrenChanged(watchTarget, exec);
+		}
+		
+		/** */
+		export function onChildrenChanged(e: HTMLElement, fn: () => void)
+		{
+			new MutationObserver(() => fn()).observe(e, { childList: true });
 		}
 		
 		/** */

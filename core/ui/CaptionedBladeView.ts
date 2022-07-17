@@ -110,10 +110,11 @@ namespace Turf
 			if (dt.files.length === 0)
 				return;
 			
-			const mediaRecord = this.createMediaRecord(ev);
-			if (!mediaRecord)
+			const mediaRecords= this.createMediaRecords(ev, [MimeClass.image, MimeClass.video]);
+			if (mediaRecords.length === 0)
 				return;
 			
+			const mediaRecord = mediaRecords[0];
 			const { y } = UI.getLayerCoords(this.sceneContainer, ev);
 			const isBackground = y > this.sceneContainer.offsetHeight / 2;
 			

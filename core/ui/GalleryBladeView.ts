@@ -23,72 +23,32 @@ namespace Turf
 					),
 					Htx.on("drop", ev =>
 					{
-						const dt = ev.dataTransfer!;
-						
-						const imageFiles = Array.from(dt.files)
-							.filter(f => MimeType.getClass(f.type) === MimeClass.image);
-						
-						if (imageFiles.length === 0)
+						const mediaRecords = this.createMediaRecords(ev);
+						if (mediaRecords.length === 0)
 							return;
 						
-						const isLeft = ev.offsetX < window.innerWidth / 2;
-						const ms = AppContainer.of(this).currentMediaStore;
-						const mediaObjects = imageFiles.map(file => ms.add(file));
-						const visibleImage = this.getVisibleImage();
+						const visibleFrame = this.getVisibleFrame();
+						const newFrames: FrameView[] = [];
 						
-						const newImages = mediaObjects.map(mediaObject =>
+						for (const mediaRecord of mediaRecords)
 						{
-							const newImage: HTMLElement = Htx.div(
-									Class.imageContainer,
-									{
-										scrollSnapAlign: "start",
-										display: "inline-block",
-										width: "100%",
-										height: "100%",
-										background: "black",
-									},
-									Htx.img(
-										{
-											src: mediaObject.url,
-											width: "100%",
-											height: "100%",
-											objectFit: "contain",
-										}
-									),
-									Htx.div(
-										UI.anchor(),
-										UI.clickable,
-										{
-											margin: "auto",
-											padding: "20px",
-											backgroundColor: UI.black(0.75),
-											color: "white",
-											maxWidth: "max-content",
-											maxHeight: "max-content",
-											borderRadius: UI.borderRadius.default
-										},
-										new Text("Delete"),
-										Htx.on("click", ev => newImage.remove())
-									)
-								);
-							
-							return newImage;
-						});
-						
-						if (!visibleImage)
-						{
-							this.galleryContainer.append(...newImages);
+							const frameRecord = new FrameRecord();
+							frameRecord.media = mediaRecord;
+							const frameView = new FrameView(frameRecord);
+							newFrames.push(frameView);
 						}
-						else
+						
+						const isLeft = ev.offsetX < window.innerWidth / 2;
+						
+						if (visibleFrame)
 						{
 							if (isLeft)
-								newImages.reverse();
-							
-							const pos: InsertPosition = isLeft ? "beforebegin" : "afterend";
-							
-							for (const e of newImages)
-								visibleImage.insertAdjacentElement(pos, e);
+								visibleFrame.root.before(...newFrames.map(f => f.root));
+							else
+								visibleFrame.root.after(...newFrames.map(f => f.root));
 						}
+						else
+							this.galleryContainer.append(...newFrames.map(f => f.root));
 					})
 				),
 				
@@ -101,22 +61,30 @@ namespace Turf
 						whiteSpace: "nowrap",
 						borderRadius: "inherit",
 					},
+					Htx.on("scroll", () => this.updateButtons()),
 					Htx.div(
 						UI.visibleWhenAlone(),
 						UI.flexCenter,
-						new Text("Drop an image here"),
+						{
+							height: "100%",
+						},
+						...UI.cueLabel("Drop an image here.")
 					),
+					...this.record.frames.map(f => new FrameView(f).root)
 				)
 			);
 			
 			this.setBladeButtons(
 				() =>
 				{
-					
+					this.getVisibleFrame()?.setSize(this.coverButton.selected ? "cover" : "contain");
 				},
 				this.coverButton,
 				this.containButton,
 			);
+			
+			this.updateButtons();
+			UI.onChildrenChanged(this.galleryContainer, () => this.updateButtons());
 		}
 		
 		private readonly galleryContainer: HTMLElement;
@@ -134,18 +102,98 @@ namespace Turf
 		});
 		
 		/** */
-		private getVisibleImage()
+		private getVisibleFrame()
 		{
 			const gc = this.galleryContainer;
 			const index = Math.round(gc.scrollLeft / gc.offsetWidth);
-			const imageContainers = Query.find(Class.imageContainer, gc);
-			return imageContainers.length > 0 ? imageContainers[index] : null;
+			const frameViews = Controller.map(Query.children(gc), FrameView);
+			return frameViews.length > 0 ? frameViews[index] : null;
+		}
+		
+		/** */
+		private updateButtons()
+		{
+			const currentVisibleFrame = this.getVisibleFrame();
+			
+			if (currentVisibleFrame === null)
+			{
+				this.coverButton.enabled = false;
+				this.containButton.enabled = false;
+			}
+			else
+			{
+				this.coverButton.enabled = true;
+				this.containButton.enabled = true;
+				const cover = currentVisibleFrame.record.size === "cover";
+				this.coverButton.selected = cover;
+				this.containButton.selected = !cover;
+			}
 		}
 		
 		/** */
 		save()
 		{
 			
+		}
+	}
+	
+	/** */
+	class FrameView
+	{
+		/** */
+		constructor(readonly record: FrameRecord)
+		{
+			const media = record.media!;
+			
+			this.root = Htx.div(
+				{
+					scrollSnapAlign: "start",
+					display: "inline-block",
+					overflow: "hidden",
+					width: "100%",
+					height: "100%",
+				},
+				Htx.div(
+					UI.anchor(-40),
+					{
+						backgroundImage: media.getBlobCssUrl(),
+						backgroundSize: "100% 100%",
+						filter: "blur(40px)",
+					}
+				),
+				this.imageElement = Htx.img(
+					{
+						src: media.getBlobUrl(),
+						width: "100%",
+						height: "100%",
+						objectFit: "contain",
+					}
+				),
+				UI.clickLabel(
+					UI.anchorTopRight(20),
+					{
+						padding: "20px 30px",
+						backgroundColor: UI.black(0.5),
+						backdropFilter: "blur(5px)",
+						borderRadius: UI.borderRadius.large,
+					},
+					new Text("Delete"),
+					Htx.on("click", () => this.root.remove())
+				)
+			);
+			
+			this.setSize(record.size);
+			Controller.set(this);
+		}
+		
+		readonly root;
+		private readonly imageElement;
+		
+		/** */
+		setSize(sizeMethod: SizeMethod)
+		{
+			this.record.size = sizeMethod;
+			this.imageElement.style.objectFit = sizeMethod;
 		}
 	}
 	
