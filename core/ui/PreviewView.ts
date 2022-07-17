@@ -14,7 +14,7 @@ namespace Turf
 				{
 					zIndex: "1",
 					backgroundColor: "black",
-					boxShadow: "0 0 0 100px " + UI.gray(128, 0.33),
+					boxShadow: "0 0 0 100px " + UI.gray(64, 0.75),
 					borderRadius: UI.borderRadius.large
 				},
 				

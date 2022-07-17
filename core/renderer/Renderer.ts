@@ -33,10 +33,10 @@ namespace Turf
 		{ }
 		
 		/** */
-		getMediaUrl(media: MediaRecord)
+		getMediaUrl(media: MediaRecord, css?: "css")
 		{
 			if (this.isPreview)
-				return media.getBlobUrl();
+				return css ? media.getBlobCssUrl() : media.getBlobUrl();
 			
 			return media.getHttpUrl();
 		}
@@ -312,14 +312,15 @@ namespace Turf
 				if (!frame.media)
 					return null;
 				
-				const src = bun.getMediaUrl(frame.media)
+				const src = bun.getMediaUrl(frame.media);
+				const bgImage = bun.getMediaUrl(frame.media, "css");
+				
 				const frameDiv = Htx.div(
 					CssClass.galleryFrame,
+					frame.size === "contain" && RenderUtil.createImageFiller(bgImage),
 					Htx.img(
-						{
-							src,
-							objectFit: frame.size
-						}
+						{ src },
+						frame.size === "cover" ? { objectFit: "cover" } : {}
 					)
 				);
 				

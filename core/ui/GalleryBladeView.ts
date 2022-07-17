@@ -83,7 +83,7 @@ namespace Turf
 		});
 		
 		/** */
-		private importMedia(files: FileList | undefined, dropOffsetX = 0)
+		private async importMedia(files: FileList | undefined, dropOffsetX = 0)
 		{
 			const mediaRecords = this.createMediaRecords(files, [MimeClass.image]);
 			if (mediaRecords.length === 0)
@@ -111,6 +111,12 @@ namespace Turf
 			}
 			else
 				this.galleryContainer.append(...newFrames.map(f => f.root));
+			
+			await UI.wait();
+			
+			this.record.frames = Controller
+				.map(this.galleryContainer, FrameView)
+				.map(v => v.record);
 		}
 		
 		/** */
@@ -165,14 +171,7 @@ namespace Turf
 					width: "100%",
 					height: "100%",
 				},
-				Htx.div(
-					UI.anchor(-ConstN.fillerContentBlur),
-					{
-						backgroundImage: media.getBlobCssUrl(),
-						backgroundSize: "100% 100%",
-						filter: `blur(${ConstN.fillerContentBlur}px)`,
-					}
-				),
+				RenderUtil.createImageFiller(media.getBlobCssUrl()),
 				this.imageElement = Htx.img(
 					{
 						src: media.getBlobUrl(),

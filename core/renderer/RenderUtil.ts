@@ -60,4 +60,27 @@ namespace Turf.RenderUtil
 		
 		return meta.colorScheme[colorIndex];
 	}
+	
+	/**
+	 * 
+	 */
+	export function createImageFiller(src: string)
+	{
+		return Htx.div(
+			UI.anchor(-ConstN.fillerContentBlur),
+			{
+				backgroundImage: src,
+				backgroundSize: "100% 100%",
+				filter: `blur(${ConstN.fillerContentBlur}px)`,
+			}
+		)
+	}
+	
+	/**
+	 * 
+	 */
+	export function createVideoFiller()
+	{
+		
+	}
 }
