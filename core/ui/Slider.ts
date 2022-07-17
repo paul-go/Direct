@@ -11,7 +11,7 @@ namespace Turf
 				{
 					height: (thumbSize + thumbPadding * 2) + "px",
 					padding: thumbPadding + "px",
-					outline: "5px solid " + UI.white(0.15),
+					boxShadow: "inset 0 0 0 5px " + UI.white(0.15),
 					borderRadius: "1000px",
 				},
 				Htx.on("pointerdown", () =>
@@ -45,7 +45,7 @@ namespace Turf
 							width: thumbSize + "px",
 							height: thumbSize + "px",
 							borderRadius: "100%",
-							outline: "4px solid white",
+							boxShadow: "inset 0 0 0 4px white",
 							color: "white",
 							fontWeight: "900",
 						}
