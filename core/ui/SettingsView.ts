@@ -55,7 +55,7 @@ namespace Turf
 						UI.clickable,
 						UI.anchorBottomRight(20),
 						UI.checkmark({ filter: "invert(1)" }),
-						Htx.on(UI.click, () =>
+						Htx.on(UI.clickEvt, () =>
 						{
 							//this.save();
 							UI.removeWithFade(this.root);
@@ -114,7 +114,7 @@ namespace Turf
 					borderStyle: "solid",
 					borderColor: "transparent",
 				},
-				Htx.on(UI.click, () =>
+				Htx.on(UI.clickEvt, () =>
 				{
 					this.select();
 					this.selectedFn();

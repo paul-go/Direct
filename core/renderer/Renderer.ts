@@ -123,8 +123,7 @@ namespace Turf
 	{
 		const blade = bun.blade;
 		const out: Htx.Param[] = [
-			CssClass.captionScene,
-			blade.origin
+			CssClass.captionScene
 		];
 		
 		// Background
@@ -170,6 +169,22 @@ namespace Turf
 				}
 			);
 			
+			let textContainer: HTMLElement = fg;
+			
+			if (blade.textContrast)
+			{
+				textContainer = RenderUtil.setContrast(Htx.div(), blade.textContrast);
+				fg.append(textContainer);
+			}
+			
+			if (blade.contentImage)
+			{
+				Htx.img(
+					CssClass.captionSceneContentImage,
+					{ src: bun.getMediaUrl(blade.contentImage) }
+				);
+			}
+			
 			if (blade.titles.length > 0)
 			{
 				const h2 = Htx.h2();
@@ -185,11 +200,11 @@ namespace Turf
 					));
 				}
 				
-				fg.append(h2);
+				textContainer.append(h2);
 			}
 			
 			if (blade.description.length > 0)
-				fg.append(...convertDescriptionToParagraphs(blade.description));
+				textContainer.append(...convertDescriptionToParagraphs(blade));
 			
 			out.push(fg);
 		}
@@ -198,13 +213,13 @@ namespace Turf
 	}
 	
 	/** */
-	function convertDescriptionToParagraphs(description: string)
+	function convertDescriptionToParagraphs(blade: CaptionedBladeRecord)
 	{
 		interface IRegion { text: string, bold: boolean; href: string }
 		const regions: IRegion[] = [];
 		const empty: IRegion = { text: "", bold: false, href: "" };
 		const shim = Htx.div();
-		shim.innerHTML = description;
+		shim.innerHTML = blade.description;
 		
 		const recurse = (e: Element, bold: boolean, href: string) =>
 		{
@@ -294,10 +309,13 @@ namespace Turf
 		
 		htmlParts.push("</p>");
 		
-		const container = Htx.div();
+		const container = Htx.div({
+			fontSize: UI.vsize(blade.descriptionSize)
+		});
+		
 		container.innerHTML = htmlParts.join("");
 		
-		return Array.from(container.children) as HTMLParagraphElement[]
+		return Array.from(container.children) as HTMLParagraphElement[];
 	}
 	
 	/**

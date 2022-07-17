@@ -180,16 +180,11 @@ namespace Turf
 						objectFit: "contain",
 					}
 				),
-				UI.clickLabel(
+				
+				UI.toolButton(
 					UI.anchorTopRight(20),
-					{
-						padding: "20px 30px",
-						backgroundColor: UI.black(0.5),
-						backdropFilter: "blur(5px)",
-						borderRadius: UI.borderRadius.large,
-					},
+					...UI.click(() => this.root.remove()),
 					new Text("Delete"),
-					Htx.on("click", () => this.root.remove())
 				)
 			);
 			

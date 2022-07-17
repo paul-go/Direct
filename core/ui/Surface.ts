@@ -95,7 +95,7 @@ namespace Turf
 					});
 				
 				closer.textContent = UI.mul;
-				closer.addEventListener(UI.click, () => this.close());
+				closer.addEventListener(UI.clickEvt, () => this.close());
 				
 				Htx.defer(this.root, () =>
 				{
@@ -118,7 +118,7 @@ namespace Turf
 					fontSize: "30px",
 				});
 			
-			accepter.addEventListener(UI.click, () =>
+			accepter.addEventListener(UI.clickEvt, () =>
 			{
 				this.close("accept");
 			});

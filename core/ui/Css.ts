@@ -84,6 +84,12 @@ namespace Turf
 				"padding": ConstN.foregroundEdgeVmin + "vmin",
 				"margin": "auto",
 			}),
+			rule("." + CssClass.captionSceneContentImage, {
+				"display": "block",
+				"margin": "0 auto 30px",
+				"max-width": "70%",
+				"max-height": "100px",
+			}),
 			rule("." + CssClass.galleryScene, {
 				"height": "100%",
 				"scroll-snap-type": "x mandatory",

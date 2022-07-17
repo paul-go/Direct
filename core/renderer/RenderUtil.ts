@@ -62,6 +62,36 @@ namespace Turf.RenderUtil
 	}
 	
 	/**
+	 * A number between 0 (fully black) and 100 (fully white) that
+	 * indicates the amount of contrast to render with.
+	 * A value of 50 removes the text contrast from the element.
+	 */
+	export function setContrast(e: HTMLElement, amount: number)
+	{
+		amount = ((amount * 2) - 100) / 100;
+		
+		e.classList.remove(
+			CssClass.textContrast,
+			CssClass.textContrastDark,
+			CssClass.textContrastLight);
+		
+		e.style.removeProperty(ConstS.textContrastProperty);
+		
+		if (amount !== 50)
+		{
+			e.classList.add(
+				CssClass.textContrast,
+				amount > 0 ?
+					CssClass.textContrastDark : 
+					CssClass.textContrastLight);
+			
+			e.style.setProperty(ConstS.textContrastProperty, Math.abs(amount).toString());
+		}
+		
+		return e;
+	}
+	
+	/**
 	 * 
 	 */
 	export function createImageFiller(src: string)

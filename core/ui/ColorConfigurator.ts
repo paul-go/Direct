@@ -62,7 +62,7 @@ namespace Turf
 				},
 				color.l > 20 ? {} : { border: "1px solid " + UI.white(0.2) },
 				UI.clickable,
-				Htx.on(UI.click, () => this.select()),
+				Htx.on(UI.clickEvt, () => this.select()),
 				() =>
 				{
 					if (record.backgroundColorIndex === colorIndex)

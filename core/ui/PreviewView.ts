@@ -49,7 +49,7 @@ namespace Turf
 						backdropFilter: "blur(10px)",
 						borderRadius: "100%"
 					},
-					Htx.on(UI.click, () =>
+					Htx.on(UI.clickEvt, () =>
 					{
 						this.root.remove();
 					})

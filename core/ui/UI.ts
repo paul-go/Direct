@@ -71,6 +71,18 @@ namespace Turf
 			cursor: "pointer"
 		} as const;
 		
+		
+		export const clickEvt = "pointerdown";
+		
+		/** */
+		export function click(handlerFn: (ev: Event) => void)
+		{
+			return [
+				UI.clickable,
+				Htx.on("click", handlerFn)
+			];
+		}
+		
 		/** */
 		export function clickLabel(...params: Htx.Param[])
 		{
@@ -101,6 +113,20 @@ namespace Turf
 		}
 		
 		/** */
+		export function toolButton(...params: Htx.Param[])
+		{
+			return UI.clickLabel(
+				{
+					padding: "20px 30px",
+					backgroundColor: UI.black(0.5),
+					backdropFilter: "blur(5px)",
+					borderRadius: UI.borderRadius.large,
+				},
+				...params
+			);
+		}
+		
+		/** */
 		export const presentational: Htx.Style = {
 			pointerEvents: "none",
 			cursor: "default",
@@ -112,6 +138,23 @@ namespace Turf
 			tabIndex: 0,
 			outline: "0",
 		};
+		
+		/**
+		 * Sets the specified element as hidden or not hidden.
+		 * Returns a boolean value that indicates whether the
+		 * hidden state was changed.
+		 */
+		export function hide(e: Element, hide = true)
+		{
+			const hidden = e.classList.contains(CssClass.hide);
+			
+			if (hide)
+				e.classList.add(CssClass.hide);
+			else
+				e.classList.remove(CssClass.hide);
+				
+			return hidden !== e.classList.contains(CssClass.hide);
+		}
 		
 		/** */
 		export function fixed(amount = 0)
@@ -291,8 +334,6 @@ namespace Turf
 		{
 			return `perspective(500px) translateZ(${z}px)`;
 		}
-		
-		export const click = "pointerdown";
 		
 		/** */
 		export function vsize(size: number)
@@ -500,7 +541,7 @@ namespace Turf
 		/** */
 		export function removeOnClick(removedFn?: () => void)
 		{
-			return Htx.on(UI.click, async ev =>
+			return Htx.on(UI.clickEvt, async ev =>
 			{
 				if (ev.target === ev.currentTarget)
 				{
@@ -586,10 +627,6 @@ namespace Turf
 			};
 			
 			return Htx.div(
-				e =>
-				{
-					
-				},
 				UI.clickable,
 				{
 					width: "25px",
@@ -783,7 +820,7 @@ namespace Turf
 				UI.anchor(),
 				UI.flexCenter,
 				UI.clickable,
-				Htx.on(UI.click, () => input.click()),
+				Htx.on(UI.clickEvt, () => input.click()),
 				
 				Htx.on("drop", ev =>
 				{

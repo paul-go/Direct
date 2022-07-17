@@ -60,13 +60,13 @@ namespace Turf
 								fontSize: "25px",
 							},
 							UI.flexVCenter,
-							Htx.on(UI.click, () => this.handleTransition())
+							Htx.on(UI.clickEvt, () => this.handleTransition())
 						),
 					),
 					Htx.div(
 						UI.flexVCenter,
 						UI.plusButton(
-							Htx.on(UI.click, () => this.handleAdd("beforebegin")),
+							Htx.on(UI.clickEvt, () => this.handleAdd("beforebegin")),
 						),
 					),
 					...UI.dripper(
@@ -121,7 +121,7 @@ namespace Turf
 						paddingLeft: "0",
 					},
 					UI.plusButton(
-						Htx.on(UI.click, () => this.handleAdd("afterend")),
+						Htx.on(UI.clickEvt, () => this.handleAdd("afterend")),
 					),
 				)
 			);
@@ -130,7 +130,7 @@ namespace Turf
 			this.transition = Transitions.slide;
 			
 			Htx.from(this.moreButton.root)(
-				Htx.on(UI.click, ev => UI.springMenu(ev.target, {
+				Htx.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
 					"Move Up": () => {},
 					"Move Down": () => {},
 					"Delete": () => this.root.remove(),
@@ -260,32 +260,6 @@ namespace Turf
 			}
 		
 			return records;
-		}
-		
-		/**
-		 * A number between -1 (fully black) and 1 (fully white) that
-		 * indicates the amount of contrast to render with.
-		 * A value of 0 removes the text contrast from the element.
-		 */
-		protected setContrast(e: HTMLElement, amount: number)
-		{
-			e.classList.remove(
-				CssClass.textContrast,
-				CssClass.textContrastDark,
-				CssClass.textContrastLight);
-			
-			e.style.removeProperty(ConstS.textContrastProperty);
-			
-			if (amount !== 0)
-			{
-				e.classList.add(
-					CssClass.textContrast,
-					amount > 0 ?
-						CssClass.textContrastDark : 
-						CssClass.textContrastLight);
-				
-				e.style.setProperty(ConstS.textContrastProperty, Math.abs(amount).toString());
-			}
 		}
 		
 		/** */

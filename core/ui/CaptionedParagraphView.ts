@@ -1,27 +1,43 @@
+/// <reference path="CaptionedTextView.ts" />
 
 namespace Turf
 {
 	/** */
-	export class CaptionedParagraphView
+	export class CaptionedParagraphView extends CaptionedTextView
 	{
 		/** */
 		constructor()
 		{
-			this.root = Htx.div("captioned-paragraph-view");
+			super();
+			this.root.classList.add("captioned-paragraph-view");
 			
 			this.textBox = new TextBox();
-			this.textBox.placeholder = "Write a paragraph, if you feel like it.";
 			this.textBox.acceptedCommands.add(InputCommand.formatBold);
 			this.root.append(this.textBox.root);
 			
 			this.fontSize = 4;
 			this.fontWeight = 400;
+			this.textBox.root.style.lineHeight = "1.5";
+			this.hide();
 			
 			Controller.set(this);
 		}
 		
-		readonly root;
 		private readonly textBox;
+		
+		/** */
+		protected get isEmpty()
+		{
+			return !this.html;
+		}
+		
+		/** */
+		async focus()
+		{
+			this.hide(false);
+			await UI.wait();
+			this.textBox.focus();
+		}
 		
 		/** */
 		get fontSize()
@@ -78,6 +94,9 @@ namespace Turf
 		}
 		set html(html: string)
 		{
+			if (html)
+				this.hide(false);
+			
 			this.textBox.html = html;
 		}
 	}

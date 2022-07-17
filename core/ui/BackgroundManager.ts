@@ -109,7 +109,7 @@ namespace Turf
 						padding: "20px",
 					},
 					
-					Htx.on(UI.click, ev => UI.springMenu(ev.target, {
+					Htx.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
 						"Move Up": () => {},
 						"Move Down": () => {},
 						"Delete": () => this.root.remove(),

@@ -46,7 +46,7 @@ namespace Turf
 						height: "30px",
 					}
 				),
-				Htx.on(UI.click, () =>
+				Htx.on(UI.clickEvt, () =>
 				{
 					AppContainer.of(this).root.append(new SettingsView().root);
 				})
@@ -189,7 +189,7 @@ namespace Turf
 						},
 						...previewDisplayParams
 					),
-					Htx.on(UI.click, () =>
+					Htx.on(UI.clickEvt, () =>
 					{
 						this.animateTile(previewTransformable, previewDisplay, patch);
 					})

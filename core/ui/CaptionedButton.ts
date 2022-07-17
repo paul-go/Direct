@@ -33,17 +33,17 @@ namespace Turf
 			this.class = cls;
 			
 			this.root.append(
-				this.hrefButton = Htx.a(Htx.on(UI.click, async () =>
+				this.hrefButton = Htx.a(Htx.on(UI.clickEvt, async () =>
 				{
 					const href = await Dialog.prompt("Where do you want this link to go?", this.href);
 					if (href !== null)
 						this.href = href;
 				})),
-				this.deleteButton = Htx.a(Htx.on(UI.click, () =>
+				this.deleteButton = Htx.a(Htx.on(UI.clickEvt, () =>
 				{
 					this.root.remove();
 				})),
-				this.sortButton = Htx.a(Htx.on(UI.click, () =>
+				this.sortButton = Htx.a(Htx.on(UI.clickEvt, () =>
 				{
 					
 				}))

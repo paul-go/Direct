@@ -33,7 +33,7 @@ namespace Turf
 			
 			if (this.isSelectable)
 			{
-				this.root.addEventListener(UI.click, ev =>
+				this.root.addEventListener(UI.clickEvt, ev =>
 				{
 					ev.preventDefault();
 					const wasSelected = this.selected;

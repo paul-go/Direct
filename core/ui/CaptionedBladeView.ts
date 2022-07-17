@@ -37,12 +37,23 @@ namespace Turf
 					this.record.origin,
 					this.textContainer = Htx.div(
 						"text-container",
+						{
+							flex: "1 0"
+						},
 						this.contentImageContainer = Htx.div("content-image-container"),
 						this.titleView.root,
 						this.paragraphView.root,
 						this.buttonsContainer,
 					)
-				).root
+				).root,
+				
+				// Content Buttons
+				
+				Htx.div(
+					UI.anchorTop(),
+					UI.flexCenter,
+					...this.createToolButtons()
+				)
 			);
 			
 			this.setBladeButtons(
@@ -58,13 +69,6 @@ namespace Turf
 			this.backgroundManager = new BackgroundManager({
 				record,
 				renderTarget: this.backgroundsContainer,
-			});
-			
-			//! Temporary
-			Htx.defer(this.root, () =>
-			{
-				this.titleView.insertTitle("Title");
-				this.paragraphView.html = "This is <b>strong</b> text.";
 			});
 			
 			Saver.set(this);
@@ -91,6 +95,42 @@ namespace Turf
 		private readonly weightButton = new BladeButtonView("Bold");
 		private readonly contrastButton = new BladeButtonView("Contrast");
 		private readonly backgroundsButton = new BladeButtonView("Backgrounds");
+		
+		/** */
+		private createToolButtons()
+		{
+			const imageTool = this.createToolButton("Image", () => { });
+			const titleTool = this.createToolButton("Title", () => this.titleView.focus());
+			const paraTool = this.createToolButton("Paragraph", () => this.paragraphView.focus());
+			
+			this.paragraphView.setHideChangedHandler(hidden => UI.hide(paraTool, !hidden));
+			this.titleView.setHideChangedHandler(hidden => UI.hide(titleTool, !hidden));
+			
+			return [
+				imageTool,
+				titleTool,
+				paraTool,
+			];
+		}
+		
+		/** */
+		private createToolButton(label: string, click: () => void)
+		{
+			return UI.toolButton(
+				{
+					margin: "10px 5px 0",
+				},
+				UI.plusButton(
+					{
+						width: "15px",
+						height: "15px",
+						marginRight: "20px"
+					}
+				),
+				...UI.click(click),
+				new Text(label)
+			);
+		}
 		
 		/** */
 		private addButton()
@@ -123,13 +163,10 @@ namespace Turf
 			{
 				Util.clear(this.contentImageContainer);
 				
-				this.contentImage = Htx.img({
-					src: mediaRecord.getBlobUrl(),
-					display: "block",
-					margin: "0 auto 30px",
-					maxWidth: "70%",
-					maxHeight: "100px",
-				});
+				this.contentImage = Htx.img(
+					CssClass.captionSceneContentImage,
+					{ src: mediaRecord.getBlobUrl() }
+				);
 				
 				this.contentImageContainer.append(this.contentImage);
 			}
@@ -360,8 +397,7 @@ namespace Turf
 			
 			slider.setProgressChangeFn(() =>
 			{
-				const amount = ((slider.progress * 2) - 100) / 100;
-				this.setContrast(this.textContainer, amount);
+				RenderUtil.setContrast(this.textContainer, slider.progress);
 				this.record.textContrast = slider.progress;
 			});
 		}

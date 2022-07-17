@@ -36,6 +36,7 @@ const enum CssClass
 	captionScene = "scene-caption",
 	captionSceneBackgroundImage = "bg",
 	captionSceneForeground = "fg",
+	captionSceneContentImage = "fg-content-image",
 	proseScene = "scene-prose",
 	proseSceneForeground = "scene-prose-fg",
 	galleryScene = "scene-gallery",

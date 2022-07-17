@@ -67,7 +67,7 @@ namespace Turf
 							{
 								marginTop: "10px",
 							},
-							Htx.on(UI.click, () => this.handleAddFirst()),
+							Htx.on(UI.clickEvt, () => this.handleAddFirst()),
 							new Text("Add One"),
 						)
 					),
@@ -91,7 +91,7 @@ namespace Turf
 							margin: "20px",
 						},
 						UI.clickable,
-						Htx.on(UI.click, () =>
+						Htx.on(UI.clickEvt, () =>
 						{
 							this.export();
 						}),

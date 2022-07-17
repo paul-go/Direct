@@ -121,7 +121,7 @@ namespace Turf
 						linear-gradient(white, white) no-repeat 0 50% / 100% 1px
 					`
 				},
-				Htx.on(UI.click, () => closeFn())
+				Htx.on(UI.clickEvt, () => closeFn())
 			));
 			
 			if (typeof message === "string")

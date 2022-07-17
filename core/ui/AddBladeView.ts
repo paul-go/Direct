@@ -71,7 +71,7 @@ namespace Turf
 					backgroundColor: UI.black(0.5),
 					textAlign: "center",
 				},
-				Htx.on(UI.click, () =>
+				Htx.on(UI.clickEvt, () =>
 				{
 					clickFn();
 					Surface.close(this.root);

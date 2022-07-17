@@ -1,29 +1,34 @@
+/// <reference path="CaptionedTextView.ts" />
 
 namespace Turf
 {
 	/** */
-	export class CaptionedTitleView
+	export class CaptionedTitleView extends CaptionedTextView
 	{
 		/** */
 		constructor()
 		{
-			this.root = Htx.div("title-block");
-			Controller.set(this);
+			super();
+			this.root.classList.add("captioned-title-view");
+			UI.onChildrenChanged(this.root, () => this.root.children.length > 0);
 		}
 		
-		readonly root: HTMLElement;
+		/** */
+		protected get isEmpty()
+		{
+			const data = this.getTitleData();
+			return data.length === 0 || data.every(d => d.text.trim() === "");
+		}
 		
 		/** */
 		insertTitle(titleText: string, before: TextBox | null = null)
 		{
 			const textbox = new TextBox();
 			textbox.isMultiLine = false;
-			textbox.placeholder = "Title";
 			textbox.html = titleText;
 			
 			{
 				const s = textbox.root.style;
-				s.marginBottom = "0.25em";
 				s.fontSize = UI.vsize(6);
 				s.fontWeight = "700";
 			}
@@ -127,6 +132,19 @@ namespace Turf
 			this.root.insertBefore(textbox.root, before?.root || null);
 			textbox.acceptedCommands.add(InputCommand.formatBold);
 			return textbox;
+		}
+		
+		/** */
+		async focus()
+		{
+			this.hide(false);
+			await UI.wait();
+			
+			const boxes = this.getTextBoxes();
+			if (boxes.length === 0)
+				this.insertTitle("").focus();
+			else
+				this.getTextBox(0)!.focus();
 		}
 		
 		/** */
