@@ -86,10 +86,11 @@ namespace Controller
 	 * Returns an array of Controllers of the specified type,
 	 * which are extracted from the specified array of elements.
 	 */
-	export function map<T extends IController>(
-		elements: Element[],
-		type: Constructor<T>): T[]
+	export function map<T extends IController>(elements: Element[], type: Constructor<T>): T[];
+	export function map<T extends IController>(elementContainer: Element, type: Constructor<T>): T[];
+	export function map<T extends IController>(e: Element | Element[], type: Constructor<T>): T[]
 	{
+		const elements = e instanceof Element ? window.Array.from(e.children) : e;
 		return elements
 			.map(e => get(e, type))
 			.filter((o): o is T => o instanceof type);
