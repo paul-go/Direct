@@ -104,53 +104,11 @@ namespace Turf
 			const src = this.record.media.getBlobUrl();
 			const type = this.record.media.type;
 			
-			this.videoTag = Htx.video({
-				src,
-				type,
-				playsInline: true,
-				controls: true,
-				width: "100%",
-				height: "100%",
-				objectFit: "contain",
-			});
+			this.videoTag = RenderUtil.createVideo(src, type, this.record.size);
+			const videoFillerTag = RenderUtil.createVideoFiller(this.videoTag);
 			
-			const fillerVideoTag = Htx.video({
-				src,
-				type,
-				controls: false,
-				playsInline: true,
-				
-				objectFit: "fill",
-				position: "absolute",
-				top: -(ConstN.fillerContentBlur * 4) + "px",
-				left: -(ConstN.fillerContentBlur * 4) + "px",
-				width: `calc(100% + ${ConstN.fillerContentBlur * 8}px)`,
-				height: `calc(100% + ${ConstN.fillerContentBlur * 8}px)`,
-				filter: `blur(${ConstN.fillerContentBlur}px)`,
-				zIndex: "-1",
-			});
-			
-			this.videoTag.onplay = () =>
-			{
-				fillerVideoTag.play();
-			};
-			
-			this.videoTag.onpause = () => fillerVideoTag.pause();
-			this.videoTag.onstalled = () => fillerVideoTag.pause();
-			this.videoTag.onended = () => fillerVideoTag.pause();
-			
-			this.videoTag.onseeked = () =>
-			{
-				fillerVideoTag.currentTime = this.videoTag?.currentTime || 0;
-			};
-			
-			this.videoTag.onseeking = () =>
-			{
-				fillerVideoTag.currentTime = this.videoTag?.currentTime || 0;
-			}
-			
-			this.videoContainer.append(fillerVideoTag, this.videoTag);
-			UI.removeTogether(this.videoTag, fillerVideoTag);
+			this.videoContainer.append(videoFillerTag, this.videoTag);
+			UI.removeTogether(this.videoTag, videoFillerTag);
 		}
 		
 		private videoTag: HTMLVideoElement | null = null;

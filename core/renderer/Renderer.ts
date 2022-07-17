@@ -370,18 +370,23 @@ namespace Turf
 	 */
 	function renderVideoBlade(bun: Bundle<VideoBladeRecord>)
 	{
-		return !bun.blade.media ? [] : [
-			CssClass.videoScene,
-			Htx.video(
-				{
-					src: bun.getMediaUrl(bun.blade.media),
-					autoplay: false,
-					controls: true,
-					loop: false,
-					playsInline: true,
-					objectFit: bun.blade.size,
-				}
-			)
-		];
+		const blade = bun.blade;
+		const media = blade.media;
+		if (!media)
+			return [];
+		
+		const params: Htx.Param[] = [CssClass.videoScene];
+		
+		const src = bun.getMediaUrl(media);
+		const videoTag = RenderUtil.createVideo(src, media.type, blade.size);
+		params.push(videoTag);
+		
+		if (blade.size === "contain")
+		{
+			const videoFillerTag = RenderUtil.createVideoFiller(videoTag);
+			params.push(videoFillerTag);
+		}
+		
+		return params;
 	}
 }

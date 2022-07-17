@@ -79,8 +79,74 @@ namespace Turf.RenderUtil
 	/**
 	 * 
 	 */
-	export function createVideoFiller()
+	export function createVideo(
+		src: string,
+		mimeType: MimeType,
+		size: SizeMethod = "contain")
 	{
+		return Htx.video({
+			src,
+			type: mimeType,
+			playsInline: true,
+			controls: true,
+			width: "100%",
+			height: "100%",
+			objectFit: size,
+		});
+	}
+	
+	/**
+	 * 
+	 */
+	export function createVideoFiller(srcVideo: HTMLVideoElement)
+	{
+		const src = srcVideo.src;
+		const type = srcVideo.getAttribute("type") || "";
 		
+		let fillerVideoTag: HTMLVideoElement;
+		
+		const container = Htx.div(
+			"video-filler",
+			UI.anchor(),
+			{
+				overflow: "hidden",
+				zIndex: "-1",
+			},
+			fillerVideoTag = Htx.video({
+				src,
+				type,
+				controls: false,
+				playsInline: true,
+				
+				objectFit: "fill",
+				position: "absolute",
+				top: -(ConstN.fillerContentBlur * 4) + "px",
+				left: -(ConstN.fillerContentBlur * 4) + "px",
+				width: `calc(100% + ${ConstN.fillerContentBlur * 8}px)`,
+				height: `calc(100% + ${ConstN.fillerContentBlur * 8}px)`,
+				filter: `blur(${ConstN.fillerContentBlur}px)`,
+			})
+		);
+		
+		srcVideo.onplay = () =>
+		{
+			fillerVideoTag.play();
+		};
+		
+		srcVideo.onpause = () => fillerVideoTag.pause();
+		srcVideo.onstalled = () => fillerVideoTag.pause();
+		srcVideo.onended = () => fillerVideoTag.pause();
+		
+		srcVideo.onseeked = () =>
+		{
+			fillerVideoTag.currentTime = srcVideo.currentTime || 0;
+		};
+		
+		srcVideo.onseeking = () =>
+		{
+			fillerVideoTag.currentTime = srcVideo.currentTime || 0;
+		}
+		
+		return container;
 	}
 }
