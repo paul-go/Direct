@@ -189,22 +189,27 @@ namespace Turf
 			{
 				const h2 = Htx.h2();
 				
-				for (const title of blade.titles)
-				{
-					h2.append(Htx.div(
-						UI.specificWeight(title.weight),
-						{
-							fontSize: UI.vsize(title.size),
-						},
-						new Text(title.text)
-					));
-				}
+				const render = (title: ITitle) => [
+					UI.specificWeight(title.weight),
+					{ fontSize: UI.vsize(title.size) },
+					new Text(title.text)
+				];
+				
+				if (blade.titles.length === 1)
+					Htx.from(h2)(...render(blade.titles[0]));
+				
+				else for (const title of blade.titles)
+					h2.append(Htx.div(...render(title)));
 				
 				textContainer.append(h2);
 			}
 			
 			if (blade.description.length > 0)
-				textContainer.append(...convertDescriptionToParagraphs(blade));
+			{
+				textContainer.style.fontSize = UI.vsize(blade.descriptionSize);
+				const paragraphs = convertDescriptionToParagraphs(blade);
+				textContainer.append(...paragraphs);
+			}
 			
 			out.push(fg);
 		}
