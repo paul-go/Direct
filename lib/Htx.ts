@@ -532,7 +532,7 @@ namespace Htx
 	export declare function i(...params: Param[]): HTMLElement;
 	export declare function iframe(...params: Param[]): HTMLIFrameElement;
 	export declare function img(...params: Param<ImageElementAttribute>[]): HTMLImageElement;
-	export declare function input(...params: Param[]): HTMLInputElement;
+	export declare function input(...params: Param<InputElementAttribute>[]): HTMLInputElement;
 	export declare function ins(...params: Param[]): HTMLModElement;
 	export declare function kbd(...params: Param[]): HTMLElement;
 	export declare function label(...params: Param[]): HTMLLabelElement;
