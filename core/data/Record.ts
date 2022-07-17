@@ -83,6 +83,15 @@ namespace Turf
 		}
 		
 		/** */
+		async first<R extends Record>(type: RecordConstructor<R>)
+		{
+			for await (const record of this.inner.each(type, "get"))
+				return record as R;
+			
+			return null;
+		}
+		
+		/** */
 		each<R extends Record>(
 			type: RecordConstructor<R>,
 			behavior: "get" | "peek")
