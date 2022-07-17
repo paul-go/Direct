@@ -12,23 +12,6 @@ namespace Turf
 			Htx.from(this.sceneContainer)(
 				UI.flexCenter,
 				UI.clickable,
-				...UI.dripper(
-					new Text("Drop video here"),
-					Htx.on("drop", ev =>
-					{
-						const dt = ev.dataTransfer!;
-						if (dt.files.length === 0)
-							return;
-						
-						const file = dt.files[0];
-						const mediaObject = AppContainer.of(this).currentMediaStore.add(file);
-						this.setMedia(mediaObject);
-					})
-				),
-				Htx.on("click", () =>
-				{
-					
-				}),
 				
 				this.videoContainer = Htx.div(
 					{
@@ -36,28 +19,32 @@ namespace Turf
 						height: "100%",
 						overflow: "hidden",
 						borderRadius: "inherit",
-						backgroundColor: "rgb(70, 70, 70)",
 					},
-					Htx.div(
-						"no-media-label",
-						UI.anchor(),
-						UI.flexCenter,
-						UI.visibleWhenAlone(),
-						new Text("Click to add a video."),
-					)
-				)
+				),
+				
+				...UI.dripper(
+					new Text("Drop video here"),
+					Htx.on("drop", ev => this.importMedia(ev.dataTransfer?.files))
+				),
+				
+				UI.getMediaDropCue(
+					"Click or drop a video here.",
+					files => this.importMedia(files),
+					UI.visibleWhenEmpty(this.videoContainer))
 			);
 			
 			this.setBladeButtons(
 				() =>
 				{
-					
+					this.record.size = this.containButton.selected ? "contain" : "cover";
+					this.updateButtons();
 				},
 				this.coverButton,
 				this.containButton,
 			);
 			
-			this.size = record.size;
+			this.updateMedia();
+			this.updateButtons();
 		}
 		
 		private readonly videoContainer: HTMLElement;
@@ -75,53 +62,73 @@ namespace Turf
 		});
 		
 		/** */
-		get size()
+		private importMedia(fileList?: FileList)
 		{
-			return this.containButton.selected ? "contain" : "cover";
-		}
-		set size(value: SizeMethod)
-		{
-			if (value === "contain")
-				this.containButton.selected = true;
-			else
-				this.coverButton.selected = true;
+			const mediaRecords = this.createMediaRecords(fileList, [MimeClass.video]);
+			if (mediaRecords.length === 0)
+				return;
+			
+			this.record.media = mediaRecords[0];
+			this.updateMedia();
+			this.updateButtons();
 		}
 		
 		/** */
-		setMedia(mediaObject: IMediaObject)
+		private updateButtons()
+		{
+			const hasMedia = !!this.record.media;
+			this.containButton.enabled = hasMedia;
+			this.coverButton.enabled = hasMedia;
+			
+			if (hasMedia)
+			{
+				if (this.record.size === "contain")
+					this.containButton.selected = true;
+				
+				else if (this.record.size === "cover")
+					this.coverButton.selected = true;
+			}
+			
+			if (this.videoTag)
+				this.videoTag.style.objectFit = this.record.size;
+		}
+		
+		/** */
+		private updateMedia()
 		{
 			this.videoTag?.remove();
-			this.videoTag = Htx.video(
-				{
-					src: mediaObject.url,
-					type: mediaObject.type,
-					playsInline: true,
-					controls: true,
-					width: "100%",
-					height: "100%",
-					objectFit: "contain",
-				}
-			);
 			
-			const blur = 40;
+			if (!this.record.media)
+				return;
 			
-			const fillerVideoTag = Htx.video(
-				{
-					src: mediaObject.url,
-					type: mediaObject.type,
-					controls: false,
-					playsInline: true,
-					
-					objectFit: "fill",
-					position: "absolute",
-					top: -(blur * 4) + "px",
-					left: -(blur * 4) + "px",
-					width: `calc(100% + ${blur * 8}px)`,
-					height: `calc(100% + ${blur * 8}px)`,
-					filter: `blur(${blur}px)`,
-					zIndex: "-1",
-				}
-			);
+			const src = this.record.media.getBlobUrl();
+			const type = this.record.media.type;
+			
+			this.videoTag = Htx.video({
+				src,
+				type,
+				playsInline: true,
+				controls: true,
+				width: "100%",
+				height: "100%",
+				objectFit: "contain",
+			});
+			
+			const fillerVideoTag = Htx.video({
+				src,
+				type,
+				controls: false,
+				playsInline: true,
+				
+				objectFit: "fill",
+				position: "absolute",
+				top: -(ConstN.fillerContentBlur * 4) + "px",
+				left: -(ConstN.fillerContentBlur * 4) + "px",
+				width: `calc(100% + ${ConstN.fillerContentBlur * 8}px)`,
+				height: `calc(100% + ${ConstN.fillerContentBlur * 8}px)`,
+				filter: `blur(${ConstN.fillerContentBlur}px)`,
+				zIndex: "-1",
+			});
 			
 			this.videoTag.onplay = () =>
 			{
@@ -143,6 +150,7 @@ namespace Turf
 			}
 			
 			this.videoContainer.append(fillerVideoTag, this.videoTag);
+			UI.removeTogether(this.videoTag, fillerVideoTag);
 		}
 		
 		private videoTag: HTMLVideoElement | null = null;

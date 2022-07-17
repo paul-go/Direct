@@ -16,7 +16,8 @@ const enum ConstS
 /** */
 const enum ConstN
 {
-	foregroundEdgeVmin = 4
+	foregroundEdgeVmin = 4,
+	fillerContentBlur = 40,
 }
 
 /** */

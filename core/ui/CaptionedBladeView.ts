@@ -106,11 +106,8 @@ namespace Turf
 		/** */
 		private handleMediaDrop(ev: DragEvent)
 		{
-			const dt = ev.dataTransfer!;
-			if (dt.files.length === 0)
-				return;
-			
-			const mediaRecords= this.createMediaRecords(ev, [MimeClass.image, MimeClass.video]);
+			const files = ev.dataTransfer?.files;
+			const mediaRecords= this.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
 			if (mediaRecords.length === 0)
 				return;
 			

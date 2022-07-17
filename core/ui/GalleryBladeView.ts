@@ -11,48 +11,8 @@ namespace Turf
 			
 			Htx.from(this.sceneContainer)(
 				
-				...UI.dripper(
-					Htx.div(
-						UI.dripperStyle("left"),
-						new Text("Left"),
-					),
-					Htx.div(
-						UI.anchorRight(),
-						UI.dripperStyle("right"),
-						new Text("Right"),
-					),
-					Htx.on("drop", ev =>
-					{
-						const mediaRecords = this.createMediaRecords(ev);
-						if (mediaRecords.length === 0)
-							return;
-						
-						const visibleFrame = this.getVisibleFrame();
-						const newFrames: FrameView[] = [];
-						
-						for (const mediaRecord of mediaRecords)
-						{
-							const frameRecord = new FrameRecord();
-							frameRecord.media = mediaRecord;
-							const frameView = new FrameView(frameRecord);
-							newFrames.push(frameView);
-						}
-						
-						const isLeft = ev.offsetX < window.innerWidth / 2;
-						
-						if (visibleFrame)
-						{
-							if (isLeft)
-								visibleFrame.root.before(...newFrames.map(f => f.root));
-							else
-								visibleFrame.root.after(...newFrames.map(f => f.root));
-						}
-						else
-							this.galleryContainer.append(...newFrames.map(f => f.root));
-					})
-				),
-				
 				this.galleryContainer = Htx.div(
+					"gallery-container",
 					{
 						height: "100%",
 						scrollSnapType: "x mandatory",
@@ -62,16 +22,37 @@ namespace Turf
 						borderRadius: "inherit",
 					},
 					Htx.on("scroll", () => this.updateButtons()),
-					Htx.div(
-						UI.visibleWhenAlone(),
-						UI.flexCenter,
-						{
-							height: "100%",
-						},
-						...UI.cueLabel("Drop an image here.")
-					),
+					
 					...this.record.frames.map(f => new FrameView(f).root)
-				)
+				),
+				...UI.dripper(
+					
+					// Empty Dripper
+					Htx.div(
+						UI.visibleWhenEmpty(this.galleryContainer),
+						new Text("Drop"),
+					),
+					
+					// Non-Empty Dripper
+					Htx.div(
+						UI.visibleWhenNotEmpty(this.galleryContainer),
+						UI.dripperStyle("left"),
+						new Text("Add to the left"),
+					),
+					Htx.div(
+						UI.visibleWhenNotEmpty(this.galleryContainer),
+						UI.anchorRight(),
+						UI.dripperStyle("right"),
+						new Text("Add to the right"),
+					),
+					Htx.on("drop", ev => this.importMedia(ev.dataTransfer?.files, ev.offsetX)),
+				),
+				
+				UI.getMediaDropCue(
+					"Click or drop an image here.",
+					files => this.importMedia(files),
+					UI.visibleWhenEmpty(this.galleryContainer),
+				),
 			);
 			
 			this.setBladeButtons(
@@ -100,6 +81,37 @@ namespace Turf
 			selectable: true,
 			unselectable: false,
 		});
+		
+		/** */
+		private importMedia(files: FileList | undefined, dropOffsetX = 0)
+		{
+			const mediaRecords = this.createMediaRecords(files, [MimeClass.image]);
+			if (mediaRecords.length === 0)
+				return;
+			
+			const visibleFrame = this.getVisibleFrame();
+			const newFrames: FrameView[] = [];
+			
+			for (const mediaRecord of mediaRecords)
+			{
+				const frameRecord = new FrameRecord();
+				frameRecord.media = mediaRecord;
+				const frameView = new FrameView(frameRecord);
+				newFrames.push(frameView);
+			}
+			
+			const isLeft = dropOffsetX < window.innerWidth / 2;
+			
+			if (visibleFrame)
+			{
+				if (isLeft)
+					visibleFrame.root.before(...newFrames.map(f => f.root));
+				else
+					visibleFrame.root.after(...newFrames.map(f => f.root));
+			}
+			else
+				this.galleryContainer.append(...newFrames.map(f => f.root));
+		}
 		
 		/** */
 		private getVisibleFrame()
@@ -154,11 +166,11 @@ namespace Turf
 					height: "100%",
 				},
 				Htx.div(
-					UI.anchor(-40),
+					UI.anchor(-ConstN.fillerContentBlur),
 					{
 						backgroundImage: media.getBlobCssUrl(),
 						backgroundSize: "100% 100%",
-						filter: "blur(40px)",
+						filter: `blur(${ConstN.fillerContentBlur}px)`,
 					}
 				),
 				this.imageElement = Htx.img(

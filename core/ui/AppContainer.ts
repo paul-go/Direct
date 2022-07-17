@@ -40,15 +40,5 @@ namespace Turf
 		
 		/** */
 		readonly homePatch: PatchRecord = {} as any;
-		
-		/** */
-		get currentMediaStore()
-		{
-			if (!this._currentMediaStore)
-				this._currentMediaStore = new MediaStore("temp-turf-name");
-			
-			return this._currentMediaStore;
-		}
-		private _currentMediaStore: MediaStore | null = null;
 	}
 }

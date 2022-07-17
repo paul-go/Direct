@@ -237,12 +237,13 @@ namespace Turf
 		
 		/** */
 		protected createMediaRecords(
-			ev: DragEvent,
+			fileList: FileList | undefined,
 			accept: MimeClass[] = [MimeClass.image])
 		{
 			const records: MediaRecord[] = [];
+			const files = Array.from(fileList || []);
 			
-			for (const file of Array.from(ev.dataTransfer?.files || []))
+			for (const file of files)
 			{
 				const mimeType = MimeType.from(file.type);
 				if (!mimeType)

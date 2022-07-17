@@ -737,6 +737,7 @@ namespace Turf
 					fontWeight: "700",
 					color: "white"
 				},
+				Htx.css(" * { pointer-events: none; }"),
 				Htx.on("dragleave", ev =>
 				{
 					ev.preventDefault();
@@ -767,6 +768,43 @@ namespace Turf
 			});
 			
 			return [dripper, evt];
+		}
+		
+		/** */
+		export function getMediaDropCue(
+			label: string,
+			filesFn: (files: FileList) => void,
+			...params: Htx.Param[])
+		{
+			let input: HTMLInputElement;
+			
+			return Htx.div(
+				"drop-cue",
+				UI.anchor(),
+				UI.flexCenter,
+				UI.clickable,
+				Htx.on(UI.click, () => input.click()),
+				
+				Htx.on("drop", ev =>
+				{
+					const files = ev.dataTransfer?.files;
+					if (files)
+						filesFn(files);
+				}),
+				
+				input = Htx.input(
+					{
+						type: "file",
+						position: "absolute",
+						left: "-99999px",
+						pointerEvents: "none",
+						visibility: "hidden",
+					},
+					Htx.on("change", () => input.files && filesFn(input.files)),
+				),
+				...UI.cueLabel(label),
+				...params,
+			);
 		}
 		
 		/** */
