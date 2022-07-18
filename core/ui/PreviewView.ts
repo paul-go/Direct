@@ -9,13 +9,17 @@ namespace Turf
 		{
 			this.root = Htx.div(
 				"preview-view",
-				UI.fixed(20),
+				UI.fixed(-20),
 				UI.keyable,
 				{
 					zIndex: "1",
 					backgroundColor: "black",
-					boxShadow: "0 0 0 100px " + UI.gray(64, 0.75),
-					borderRadius: UI.borderRadius.large
+					borderRadius: UI.borderRadius.large,
+					opacity: "0",
+					transform: "scale(0.66)",
+					transformOrigin: "50% 50%",
+					transitionProperty: "transform, opacity, border-radius",
+					transitionDuration: "0.5s",
 				},
 				
 				...UI.removeOnEscape(),
@@ -37,23 +41,31 @@ namespace Turf
 					}
 				),
 				
-				UI.checkmark(
+				Htx.div(
+					UI.anchorTopRight(30, 30),
 					UI.clickable,
 					{
-						position: "absolute",
-						bottom: "-17px",
-						left: "0",
-						right: "0",
-						margin: "auto",
 						backgroundColor: UI.gray(128, 0.33),
 						backdropFilter: "blur(10px)",
-						borderRadius: "100%"
+						borderRadius: "100%",
+						transform: "rotate(45deg)",
+						padding: "20px",
 					},
+					UI.plusButton(
+					),
 					Htx.on(UI.clickEvt, () =>
 					{
 						this.root.remove();
 					})
-				)
+				),
+				
+				() =>
+				{
+					const s = this.root.style;
+					s.opacity = "1";
+					s.borderRadius = "0";
+					s.transform = "scale(1)";
+				}
 			);
 			
 			document.body.append(this.root);

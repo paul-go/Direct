@@ -48,7 +48,7 @@ namespace Turf
 				"height": "100%",
 			}),
 			rule("." + CssClass.scene, {
-				"min-height": "100vh",
+				"min-height": "100%",
 				"scroll-snap-align": "start",
 			}),
 			rule("." + CssClass.scene + " VIDEO", {
