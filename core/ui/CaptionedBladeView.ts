@@ -11,7 +11,7 @@ namespace Turf
 			super(record);
 			
 			this.titleView = new CaptionedTitleView();
-			this.paragraphView = new CaptionedParagraphView();
+			this.descriptionView = new CaptionedDescriptionView();
 			this.buttonsContainer = Htx.div("buttons");
 			this.buttons = new Controller.Array(this.buttonsContainer, CaptionedButton);
 			
@@ -42,7 +42,7 @@ namespace Turf
 						},
 						this.contentImageContainer = Htx.div("content-image-container"),
 						this.titleView.root,
-						this.paragraphView.root,
+						this.descriptionView.root,
 						this.buttonsContainer,
 					)
 				).root,
@@ -71,6 +71,22 @@ namespace Turf
 				renderTarget: this.backgroundsContainer,
 			});
 			
+			this.setContentImageSize(this.record.contentImageWidth);
+			
+			this.titleView.setTitles(this.record.titles);
+			this.titleView.setTextChangedHandler(() =>
+			{
+				this.record.titles = this.titleView.getTitleData();
+			});
+			
+			this.descriptionView.setTextChangedHandler(() =>
+			{
+				this.record.description = this.descriptionView.html;
+			});
+			
+			this.setDescriptionText(this.record.description);
+			this.setDescriptionSize(this.record.descriptionSize);
+			
 			Saver.set(this);
 		}
 		
@@ -79,7 +95,7 @@ namespace Turf
 		private readonly contentImageContainer;
 		private contentImage: HTMLImageElement | null = null;
 		private readonly titleView;
-		private readonly paragraphView;
+		private readonly descriptionView;
 		private readonly buttonsContainer;
 		private readonly buttons;
 		private readonly backgroundsContainer;
@@ -101,15 +117,15 @@ namespace Turf
 		{
 			const imageTool = this.createToolButton("Image", () => { });
 			const titleTool = this.createToolButton("Title", () => this.titleView.focus());
-			const paraTool = this.createToolButton("Paragraph", () => this.paragraphView.focus());
+			const descTool = this.createToolButton("Description", () => this.descriptionView.focus());
 			
-			this.paragraphView.setHideChangedHandler(hidden => UI.hide(paraTool, !hidden));
 			this.titleView.setHideChangedHandler(hidden => UI.hide(titleTool, !hidden));
+			this.descriptionView.setHideChangedHandler(hidden => UI.hide(descTool, !hidden));
 			
 			return [
 				imageTool,
 				titleTool,
-				paraTool,
+				descTool,
 			];
 		}
 		
@@ -213,12 +229,33 @@ namespace Turf
 		}
 		
 		/** */
+		private setTitleText(idx: number, text: string)
+		{
+			const titleDatas = this.titleView.getTitleData();
+			const titleData = titleDatas[idx];
+			titleData.text = text;
+			
+			const tb = this.titleView.getTextBox(idx);
+			if (tb)
+				tb.html = text;
+			
+			this.record.titles = titleDatas;
+		}
+		
+		/** */
+		private setDescriptionText(text: string)
+		{
+			this.record.description = text;
+			this.descriptionView.html = text;
+		}
+		
+		/** */
 		private renderSizeConfigurator()
 		{
 			type TPickable = 
 				HTMLImageElement |
 				ITitle |
-				CaptionedParagraphView;
+				CaptionedDescriptionView;
 			
 			const picker = this.sizePicker = new ElementPicker(this.sceneContainer);
 			const pickMap = new Map<HTMLElement, TPickable>();
@@ -245,11 +282,11 @@ namespace Turf
 				pickMap.set(e, titleDatas[i]);
 			}
 			
-			if (this.paragraphView.html)
+			if (this.descriptionView.html)
 			{
-				const e = this.paragraphView.root;
+				const e = this.descriptionView.root;
 				picker.registerElement(e);
-				pickMap.set(e, this.paragraphView);
+				pickMap.set(e, this.descriptionView);
 			}
 			
 			const slider = new Slider();
@@ -266,9 +303,9 @@ namespace Turf
 				
 				if (pickable instanceof HTMLImageElement)
 				{
-					slider.progress = this.record.descriptionSize;
+					slider.progress = this.record.contentImageWidth;
 				}
-				else if (pickable instanceof CaptionedParagraphView)
+				else if (pickable instanceof CaptionedDescriptionView)
 				{
 					slider.progress = this.record.descriptionSize;
 					slider.max = 10;
@@ -299,25 +336,44 @@ namespace Turf
 				
 				if (pickable instanceof HTMLImageElement)
 				{
-					this.contentImage!.style.width = UI.vsize(slider.progress);
-					this.record.contentImageWidth = slider.progress;
+					this.setContentImageSize(slider.progress);
 				}
-				else if (pickable instanceof CaptionedParagraphView)
+				else if (pickable instanceof CaptionedDescriptionView)
 				{
-					this.paragraphView.fontSize = slider.progress;
-					this.record.descriptionSize = slider.progress;
+					this.setDescriptionSize(slider.progress);
 				}
 				else
 				{
 					const idx = titleDatas.indexOf(pickable);
-					if (idx < 0)
-						return;
-					
-					const titleData = titleDatas[idx];
-					titleData.size = slider.progress;
-					this.titleView.setFontSize(idx, titleData.size);
+					if (idx >= 0)
+						this.setTitleSize(idx, slider.progress);
 				}
 			});
+		}
+		
+		/** */
+		private setContentImageSize(size: number)
+		{
+			if (this.contentImage)
+				this.contentImage.style.width = UI.vsize(size);
+			
+			this.record.contentImageWidth = size;
+		}
+		
+		/** */
+		private setTitleSize(titleIdx: number, size: number)
+		{
+			const titleDatas = this.titleView.getTitleData();
+			const titleData = titleDatas[titleIdx];
+			titleData.size = size;
+			this.titleView.setFontSize(titleIdx, size);
+		}
+		
+		/** */
+		private setDescriptionSize(size: number)
+		{
+			this.descriptionView.fontSize = size;
+			this.record.descriptionSize = size;
 		}
 		
 		/** */
@@ -371,20 +427,27 @@ namespace Turf
 				if (!picker.pickedElement)
 					return;
 				
-				const pickable = pickMap.get(picker.pickedElement);
-				if (!pickable)
+				const pickedTitle = pickMap.get(picker.pickedElement);
+				if (!pickedTitle)
 					return;
 				
-				const idx = titleDatas.indexOf(pickable);
+				const idx = titleDatas.indexOf(pickedTitle);
 				if (idx < 0)
 					return;
 				
-				const titleData = titleDatas[idx];
-				const weight = Math.round(slider.progress);
-				titleData.weight = weight;
-				this.titleView.setFontWeight(idx, weight);
-				this.record.titles = titleDatas;
+				this.setTitleWeight(idx, slider.progress);
 			});
+		}
+		
+		/** */
+		private setTitleWeight(titleIdx: number, weight: number)
+		{
+			const titleDatas = this.titleView.getTitleData();
+			weight = Math.round(weight);
+			const titleData = titleDatas[titleIdx];
+			titleData.weight = weight;
+			this.titleView.setFontWeight(titleIdx, weight);
+			this.record.titles = titleDatas;
 		}
 		
 		/** */
@@ -394,12 +457,14 @@ namespace Turf
 			slider.max = 100;
 			slider.progress = this.record.textContrast;
 			this.setBladeConfigurator(slider.root);
-			
-			slider.setProgressChangeFn(() =>
-			{
-				RenderUtil.setContrast(this.textContainer, slider.progress);
-				this.record.textContrast = slider.progress;
-			});
+			slider.setProgressChangeFn(() => this.setContrast(slider.progress));
+		}
+		
+		/** */
+		private setContrast(amount: number)
+		{
+			RenderUtil.setContrast(this.textContainer, amount);
+			this.record.textContrast = amount;
 		}
 		
 		/** */
@@ -410,26 +475,28 @@ namespace Turf
 				backgroundColor: UI.black(0.333),
 			});
 			
-			this.originPicker.setSelectedFn(origin =>
-			{
-				if (origin !== null)
-				{
-					this.record.origin = origin;
-					UI.toggleEnumClass(this.foregroundContainer, Origin, origin);
-				}
-				
-				this.originButton.selected = false;
-				this.handleSelectionChange();
-			});
-			
+			this.originPicker.setSelectedFn(origin => this.setOrigin(origin));
 			this.sceneContainer.append(this.originPicker.root);
+		}
+		
+		/** */
+		private setOrigin(origin: Origin | null)
+		{
+			if (origin !== null)
+			{
+				this.record.origin = origin;
+				UI.toggleEnumClass(this.foregroundContainer, Origin, origin);
+			}
+			
+			this.originButton.selected = false;
+			this.handleSelectionChange();
 		}
 		
 		/** */
 		save()
 		{
 			this.record.titles = this.titleView.getTitleData();
-			this.record.description = this.paragraphView.html;
+			this.record.description = this.descriptionView.html;
 			
 			AppContainer.of(this).database.save(this.record);
 		}

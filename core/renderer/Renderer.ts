@@ -162,11 +162,12 @@ namespace Turf
 		{
 			const fg = Htx.div(
 				CssClass.captionSceneForeground,
+				blade.origin,
 				{
 					data: {
 						[DataAttributes.transition]: bun.useAnimation(blade.effect)
 					},
-				}
+				},
 			);
 			
 			let textContainer: HTMLElement = fg;

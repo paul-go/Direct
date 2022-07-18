@@ -3,13 +3,13 @@
 namespace Turf
 {
 	/** */
-	export class CaptionedParagraphView extends CaptionedTextView
+	export class CaptionedDescriptionView extends CaptionedTextView
 	{
 		/** */
 		constructor()
 		{
 			super();
-			this.root.classList.add("captioned-paragraph-view");
+			this.root.classList.add("captioned-description-view");
 			
 			this.textBox = new TextBox();
 			this.textBox.acceptedCommands.add(InputCommand.formatBold);
@@ -18,9 +18,6 @@ namespace Turf
 			this.fontSize = 4;
 			this.fontWeight = 400;
 			this.textBox.root.style.lineHeight = "1.5";
-			this.hide();
-			
-			Controller.set(this);
 		}
 		
 		private readonly textBox;
@@ -94,9 +91,7 @@ namespace Turf
 		}
 		set html(html: string)
 		{
-			if (html)
-				this.hide(false);
-			
+			this.hide(!html);
 			this.textBox.html = html;
 		}
 	}

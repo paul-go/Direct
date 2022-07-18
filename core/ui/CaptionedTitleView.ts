@@ -10,7 +10,6 @@ namespace Turf
 		{
 			super();
 			this.root.classList.add("captioned-title-view");
-			UI.onChildrenChanged(this.root, () => this.root.children.length > 0);
 		}
 		
 		/** */
@@ -18,6 +17,20 @@ namespace Turf
 		{
 			const data = this.getTitleData();
 			return data.length === 0 || data.every(d => d.text.trim() === "");
+		}
+		
+		/** */
+		setTitles(titles: ITitle[] = [])
+		{
+			for (const [i, title] of titles.entries())
+			{
+				this.insertTitle(title.text);
+				this.setFontSize(i, title.size);
+				this.setFontWeight(i, title.weight);
+			}
+			
+			if (titles.length > 0)
+				this.hide(false);
 		}
 		
 		/** */
@@ -148,7 +161,7 @@ namespace Turf
 		}
 		
 		/** */
-		private getTextBox(index: number)
+		getTextBox(index: number)
 		{
 			const e = Query.children(this.root)[index];
 			return e ? Controller.get(e, TextBox) : null;
