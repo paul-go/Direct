@@ -9,7 +9,7 @@ namespace Turf
 		{
 			this.root = Htx.div(
 				"preview-view",
-				UI.fixed(-20),
+				UI.fixed(),
 				UI.keyable,
 				{
 					zIndex: "1",
@@ -55,7 +55,7 @@ namespace Turf
 					),
 					Htx.on(UI.clickEvt, () =>
 					{
-						this.root.remove();
+						UI.removeWithFade(this.root);
 					})
 				),
 				
