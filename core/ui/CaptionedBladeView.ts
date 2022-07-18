@@ -63,10 +63,11 @@ namespace Turf
 				this.backgroundsButton,
 			);
 			
-			this.backgroundManager = new BackgroundManager({
-				record,
-				renderTarget: this.backgroundsContainer,
-			});
+			(this.record as any).id = "the-id";
+			
+			this.backgroundManager = new BackgroundManager(
+				this.record,
+				this.backgroundsContainer);
 			
 			this.setContentImageSize(this.record.contentImageWidth);
 			

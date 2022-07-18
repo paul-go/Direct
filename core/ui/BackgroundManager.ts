@@ -5,10 +5,9 @@ namespace Turf
 	export class BackgroundManager
 	{
 		/** */
-		constructor(private readonly options: {
-			record: CaptionedBladeRecord,
-			renderTarget: HTMLElement,
-		})
+		constructor(
+			private readonly record: CaptionedBladeRecord,
+			private readonly renderTarget: HTMLElement)
 		{
 			let imagesConfigurators: HTMLElement;
 			
@@ -20,18 +19,20 @@ namespace Turf
 						marginBottom: "20px",
 					}
 				),
-				new ColorConfigurator(options.record, options.renderTarget).root
+				new ColorConfigurator(this.record, this.renderTarget).root
 			);
 			
+			this.previews = new Controller.Array(this.renderTarget, BackgroundPreview);
 			this.configurators = new Controller.Array(imagesConfigurators, BackgroundConfigurator);
+			
+			this.updatePreviews();
+			
 			this.configurators.observe(() =>
 			{
 				const records = this.configurators!.toArray().map(r => r.record);
-				this.options.record.backgrounds = records;
+				this.record.backgrounds = records;
+				this.updatePreviews();
 			});
-			
-			this.previews = new Controller.Array(options.renderTarget, BackgroundPreview);
-			this.previews.insert(...this.configurators.toArray().map(c => c.preview));
 		}
 		
 		readonly configuratorElement;
@@ -43,25 +44,23 @@ namespace Turf
 		{
 			const backgroundRecord = new BackgroundRecord();
 			backgroundRecord.media = media;
-			this.options.record.backgrounds.push(backgroundRecord);
-			this.updateOutput();
-			
 			const cfg = new BackgroundConfigurator(backgroundRecord);
 			const idx = this.configurators.insert(cfg);
 			this.previews.insert(idx, cfg.preview);
 		}
 		
 		/** */
-		private updateOutput()
+		private updatePreviews()
 		{
-			Util.clear(this.options.renderTarget);
+			Util.clear(this.renderTarget);
 			
-			for (const backgroundRecord of this.options.record.backgrounds)
+			for (const backgroundRecord of this.record.backgrounds)
 			{
-				if (!backgroundRecord.media)
-					continue;
-				
-				this.options.renderTarget.append();
+				if (backgroundRecord.media)
+				{
+					const preview = new BackgroundPreview(backgroundRecord);
+					this.renderTarget.append(preview.root);
+				}
 			}
 		}
 	}
@@ -126,6 +125,8 @@ namespace Turf
 			
 			this.setUsingCover(record.size < 0);
 			UI.removeTogether(this.root, this.preview.root);
+			
+			Controller.set(this);
 		}
 		
 		readonly root;
@@ -221,6 +222,7 @@ namespace Turf
 			);
 			
 			this.size = record.size;
+			Controller.set(this);
 		}
 		
 		readonly root;
