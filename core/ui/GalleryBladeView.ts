@@ -64,8 +64,8 @@ namespace Turf
 				this.containButton,
 			);
 			
-			this.updateButtons();
 			UI.onChildrenChanged(this.galleryContainer, () => this.updateButtons());
+			this.updateButtons();
 		}
 		
 		private readonly galleryContainer: HTMLElement;
@@ -101,16 +101,15 @@ namespace Turf
 			}
 			
 			const isLeft = dropOffsetX < window.innerWidth / 2;
+			const elements = newFrames.map(f => f.root);
 			
-			if (visibleFrame)
-			{
-				if (isLeft)
-					visibleFrame.root.before(...newFrames.map(f => f.root));
-				else
-					visibleFrame.root.after(...newFrames.map(f => f.root));
-			}
-			else
-				this.galleryContainer.append(...newFrames.map(f => f.root));
+			if (visibleFrame && isLeft)
+				visibleFrame.root.before(...elements);
+			
+			else if (visibleFrame && !isLeft)
+				visibleFrame.root.after(...elements);
+			
+			else this.galleryContainer.append(...elements);
 			
 			await UI.wait();
 			
@@ -120,10 +119,14 @@ namespace Turf
 		}
 		
 		/** */
+		private async sdf() {}
+		
+		
+		/** */
 		private getVisibleFrame()
 		{
 			const gc = this.galleryContainer;
-			const index = Math.round(gc.scrollLeft / gc.offsetWidth);
+			const index = Math.round(gc.scrollLeft / gc.offsetWidth) || 0;
 			const frameViews = Controller.map(Query.children(gc), FrameView);
 			return frameViews.length > 0 ? frameViews[index] : null;
 		}
