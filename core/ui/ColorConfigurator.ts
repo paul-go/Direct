@@ -85,7 +85,12 @@ namespace Turf
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			
-			this.target.style.backgroundColor = UI.color(this.color);
+			// If the background color being used is black, we actually just switch to
+			// transparent. This is so that the faint lines on the top and bottom of the
+			// scene container are visible, and the black background of the application
+			// shows through.
+			const htmlColor = this.color.l === 0 ? "transparent" : UI.color(this.color);
+			this.target.style.backgroundColor = htmlColor;
 			Force.use(this, BladeView).backgroundChanged();
 		}
 	}
