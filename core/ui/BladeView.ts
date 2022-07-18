@@ -84,7 +84,9 @@ namespace Turf
 					{
 						overflow: "hidden",
 						height: UI.vsize(100), 
-						backgroundColor: UI.white(0.1),
+						boxShadow:
+							"inset 0 1px 0 " + UI.white(0.15) + ", " +
+							"inset 0 -1px 0 " + UI.white(0.15)
 					},
 				),
 				
