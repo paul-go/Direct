@@ -104,18 +104,19 @@ namespace Turf
 			this._selected = value;
 			
 			const indicator = this.getIndicator();
+			const s = indicator.style
 			
 			if (wasSelected)
 			{
-				indicator.style.opacity = "0";
+				s.opacity = "0";
 			}
 			else
 			{
 				const left = this.isIndependent ? 0 : this.root.offsetLeft;
 				const width = this.root.offsetWidth;
-				indicator.style.left = left + "px";
-				indicator.style.width = width + "px";
-				indicator.style.opacity = "1";
+				s.left = left + "px";
+				s.width = width + "px";
+				s.opacity = "1";
 			}
 		}
 		private _selected = false;

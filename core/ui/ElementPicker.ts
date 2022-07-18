@@ -21,6 +21,7 @@ namespace Turf
 					{
 						position: "absolute",
 						border: "3px solid white",
+						boxShadow: "inset 0 0 0 3px black",
 						borderRadius: UI.borderRadius.default,
 						transitionDuration: "0.15s",
 						transitionProperty: "none",
