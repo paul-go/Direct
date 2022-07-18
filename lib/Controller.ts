@@ -55,6 +55,7 @@ namespace Controller
 		const array = controllers.get(controller.root) || [];
 		array.push(controller);
 		controllers.set(controller.root, array);
+		(controller.root as any)._controller = controller;
 	}
 	
 	/**
