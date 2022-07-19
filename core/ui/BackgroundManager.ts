@@ -22,16 +22,17 @@ namespace Turf
 				new ColorConfigurator(this.record, this.renderTarget).root
 			);
 			
+			for (const bg of record.backgrounds)
+				if (bg.media)
+					this.addBackground(bg.media);
+			
 			this.previews = new Controller.Array(this.renderTarget, BackgroundPreview);
 			this.configurators = new Controller.Array(imagesConfigurators, BackgroundConfigurator);
-			
-			this.updatePreviews();
 			
 			this.configurators.observe(() =>
 			{
 				const records = this.configurators!.toArray().map(r => r.record);
 				this.record.backgrounds = records;
-				this.updatePreviews();
 			});
 		}
 		
@@ -44,24 +45,10 @@ namespace Turf
 		{
 			const backgroundRecord = new BackgroundRecord();
 			backgroundRecord.media = media;
-			const cfg = new BackgroundConfigurator(backgroundRecord);
-			const idx = this.configurators.insert(cfg);
-			this.previews.insert(idx, cfg.preview);
-		}
-		
-		/** */
-		private updatePreviews()
-		{
-			Util.clear(this.renderTarget);
-			
-			for (const backgroundRecord of this.record.backgrounds)
-			{
-				if (backgroundRecord.media)
-				{
-					const preview = new BackgroundPreview(backgroundRecord);
-					this.renderTarget.append(preview.root);
-				}
-			}
+			const preview = new BackgroundPreview(backgroundRecord);
+			const cfg = new BackgroundConfigurator(backgroundRecord, preview);
+			this.configurators.insert(cfg);
+			this.previews.insert(cfg.preview);
 		}
 	}
 	
@@ -69,9 +56,10 @@ namespace Turf
 	class BackgroundConfigurator
 	{
 		/** */
-		constructor(readonly record: BackgroundRecord)
+		constructor(
+			readonly record: BackgroundRecord,
+			readonly preview: BackgroundPreview)
 		{
-			this.preview = new BackgroundPreview(record);
 			this.root = Htx.div(
 				"background-configurator",
 				Htx.css(" + .background-configurator { margin-top: 10px }"),
@@ -130,7 +118,6 @@ namespace Turf
 		}
 		
 		readonly root;
-		readonly preview;
 		private readonly coverButton;
 		private readonly sizeSlider;
 		
