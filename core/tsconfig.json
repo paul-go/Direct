@@ -1,7 +1,7 @@
 {
 	"extends": "../tsconfig.standard.json",
 	"compilerOptions": {
-		"outFile": "../build/index.js"
+		"outFile": "../build/app.js"
 	},
 	"include": [
 		"../lib/*.ts",

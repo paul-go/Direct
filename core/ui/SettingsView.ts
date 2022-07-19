@@ -34,22 +34,13 @@ namespace Turf
 						borderRadius: UI.borderRadius.large,
 						maxHeight: "80vh",
 					},
-					Htx.div(
+					this.contentsElement = Htx.div(
 						Htx.h2(
 							new Text("Settings"),
 							{
-								paddingBottom: "1em",
 								fontSize: "4vw"
 							}
 						),
-						Htx.h3(
-							new Text("Color Scheme"),
-							{
-								paddingBottom: "1em",
-								fontSize: "2.5vw",
-							}
-						),
-						Htx.div(...this.colorSchemeViews.map(v => v.root))
 					),
 					Htx.div(
 						UI.clickable,
@@ -76,11 +67,34 @@ namespace Turf
 				}
 			);
 			
+			this.addSection({
+				label: "Color Scheme",
+				params: [
+					Htx.div(...this.colorSchemeViews.map(v => v.root))
+				]
+			})
+			
 			Controller.set(this);
 		}
 		
 		readonly root;
+		private readonly contentsElement;
 		private readonly colorSchemeViews;
+		
+		/** */
+		addSection(options: { label: string, params: Htx.Param[]; })
+		{
+			Htx.from(this.contentsElement)(
+				Htx.h3(
+					new Text(options.label),
+					{
+						padding: "1em 0",
+						fontSize: "2.5vw",
+					}
+				),
+				...options.params
+			);
+		}
 		
 		/** */
 		private get meta()

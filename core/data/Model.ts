@@ -11,10 +11,8 @@ namespace Turf
 		htmlFooter = "";
 		
 		// User-related members
-		userEmail = "";
-		userPassword = "";
-		userAccessKey = "";
-		userSecretKey = "";
+		userIdentifier = "";
+		userSecret = "";
 		
 		homePatch = Back.reference(PatchRecord);
 	}

@@ -55,5 +55,5 @@ namespace Turf
 	}
 	
 	if (document.documentElement.hasAttribute("data-autostart"))
-		setTimeout(() => createApp())
+		setTimeout(() => createApp());
 }

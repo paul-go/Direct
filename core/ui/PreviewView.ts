@@ -51,12 +51,8 @@ namespace Turf
 						transform: "rotate(45deg)",
 						padding: "20px",
 					},
-					UI.plusButton(
-					),
-					Htx.on(UI.clickEvt, () =>
-					{
-						UI.removeWithFade(this.root);
-					})
+					UI.plusButton(),
+					Htx.on(UI.clickEvt, () => UI.removeWithFade(this.root))
 				),
 				
 				() =>
