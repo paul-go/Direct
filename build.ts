@@ -6,20 +6,19 @@ namespace Build
 	const Path = require("path") as typeof import("path");
 	const Proc = require("child_process") as typeof import("child_process");
 	const Terser = require("terser") as typeof import("terser");
-	//const fetch = require("node-fetch") as typeof window.fetch;
+	
+	const buildDir = Path.join(__dirname, "build");
+	const playerDir = Path.join(__dirname, "core", "player");
+	const tempDir = Path.join(__dirname, "+");
+	const tsConfigPath = Path.join(tempDir, "tsconfig.json");
 	
 	/** */
 	export function copyResources()
 	{
 		const files = [
-			"loki-incremental-indexeddb-adapter.js",
-			"loki-incremental-adapter.js",
-			"loki-indexed-adapter.js",
-			"loki.js",
 			"medium-editor.default.min.css",
 			"medium-editor.min.css",
 			"medium-editor.min.js",
-			"index.html",
 		];
 		
 		for (const fileName of files)
@@ -27,13 +26,25 @@ namespace Build
 	}
 	
 	/** */
+	export function emitHtml()
+	{
+		const lines = [
+			`<!DOCTYPE html>`,
+			`<html lang="en-us" data-autostart>`,
+			`<meta charset="utf-8">`,
+			`<meta name="theme-color" content="#000000">`,
+			`<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">`,
+			`<meta name="apple-mobile-web-app-capable" content="yes">`,
+			`<script src="app.js"></script>`,
+			`</html>`
+		].join("\n");
+		
+		Fs.writeFileSync(Path.join(buildDir, "index.html"), lines);
+	}
+	
+	/** */
 	export async function compilePlayer()
 	{
-		const buildDir = Path.join(__dirname, "build");
-		const playerDir = Path.join(__dirname, "core", "player");
-		const tempDir = Path.join(__dirname, "+temp");
-		const tsConfigPath = Path.join(tempDir, "tsconfig.json");
-		
 		if (!Fs.existsSync(tempDir))
 			Fs.mkdirSync(tempDir);
 		
@@ -80,17 +91,30 @@ namespace Build
 		const outJsFilePath = Path.join(buildDir, ConstS.jsFileName);
 		Fs.writeFileSync(outJsFilePathMin, jsCode);
 		Fs.writeFileSync(outJsFilePath, inJsCode);
+		Fs.rmdirSync(tempDir, { recursive: true });
 	}
 	
 	/** */
 	export function deploy()
 	{
 		copyResources();
-		
-		
 	}
 	
-	const fnName = process.argv.at(-1) || "";
-	Build[fnName]?.();
+	setTimeout(() =>
+	{
+		const fnName = process.argv.at(-1) || "";
+		const fn = (Build as any)[fnName];
+		
+		if (typeof fn === "function")
+		{
+			fn();
+			console.log("Build function executed: " + fnName);
+		}
+		else
+		{
+			console.error("Build function not found: " + fnName);
+		}
+	});
+	
+	(globalThis as any).Build = Build;
 }
-
