@@ -163,6 +163,21 @@ namespace Controller
 		private readonly marker: Comment;
 		
 		/** */
+		*[Symbol.iterator]()
+		{
+			for (let i = -1; ++i < this.parentElement.children.length;)
+			{
+				const child = this.parentElement.children.item(i);
+				if (child)
+				{
+					const ctrl = Controller.get(child, this.controllerType);
+					if (ctrl)
+						yield ctrl;
+				}
+			}
+		}
+		
+		/** */
 		toArray()
 		{
 			const controllers = childrenOf(this.parentElement, this.controllerType);
