@@ -11,6 +11,9 @@ namespace Turf
 		htmlFooter = "";
 		
 		// User-related members
+		
+		/** Stores the method of publishing used in this Turf. */
+		publishIdentifier = "";
 		userIdentifier = "";
 		userSecret = "";
 		
