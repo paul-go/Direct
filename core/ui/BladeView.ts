@@ -33,10 +33,10 @@ namespace Turf
 				"blade-view",
 				
 				// Hide the transition configurator for the first blade view
-				Htx.css(":first-of-type .transition-configurator { visibility: hidden; }"),
+				Htx.css(":first-of-type .transition-configurator", { visibility: "hidden" }),
 				
 				// 
-				Htx.css(":not(:last-of-type) .final-add { display: none; }"),
+				Htx.css(":not(:last-of-type) .final-add", { display: "none" }),
 				
 				// Controls header
 				Htx.div(

@@ -16,7 +16,7 @@ namespace Turf
 					display: "inline-block",
 					borderRadius: UI.borderRadius.default,
 				},
-				Htx.css(`:hover { background-color: ${UI.white(0.1)}; }`),
+				Htx.css(":hover", { backgroundColor: UI.white(0.1) }),
 				Htx.on(UI.clickEvt, () =>
 				{
 					this.selectedFn(origin);

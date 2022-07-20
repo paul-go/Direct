@@ -62,7 +62,7 @@ namespace Turf
 		{
 			this.root = Htx.div(
 				"background-configurator",
-				Htx.css(" + .background-configurator { margin-top: 10px }"),
+				Htx.css(" + .background-configurator", { marginTop: "10px" }),
 				{
 					display: "flex",
 				},
@@ -177,16 +177,12 @@ namespace Turf
 					"image-boundary",
 					this.imgContainer = Htx.div(
 						"image-container",
-						Htx.css(`:before {
-							content: "";
-							position: absolute;
-							top: -4px;
-							left: -4px;
-							right: -4px;
-							bottom: -4px;
-							border: 3px dashed white;
-							border-radius: ${UI.borderRadius.default}
-						}`),
+						Htx.css(":before", {
+							content: `""`,
+							...UI.anchor(-4),
+							border: "3px dashed white",
+							borderRadius: UI.borderRadius.default
+						}),
 						{
 							userSelect: "none",
 							cursor: "move",
