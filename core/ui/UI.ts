@@ -87,14 +87,15 @@ namespace Turf
 		export function clickLabel(...params: Htx.Param[])
 		{
 			return Htx.div(
-				UI.clickable,
 				{
 					display: "flex",
 					alignItems: "center",
+					justifyContent: "center",
 					fontWeight: "600",
 					fontSize: "20px",
 				},
-				...params
+				...params,
+				UI.clickable,
 			)
 		}
 		
@@ -121,6 +122,7 @@ namespace Turf
 					backgroundColor: UI.black(0.5),
 					backdropFilter: "blur(5px)",
 					borderRadius: UI.borderRadius.large,
+					color: "white",
 				},
 				...params
 			);
@@ -359,13 +361,15 @@ namespace Turf
 		}
 		
 		/** */
-		export function text(size: number | bigint, weight: number, label?: string)
+		export function text(label: string, size: number | string = 20, weight?: number)
 		{
 			return [
 				{
-					fontSize: typeof size === "number" ? UI.vsize(size) : size + "px",
-					...UI.specificWeight(weight)
+					fontSize: typeof size === "number" ? size + "px" : size,
+					userSelect: "none",
+					cursor: "default",
 				},
+				weight ? UI.specificWeight(weight) : null,
 				label ? new Text(label) : null
 			];
 		}
@@ -431,7 +435,7 @@ namespace Turf
 		/** */
 		export function visibleWhenAlone()
 		{
-			return Htx.css(":not(:only-child) { display: none !important; }");
+			return Htx.css(":not(:only-child)", { display: "none !important" });
 		}
 		
 		/** */
@@ -443,7 +447,7 @@ namespace Turf
 		/** */
 		export function visibleWhenNotAlone()
 		{
-			return Htx.css(":only-child { display: none !important; }");
+			return Htx.css(":only-child", { display: "none !important" });
 		}
 		
 		/** */
@@ -774,7 +778,7 @@ namespace Turf
 					fontWeight: "700",
 					color: "white"
 				},
-				Htx.css(" * { pointer-events: none; }"),
+				Htx.css(" *", { pointerEvents: "none" }),
 				Htx.on("dragleave", ev =>
 				{
 					ev.preventDefault();
@@ -921,7 +925,7 @@ namespace Turf
 								fontSize: "22px",
 								fontWeight: "600",
 							},
-							Htx.css(":hover { background-color: #007cd3; }"),
+							Htx.css(":hover", { backgroundColor: "#007cd3" }),
 							UI.clickable,
 							Htx.on("click", () =>
 							{
@@ -963,6 +967,64 @@ namespace Turf
 			const winCenterY = window.innerHeight / 2;
 			
 			document.body.append(overlay);
+		}
+		
+		/** */
+		export async function showInlineNotification(
+			container: HTMLElement,
+			message: string,
+			type: "error" | "info")
+		{
+			const clsVisible = Htx.css({
+				opacity: "1",
+				transform: "translateY(0)",
+			});
+			
+			const clsInvisible = Htx.css({
+				opacity: "0",
+				transform: "translateY(20px)",
+			});
+			
+			const notificationDiv = Htx.div(
+				UI.anchorTop(10),
+				{
+					padding: "20px",
+					borderRadius: UI.borderRadius.large,
+					backgroundColor: type === "error" ? "red" : UI.primaryColor,
+					boxShadow: "0 10px 20px " + UI.black(0.2),
+					color: "white",
+					pointerEvents: "none",
+					transitionProperty: "transform, opacity",
+					transitionDuration: "0.2s",
+				},
+				clsInvisible,
+				...UI.text(message, 22, 600)
+			);
+			
+			container.append(notificationDiv);
+			await UI.wait();
+			
+			notificationDiv.classList.remove(clsInvisible);
+			
+			let cancel = () =>
+			{
+				cancel = () => {};
+				setTimeout(async () =>
+				{
+					notificationDiv.classList.remove(clsVisible);
+					notificationDiv.classList.add(clsInvisible);
+					await UI.waitTransitionEnd(notificationDiv);
+					notificationDiv.remove();
+				},
+				200);
+			};
+			
+			Htx.from(notificationDiv)(
+				clsVisible,
+				Htx.on("pointermove", cancel),
+				Htx.on(document.body, "pointerdown", cancel),
+				Htx.on(document.body, "keydown", cancel)
+			);
 		}
 	}
 }

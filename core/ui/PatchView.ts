@@ -87,15 +87,19 @@ namespace Turf
 					),
 					Htx.div(
 						{
-							textAlign: "center",
-							margin: "20px",
+							display: "flex",
+							justifyContent: "space-evenly",
+							paddingTop: "10px",
 						},
-						UI.clickable,
-						Htx.on(UI.clickEvt, () =>
-						{
-							this.export();
-						}),
-						new Text("Export"),
+						Htx.css(" > *", { padding: "20px" }),
+						UI.clickLabel(
+							Htx.on(UI.clickEvt, () => this.export()),
+							...UI.text("Export", 25, 600)
+						),
+						UI.clickLabel(
+							Htx.on(UI.clickEvt, () => this.publish()),
+							...UI.text("Publish", 25, 900)
+						),
 					)
 				),
 				
@@ -249,6 +253,12 @@ namespace Turf
 			
 			if (DEBUG)
 				console.log("Exported to: " + baseFolder);
+		}
+		
+		/** */
+		private async publish()
+		{
+			
 		}
 	}
 }

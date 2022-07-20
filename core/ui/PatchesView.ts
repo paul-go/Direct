@@ -98,7 +98,7 @@ namespace Turf
 						},
 					),
 					Htx.div(
-						...UI.text(2.5, 600, "Add Patch"),
+						...UI.text("Add Patch", "2.5vw", 600),
 					),
 				),
 			]);
