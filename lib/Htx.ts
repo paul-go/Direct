@@ -228,12 +228,8 @@ namespace Htx { { } }
 	(window as any).callbackMap = callbackMap;
 	
 	/** */
-	function css(cssRuleText: string)
+	function css(selectorOrStyles: string | Htx.Style, maybeStyles?: Htx.Style)
 	{
-		let classNameForRule = cssTextMap.get(cssRuleText);
-		if (classNameForRule)
-			return classNameForRule;
-		
 		if (!globalSheet)
 		{
 			const style = Htx.style();
@@ -241,24 +237,36 @@ namespace Htx { { } }
 			globalSheet = style.sheet!;
 		}
 		
-		let cssClass = "";
+		const selector = typeof selectorOrStyles === "string" ? selectorOrStyles : "";
+		const styles = maybeStyles || selectorOrStyles as Htx.Style;
+		const cssClass = "c" + (index++);
+		const ruleText = "." + cssClass + selector + "{}";
 		
-		const firstChar = cssRuleText.trimStart().slice(0, 1);
-		if (firstChar === "@")
+		const idx = globalSheet.insertRule(ruleText);
+		const cssRule = globalSheet.cssRules.item(idx) as CSSStyleRule;
+		
+		for (let [propertyName, propertyValue] of Object.entries(styles))
 		{
-			globalSheet.insertRule(cssRuleText);
-		}
-		else 
-		{
-			cssClass = "c" + (index++);
-			globalSheet.insertRule("." + cssClass + cssRuleText);
+			if (typeof propertyValue !== "string")
+				continue;
+			
+			propertyName = propertyName.replace(
+				/[A-Z]/g,
+				(char: string) => "-" + char.toLowerCase());
+			
+			let important = "";
+			if (propertyValue.slice(-10) === "!important")
+			{
+				important = "important";
+				propertyValue = propertyValue.slice(0, -10);
+			}
+			
+			cssRule.style.setProperty(propertyName, propertyValue, important);
 		}
 		
-		cssTextMap.set(cssRuleText, cssClass);
 		return cssClass;
 	}
 	
-	const cssTextMap = new Map<string, string>();
 	let globalSheet: CSSStyleSheet | null = null;
 	let index = 0;
 }
@@ -441,6 +449,8 @@ namespace Htx
 	export interface InputElementAttribute extends ElementAttribute
 	{
 		type: string;
+		value: string;
+		disabled: boolean;
 	}
 	
 	/** */
@@ -633,7 +643,8 @@ namespace Htx
 	export declare function defer(e: Element, callbackFn: () => void): void;
 	
 	/** */
-	export declare function css(cssRuleText: string): string;
+	export declare function css(selectorSuffix: string, properties: Htx.Style): string;
+	export declare function css(properties: Htx.Style): string;
 }
 
 if (typeof module === "object")
