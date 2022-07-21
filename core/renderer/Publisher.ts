@@ -68,6 +68,12 @@ namespace Turf
 		constructor(protected readonly meta: MetaRecord) { }
 		
 		/** */
+		get identifier()
+		{
+			return (this.constructor as typeof Publisher).identifier;
+		}
+		
+		/** */
 		abstract getSettings(): object;
 		
 		/** */
@@ -79,12 +85,14 @@ namespace Turf
 		/** */
 		async publish(files: IRenderedFile[])
 		{
+			const removeFn = PublishStatusView.show(this.identifier);
 			const promises: Promise<void>[] = [];
 			
 			for (const file of files)
 				promises.push(this.publishFile(file));
 			
 			await Promise.all(promises);
+			removeFn();
 		}
 		
 		/** */

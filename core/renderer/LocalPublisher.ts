@@ -73,5 +73,5 @@ namespace Turf
 		folder: string;
 	}
 	
-	setTimeout(() => Publisher.register("local", LocalPublisher));
+	setTimeout(() => Publisher.register("Local", LocalPublisher));
 }

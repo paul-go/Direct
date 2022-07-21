@@ -53,5 +53,5 @@ namespace Turf
 		secretKey: string;
 	}
 	
-	setTimeout(() => Publisher.register("s3", S3Publisher));
+	setTimeout(() => Publisher.register("S3 Storage", S3Publisher));
 }
