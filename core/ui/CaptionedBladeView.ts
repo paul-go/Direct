@@ -55,7 +55,7 @@ namespace Turf
 			
 			this.setBladeButtons(
 				() => this.handleSelectionChange(),
-				this.animationButton,
+				//this.animationButton,
 				this.originButton,
 				this.sizeButton,
 				this.weightButton,
