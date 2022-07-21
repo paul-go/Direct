@@ -129,11 +129,14 @@ namespace Turf
 		//# Record Related
 		
 		/**
-		 * Returns whether the specified PatchRecord is the home page.
+		 * 
 		 */
-		export function isHome(patch: PatchRecord)
+		export function getMimeClass(record: BackgroundRecord)
 		{
-			return patch.slug === "";
+			const media = record.media;
+			return media ?
+				MimeType.getClass(media.type) :
+				null;
 		}
 		
 		/**

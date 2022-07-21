@@ -103,7 +103,7 @@ namespace Turf.RenderUtil
 				backgroundSize: "100% 100%",
 				filter: `blur(${ConstN.fillerContentBlur}px)`,
 			}
-		)
+		);
 	}
 	
 	/**
@@ -178,5 +178,25 @@ namespace Turf.RenderUtil
 		}
 		
 		return container;
+	}
+	
+	/**
+	 * 
+	 */
+	export function createVideoBackground(src: string, mimeType: string)
+	{
+		return Htx.video({
+			src,
+			type: mimeType,
+			playsInline: true,
+			controls: false,
+			autoplay: true,
+			muted: true,
+			loop: true,
+			width: "100%",
+			height: "100%",
+			objectFit: "cover",
+			...UI.anchor()
+		});
 	}
 }

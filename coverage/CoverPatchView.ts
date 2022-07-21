@@ -15,6 +15,16 @@ namespace Cover
 		const app = await Turf.createApp({ shell: true });
 		const pv = new Turf.PatchView(app.homePatch);
 		const bv1 = new Turf.CaptionedBladeView();
+		pv.blades.insert(bv1);
+		Cover.display(pv);
+	}
+	
+	/** */
+	export async function coverPatchViewWithMultipleCaptioned()
+	{
+		const app = await Turf.createApp({ shell: true });
+		const pv = new Turf.PatchView(app.homePatch);
+		const bv1 = new Turf.CaptionedBladeView();
 		const bv2 = new Turf.CaptionedBladeView();
 		pv.blades.insert(bv1);
 		pv.blades.insert(bv2);

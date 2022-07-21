@@ -22,12 +22,12 @@ namespace Turf
 				new ColorConfigurator(this.record, this.renderTarget).root
 			);
 			
+			this.previews = new Controller.Array(this.renderTarget, BackgroundPreview);
+			this.configurators = new Controller.Array(imagesConfigurators, BackgroundConfigurator);
+			
 			for (const bg of record.backgrounds)
 				if (bg.media)
 					this.addBackground(bg.media);
-			
-			this.previews = new Controller.Array(this.renderTarget, BackgroundPreview);
-			this.configurators = new Controller.Array(imagesConfigurators, BackgroundConfigurator);
 			
 			this.configurators.observe(() =>
 			{
@@ -45,7 +45,7 @@ namespace Turf
 		{
 			const backgroundRecord = new BackgroundRecord();
 			backgroundRecord.media = media;
-			const preview = new BackgroundPreview(backgroundRecord);
+			const preview = BackgroundPreview.new(backgroundRecord);
 			const cfg = new BackgroundConfigurator(backgroundRecord, preview);
 			this.configurators.insert(cfg);
 			this.previews.insert(cfg.preview);
@@ -71,11 +71,9 @@ namespace Turf
 					{
 						width: "75px",
 						height: "75px",
-						backgroundImage: record.media?.getBlobCssUrl(),
-						backgroundSize: "contain",
-						backgroundColor: UI.gray(50),
 						borderRadius: UI.borderRadius.default
-					}
+					},
+					this.renderMiniPreview(record)
 				),
 				Htx.div(
 					{
@@ -95,7 +93,6 @@ namespace Turf
 					{
 						padding: "20px",
 					},
-					
 					Htx.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
 						"Move Up": () => {},
 						"Move Down": () => {},
@@ -106,20 +103,48 @@ namespace Turf
 				),
 			);
 			
-			this.sizeSlider.setProgressChangeFn(() =>
+			if (this.preview instanceof BackgroundImagePreview)
 			{
-				this.preview.setSize(this.sizeSlider.progress);
-			});
+				const bip = this.preview;
+				this.sizeSlider.setProgressChangeFn(() =>
+				{
+					bip.setSize(this.sizeSlider.progress);
+				});
+				
+				this.setUsingCover(record.size < 0);
+			}
 			
-			this.setUsingCover(record.size < 0);
 			UI.removeTogether(this.root, this.preview.root);
-			
 			Controller.set(this);
 		}
 		
 		readonly root;
 		private readonly coverButton;
 		private readonly sizeSlider;
+		
+		/** */
+		private renderMiniPreview(record: BackgroundRecord): Htx.Param
+		{
+			const cls = Util.getMimeClass(record);
+			
+			if (cls === MimeClass.image)
+			{
+				return {
+					backgroundColor: UI.gray(50),
+					backgroundImage: record.media!.getBlobCssUrl(),
+					backgroundSize: "contain",
+				};
+			}
+			
+			if (cls === MimeClass.video)
+			{
+				return RenderUtil.createVideoBackground(
+					record.media!.getBlobUrl(),
+					record.media!.type);
+			}
+			
+			return false;
+		}
 		
 		/** */
 		private getSizeParams(useCover: boolean)
@@ -139,6 +164,9 @@ namespace Turf
 		/** */
 		private setUsingCover(usingCover: boolean)
 		{
+			if (!(this.preview instanceof BackgroundImagePreview))
+				return;
+			
 			this.coverButton.style.opacity = usingCover ? "1" : "0.5";
 			this.sizeSlider.root.style.opacity = usingCover ? "0.5" : "1";
 			
@@ -151,13 +179,55 @@ namespace Turf
 	}
 	
 	/** */
-	class BackgroundPreview
+	abstract class BackgroundPreview
 	{
 		/** */
-		constructor(readonly record: BackgroundRecord)
+		static new(record: BackgroundRecord)
 		{
+			return Util.getMimeClass(record) === MimeClass.video ?
+				new BackgroundVideoPreview(record) :
+				new BackgroundImagePreview(record);
+		}
+		
+		/** */
+		constructor(readonly record: BackgroundRecord) { }
+		
+		abstract readonly root: HTMLElement;
+	}
+	
+	/** */
+	class BackgroundVideoPreview extends BackgroundPreview
+	{
+		/** */
+		constructor(record: BackgroundRecord)
+		{
+			super(record);
+			
+			const blobUrl = record.media?.getBlobUrl() || "";
+			const mimeType = record.media?.type || "";
+			
 			this.root = Htx.div(
-				"background-preview",
+				"background-video-preview",
+				UI.anchor(),
+				RenderUtil.createVideoBackground(blobUrl, mimeType)
+			);
+			
+			Controller.set(this);
+		}
+		
+		readonly root;
+	}
+	
+	/** */
+	class BackgroundImagePreview extends BackgroundPreview
+	{
+		/** */
+		constructor(record: BackgroundRecord)
+		{
+			super(record);
+			
+			this.root = Htx.div(
+				"background-image-preview",
 				UI.anchor(),
 				
 				Htx.on("pointerdown", () =>
