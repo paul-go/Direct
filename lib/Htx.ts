@@ -499,6 +499,7 @@ namespace Htx
 		loop: boolean;
 		playsInline: boolean;
 		controls: boolean;
+		muted: boolean;
 	}
 	
 	/** */
