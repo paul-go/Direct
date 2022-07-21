@@ -86,19 +86,13 @@ namespace Turf
 						Htx.on("click", () => this.handlePreview())
 					),
 					Htx.div(
-						{
-							display: "flex",
-							justifyContent: "space-evenly",
-							paddingTop: "10px",
-						},
-						Htx.css(" > *", { padding: "20px" }),
 						UI.clickLabel(
-							Htx.on(UI.clickEvt, () => this.export()),
-							...UI.text("Export", 25, 600)
-						),
-						UI.clickLabel(
+							{
+								marginTop: "10px",
+								padding: "20px",
+							},
 							Htx.on(UI.clickEvt, () => this.publish()),
-							...UI.text("Publish", 25, 900)
+							...UI.text("Publish", 25, 800)
 						),
 					)
 				),
@@ -134,7 +128,6 @@ namespace Turf
 			});
 			
 			Controller.set(this);
-			console.log(this.root);
 			Saver.set(this);
 		}
 		
@@ -222,43 +215,26 @@ namespace Turf
 		}
 		
 		/** */
-		private async export()
-		{
-			const meta = AppContainer.of(this).meta;
-			let baseFolder = "";
-			
-			if (ELECTRON)
-			{
-				baseFolder = getExportsFolder();
-			}
-			else
-			{
-				const key = ConstS.baseFolderPrefix + meta.id;
-				baseFolder = localStorage.getItem(key) || "";
-				
-				if (TAURI)
-				{
-					const choice = await Tauri.dialog.open({
-						recursive: true,
-						directory: true,
-						multiple: false,
-						defaultPath: "",
-					});
-				}
-				
-				localStorage.setItem(key, baseFolder);
-			}
-			
-			await Export.single(this.record, meta, baseFolder);
-			
-			if (DEBUG)
-				console.log("Exported to: " + baseFolder);
-		}
-		
-		/** */
 		private async publish()
 		{
+			const app = AppContainer.of(this);
 			
+			if (!app.meta.publishMethod)
+			{
+				if (TAURI)
+					await Tauri.dialog.message("You must setup your publish settings before doing this.");
+				
+				AppContainer.of(this).root.append(new SettingsView().root);
+				return;
+			}
+			
+			const files = [
+				...(await Render.getPatchFiles(this.record, app.meta)),
+				...(await Render.getSupportFiles()),
+			];
+			
+			const publisher = app.getPublisher();
+			await publisher.publish(files);
 		}
 	}
 }

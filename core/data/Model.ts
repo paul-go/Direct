@@ -13,9 +13,17 @@ namespace Turf
 		// User-related members
 		
 		/** Stores the method of publishing used in this Turf. */
-		publishIdentifier = "";
-		userIdentifier = "";
-		userSecret = "";
+		publishMethod = "";
+		
+		/**
+		 * Stores an object where the keys line up with a particular staticIdentifier
+		 * referring to a publish method, and the values refer to objects whose
+		 * structure differs depending on the publish method.
+		 * 
+		 * There should be a separate entry in the top-level publishData object
+		 * for each publish method that has been configured.
+		 */
+		publishDataTable: Literal<string, Literal<string, string | number | boolean>> = {};
 		
 		homePatch = Back.reference(PatchRecord);
 	}

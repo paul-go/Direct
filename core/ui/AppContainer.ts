@@ -40,5 +40,11 @@ namespace Turf
 		
 		/** */
 		readonly homePatch: PatchRecord = {} as any;
+		
+		/** */
+		getPublisher(): Publisher
+		{
+			return Publisher.getCurrent(this.meta);
+		}
 	}
 }

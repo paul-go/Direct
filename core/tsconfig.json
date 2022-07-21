@@ -5,7 +5,9 @@
 	},
 	"include": [
 		"../lib/*.ts",
-		"./ui/*.ts",
+		"renderer/Publisher.ts",
+		"ui/PublishConfigurator.ts",
+		"ui/*.ts",
 		"**/*.ts",
 		"**/*.tsx",
 	]

@@ -128,6 +128,18 @@ namespace Turf
 			);
 		}
 		
+		/**
+		 * Creates a button with the style used in the publish option window.
+		 */
+		export function createPublishButton(label: string, clickFn: () => void)
+		{
+			return UI.toolButton(
+				toolButtonCls,
+				...UI.text(label),
+				Htx.on(UI.clickEvt, clickFn));
+		}
+		const toolButtonCls = Htx.css(":not(:first-child)", { marginTop: "10px" });
+		
 		/** */
 		export const presentational: Htx.Style = {
 			pointerEvents: "none",
@@ -967,6 +979,44 @@ namespace Turf
 			const winCenterY = window.innerHeight / 2;
 			
 			document.body.append(overlay);
+		}
+		
+		/** */
+		export function spinner(color = "white", ...params: Htx.Param[])
+		{
+			return Htx.div(
+				Htx.animation("spin", {
+					0: {
+						transform: "rotate(0)",
+					},
+					100: {
+						transform: "rotate(360deg)",
+					}
+				}),
+				{
+					animationDuration: "1s",
+					animationIterationCount: "infinite",
+					animationTimingFunction: "linear",
+					
+					width: "50px",
+					height: "50px",
+					borderRadius: "100%",
+					backgroundImage: `conic-gradient(${color}, transparent)`,
+					webkitMaskImage: `radial-gradient(
+						transparent 0, transparent 50%, black 51%, black 100%
+					)`,
+				},
+				Htx.css(":before", {
+					content: `""`,
+					...UI.anchorTop(),
+					margin: "auto",
+					width: "14%",
+					height: "14%",
+					backgroundColor: color,
+					borderRadius: "100%"
+				}),
+				...params,
+			);
 		}
 		
 		/** */

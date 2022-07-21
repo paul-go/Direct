@@ -104,4 +104,19 @@ namespace Cover
 		const np = new Turf.OriginPicker();
 		document.body.append(np.root);
 	}
+	
+	/** */
+	export async function coverSpinner()
+	{
+		Turf.appendCss();
+		document.body.append(Turf.UI.spinner());
+	}
+	
+	/** */
+	export async function coverPublishStatusView()
+	{
+		Turf.appendCss();
+		const remover = Turf.PublishStatusView.show("Local");
+		setTimeout(remover, 2500);
+	}
 }

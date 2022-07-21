@@ -1,24 +1,168 @@
 
 namespace Turf
 {
-	/**
-	 * 
-	 */
-	export function renderPatchPreview(
-		patch: PatchRecord,
-		meta: MetaRecord)
+	/** */
+	export interface IRenderedFile
 	{
-		return renderPatch(patch, meta, true);
+		data: string | ArrayBuffer;
+		mime: MimeType;
+		fileName: string;
+		
+		/**
+		 * Stores the sub-folder within the file system space where 
+		 * the rendered file should be written.
+		 */
+		folderName: string;
 	}
 	
-	/**
-	 * 
-	 */
-	export function renderPatchFinal(
-		patch: PatchRecord,
-		meta: MetaRecord)
+	/** */
+	export namespace Render
 	{
-		return renderPatch(patch, meta, true);
+		/** */
+		export async function getSupportFiles()
+		{
+			const files: IRenderedFile[] = [];
+			
+			// CSS file
+			{
+				const cssText = Turf.createGeneralCssText();
+				files.push({
+					data: cssText,
+					mime: MimeType.css,
+					fileName: ConstS.cssFileNameGeneral,
+					folderName: "",
+				});
+			}
+			
+			// JS file
+			{
+				const jsFileText = await readStandardFile(ConstS.jsFileName, "utf8");
+				
+				files.push({
+					data: jsFileText,
+					mime: MimeType.js,
+					fileName: ConstS.jsFileName,
+					folderName: "",
+				});
+			}
+			
+			// Text Contrast Images
+			{
+				const blurBlack = await readStandardFile(ConstS.textContrastBlackName);
+				const blurWhite = await readStandardFile(ConstS.textContrastWhiteName);
+				
+				files.push(
+					{
+						data: blurBlack,
+						mime: MimeType.png,
+						fileName: ConstS.textContrastBlackName,
+						folderName: "",
+					},
+					{
+						data: blurWhite,
+						mime: MimeType.png,
+						fileName: ConstS.textContrastWhiteName,
+						folderName: "",
+					}
+				);
+			}
+			
+			return files;
+		}
+		
+		/** */
+		async function readStandardFile(fileName: string, encoding?: "utf8"): Promise<string | ArrayBuffer>
+		{
+			if (ELECTRON)
+			{
+				const path = Electron.path.join(__dirname, fileName);
+				return Electron.fs.readFileSync(path, encoding);
+			}
+			else
+			{
+				try
+				{
+					const result = await fetch(fileName);
+					return encoding ? 
+						await result.text() :
+						await result.arrayBuffer();
+				}
+				catch (e) { }
+			}
+			
+			return "";
+		}
+		
+		/** */
+		export async function getPatchFiles(patch: PatchRecord, meta: MetaRecord)
+		{
+			const files: IRenderedFile[] = [];
+			const folderName = patch === meta.homePatch ? "" : patch.slug;
+			
+			// HTML file
+			{
+				const storyDiv = Render.createPatchFinal(patch, meta);
+				const htmlFile = new HtmlFile();
+				const htmlText = htmlFile.emit(storyDiv);
+				
+				files.push({
+					data: htmlText,
+					mime: MimeType.html,
+					fileName: ConstS.htmlFileName,
+					folderName,
+				});
+			}
+			
+			// Generate any images
+			
+			const records: MediaRecord[] = [];
+			const promises: Promise<ArrayBuffer>[] = [];
+			
+			for (const record of Util.eachDeepRecord(patch))
+			{
+				if (record instanceof MediaRecord)
+				{
+					records.push(record);
+					promises.push(record.blob.arrayBuffer());
+				}
+			}
+			
+			const buffers = await Promise.all(promises);
+			
+			for (let i = -1; ++i < records.length;)
+			{
+				const record = records[i];
+				const buffer = buffers[i];
+				files.push({
+					data: buffer,
+					mime: record.type,
+					fileName: record.name,
+					folderName,
+				});
+			}
+			
+			return files;
+		}
+		
+		/**
+		 * 
+		 */
+		export function createPatchPreview(
+			patch: PatchRecord,
+			meta: MetaRecord)
+		{
+			return renderPatch(patch, meta, true);
+		}
+		
+		/**
+		 * 
+		 */
+		export function createPatchFinal(
+			patch: PatchRecord,
+			meta: MetaRecord)
+		{
+			return renderPatch(patch, meta, true);
+		}
 	}
 	
 	/**

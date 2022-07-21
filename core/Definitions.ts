@@ -10,6 +10,8 @@ const enum ConstS
 	cssFileNameSpecific = "index.css",
 	jsFileName = "turf.js",
 	jsFileNameMin = "turf.min.js",
+	textContrastBlackName = "res.blur-black.png",
+	textContrastWhiteName = "res.blur-white.png",
 	debugExportsFolderName = "+exports",
 }
 

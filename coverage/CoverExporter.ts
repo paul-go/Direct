@@ -7,6 +7,7 @@ namespace Cover
 		Turf.appendCss();
 		const meta = new Turf.MetaRecord();
 		const patch = new Turf.PatchRecord();
+		patch.slug = "slug";
 		const blade = new Turf.CaptionedBladeRecord();
 		blade.titles.push({ text: "Title", weight: 700, size: 10 });
 		
@@ -17,7 +18,15 @@ namespace Cover
 		patch.blades.push(blade);
 		
 		const folder = getExportsFolder();
-		await Turf.Export.single(patch, meta, folder);
+		const files = [
+			...(await Turf.Render.getPatchFiles(patch, meta)),
+			...(await Turf.Render.getSupportFiles())
+		];
+		
+		const publisher = new Turf.LocalPublisher(meta);
+		publisher.setSettings(folder);
+		await publisher.publish(files);
+		
 		console.log("Done");
 	}
 }
