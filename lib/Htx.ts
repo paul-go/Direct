@@ -24,6 +24,7 @@ namespace Htx { { } }
 				case "from": return from;
 				case "defer": return defer;
 				case "css": return css;
+				case "animation": return animation;
 			}
 			
 			return (...params: Htx.Param[]) => create(name, params);
@@ -269,6 +270,36 @@ namespace Htx { { } }
 	
 	let globalSheet: CSSStyleSheet | null = null;
 	let index = 0;
+	
+	/** */
+	function animation(animationName: string, style: Record<number, Htx.Style>)
+	{
+		if (animationsWritten.has(animationName))
+			return;
+		
+		const css: string[] = [];
+		
+		for (const [keyframe, styles] of Object.entries(style))
+		{
+			css.push(keyframe + "% { ");
+			
+			for (const [propertyName, propertyValue] of Object.entries(styles))
+				css.push(propertyName + ": " + propertyValue + ";");
+			
+			css.push(" } ");
+		}
+		
+		const animationBody = css.join("");
+		const fullCss  = ["@", "@-webkit-", "@-moz-"].map(s =>
+			s + `keyframes ${animationName} { ${animationBody} }`).join("");
+		
+		const styleTag = Htx.style(new Text(fullCss));
+		styleTag.classList.add(animationName);
+		document.head.append(styleTag);
+		
+		return { animationName };
+	}
+	const animationsWritten = new Set<string>();
 }
 
 namespace Htx
@@ -645,6 +676,11 @@ namespace Htx
 	/** */
 	export declare function css(selectorSuffix: string, properties: Htx.Style): string;
 	export declare function css(properties: Htx.Style): string;
+	
+	/**
+	 * 
+	 */
+	export declare function animation(name: string, style: Record<number, Htx.Style>): Htx.Style
 }
 
 if (typeof module === "object")
