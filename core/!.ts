@@ -77,9 +77,6 @@ else if (ELECTRON)
 			ConstS.debugExportsFolderName,
 			turfName);
 		
-		if (!Electron.fs.existsSync(path))
-			Electron.fs.mkdirSync(path);
-		
 		return path;
 	};
 }
