@@ -25,7 +25,7 @@ namespace Turf
 						UI.dripperStyle("bottom"),
 						new Text("Add Background Image")
 					),
-					Htx.on("drop", ev => this.handleMediaDrop(ev)),
+					onFileDrop((files, x, y) => this.handleMediaDrop(files, x, y)),
 				),
 				this.backgroundsContainer = Htx.div(
 					"backgrounds-container",
@@ -158,16 +158,14 @@ namespace Turf
 		}
 		
 		/** */
-		private handleMediaDrop(ev: DragEvent)
+		private handleMediaDrop(files: FileLike[], layerX: number, layerY: number)
 		{
-			const files = ev.dataTransfer?.files;
 			const mediaRecords= this.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
 			if (mediaRecords.length === 0)
 				return;
 			
 			const mediaRecord = mediaRecords[0];
-			const { y } = UI.getLayerCoords(this.sceneContainer, ev);
-			const isBackground = y > this.sceneContainer.offsetHeight / 2;
+			const isBackground = layerY > this.sceneContainer.offsetHeight / 2;
 			
 			if (isBackground)
 			{

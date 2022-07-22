@@ -75,10 +75,6 @@ namespace Turf
 					),
 					...UI.dripper(
 						new Text("Add Here"),
-						Htx.on("drop", ev =>
-						{
-							
-						})
 					)
 				),
 				
@@ -219,36 +215,11 @@ namespace Turf
 		private readonly transitionAnchor: HTMLAnchorElement;
 		
 		/** */
-		protected createDripper(title: string, dropFn: (dt: DataTransfer) => void)
-		{
-			return UI.dripper(
-				new Text(title),
-				UI.flexCenter,
-				{
-					backgroundColor: UI.color({ l: 20, a: 0.85 }),
-					border: "3px solid " + UI.color({ l: 20 }),
-					borderRadius: UI.borderRadius.default,
-					fontSize: "40px",
-					fontWeight: "700",
-					color: "white"
-				},
-				Htx.on("drop", ev =>
-				{
-					(ev.target as HTMLElement)?.remove();
-					
-					if (ev.dataTransfer)
-						dropFn(ev.dataTransfer);
-				})
-			);
-		}
-		
-		/** */
 		protected createMediaRecords(
-			fileList: FileList | undefined,
+			files: FileLike[],
 			accept: MimeClass[] = [MimeClass.image])
 		{
 			const records: MediaRecord[] = [];
-			const files = Array.from(fileList || []);
 			
 			for (const file of files)
 			{
@@ -260,7 +231,7 @@ namespace Turf
 					continue;
 				
 				const record = new MediaRecord();
-				record.blob = new Blob([file]);
+				record.blob = new Blob([file.data]);
 				record.name = file.name;
 				record.type = mimeType;
 				records.push(record);

@@ -7,12 +7,6 @@ namespace Turf
 		(new (...args: any) => T);
 	
 	/** */
-	export interface FileLike extends Blob
-	{
-		readonly type: string;
-		name?: string;
-	}
-	
 	export namespace Util
 	{
 		/**

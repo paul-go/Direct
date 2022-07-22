@@ -45,7 +45,7 @@ namespace Turf
 						UI.dripperStyle("right"),
 						new Text("Add to the right"),
 					),
-					Htx.on("drop", ev => this.importMedia(ev.dataTransfer?.files, ev.offsetX)),
+					onFileDrop((files, x, y) => this.importMedia(files, x))
 				),
 				
 				UI.getMediaDropCue(
@@ -83,7 +83,7 @@ namespace Turf
 		});
 		
 		/** */
-		private async importMedia(files: FileList | undefined, dropOffsetX = 0)
+		private async importMedia(files: FileLike[], dropOffsetX = 0)
 		{
 			const mediaRecords = this.createMediaRecords(files, [MimeClass.image]);
 			if (mediaRecords.length === 0)
@@ -117,10 +117,6 @@ namespace Turf
 				.map(this.galleryContainer, FrameView)
 				.map(v => v.record);
 		}
-		
-		/** */
-		private async sdf() {}
-		
 		
 		/** */
 		private getVisibleFrame()

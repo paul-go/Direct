@@ -24,7 +24,7 @@ namespace Turf
 				
 				...UI.dripper(
 					new Text("Drop video here"),
-					Htx.on("drop", ev => this.importMedia(ev.dataTransfer?.files))
+					onFileDrop(files => this.importMedia(files))
 				),
 				
 				UI.getMediaDropCue(
@@ -62,9 +62,9 @@ namespace Turf
 		});
 		
 		/** */
-		private importMedia(fileList?: FileList)
+		private importMedia(files: FileLike[])
 		{
-			const mediaRecords = this.createMediaRecords(fileList, [MimeClass.video]);
+			const mediaRecords = this.createMediaRecords(files, [MimeClass.video]);
 			if (mediaRecords.length === 0)
 				return;
 			

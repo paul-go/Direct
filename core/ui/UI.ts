@@ -618,15 +618,6 @@ namespace Turf
 		const prefixes = new Map<Literal<string, string>, string>();
 		
 		/** */
-		export function getLayerCoords(target: HTMLElement, ev: DragEvent | MouseEvent)
-		{
-			const box = target.getBoundingClientRect();
-			const x = ev.clientX - box.left;
-			const y = ev.clientY - box.top;
-			return { x, y };
-		}
-		
-		/** */
 		export async function lockBody(innerFn: () => Promise<void>)
 		{
 			document.body.style.overflow = "hidden";
@@ -813,16 +804,13 @@ namespace Turf
 				{
 					dripper.classList.add(CssClass.hide);
 				}),
-				Htx.on("dragover", ev =>
+				Htx.on("dragenter", ev =>
 				{
 					ev.preventDefault();
 				}),
-				Htx.on("drop", ev =>
+				onFileDrop(() =>
 				{
 					dripper.classList.add(CssClass.hide);
-					
-					if (!ev.dataTransfer)
-						ev.stopImmediatePropagation();
 				}),
 				...params
 			);
@@ -839,7 +827,7 @@ namespace Turf
 		/** */
 		export function getMediaDropCue(
 			label: string,
-			filesFn: (files: FileList) => void,
+			filesFn: (files: FileLike[]) => void,
 			...params: Htx.Param[])
 		{
 			let input: HTMLInputElement;
@@ -851,12 +839,7 @@ namespace Turf
 				UI.clickable,
 				Htx.on(UI.clickEvt, () => input.click()),
 				
-				Htx.on("drop", ev =>
-				{
-					const files = ev.dataTransfer?.files;
-					if (files)
-						filesFn(files);
-				}),
+				onFileDrop(files => filesFn(files)),
 				
 				input = Htx.input(
 					{
@@ -866,7 +849,12 @@ namespace Turf
 						pointerEvents: "none",
 						visibility: "hidden",
 					},
-					Htx.on("change", () => input.files && filesFn(input.files)),
+					Htx.on("change", async () =>
+					{
+						const files = await FileLike.fromFiles(input.files);
+						if (files.length)
+							filesFn(files)
+					}),
 				),
 				...UI.cueLabel(label),
 				...params,
