@@ -13,7 +13,6 @@ namespace Turf
 				UI.keyable,
 				{
 					zIndex: "1",
-					backgroundColor: "black",
 					borderRadius: UI.borderRadius.large,
 					opacity: "0",
 					transform: "scale(0.66)",
@@ -46,11 +45,11 @@ namespace Turf
 					UI.clickable,
 					{
 						backgroundColor: UI.gray(128, 0.33),
-						backdropFilter: "blur(10px)",
 						borderRadius: "100%",
 						transform: "rotate(45deg)",
 						padding: "20px",
 					},
+					UI.backdropBlur(10),
 					UI.plusButton(),
 					Htx.on(UI.clickEvt, () => UI.removeWithFade(this.root))
 				),

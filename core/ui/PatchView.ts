@@ -31,8 +31,6 @@ namespace Turf
 				{
 					minHeight: "100vh",
 					paddingBottom: "10px",
-					backgroundColor: "black",
-					
 					transitionDuration: "0.5s",
 					transitionProperty: "transform, opacity",
 					transformOrigin: "0 0",
@@ -94,7 +92,7 @@ namespace Turf
 							Htx.on(UI.clickEvt, () => this.publish()),
 							...UI.text("Publish", 25, 800)
 						),
-					)
+					),
 				),
 				
 				this.headerScreen = Htx.div(
@@ -107,7 +105,7 @@ namespace Turf
 						height: BladeView.headerHeight,
 						transitionDuration: "0.33s",
 						transitionProperty: "background-color",
-						padding: "35px",
+						padding: "25px",
 						// Elevate the chevron so that it goes above the "no blades" message
 						zIndex: "1",
 					},
@@ -115,6 +113,12 @@ namespace Turf
 					Htx.on("click", () => this.handleBack()),
 					UI.chevron(
 						Origin.left,
+						TAURI && {
+							width: "20px",
+							height: "20px",
+							top: "20px",
+							left: "3px"
+						},
 					),
 				),
 			);
@@ -164,9 +168,10 @@ namespace Turf
 		/** */
 		private toggleHeader(visible: boolean)
 		{
-			const s = this.headerScreen;
-			s.style.backgroundColor = visible ? UI.gray(128, 0.25) : "transparent";
-			s.style.backdropFilter = visible ? "blur(8px)" : "none";
+			Htx.from(this.headerScreen)(
+				{ backgroundColor: visible ? UI.gray(128, 0.25) : "transparent" },
+				UI.backdropBlur(visible ? 8 : 0)
+			);
 		}
 		
 		/** */

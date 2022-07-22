@@ -168,7 +168,6 @@ namespace Turf
 						transform: "scale(1)",
 						transitionDuration,
 						transitionProperty: "transform, height",
-						backgroundColor: "black",
 						overflow: "hidden",
 					},
 					previewDisplay = Htx.div(

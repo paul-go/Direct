@@ -24,12 +24,12 @@ namespace Turf
 					padding: "20px",
 					borderRadius: UI.borderRadius.large,
 					backgroundColor: UI.gray(75, 0.5),
-					backdropFilter: "blur(5px)",
 					transformOrigin: "50% 50%",
 					transitionProperty: "transform, opacity",
 					transitionDuration: transitionTicks + "ms",
 					pointerEvents: "none",
 				},
+				UI.backdropBlur(5),
 				this.hide,
 				() => Htx.from(this.root)(this.show),
 				Htx.span(

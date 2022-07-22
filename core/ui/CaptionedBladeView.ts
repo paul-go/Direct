@@ -469,7 +469,7 @@ namespace Turf
 		private renderOriginConfigurator()
 		{
 			this.originPicker = new OriginPicker({
-				backdropFilter: "blur(5px)",
+				...UI.backdropBlur(5),
 				backgroundColor: UI.black(0.333),
 			});
 			

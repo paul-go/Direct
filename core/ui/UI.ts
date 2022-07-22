@@ -373,6 +373,16 @@ namespace Turf
 		}
 		
 		/** */
+		export function backdropBlur(pixels = 5): Htx.Style
+		{
+			const value = pixels > 0 ? `blur(${pixels}px)` : "none";
+			return {
+				backdropFilter: value,
+				webkitBackdropFilter: value,
+			};
+		}
+		
+		/** */
 		export function text(label: string, size: number | string = 20, weight?: number)
 		{
 			return [
@@ -447,7 +457,7 @@ namespace Turf
 		/** */
 		export function visibleWhenAlone()
 		{
-			return Htx.css(":not(:only-child)", { display: "none !important" });
+			return Htx.css(":not(:only-child)", { display: "none" });
 		}
 		
 		/** */
@@ -459,7 +469,7 @@ namespace Turf
 		/** */
 		export function visibleWhenNotAlone()
 		{
-			return Htx.css(":only-child", { display: "none !important" });
+			return Htx.css(":only-child", { display: "none" });
 		}
 		
 		/** */

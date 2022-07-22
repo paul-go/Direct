@@ -93,7 +93,7 @@ namespace Turf
 				justifyContent: "center",
 				justifyItems: "center",
 				textAlign: "center",
-				backdropFilter: "blur(8px)",
+				...UI.backdropBlur(8),
 			});
 			
 			const closeFn = () =>
