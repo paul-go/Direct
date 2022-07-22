@@ -31,7 +31,7 @@ namespace Turf
 				CssClass.appRoot,
 				{
 					minHeight: "100%",
-					backgroundColor: "rgb(20, 20, 20)"
+					backgroundColor: UI.darkGrayBackground
 				},
 				titleBar = Htx.div(
 					"title-bar",

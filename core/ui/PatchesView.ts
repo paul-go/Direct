@@ -71,7 +71,7 @@ namespace Turf
 						color: "white",
 						fontSize: "max(16px, 1vw)",
 						fontWeight: "700",
-						backgroundColor: UI.primaryColor,
+						backgroundColor: UI.themeColor,
 						padding: "0.5vw 1.5vw",
 					},
 					new Text("Draft"),
@@ -85,7 +85,7 @@ namespace Turf
 		{
 			return this.renderTile([
 				{
-					backgroundColor: UI.primaryColor,
+					backgroundColor: UI.themeColor,
 				},
 				Htx.div(
 					UI.presentational,
@@ -131,7 +131,7 @@ namespace Turf
 						color: "white",
 						fontSize: "max(16px, 1vw)",
 						fontWeight: "700",
-						backgroundColor: UI.primaryColor,
+						backgroundColor: UI.themeColor,
 						padding: "0.5vw 1.5vw",
 					},
 					new Text("Draft"),

@@ -32,6 +32,10 @@ namespace Turf
 			this.root = Htx.div(
 				"blade-view",
 				
+				{
+					backgroundColor: UI.darkGrayBackground
+				},
+				
 				// Hide the transition configurator for the first blade view
 				Htx.css(":first-of-type .transition-configurator", { visibility: "hidden" }),
 				

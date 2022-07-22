@@ -31,7 +31,10 @@ namespace Turf
 		}
 		
 		/** */
-		export const primaryColor = UI.color({ s: 70, l: 30 });
+		export const themeColor = UI.color({ s: 70, l: 30 });
+		
+		/** */
+		export const darkGrayBackground = "rgb(20, 20, 20)";
 		
 		/** */
 		export function white(alpha = 1)
@@ -1050,7 +1053,7 @@ namespace Turf
 				{
 					padding: "20px",
 					borderRadius: UI.borderRadius.large,
-					backgroundColor: type === "error" ? "red" : UI.primaryColor,
+					backgroundColor: type === "error" ? "red" : UI.themeColor,
 					boxShadow: "0 10px 20px " + UI.black(0.2),
 					color: "white",
 					pointerEvents: "none",
