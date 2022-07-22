@@ -39,20 +39,17 @@ namespace Turf
 			{
 				saveFolder = getExportsFolder();
 			}
-			else
+			else if (TAURI)
 			{
-				if (TAURI && !saveFolder)
-				{
-					const dialogResult = await Tauri.dialog.open({
-						recursive: true,
-						directory: true,
-						multiple: false,
-						defaultPath: "",
-					});
-					
-					if (typeof dialogResult === "string")
-						saveFolder = dialogResult;
-				}
+				const dialogResult = await Tauri.dialog.open({
+					recursive: true,
+					directory: true,
+					multiple: false,
+					defaultPath: saveFolder || undefined
+				});
+				
+				if (typeof dialogResult === "string")
+					saveFolder = dialogResult;
 			}
 			
 			this.saveLocationInput.input.value = saveFolder;
