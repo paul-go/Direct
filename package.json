@@ -14,11 +14,11 @@
 	},
 	"scripts": {
 		"tauri": "tauri",
-		"run-native": "npm run tauri dev"
+		"native": "npm run tauri dev"
 	},
 	"main": "turf.js",
 	"dependencies": {
-		"@tauri-apps/api": "^1.0.1"
+		"@tauri-apps/api": "^1.0.2"
 	},
 	"devDependencies": {
 		"@tauri-apps/cli": "^1.0.0",
