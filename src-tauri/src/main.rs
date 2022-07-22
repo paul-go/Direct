@@ -4,13 +4,15 @@
 )]
 
 use cocoa::appkit::{NSWindow, NSWindowStyleMask, NSWindowTitleVisibility};
-use tauri::{Runtime, Window, Manager};
+use tauri::{Runtime, Window, Manager, Size, LogicalSize};
 
+/** */
 pub trait WindowExt {
     #[cfg(target_os = "macos")]
     fn set_transparent_titlebar(&self, title_transparent: bool, remove_toolbar: bool);
 }
 
+/** */
 impl<R: Runtime> WindowExt for Window<R> {
     #[cfg(target_os = "macos")]
     fn set_transparent_titlebar(&self, title_transparent: bool, remove_tool_bar: bool) {
@@ -48,23 +50,18 @@ impl<R: Runtime> WindowExt for Window<R> {
     }
 }
 
-
+/** */
 fn main() {
 	let context = tauri::generate_context!();
 	tauri::Builder::default()
 		.setup(|app| {
 			let win = app.get_window("main").unwrap();
 			win.set_transparent_titlebar(true, false);
+			win.set_size(Size::Logical(LogicalSize { width: 800.0, height: 4000.0 })).unwrap();
 			Ok(())
 	      })
-		.invoke_handler(tauri::generate_handler![my_custom_command])
 		.menu(tauri::Menu::os_default(&context.package_info().name))
 		.run(context)
 		.expect("error while running tauri application");
 	println!("from rust");
-}
-
-#[tauri::command]
-fn my_custom_command() {
-	println!("I was invoked from JS!");
 }
