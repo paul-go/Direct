@@ -191,7 +191,7 @@ namespace Htx { { } }
 						.join("") +
 				"}";
 			
-			document.head.append(Htx.style(new Text(css)));
+			document.head.append(Htx.style("defer-sheet", new Text(css)));
 			
 			const listener = (ev: AnimationEvent) =>
 			{
@@ -231,11 +231,11 @@ namespace Htx { { } }
 	/** */
 	function css(selectorOrStyles: string | Htx.Style, maybeStyles?: Htx.Style)
 	{
-		if (!globalSheet)
+		if (!inlineRuleSheet)
 		{
-			const style = Htx.style();
+			const style = Htx.style("inline-rule-sheet");
 			document.head.append(style);
-			globalSheet = style.sheet!;
+			inlineRuleSheet = style.sheet!;
 		}
 		
 		const selector = typeof selectorOrStyles === "string" ? selectorOrStyles : "";
@@ -243,8 +243,8 @@ namespace Htx { { } }
 		const cssClass = "c" + (index++);
 		const ruleText = "." + cssClass + selector + "{}";
 		
-		const idx = globalSheet.insertRule(ruleText);
-		const cssRule = globalSheet.cssRules.item(idx) as CSSStyleRule;
+		const idx = inlineRuleSheet.insertRule(ruleText);
+		const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
 		
 		for (let [propertyName, propertyValue] of Object.entries(styles))
 		{
@@ -255,20 +255,15 @@ namespace Htx { { } }
 				/[A-Z]/g,
 				(char: string) => "-" + char.toLowerCase());
 			
-			let important = "";
-			if (propertyValue.slice(-10) === "!important")
-			{
-				important = "important";
-				propertyValue = propertyValue.slice(0, -10);
-			}
-			
-			cssRule.style.setProperty(propertyName, propertyValue, important);
+			// The properties of inline rules are always important, because there
+			// are no conceivable cases where they shouldn't override the inline styles.
+			cssRule.style.setProperty(propertyName, propertyValue, "important");
 		}
 		
 		return cssClass;
 	}
 	
-	let globalSheet: CSSStyleSheet | null = null;
+	let inlineRuleSheet: CSSStyleSheet | null = null;
 	let index = 0;
 	
 	/** */
@@ -293,7 +288,7 @@ namespace Htx { { } }
 		const fullCss  = ["@", "@-webkit-", "@-moz-"].map(s =>
 			s + `keyframes ${animationName} { ${animationBody} }`).join("");
 		
-		const styleTag = Htx.style(new Text(fullCss));
+		const styleTag = Htx.style("animation-sheet", new Text(fullCss));
 		styleTag.classList.add(animationName);
 		document.head.append(styleTag);
 		
@@ -482,6 +477,8 @@ namespace Htx
 		type: string;
 		value: string;
 		disabled: boolean;
+		webkitdirectory: boolean;
+		multiple: boolean;
 	}
 	
 	/** */
