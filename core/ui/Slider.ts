@@ -14,14 +14,9 @@ namespace Turf
 					boxShadow: "inset 0 0 0 5px " + UI.white(0.15),
 					borderRadius: "1000px",
 				},
-				Htx.on("pointerdown", () =>
-				{
-					this.root.setPointerCapture(1);
-				}),
-				Htx.on("pointerup", () =>
-				{
-					this.root.releasePointerCapture(1);
-				}),
+				Htx.on("pointerdown", ev => this.startDrag(ev)),
+				Htx.on("pointerup", ev => this.endDrag(ev)),
+				Htx.on("pointercancel", ev => this.endDrag(ev)),
 				Htx.on("pointermove", ev =>
 				{
 					this.handlePointerMove(ev);
@@ -62,6 +57,25 @@ namespace Turf
 		private readonly slideArea;
 		private readonly thumb;
 		
+		private sliderRect: DOMRect | null = null;
+		
+		/** */
+		private startDrag(ev: PointerEvent)
+		{
+			if (ev.buttons === 1)
+			{
+				this.root.setPointerCapture(ev.pointerId);
+				this.sliderRect = this.slideArea.getBoundingClientRect();
+			}
+		}
+		
+		/** */
+		private endDrag(ev: PointerEvent)
+		{
+			this.root.releasePointerCapture(ev.pointerId);
+			this.sliderRect = null;
+		}
+		
 		/** */
 		get max()
 		{
@@ -90,14 +104,13 @@ namespace Turf
 		private handlePointerMove(ev: PointerEvent)
 		{
 			this.root.style.cursor = ev.buttons === 1 ? "pointer" : "default";
-					
-			if (ev.buttons !== 1 || ev.movementX === 0)
+			
+			if (this.sliderRect === null)
 				return;
 			
-			const pctLeft = parseFloat(this.thumb.style.left);
-			const pctMovement = (ev.movementX / this.slideArea.offsetWidth || 0) * 100;
-			const position = Math.max(0, Math.min(100, pctLeft + pctMovement));
-			this._progress = (position / 100 || 0) * this.max;
+			const xPixel = Math.max(0, Math.min(this.sliderRect.width, ev.clientX - this.sliderRect.x));
+			const xPercent = xPixel / this.sliderRect.width;
+			this._progress = xPercent * this.max;
 			
 			this.updateThumb();
 			this.progressChangeFn();

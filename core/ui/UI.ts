@@ -71,6 +71,7 @@ namespace Turf
 		/** */
 		export const clickable: Htx.Style = {
 			userSelect: "none",
+			webkitUserSelect: "none",
 			cursor: "pointer"
 		} as const;
 		
