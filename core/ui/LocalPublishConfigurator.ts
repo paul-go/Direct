@@ -45,7 +45,7 @@ namespace Turf
 					recursive: true,
 					directory: true,
 					multiple: false,
-					defaultPath: saveFolder || undefined
+					defaultPath: saveFolder || undefined // Prevents Tauri crash
 				});
 				
 				if (typeof dialogResult === "string")

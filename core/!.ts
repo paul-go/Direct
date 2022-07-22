@@ -21,6 +21,7 @@ declare namespace Tauri
 	export const shell: typeof import("@tauri-apps/api").shell;
 	export const tauri: typeof import("@tauri-apps/api").tauri;
 	export const updater: typeof import("@tauri-apps/api").updater;
+	export const window: typeof import("@tauri-apps/api").window;
 }
 
 /**
