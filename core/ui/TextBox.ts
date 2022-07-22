@@ -29,6 +29,7 @@ namespace Turf
 					{
 						contentEditable: "true",
 						outline: "0",
+						minWidth: "1px" // Minimum width needed so that the caret is visible
 					}
 				)
 			);
