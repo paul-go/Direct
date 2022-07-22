@@ -260,7 +260,7 @@ namespace Turf
 				"margin": "0",
 				"padding": "0",
 				"height": "100%",
-				"background-color": "black",
+				"background-color": UI.darkGrayBackground,
 				"color": "white",
 			}),
 			rule("." + CssClass.hide, {

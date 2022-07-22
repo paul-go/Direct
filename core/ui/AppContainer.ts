@@ -31,7 +31,6 @@ namespace Turf
 				CssClass.appRoot,
 				{
 					minHeight: "100%",
-					backgroundColor: UI.darkGrayBackground
 				},
 				titleBar = Htx.div(
 					"title-bar",
@@ -47,7 +46,7 @@ namespace Turf
 					},
 					UI.backdropBlur(8),
 					Htx.css(":hover", { opacity: "1" })
-				)
+				),
 			);
 			
 			titleBar.setAttribute("data-tauri-drag-region", "");
