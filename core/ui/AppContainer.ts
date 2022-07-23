@@ -11,19 +11,24 @@ namespace Turf
 		}
 		
 		/** */
-		static async new(root: HTMLElement, database: Back)
+		static async new(root: HTMLElement, database: Database)
 		{
-			const container = new AppContainer(root, database);
-			const meta = await database?.first?.(MetaRecord) ?? new MetaRecord();
-			const homePatch = meta.homePatch || (meta.homePatch = new PatchRecord());
-			Object.assign(container, { meta, homePatch } as Partial<AppContainer>);
-			return container;
+			const meta = await database.first(MetaRecord) ?? (() =>
+			{
+				const meta = new MetaRecord();
+				meta.homePatch = new PatchRecord();
+				database.save(meta);
+				return meta;
+			})();
+			
+			return new AppContainer(root, database, meta);
 		}
 		
 		/** */
 		private constructor(
 			readonly root: HTMLElement,
-			readonly database: Back)
+			readonly database: Database,
+			readonly meta: MetaRecord)
 		{
 			let titleBar: HTMLElement;
 			
@@ -54,10 +59,10 @@ namespace Turf
 		}
 		
 		/** */
-		readonly meta: MetaRecord = {} as any;
-		
-		/** */
-		readonly homePatch: PatchRecord = {} as any;
+		get homePatch()
+		{
+			return Not.nullable(this.meta.homePatch);
+		}
 		
 		/** */
 		getPublisher(): Publisher

@@ -22,7 +22,7 @@ namespace Turf
 	{
 		const database = await createDatabase(options?.database ? 
 			options.database :
-			ConstS.homeDatabaseName);
+			ConstS.mainDatabaseName);
 		
 		Turf.appendCss();
 		const container = options?.container ?? document.body;
@@ -40,9 +40,9 @@ namespace Turf
 	/** */
 	export function createDatabase(name: string)
 	{
-		return Turf.Back.new(name,
-			{ ctor: Turf.MetaRecord, stable: 1 },
-			{ ctor: Turf.PatchRecord, stable: 2 },
+		return Turf.Database.new(name,
+			{ ctor: Turf.MetaRecord, stable: 1, root: true },
+			{ ctor: Turf.PatchRecord, stable: 2, root: true },
 			{ ctor: Turf.CaptionedBladeRecord, stable: 3 },
 			{ ctor: Turf.ProseBladeRecord, stable: 4 },
 			{ ctor: Turf.VideoBladeRecord, stable: 5 },

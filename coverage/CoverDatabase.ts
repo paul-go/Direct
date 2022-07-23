@@ -2,7 +2,7 @@
 namespace Cover
 {
 	/** */
-	export async function coverDatabase()
+	export async function coverDatabaseBasic()
 	{
 		const [db1, dbName] = await setup();
 		
@@ -25,7 +25,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverInstance()
+	export async function coverDatabaseInstance()
 	{
 		const [db1, dbName] = await setup();
 		
@@ -54,7 +54,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverMediaObject()
+	export async function coverDatabaseMediaObject()
 	{
 		const [db] = await setup();
 		
@@ -74,7 +74,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverArrayReassignment()
+	export async function coverDatabaseArrayReassignment()
 	{
 		const [db1, dbName] = await setup();
 		
@@ -106,7 +106,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverIteration()
+	export async function coverDatabaseIteration()
 	{
 		const [db1, dbName] = await setup();
 		
@@ -138,11 +138,93 @@ namespace Cover
 	}
 	
 	/** */
+	export async function coverDatabaseAssignUnretainedToRetained()
+	{
+		const [db] = await setup();
+		
+		const patch = new Turf.PatchRecord();
+		await db.save(patch);
+		
+		const gallery = new Turf.GalleryBladeRecord();
+		const frame = new Turf.FrameRecord();
+		const media = new Turf.MediaRecord();
+		frame.media = media;
+		gallery.frames.push(frame);
+		patch.blades.push(gallery);
+		
+		return [
+			() => !!patch.id,
+			() => !!gallery.id,
+			() => !!frame.id,
+			() => !!media.id
+		];
+	}
+	
+	/** */
+	export async function coverDatabaseAutosaveAssignment()
+	{
+		const [db] = await setup();
+		
+		const patch = new Turf.PatchRecord();
+		await db.save(patch);
+		
+		const gallery = new Turf.GalleryBladeRecord();
+		patch.blades.push(gallery);
+		
+		await Turf.UI.wait(100);
+		gallery.transition = "x";
+		await Turf.UI.wait(100);
+	}
+	
+	/** */
+	export async function coverDatabaseAutosaveReassignment()
+	{
+		const [db] = await setup();
+		
+		const patch = new Turf.PatchRecord();
+		await db.save(patch);
+		
+		const prose1 = new Turf.ProseBladeRecord();
+		prose1.html = "prose1";
+		
+		const prose2 = new Turf.ProseBladeRecord();
+		prose2.html = "prose2";
+		patch.blades.push(prose1, prose2);
+		
+		await Turf.UI.wait(100);
+		
+		const prose3 = new Turf.ProseBladeRecord();
+		prose3.html = "prose3";
+		
+		await Turf.UI.wait(100);
+		
+		console.log("Patch1: " + patch.id);
+		console.log("Prose1: " + prose1.id);
+		console.log("Prose2: " + prose2.id);
+		console.log("Prose3: " + prose3.id);
+		
+		patch.blades = [prose2, prose3];
+		
+		await Turf.UI.wait(200);
+		
+		const allProseRecords: Turf.Record[] = [];
+		
+		for await (const record of db.each(Turf.ProseBladeRecord, "get"))
+			allProseRecords.push(record);
+		
+		return [
+			() => allProseRecords.length === 2,
+			() => allProseRecords[0] === prose2,
+			() => allProseRecords[1] === prose3,
+		];
+	}
+	
+	/** */
 	async function setup()
 	{
 		const dbName = Moduless.getRunningFunctionName();
-		await Turf.Back.delete(dbName);
+		await Turf.Database.delete(dbName);
 		const db = await Turf.createDatabase(dbName);
-		return [db, dbName] as [Turf.Back, string];
+		return [db, dbName] as [Turf.Database, string];
 	}
 }

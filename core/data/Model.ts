@@ -10,8 +10,6 @@ namespace Turf
 		htmlHeader = "";
 		htmlFooter = "";
 		
-		// User-related members
-		
 		/** Stores the method of publishing used in this Turf. */
 		publishMethod = "";
 		
@@ -25,7 +23,7 @@ namespace Turf
 		 */
 		publishDataTable: Literal<string, Literal<string, string | number | boolean>> = {};
 		
-		homePatch = Back.reference(PatchRecord);
+		homePatch = Database.reference(PatchRecord);
 	}
 	
 	/** */
@@ -39,7 +37,7 @@ namespace Turf
 		draft = true;
 		dateCreated = Date.now();
 		datePublished = 0;
-		blades = Back.array(BladeRecord);
+		blades = Database.array(BladeRecord);
 	}
 	
 	/** */
@@ -55,12 +53,12 @@ namespace Turf
 		textContrast = 50;
 		effect = Effects.none.name;
 		origin = Origin.center;
-		contentImage = Back.reference(MediaRecord);
+		contentImage = Database.reference(MediaRecord);
 		contentImageWidth = 50;
 		titles: ITitle[] = [];
 		description = "";
 		descriptionSize = 3;
-		backgrounds = Back.array(BackgroundRecord);
+		backgrounds = Database.array(BackgroundRecord);
 	}
 	
 	/** */
@@ -74,7 +72,7 @@ namespace Turf
 	/** */
 	export class BackgroundRecord extends Record
 	{
-		media = Back.reference(MediaRecord);
+		media = Database.reference(MediaRecord);
 		
 		/** Stores the size of the background in vmin units. A value of -1 indicates "cover" */
 		size = -1;
@@ -85,7 +83,7 @@ namespace Turf
 	/** */
 	export class GalleryBladeRecord extends BladeRecord
 	{
-		frames = Back.array(FrameRecord);
+		frames = Database.array(FrameRecord);
 	}
 	
 	/** */
@@ -98,7 +96,7 @@ namespace Turf
 	export class VideoBladeRecord extends BladeRecord
 	{
 		size: SizeMethod = "cover";
-		media = Back.reference(MediaRecord);
+		media = Database.reference(MediaRecord);
 	}
 	
 	/** */
@@ -108,7 +106,7 @@ namespace Turf
 		captionLine2 = "";
 		textContrast = 0;
 		size: SizeMethod = "contain";
-		media = Back.reference(MediaRecord);
+		media = Database.reference(MediaRecord);
 	}
 	
 	/** */

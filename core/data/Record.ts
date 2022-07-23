@@ -2,29 +2,64 @@
 namespace Turf
 {
 	export type RecordConstructor<R extends Record = Record> = new(id?: string) => R;
-	
 	export type GetBehavior = "get" | "peek";
+	type ID = number;
 	
 	/** */
 	export interface IConfig
 	{
 		ctor: RecordConstructor;
 		stable: number;
+		root?: boolean;
 	}
 	
 	/** */
-	export class Back
+	export class Database
 	{
+		/** */
+		static rename(currentName: string, newName: string)
+		{
+			const id = this.getDatabaseId(currentName);
+			localStorage.removeItem(dbNamePrefix + currentName);
+			localStorage.setItem(dbNamePrefix + newName, id);
+		}
+		
+		/** */
+		static getAllNames()
+		{
+			const names: string[] = [];
+			
+			for (let i = -1; ++ i < localStorage.length;)
+			{
+				const key = localStorage.key(i);
+				if (key)
+				{
+					const name = localStorage.getItem(key);
+					if (name)
+						names.push(name);
+				}
+			}
+			
+			return names;
+		}
+		
 		/**
 		 * Returns a new Database instance, which is connected to the database
 		 * in IndexedDB with the specified name. Creates a new database if one
 		 * does not already exist.
 		 */
-		static async new(backName: string, ...configurations: IConfig[])
+		static async new(databaseName: string, ...configurations: IConfig[])
 		{
-			return new Promise<Back>(r =>
+			const databaseId = this.getDatabaseId(databaseName) || (() =>
 			{
-				const openRequest = indexedDB.open(backName, 1);
+				const id = Date.now().toString();
+				localStorage.setItem(dbNamePrefix + databaseName, id);
+				return id;
+			})();
+			
+			return new Promise<Database>(r =>
+			{
+				const openRequest = indexedDB.open(databaseId, 1);
 				
 				openRequest.onupgradeneeded = () =>
 				{
@@ -39,23 +74,25 @@ namespace Turf
 				
 				openRequest.onerror = () =>
 				{
-					console.error("Could not open the database: " + backName);
+					console.error("Could not open the database: " + databaseName);
 				};
 				
 				openRequest.onsuccess = async () =>
 				{
-					const back = new Back(new Database(openRequest.result, configurations));
-					r(back);
+					const db = new Database(openRequest.result, configurations);
+					r(db);
 				};
 			});
 		}
 		
 		/** */
-		static delete(backName: string)
+		static delete(databaseName: string)
 		{
+			const databaseId = this.getDatabaseId(databaseName);
+			
 			return new Promise<void>(resolve =>
 			{
-				const request = indexedDB.deleteDatabase(backName);
+				const request = indexedDB.deleteDatabase(databaseId);
 				request.onsuccess = () => resolve();
 				request.onerror = () => resolve();
 			});
@@ -74,86 +111,26 @@ namespace Turf
 		}
 		
 		/** */
-		private constructor(private readonly inner: Database) { }
-		
-		/** */
-		get<R extends Record>(id: string)
+		private static getDatabaseId(name: string)
 		{
-			return this.inner.get<R>(id);
+			return localStorage.getItem(dbNamePrefix + name) || "";
 		}
 		
 		/** */
-		async first<R extends Record>(type: RecordConstructor<R>)
-		{
-			for await (const record of this.inner.each(type, "get"))
-				return record as R;
-			
-			return null;
-		}
-		
-		/** */
-		each<R extends Record>(
-			type: RecordConstructor<R>,
-			behavior: "get" | "peek")
-		{
-			return this.inner.each(type, behavior);
-		}
-		
-		/** */
-		save(...records: Record[])
-		{
-			return this.inner.save(records);
-		}
-	}
-	
-	/** */
-	class Database
-	{
-		/** */
-		constructor(
+		private constructor(
 			readonly idb: IDBDatabase,
 			private readonly configurations: IConfig[])
 		{ }
 		
 		/** */
-		async *each<R extends Record>(
-			type: RecordConstructor<R>,
-			behavior:GetBehavior )
-		{
-			const tx = this.idb.transaction(objectTableName, "readonly");
-			const store = tx.objectStore(objectTableName);
-			const index = store.index(stableIndexName);
-			const config = this.resolveConfig(type);
-			const cursor = index.openCursor(IDBKeyRange.only(config.stable));
-			
-			for (;;)
-			{
-				await new Promise<void>(r =>
-				{
-					if (cursor.readyState === "done")
-						cursor.result!.continue();
-					
-					cursor.onsuccess = () => r();
-				});
-				
-				if (!cursor.result)
-					break;
-				
-				const value = cursor.result.value;
-				const record = await this.constructRecord(value, behavior);
-				yield record as R;
-			}
-		}
-		
-		/** */
-		get<R extends Record>(id: string)
+		get<R extends Record>(id: ID)
 		{
 			if (!id)
 				throw "ID required";
 			
 			return new Promise<R | null>(resolve =>
 			{
-				const existing = this.getFromHeap(id);
+				const existing = this.heap.get(id);
 				if (existing)
 					return resolve(existing as R);
 				
@@ -176,7 +153,16 @@ namespace Turf
 		}
 		
 		/** */
-		async pick<R extends Record>(ids: string[]): Promise<R[]>
+		async first<R extends Record>(type: RecordConstructor<R>)
+		{
+			for await (const record of this.each(type, "get"))
+				return record as R;
+			
+			return null;
+		}
+		
+		/** */
+		async pick<R extends Record>(ids: ID[]): Promise<R[]>
 		{
 			if (ids.length === 0)
 				return [];
@@ -189,7 +175,7 @@ namespace Turf
 			for (let i = -1; ++i < ids.length;)
 			{
 				const id = ids[i];
-				const existing = this.getFromHeap(id);
+				const existing = this.heap.get(id);
 				if (existing)
 				{
 					records[i] = existing as R;
@@ -241,10 +227,44 @@ namespace Turf
 		}
 		
 		/** */
+		async * each<R extends Record>(type: RecordConstructor<R>, behavior: GetBehavior)
+		{
+			const tx = this.idb.transaction(objectTableName, "readonly");
+			const store = tx.objectStore(objectTableName);
+			const index = store.index(stableIndexName);
+			const config = this.resolveConfig(type);
+			const cursor = index.openCursor(IDBKeyRange.only(config.stable));
+			
+			for (;;)
+			{
+				await new Promise<void>(r =>
+				{
+					if (cursor.readyState === "done")
+						cursor.result!.continue();
+					
+					cursor.onsuccess = () => r();
+				});
+				
+				if (!cursor.result)
+					break;
+				
+				const value = (cursor.result.value as RecordJson<R>);
+				const record = await this.constructRecord(value, behavior);
+				yield record as R;
+			}
+		}
+		
+		/** */
 		private async constructRecord<R extends Record>(
 			recordJson: RecordJson<R>,
 			behavior: GetBehavior = "get"): Promise<R>
 		{
+			// Don't create another Record instance if we already have one in
+			// the heap. This will allow the system to maintain referential significance.
+			const existing = this.heap.get(recordJson.id);
+			if (existing)
+				return existing as R;
+			
 			const id = recordJson.id;
 			const raw = recordJson as any;
 			const config = this.resolveConfig(recordJson);
@@ -258,7 +278,7 @@ namespace Turf
 				
 				if (value.type instanceof ArrayMarker)
 				{
-					const ids = rawValue as string[];
+					const ids = rawValue as ID[];
 					
 					if (behavior === "get" && Array.isArray(ids))
 					{
@@ -281,16 +301,13 @@ namespace Turf
 			}
 			
 			if (behavior === "get")
-			{
-				this.maybeAssociate(record);
-				this.putOnHeap(record);
-			}
+				this.maybeImport(record);
 			
 			return record as R;
 		}
 		
 		/** */
-		resolveConfig(object: object)
+		private resolveConfig(object: object)
 		{
 			if (object instanceof Record || object instanceof Function)
 			{
@@ -317,10 +334,15 @@ namespace Turf
 		}
 		
 		/** */
-		async save(records: Record[])
+		save(...records: Record[])
 		{
 			if (records.length === 0)
-				return;
+				return Promise.resolve();
+			
+			// Note: this operation is actually recursive.
+			// No need to make it recursive here again.
+			for (const record of records)
+				this.unmarkForDeletion(record);
 			
 			return new Promise<void>(resolve =>
 			{
@@ -336,10 +358,16 @@ namespace Turf
 				
 				for (const record of recurseRecords(records))
 				{
-					this.maybeAssociate(record);
+					this.maybeImport(record);
 					
 					const entries = Object.entries(record).map(([key, recordValue]) =>
 					{
+						if (recordValue === undefined)
+							throw "Cannot serialize undefined.";
+						
+						if (recordValue !== recordValue)
+							throw "Cannot serialize NaN.";
+						
 						let serializedValue: any = null;
 						
 						if (recordValue instanceof Record)
@@ -350,20 +378,16 @@ namespace Turf
 							if (recordValue.length > 0 && recordValue[0] instanceof Record)
 							{
 								const records = recordValue as Record[];
-								
-								for (const record of records)
-									this.maybeAssociate(record);
-								
 								serializedValue = records.map(r => r.id);
 							}
-							else
-								serializedValue = [];
+							else serializedValue = [];
 						}
 						else if (
 							recordValue === null ||
 							typeof recordValue === "string" || 
 							typeof recordValue === "number" ||
 							typeof recordValue === "boolean" ||
+							recordValue.constructor === Object ||
 							recordValue instanceof Blob)
 						{
 							serializedValue = recordValue;
@@ -396,314 +420,374 @@ namespace Turf
 			});
 		}
 		
-		//# Memory Management
+		//# Dirty Management
 		
 		/** */
-		getFromHeap(id: string)
+		private setDirty(record: Record)
 		{
-			const ref = this.heap.get(id);
-			if (!ref)
-				return null;
-			
-			this.heap.queueCleanup();
-			
-			const record = ref.deref();
-			if (record)
-				return record;
-			
-			this.heap.delete(id);
-			return null;
+			this.dirtyRecords.add(record);
+			this.queueAutosave();
 		}
 		
 		/** */
-		putOnHeap(record: Record)
+		private queueAutosave()
 		{
-			const existing = this.heap.get(record.id);
-			if (!existing)
-				this.heap.set(record.id, new WeakRef(record));
-			
-			this.heap.queueCleanup();
-		}
-		
-		/** Stores a reference to all Record objects in memory. */
-		readonly heap = new WeakRecordCollection();
-		
-		//# Garbage Collection
-		
-		/** */
-		ref(record: Record)
-		{
-			if (record.id)
-				this.setReferenceCount(record, this.getReferenceCount(record) + 1);
-		}
-		
-		/** */
-		deref(record: Record)
-		{
-			if (!record.id)
-				return;
-			
-			const count = this.setReferenceCount(record, this.getReferenceCount(record) - 1);
-			if (count === 0)
+			clearTimeout(this.autosaveTimeoutId);
+			this.autosaveTimeoutId = setTimeout(() =>
 			{
-				this.sweepables.add(record);
-				this.queueSweep();
-			}
+				const dirtyRecords = Array.from(this.dirtyRecords);
+				this.dirtyRecords.clear();
+				this.save(...dirtyRecords);
+			},
+			1);
 		}
+		private autosaveTimeoutId: any = 0;
+		
+		private readonly dirtyRecords = new Set<Record>();
+		
+		//# Deletion Watcher
 		
 		/** */
-		getReferenceCount(record: Record)
+		private markForDeletion(record: Record)
 		{
-			return Number(localStorage.getItem(record.id)) || 0;
-		}
-		
-		/** */
-		setReferenceCount(record: Record, count: number)
-		{
-			if (count < 1)
-				localStorage.removeItem(record.id);
-			else
-				localStorage.setItem(record.id, String(count));
+			for (const rec of recurseRecords([record]))
+				if (rec.id && !this.resolveConfig(record).root)
+					this.markedRecordIds.add(rec.id);
 			
-			return count;
+			this.queueDeletion();
 		}
 		
 		/** */
-		queueSweep()
+		private unmarkForDeletion(record: Record)
 		{
-			clearTimeout(this.sweepTimeout);
-			this.sweepTimeout = setTimeout(() =>
+			for (const rec of recurseRecords([record]))
+				if (rec.id)
+					this.markedRecordIds.delete(rec.id);
+		}
+		
+		/** */
+		private queueDeletion()
+		{
+			clearTimeout(this.deletionTimeoutId);
+			this.deletionTimeoutId = setTimeout(async () =>
 			{
-				const sweepablesCopy = Array.from(this.sweepables);
-				this.sweepables.clear();
+				const idsOriginal = this.markedRecordIds.toSet();
+				const ids = this.markedRecordIds.toSet();
 				
-				for (const record of sweepablesCopy)
+				for await (const [ownerId, refId] of this.eachEdge())
+					if (!ids.has(ownerId) && ids.has(refId))
+						ids.delete(refId);
+				
+				const tx = this.idb.transaction(objectTableName, "readwrite");
+				const store = tx.objectStore(objectTableName);
+				
+				for (const id of ids)
 				{
-					// If the record was re-referenced, then avoid sweeping it.
-					if (this.getReferenceCount(record) > 0)
-						continue;
-					
-					//debugger;
-					//! Hit the database somehow and nuke the object
+					store.delete(Number(id));
+					this.heap.delete(id);
 				}
+				
+				for (const id of idsOriginal)
+					this.markedRecordIds.delete(id);
 			},
 			100);
 		}
+		private deletionTimeoutId: any = 0;
 		
-		private sweepTimeout: any = 0;
-		private readonly sweepables = new Set<Record>();
-		
-		//# Dirty Records Management
-		
-		/** */
-		*eachDirty()
+		/**
+		 * Performs a complete scan of the database records, returning a pair
+		 * of IDs that define an edge relationship from the first ID to the second ID.
+		 * This edge can be established through a record reference (single record
+		 * property), or as an array of records.
+		 */
+		private async * eachEdge(): AsyncIterableIterator<[ID, ID]>
 		{
-			for (const [id, ref] of this.dirtyRecords)
+			const tx = this.idb.transaction(objectTableName, "readonly");
+			const store = tx.objectStore(objectTableName);
+			const index = store.index(stableIndexName);
+			const cursor = index.openCursor();
+			
+			for (;;)
 			{
-				const record = ref.deref();
+				await new Promise<void>(r =>
+				{
+					if (cursor.readyState === "done")
+						cursor.result!.continue();
+					
+					cursor.onsuccess = () => r();
+				});
 				
-				if (record)
-					yield record;
-				else
-					this.dirtyRecords.delete(id);
+				if (!cursor.result)
+					break;
+				
+				const raw = cursor.result.value;
+				const ownerId = (raw as Record).id;
+				const config = Not.nullable(this.resolveConfig(raw));
+				const memberLayout = getMemberLayout(config.ctor);
+				
+				for (const [key, value] of Object.entries(memberLayout))
+				{
+					const rawValue = raw[key];
+					
+					if (value.type instanceof ArrayMarker)
+						for (const id of rawValue as ID[])
+							yield [ownerId, id];
+					
+					else if (value.type instanceof ReferenceMarker)
+						yield [ownerId, rawValue];
+				}
 			}
 		}
 		
 		/** */
-		setDirty(record: Record)
+		private get markedRecordIds()
 		{
-			this.dirtyRecords.set(record.id, new WeakRef(record));
-			this.dirtyRecords.queueCleanup();
+			if (!this._markedRecordIds)
+				this._markedRecordIds = new LocalStorageSet(this.idb.name);
+			
+			return this._markedRecordIds;
+		}
+		private _markedRecordIds: LocalStorageSet | null = null;
+		
+		//# Property Creators
+		
+		/**
+		 * Adds an ID and getters / setters to the specified record,
+		 * and adds the record to the heap, if these things have not 
+		 * been done already.
+		 */
+		private maybeImport(record: Record)
+		{
+			if (!record.id)
+				Object.assign(record, { id: generateId() });
+			
+			if (!this.recordsWithProperties.has(record))
+			{
+				const memberLayout = getMemberLayout(record);
+				for (const [memberName, memberInfo] of Object.entries(memberLayout))
+				{
+					const name = memberName as keyof Record;
+					if (name === "id")
+						continue;
+					
+					if (memberInfo.type instanceof ArrayMarker)
+						this.defineArrayProperty(record, name);
+					
+					else if (memberInfo.type instanceof ReferenceMarker)
+						this.defineRecordProperty(record, name);
+					
+					else if (memberInfo.type === "array")
+						this.defineArrayProperty(record, name);
+					
+					else
+						this.definePrimitiveProperty(record, name);
+				}
+				
+				this.recordsWithProperties.add(record);
+			}
+			
+			this.heap.set(record.id, record);
+		}
+		
+		private readonly recordsWithProperties = new WeakSet<Record>();
+		private readonly heap = new IterableWeakMap<ID, Record>();
+		
+		/** */
+		private definePrimitiveProperty(record: Record, memberName: keyof Record)
+		{
+			let backingValue = record[memberName] as unknown;
+			
+			Object.defineProperty(record, memberName, {
+				get: () => backingValue,
+				set: (value: Record | null) =>
+				{
+					if (value === backingValue)
+						return value;
+					
+					this.setDirty(record);
+					return backingValue = value;
+				}
+			});
 		}
 		
 		/** */
-		setClean(record: Record)
+		private defineRecordProperty(owner: Record, memberName: string)
 		{
-			this.dirtyRecords.delete(record.id);
-			this.dirtyRecords.queueCleanup();
+			let backingValue: Record | null = (owner as any)[memberName];
+			
+			Object.defineProperty(owner, memberName, {
+				get: () => backingValue,
+				set: (assignee: Record | null) =>
+				{
+					if (assignee === backingValue)
+						return;
+					
+					if (backingValue)
+						this.markForDeletion(backingValue);
+					
+					if (assignee)
+						this.save(assignee);
+					
+					this.setDirty(owner);
+					return backingValue = assignee;
+				}
+			});
 		}
 		
-		/** Stores a reference to the dirty Record objects in memory. */
-		private readonly dirtyRecords = new WeakRecordCollection();
-		
-		//# Record Preparation
+		/** */
+		private defineArrayProperty(owner: Record, memberName: keyof Record)
+		{
+			const target = owner[memberName] as any as Record[];
+			let observableArray = new this.ObservableArray(this, owner, target);
+			
+			Object.defineProperty(owner, memberName, {
+				get: () => observableArray.proxy,
+				set: (records: Record[]) =>
+				{
+					for (const record of observableArray.proxy)
+						if (record instanceof Record)
+							this.markForDeletion(record);
+					
+					for (const record of records)
+						if (record instanceof Record)
+							this.save(record);
+					
+					this.setDirty(owner);
+					observableArray = new this.ObservableArray(this, owner, records);
+					return observableArray.proxy;
+				}
+			});
+		}
 		
 		/**
 		 * 
 		 */
-		private maybeAssociate(record: Record)
+		private readonly ObservableArray = class ObservableArray
 		{
-			if (this.associations.has(record))
-				return;
-			
-			this.maybeSetId(record);
-			this.associations.set(record, this);
-			this.putOnHeap(record);
-			
-			const memberLayout = getMemberLayout(record);
-			
-			for (const [memberName, memberInfo] of Object.entries(memberLayout))
+			constructor(
+				readonly database: Database,
+				readonly owner: Record,
+				target: Record[] = [])
 			{
-				if (memberName === "id")
-					continue;
-				
-				if (memberInfo.type instanceof ArrayMarker)
-				{
-					this.defineArrayProperty(this, record, memberName);
-				}
-				else if (memberInfo.type instanceof ReferenceMarker)
-				{
-					this.defineRecordProperty(this, record, memberName);
-				}
-				else if (memberInfo.type === "array")
-				{
-					this.defineArrayProperty(this, record, memberName);
-				}
-				else
-				{
-					this.definePrimitiveProperty(this, record, memberName as keyof Record);
-				}
+				this.proxy = new Proxy(target, {
+					get(target, name: string)
+					{
+						switch (name)
+						{
+							case target.copyWithin.name: throw "Not implemented";
+							case target.pop.name: return () =>
+							{
+								if (target.length === 0)
+									return undefined;
+								
+								const result = target.pop();
+								if (result instanceof Record)
+									database.markForDeletion(result);
+								
+								database.setDirty(owner);
+								return target.pop();
+							};
+							case target.push.name: return (...args: Record[]) =>
+							{
+								if (args.length === 0)
+									return target.length;
+								
+								for (const arg of args)
+									if (arg instanceof Record)
+										database.save(arg);
+								
+								database.setDirty(owner);
+								return target.push(...args);
+							};
+							case target.reverse.name: return () =>
+							{
+								if (target.length > 1)
+									database.setDirty(owner);
+								
+								return target.reverse();
+							};
+							case target.shift.name: return () =>
+							{
+								if (target.length === 0)
+									return undefined;
+								
+								const result = target.shift();
+								if (result instanceof Record)
+									database.markForDeletion(result);
+								
+								database.setDirty(owner);
+								return result;
+							};
+							case target.unshift.name: return (...args: any[]) =>
+							{
+								if (args.length === 0 || target.length === 0)
+									return target.length;
+								
+								for (const arg of args)
+									if (arg instanceof Record)
+										database.save(arg);
+								
+								database.setDirty(owner);
+								return target.unshift(...args);
+							};
+							case target.sort.name: return (compareFn: any) =>
+							{
+								if (target.length < 2)
+									return target;
+								
+								database.setDirty(owner);
+								return target.sort(compareFn);
+							};
+							case target.splice.name: return (
+								start: number,
+								deleteCount?: number,
+								...insertables: Record[]) =>
+							{
+								deleteCount ||= 0;
+								const deleted = target.splice(start, deleteCount, ...insertables);
+								
+								for (const del of deleted)
+									database.markForDeletion(del);
+								
+								for (const ins of insertables)
+									database.save(ins);
+								
+								if (deleteCount > 0 || insertables.length > 0)
+									database.setDirty(owner);
+								
+								return deleted;
+							}
+							case "length": return target.length;
+							
+							default: return (target as any)[name];
+						}
+					},
+					set(target, p, value, receiver)
+					{
+						throw "The .length property is not writable.";
+					},
+				});
 			}
-		}
-		
-		private readonly associations = new WeakMap<Record, Database>();
-		
-		/** */
-		private maybeSetId(record: Record)
-		{
-			if (record.id)
-				return;
 			
-			/*
-			const config = this.resolveConfig(record);
-			let id = "0".repeat(this.idUniqueLength) + (++this.nextId).toString(36);
-			id = id.slice(-this.idUniqueLength);
-			id = config.stable + id;
-			*/
-			
-			const id = (++this.nextId).toString(36);
-			Object.assign(record, { id });
+			readonly proxy: Record[] = [];
 		}
-		
-		private nextId = 0;
-		
-		/** * /
-		getIdBounds(record: RecordConstructor)
-		{
-			const config = this.resolveConfig(record);
-			const stable = config.stable;
-			
-			return {
-				lower: stable + "0".repeat(this.idUniqueLength),
-				upper: stable + "z".repeat(this.idUniqueLength),
-			};
-		}
-		
-		private readonly idUniqueLength = 8;
-		*/
-		
-		/** */
-		private definePrimitiveProperty(database: Database, record: any, memberName: string)
-		{
-			let backingValue = record[memberName];
-			
-			Object.defineProperty(record, memberName, {
-				get()
-				{
-					return backingValue;
-				},
-				set(value: Record | null)
-				{
-					if (value === backingValue)
-						return;
-					
-					if (backingValue)
-						database.deref(backingValue);
-					
-					if (value)
-						database.ref(value);
-					
-					database.setDirty(record);
-					return backingValue = value;
-				}
-			});
-		}
-		
-		/** */
-		private defineRecordProperty(database: Database, record: any, memberName: string)
-		{
-			let backingValue: Record | null = record[memberName];
-			
-			Object.defineProperty(record, memberName, {
-				get()
-				{
-					return backingValue;
-				},
-				set(value: Record | null)
-				{
-					if (value === backingValue)
-						return;
-					
-					if (backingValue)
-						database.deref(backingValue);
-					
-					if (value)
-						database.ref(value);
-					
-					database.setDirty(record);
-					return backingValue = value;
-				}
-			});
-		}
-		
-		/** */
-		private defineArrayProperty(database: Database, owner: any, memberName: string)
-		{
-			const target = owner[memberName];
-			let observableArray = new ObservableArray(database, owner, target);
-			
-			Object.defineProperty(owner, memberName, {
-				get()
-				{
-					return observableArray.proxy;
-				},
-				set(records: Record[])
-				{
-					for (const record of observableArray.proxy)
-						if (record instanceof Record)
-							database.deref(record);
-					
-					for (const record of records)
-						if (record instanceof Record)
-							database.ref(record)
-					
-					database.setDirty(owner);
-					observableArray = new ObservableArray(database, owner, records);
-					return observableArray.proxy;
-				}
-			});
-		}
-		
-	}
 	
-	const objectTableName = "objects";
-	const stableIndexName = "stable";
-	const stableProperty = "_";
+	}
 	
 	//# Record Class
 	
 	/** */
-	export type RecordType = abstract new(id?: string) => Record;
+	export type RecordType = abstract new(id?: ID) => Record;
 	
 	/**
 	 * A type that describes a Record object as it comes directly from the database.
 	 */
-	type RecordJson<T> = { [P in keyof T]: T[P] extends any[] ? number[] : T[P]; } & { id: string };
+	type RecordJson<T> = { [P in keyof T]: T[P] extends any[] ? number[] : T[P]; } & { id: ID };
 	
 	/** */
 	export class Record
 	{
-		readonly id: string = "";
+		readonly id: ID = 0;
 	}
 	
 	/** */
@@ -718,145 +802,14 @@ namespace Turf
 		constructor(readonly ctor: any) { }
 	}
 	
-	/**
-	 * 
-	 */
-	class ObservableArray
-	{
-		constructor(
-			readonly database: Database,
-			readonly owner: Record,
-			target: Record[] = [])
-		{
-			this.proxy = new Proxy(target, {
-				get(target, name: string)
-				{
-					switch (name)
-					{
-						case target.copyWithin.name: throw "Not implemented";
-						case target.pop.name: return () =>
-						{
-							if (target.length === 0)
-								return undefined;
-							
-							const result = target.pop();
-							if (result instanceof Record)
-								database.deref(result);
-							
-							database.setDirty(owner);
-							return target.pop();
-						};
-						case target.push.name: return (...args: Record[]) =>
-						{
-							if (args.length === 0)
-								return target.length;
-							
-							for (const arg of args)
-								if (arg instanceof Record)
-									database.ref(arg);
-							
-							database.setDirty(owner);
-							return target.push(...args);
-						};
-						case target.reverse.name: return () =>
-						{
-							if (target.length > 1)
-								database.setDirty(owner);
-							
-							return target.reverse();
-						};
-						case target.shift.name: return () =>
-						{
-							if (target.length === 0)
-								return undefined;
-							
-							database.setDirty(owner);
-							const result = target.shift();
-							
-							if (result instanceof Record)
-								database.deref(result);
-							
-							return result;
-						};
-						case target.unshift.name: return (...args: any[]) =>
-						{
-							if (args.length === 0 || target.length === 0)
-								return target.length;
-							
-							for (const arg of args)
-								if (arg instanceof Record)
-									database.ref(arg);
-							
-							database.setDirty(owner);
-							return target.unshift(...args);
-						};
-						case target.sort.name: return (compareFn: any) =>
-						{
-							if (target.length < 2)
-								return target;
-							
-							database.setDirty(owner);
-							return target.sort(compareFn);
-						};
-						case target.splice.name: return (
-							start: number,
-							deleteCount?: number,
-							...insertables: Record[]) =>
-						{
-							deleteCount ||= 0;
-							const deleted = target.splice(start, deleteCount, ...insertables);
-							
-							for (const del of deleted)
-								database.deref(del);
-							
-							for (const ins of insertables)
-								database.ref(ins);
-							
-							if (deleteCount > 0 || insertables.length > 0)
-								database.setDirty(owner);
-							
-							return deleted;
-						}
-						case "length": return target.length;
-						
-						default: return (target as any)[name];
-					}
-				},
-				set(target, p, value, receiver)
-				{
-					throw "The .length property is not writable.";
-				},
-			});
-		}
-		
-		readonly proxy: Record[] = [];
-	}
-	
-	/** */
-	class WeakRecordCollection extends Map<string, WeakRef<Record>>
-	{
-		/** */
-		queueCleanup()
-		{
-			clearTimeout(this.timeoutId);
-			this.timeoutId = setTimeout(() =>
-			{
-				for (const [key, ref] of this)
-					if (ref.deref() === undefined)
-						this.delete(key);
-			},
-			5000);
-		}
-		
-		private timeoutId: any = 0;
-	}
-	
 	//# Member Layouts
 	
 	/** */
-	function getMemberLayout(record: Record)
+	function getMemberLayout(record: Record | Ctor)
 	{
-		const recordCtor = constructorOf(record);
+		const recordCtor = record instanceof Record ? 
+			constructorOf(record) :
+			record;
 		
 		let layout = memberLayouts.get(recordCtor);
 		if (!layout)
@@ -908,6 +861,11 @@ namespace Turf
 		return layout;
 	}
 	
+	const dbNamePrefix = "database-";
+	const objectTableName = "objects";
+	const stableIndexName = "stable-index";
+	const stableProperty = "_";
+	
 	let isInspecting = false;
 	type MemberType = "string" | "number" | "boolean" | "array" | ArrayMarker | ReferenceMarker;
 	type MemberLayout = { [member: string]: { type: MemberType, array: boolean; } };
@@ -941,6 +899,17 @@ namespace Turf
 		for (const record of records)
 			yield* recurse(record);
 	}
+	
+	/**
+	 * Generates an ID which is a timestamp with an incrementation
+	 * feature, in order to prevent the case of multiple timestamps
+	 * being generated in the same millisecond.
+	 */
+	function generateId(): ID
+	{
+		return Date.now() * 1000 + (nextId++);
+	}
+	let nextId = 0;
 	
 	/** */
 	type Ctor = new(id?: string) => Record;
