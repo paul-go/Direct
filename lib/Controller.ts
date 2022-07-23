@@ -163,7 +163,7 @@ namespace Controller
 		private readonly marker: Comment;
 		
 		/** */
-		*[Symbol.iterator]()
+		* [Symbol.iterator]()
 		{
 			for (let i = -1; ++i < this.parentElement.children.length;)
 			{

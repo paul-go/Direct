@@ -3,7 +3,7 @@
 const enum ConstS
 {
 	baseFolderPrefix = "patch-base-folder-",
-	homeDatabaseName = "home",
+	mainDatabaseName = "main",
 	textContrastProperty = "--text-contrast",
 	htmlFileName = "index.html",
 	cssFileNameGeneral = "index.general.css",
