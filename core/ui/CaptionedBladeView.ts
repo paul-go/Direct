@@ -84,8 +84,6 @@ namespace Turf
 			
 			this.setDescriptionText(this.record.description);
 			this.setDescriptionSize(this.record.descriptionSize);
-			
-			Saver.set(this);
 		}
 		
 		private readonly foregroundContainer;
@@ -486,15 +484,6 @@ namespace Turf
 			
 			this.originButton.selected = false;
 			this.handleSelectionChange();
-		}
-		
-		/** */
-		save()
-		{
-			this.record.titles = this.titleView.getTitleData();
-			this.record.description = this.descriptionView.html;
-			
-			AppContainer.of(this).database.save(this.record);
 		}
 	}
 }

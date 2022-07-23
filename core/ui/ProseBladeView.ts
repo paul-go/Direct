@@ -213,11 +213,5 @@ namespace Turf
 					this.paragraphButton.selected = true;
 			}
 		}
-		
-		/** */
-		save()
-		{
-			this.record.html = this.textBox.editableElement.innerHTML;
-		}
 	}
 }

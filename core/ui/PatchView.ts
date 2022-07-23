@@ -132,7 +132,6 @@ namespace Turf
 			});
 			
 			Controller.set(this);
-			Saver.set(this);
 		}
 		
 		readonly root;
@@ -144,7 +143,7 @@ namespace Turf
 		private readonly isNewRecord: boolean;
 		
 		/** */
-		save()
+		private save()
 		{
 			this.record.blades = this.blades
 				.toArray()
@@ -214,7 +213,6 @@ namespace Turf
 		/** */
 		private handlePreview()
 		{
-			Saver.execute(this);
 			const meta = AppContainer.of(this).meta;
 			new PreviewView(this.record, meta);
 		}

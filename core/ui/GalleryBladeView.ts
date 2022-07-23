@@ -146,12 +146,6 @@ namespace Turf
 				this.containButton.selected = !cover;
 			}
 		}
-		
-		/** */
-		save()
-		{
-			
-		}
 	}
 	
 	/** */

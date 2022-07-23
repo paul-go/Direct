@@ -141,7 +141,6 @@ namespace Turf
 			);
 			
 			Controller.set(this);
-			Saver.set(this);
 		}
 		
 		readonly root: HTMLDivElement;
@@ -239,8 +238,5 @@ namespace Turf
 		
 			return records;
 		}
-		
-		/** */
-		abstract save(): void;
 	}
 }
