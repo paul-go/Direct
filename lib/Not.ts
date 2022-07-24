@@ -1,5 +1,4 @@
 
-
 /**
  * Utility class for performing basic guarding.
  */

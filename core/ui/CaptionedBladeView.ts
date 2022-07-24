@@ -63,8 +63,6 @@ namespace Turf
 				this.backgroundsButton,
 			);
 			
-			(this.record as any).id = "the-id";
-			
 			this.backgroundManager = new BackgroundManager(
 				this.record,
 				this.backgroundsContainer);
