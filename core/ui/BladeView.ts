@@ -230,7 +230,7 @@ namespace Turf
 					continue;
 				
 				const record = new MediaRecord();
-				record.blob = new Blob([file.data]);
+				record.blob = new Blob([file.data], { type: file.type });
 				record.name = file.name;
 				record.type = mimeType;
 				records.push(record);
