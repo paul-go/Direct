@@ -13,13 +13,13 @@ namespace Turf
 		/** */
 		static async new(root: HTMLElement, database: Database)
 		{
-			const meta = await database.first(MetaRecord) ?? (() =>
+			let meta = await database.first(MetaRecord);
+			if (!meta)
 			{
-				const meta = new MetaRecord();
+				meta = new MetaRecord();
 				meta.homePatch = new PatchRecord();
-				database.save(meta);
-				return meta;
-			})();
+				await database.save(meta);
+			}
 			
 			return new AppContainer(root, database, meta);
 		}

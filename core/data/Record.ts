@@ -126,7 +126,10 @@ namespace Turf
 		get<R extends Record>(id: ID)
 		{
 			if (!id)
-				throw "ID required";
+			{
+				//throw "ID required";
+				return null;
+			}
 			
 			return new Promise<R | null>(resolve =>
 			{
@@ -371,14 +374,14 @@ namespace Turf
 						let serializedValue: any = null;
 						
 						if (recordValue instanceof Record)
-							serializedValue = recordValue.id;
+							serializedValue = this.maybeImport(recordValue).id;
 						
 						else if (Array.isArray(recordValue))
 						{
 							if (recordValue.length > 0 && recordValue[0] instanceof Record)
 							{
 								const records = recordValue as Record[];
-								serializedValue = records.map(r => r.id);
+								serializedValue = records.map(r => this.maybeImport(r).id);
 							}
 							else serializedValue = [];
 						}
@@ -587,6 +590,7 @@ namespace Turf
 			}
 			
 			this.heap.set(record.id, record);
+			return record;
 		}
 		
 		private readonly recordsWithProperties = new WeakSet<Record>();
