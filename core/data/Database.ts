@@ -569,7 +569,7 @@ namespace Turf
 			if (!record.id)
 				Object.assign(record, { id: generateId() });
 			
-			if (!this.recordsWithProperties.has(record))
+			if (!importedRecords.has(record))
 			{
 				const memberLayout = getMemberLayout(record);
 				for (const [memberName, memberInfo] of Object.entries(memberLayout))
@@ -591,14 +591,13 @@ namespace Turf
 						this.definePrimitiveProperty(record, name);
 				}
 				
-				this.recordsWithProperties.add(record);
+				importedRecords.set(record, this);
 			}
 			
 			this.heap.set(record.id, record);
 			return record;
 		}
 		
-		private readonly recordsWithProperties = new WeakSet<Record>();
 		private readonly heap = new IterableWeakMap<ID, Record>();
 		
 		/** */
@@ -797,6 +796,19 @@ namespace Turf
 	export class Record
 	{
 		readonly id: ID = 0;
+		
+		/**
+		 * Saves this record to it's associated database.
+		 * Throws an exception if no database is associated with this record.
+		 */
+		async save()
+		{
+			const containingDatabase = importedRecords.get(this);
+			if (!containingDatabase)
+				throw "Cannot save this record. It has not been imported into any database.";
+			
+			return containingDatabase.save(this);
+		}
 	}
 	
 	/** */
@@ -879,6 +891,13 @@ namespace Turf
 	type MemberType = "string" | "number" | "boolean" | "array" | ArrayMarker | ReferenceMarker;
 	type MemberLayout = { [member: string]: { type: MemberType, array: boolean; } };
 	const memberLayouts = new Map<Ctor, MemberLayout>();
+	
+	/**
+	 * Stores a WeakMap of records that have been imported into the system,
+	 * which means that they have getters and setters installed. The value is
+	 * a reference to the Database that contains the record.
+	 */
+	const importedRecords = new WeakMap<Record, Database>();
 	
 	//# Utilities
 	
