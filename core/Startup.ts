@@ -15,14 +15,20 @@ namespace Turf
 		database?: string;
 		container?: HTMLElement;
 		shell?: boolean;
+		clear?: boolean;
 	}
 	
 	/** */
 	export async function createApp(options?: ICreateAppOptions)
 	{
-		const database = await createDatabase(options?.database ? 
+		const dbName = options?.database ? 
 			options.database :
-			ConstS.mainDatabaseName);
+			ConstS.mainDatabaseName;
+		
+		if (DEBUG && options?.clear)
+			await Turf.Database.delete(dbName);
+		
+		const database = await createDatabase(dbName);
 		
 		Turf.appendCss();
 		const container = options?.container ?? document.body;

@@ -4,6 +4,14 @@ namespace Cover
 	/** */
 	export async function coverPatchViewEmpty()
 	{
+		const app = await Turf.createApp({ shell: true, clear: true });
+		const pv = new Turf.PatchView(app.homePatch);
+		Cover.display(pv);
+	}
+	
+	/** */
+	export async function coverPatchViewExisting()
+	{
 		const app = await Turf.createApp({ shell: true });
 		const pv = new Turf.PatchView(app.homePatch);
 		Cover.display(pv);
@@ -12,7 +20,7 @@ namespace Cover
 	/** */
 	export async function coverPatchViewWithCaptioned()
 	{
-		const app = await Turf.createApp({ shell: true });
+		const app = await Turf.createApp({ shell: true, clear: true });
 		const pv = new Turf.PatchView(app.homePatch);
 		const bv1 = new Turf.CaptionedBladeView();
 		pv.blades.insert(bv1);
@@ -22,7 +30,7 @@ namespace Cover
 	/** */
 	export async function coverPatchViewWithMultipleCaptioned()
 	{
-		const app = await Turf.createApp({ shell: true });
+		const app = await Turf.createApp({ shell: true, clear: true });
 		const pv = new Turf.PatchView(app.homePatch);
 		const bv1 = new Turf.CaptionedBladeView();
 		const bv2 = new Turf.CaptionedBladeView();
@@ -34,7 +42,7 @@ namespace Cover
 	/** */
 	export async function coverPatchViewWithGallery()
 	{
-		const app = await Turf.createApp({ shell: true });
+		const app = await Turf.createApp({ shell: true, clear: true });
 		const pv = new Turf.PatchView(app.homePatch);
 		const bv = new Turf.GalleryBladeView();
 		pv.blades.insert(bv);
@@ -44,7 +52,7 @@ namespace Cover
 	/** */
 	export async function coverPatchViewWithVideo()
 	{
-		const app = await Turf.createApp({ shell: true });
+		const app = await Turf.createApp({ shell: true, clear: true });
 		const pv = new Turf.PatchView(app.homePatch);
 		const bv = new Turf.VideoBladeView();
 		pv.blades.insert(bv);
@@ -54,7 +62,7 @@ namespace Cover
 	/** */
 	export async function coverPatchViewWithProse()
 	{
-		const app = await Turf.createApp({ shell: true });
+		const app = await Turf.createApp({ shell: true, clear: true });
 		const pv = new Turf.PatchView(app.homePatch);
 		const bv = new Turf.ProseBladeView();
 		pv.blades.insert(bv);
