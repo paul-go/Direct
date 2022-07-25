@@ -218,8 +218,8 @@ namespace Turf
 			{
 				top = args[0];
 				right = args[1];
-				left = args[2];
-				bottom = args[3];
+				bottom = args[2];
+				left = args[3];
 			}
 			
 			return <Htx.Style>{

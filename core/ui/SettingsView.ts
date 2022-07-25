@@ -17,24 +17,31 @@ namespace Turf
 				return csv;
 			});
 			
+			let windowElement: HTMLElement;
+			const edge = parseInt(UI.borderRadius.large);
+			
 			this.root = Htx.div(
 				"settings-view",
 				UI.fixed(),
 				...UI.removeOnEscape(),
 				UI.removeOnClick(),
-				Htx.div(
+				windowElement = Htx.div(
 					"window",
-					{
-						overflowY: "auto",
-					},
-					UI.anchorCenter("85vw", "auto"),
+					UI.anchor(-edge, 0, -edge, 0),
 					UI.shadow.window,
 					{
+						opacity: "0",
+						transform: "translateY(20%) scale(0.9)",
+						transformOrigin: "50% 50%",
+						transitionProperty: "opacity, transform, border-radius",
+						transitionDuration: "0.3s",
+						overflowY: "auto",
 						backgroundColor: "white",
 						color: "black",
-						padding: "20px",
-						borderRadius: UI.borderRadius.large,
-						maxHeight: "80vh",
+						padding: `${20 + edge * 2}px 20px`,
+						borderRadius: 
+							UI.borderRadius.large + " " +
+							UI.borderRadius.large + " 0 0",
 					},
 					Htx.div(...UI.text("Settings", 35, 600)),
 					this.windowContents = Htx.div(
@@ -47,13 +54,16 @@ namespace Turf
 						UI.checkmark({ filter: "invert(1)" }),
 						Htx.on(UI.clickEvt, () =>
 						{
-							//this.save();
 							UI.removeWithFade(this.root);
 						})
 					)
 				),
 				() =>
 				{
+					const s = windowElement.style;
+					s.opacity = "1";
+					s.transform = `translateY(-${edge}px) scale(1)`;
+					
 					const scheme = ColorScheme.fromJson(this.meta.colorScheme);
 					if (!scheme)
 						return;
