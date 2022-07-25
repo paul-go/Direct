@@ -52,9 +52,12 @@ namespace Turf
 		static getCurrent(meta: MetaRecord)
 		{
 			const staticIdentifier = meta.publishMethod;
+			if (!staticIdentifier)
+				return null;
+			
 			const pub = this.publishers.get(staticIdentifier);
 			if (!pub)
-				throw "Publisher type not found.";
+				return null;
 			
 			if (pub instanceof Publisher)
 				return pub;
@@ -81,6 +84,12 @@ namespace Turf
 		
 		/** */
 		abstract deleteSettings(): void;
+		
+		/** */
+		canPublish()
+		{
+			return true;
+		}
 		
 		/** */
 		async publish(files: IRenderedFile[])

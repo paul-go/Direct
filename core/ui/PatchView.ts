@@ -89,7 +89,7 @@ namespace Turf
 								marginTop: "10px",
 								padding: "20px",
 							},
-							Htx.on(UI.clickEvt, () => this.publish()),
+							Htx.on(UI.clickEvt, () => AppContainer.of(this).publish(this.record)),
 							...UI.text("Publish", 25, 800)
 						),
 					),
@@ -215,29 +215,6 @@ namespace Turf
 		{
 			const meta = AppContainer.of(this).meta;
 			new PreviewView(this.record, meta);
-		}
-		
-		/** */
-		private async publish()
-		{
-			const app = AppContainer.of(this);
-			
-			if (!app.meta.publishMethod)
-			{
-				if (TAURI)
-					await Tauri.dialog.message("You must setup your publish settings before doing this.");
-				
-				AppContainer.of(this).root.append(new SettingsView().root);
-				return;
-			}
-			
-			const files = [
-				...(await Render.getPatchFiles(this.record, app.meta)),
-				...(await Render.getSupportFiles()),
-			];
-			
-			const publisher = app.getPublisher();
-			await publisher.publish(files);
 		}
 	}
 }

@@ -65,9 +65,28 @@ namespace Turf
 		}
 		
 		/** */
-		getPublisher(): Publisher
+		async publish(record: PatchRecord)
 		{
-			return Publisher.getCurrent(this.meta);
+			const publisher = Publisher.getCurrent(this.meta);
+			if (!publisher?.canPublish())
+			{
+				const message = "You must setup your publish settings before doing this."
+				
+				if (TAURI)
+					await Tauri.dialog.message(message);
+				else
+					alert(message);
+				
+				AppContainer.of(this).root.append(new SettingsView().root);
+				return;
+			}
+			
+			const files = [
+				...(await Render.getPatchFiles(record, this.meta)),
+				...(await Render.getSupportFiles()),
+			];
+			
+			await publisher.publish(files);
 		}
 	}
 }
