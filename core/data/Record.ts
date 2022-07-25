@@ -126,10 +126,7 @@ namespace Turf
 		get<R extends Record>(id: ID)
 		{
 			if (!id)
-			{
-				//throw "ID required";
-				return null;
-			}
+				throw "ID required";
 			
 			return new Promise<R | null>(resolve =>
 			{
@@ -378,12 +375,20 @@ namespace Turf
 						
 						else if (Array.isArray(recordValue))
 						{
-							if (recordValue.length > 0 && recordValue[0] instanceof Record)
+							if (recordValue.length === 0)
+							{
+								serializedValue = [];
+							}
+							else if (recordValue[0] instanceof Record)
 							{
 								const records = recordValue as Record[];
 								serializedValue = records.map(r => this.maybeImport(r).id);
 							}
-							else serializedValue = [];
+							else
+							{
+								// Clone the array. Necessary if the record value is a proxy.
+								serializedValue = JSON.parse(JSON.stringify(recordValue));
+							}
 						}
 						else if (
 							recordValue === null ||
