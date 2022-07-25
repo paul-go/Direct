@@ -122,14 +122,14 @@ namespace Turf
 		private _selected = false;
 		
 		/** */
-		protected showError(message: string)
+		showError(message: string)
 		{
 			const wc = Controller.over(this, SettingsView).windowContents;
 			UI.showInlineNotification(wc, message, "error");
 		}
 		
 		/** */
-		protected showInfo(message: string)
+		showInfo(message: string)
 		{
 			const wc = Controller.over(this, SettingsView).windowContents;
 			UI.showInlineNotification(wc, message, "info");

@@ -39,9 +39,9 @@ namespace Turf
 		}
 		
 		/** */
-		protected async publishFile(file: IRenderedFile)
+		protected async executePublish(files: IRenderedFile[])
 		{
-			
+			return "";
 		}
 	}
 	

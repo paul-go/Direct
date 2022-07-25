@@ -2,7 +2,7 @@
 namespace Turf
 {
 	/** */
-	export class S3PublishConfigurator extends PublishConfigurator
+	class S3PublishConfigurator extends PublishConfigurator
 	{
 		/** */
 		static readonly description = "Use my own hosting (S3 storage)";

@@ -140,6 +140,9 @@ namespace Turf
 			return UI.toolButton(
 				toolButtonCls,
 				...UI.text(label),
+				{
+					backgroundColor: UI.themeColor,
+				},
 				Htx.on(UI.clickEvt, clickFn));
 		}
 		const toolButtonCls = Htx.css(":not(:first-child)", { marginTop: "10px" });

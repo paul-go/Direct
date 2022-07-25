@@ -30,8 +30,10 @@ namespace Turf
 					UI.anchor(-edge, 0, -edge, 0),
 					UI.shadow.window,
 					{
+						maxWidth: "700px",
+						margin: "auto",
 						opacity: "0",
-						transform: "translateY(20%) scale(0.9)",
+						transform: "translateY(-20%) scale(0.9)",
 						transformOrigin: "50% 50%",
 						transitionProperty: "opacity, transform, border-radius",
 						transitionDuration: "0.3s",

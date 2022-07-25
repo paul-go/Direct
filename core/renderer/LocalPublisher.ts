@@ -39,31 +39,36 @@ namespace Turf
 		}
 		
 		/** */
-		protected async publishFile(file: IRenderedFile)
+		protected async executePublish(files: IRenderedFile[])
 		{
-			const folder = this.getSettings().folder;
-			const folderPath = await this.pathJoin(folder, file.folderName);
-			const filePath = await this.pathJoin(folderPath, file.fileName);
+			for (const file of files)
+			{
+				const folder = this.getSettings().folder;
+				const folderPath = await this.pathJoin(folder, file.folderName);
+				const filePath = await this.pathJoin(folderPath, file.fileName);
+				
+				if (TAURI)
+				{
+					await Tauri.fs.createDir(folderPath, { recursive: true });
+					
+					typeof file.data === "string" ?
+						await Tauri.fs.writeFile(filePath, file.data) :
+						await Tauri.fs.writeBinaryFile(filePath, file.data);
+				}
+				else if (ELECTRON)
+				{
+					const payload = typeof file.data === "string" ?
+						file.data : 
+						Buffer.from(file.data);
+					
+					if (!Electron.fs.existsSync(folderPath))
+						Electron.fs.mkdirSync(folderPath, { recursive: true });
+					
+					Electron.fs.writeFileSync(filePath, payload);
+				}
+			}
 			
-			if (TAURI)
-			{
-				await Tauri.fs.createDir(folderPath, { recursive: true });
-				
-				typeof file.data === "string" ?
-					await Tauri.fs.writeFile(filePath, file.data) :
-					await Tauri.fs.writeBinaryFile(filePath, file.data);
-			}
-			else if (ELECTRON)
-			{
-				const payload = typeof file.data === "string" ?
-					file.data : 
-					Buffer.from(file.data);
-				
-				if (!Electron.fs.existsSync(folderPath))
-					Electron.fs.mkdirSync(folderPath, { recursive: true });
-				
-				Electron.fs.writeFileSync(filePath, payload);
-			}
+			return "";
 		}
 	}
 	

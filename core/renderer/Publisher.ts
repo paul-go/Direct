@@ -86,17 +86,16 @@ namespace Turf
 		async publish(files: IRenderedFile[])
 		{
 			const removeFn = PublishStatusView.show(this.identifier);
-			const promises: Promise<void>[] = [];
+			const maybeError = await this.executePublish(files);
 			
-			for (const file of files)
-				promises.push(this.publishFile(file));
+			if (maybeError)
+				alert(maybeError);
 			
-			await Promise.all(promises);
 			removeFn();
 		}
 		
 		/** */
-		protected abstract publishFile(file: IRenderedFile): Promise<void>;
+		protected abstract executePublish(files: IRenderedFile[]): Promise<string>;
 		
 		/** */
 		protected async pathJoin(...parts: string[])

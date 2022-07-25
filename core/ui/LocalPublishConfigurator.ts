@@ -2,7 +2,7 @@
 namespace Turf
 {
 	/** */
-	export class LocalPublishConfigurator extends PublishConfigurator
+	class LocalPublishConfigurator extends PublishConfigurator
 	{
 		/** */
 		static readonly description = "Publish to my device.";
