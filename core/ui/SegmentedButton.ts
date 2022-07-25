@@ -5,68 +5,79 @@ namespace Turf
 	export class SegmentedButton
 	{
 		/** */
-		constructor()
+		constructor(...params: Htx.Param[])
 		{
 			this.root = Htx.div(
+				"segmented-button",
 				{
 					display: "flex",
 					borderRadius: UI.borderRadius.large,
 					border: "2px solid " + this.fgColor,
 					padding: "2px",
-				}
+				},
+				...params
 			);
 		}
 		
 		readonly root;
 		private readonly titles: string[] = [];
-		private readonly fgColor = UI.black(0.5);
+		private readonly fgColor = UI.themeColor;
 		
 		/** */
-		add(title: string)
+		add(...titles: string[])
 		{
-			this.titles.push(title);
-			
-			this.root.append(Htx.div(
-				{
-					flex: "1 0",
-					padding: "15px 5px",
-					borderRadius: (parseInt(UI.borderRadius.large) - 3) + "px",
-					backgroundColor: "transparent",
-					color: this.fgColor,
-					textAlign: "center",
-				},
-				...UI.text(title, 22, 600),
-				Htx.on("click", () =>
-				{
-					this.selected = title;
-				})
-			));
+			for (const [idx, title] of titles.entries())
+			{
+				this.titles.push(title);
+				
+				this.root.append(Htx.div(
+					{
+						flex: "1 0",
+						padding: "15px 5px",
+						borderRadius: (parseInt(UI.borderRadius.large) - 3) + "px",
+						backgroundColor: "transparent",
+						color: this.fgColor,
+						textAlign: "center",
+					},
+					...UI.text(title, 22, 600),
+					Htx.on("click", () =>
+					{
+						this.selectedIndex = idx;
+					})
+				));
+				
+				if (this._selectedIndex < 0)
+					this.updateSelectedIndex(idx);
+			}
 		}
 		
 		/** */
-		get selected()
+		get selectedIndex()
 		{
-			if (this._selected < 0 || this._selected >= this.titles.length)
-				return "";
+			if (this._selectedIndex < 0 || this._selectedIndex >= this.titles.length)
+				return -1;
 			
-			return this.titles[this._selected];
+			return this._selectedIndex;
 		}
-		set selected(title: string)
+		set selectedIndex(idx: number)
 		{
-			const titleIndex = this.titles.findIndex(t => t === title);
-			if (titleIndex < 0)
-				throw "Title not found: " + title;
-			
-			if (titleIndex === this._selected)
+			if (idx === this._selectedIndex)
 				return;
 			
+			this.updateSelectedIndex(idx);
+			this.selectedChangedFn(idx);
+		}
+		
+		/** */
+		private updateSelectedIndex(idx: number)
+		{
 			const children = Query.children(this.root);
 			for (let i = -1; ++i < children.length;)
 			{
 				const child = children[i];
 				const s = child.style;
 				
-				if (i === titleIndex)
+				if (i === idx)
 				{
 					s.backgroundColor = this.fgColor;
 					s.color = "white";
@@ -78,16 +89,16 @@ namespace Turf
 				}
 			}
 			
-			this._selected = titleIndex;
-			this.selectedChangedFn();
+			this._selectedIndex = idx;
 		}
-		private _selected = -1;
+		
+		private _selectedIndex = -1;
 		
 		/** */
-		setSelectedChangedFn(fn: () => void)
+		setSelectedChangedFn(fn: (idx: number) => void)
 		{
 			this.selectedChangedFn = fn;
 		}
-		private selectedChangedFn = () => {};
+		private selectedChangedFn = (idx: number) => {};
 	}
 }

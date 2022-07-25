@@ -113,6 +113,21 @@ namespace Cover
 	}
 	
 	/** */
+	export async function coverSegmentedButton()
+	{
+		Turf.appendCss();
+		
+		const sb = new Turf.SegmentedButton();
+		sb.add("First");
+		sb.add("Second");
+		sb.add("Third");
+		
+		document.body.style.backgroundColor = "white";
+		document.body.style.padding = "100px";
+		document.body.append(sb.root);
+	}
+	
+	/** */
 	export async function coverPublishStatusView()
 	{
 		Turf.appendCss();
