@@ -107,10 +107,17 @@ namespace Turf
 		/** */
 		private async populatePatches()
 		{
-			const db = AppContainer.of(this).database;
+			const app = AppContainer.of(this);
+			const db = app.database;
 			
 			for await (const patch of db.each(PatchRecord, "peek"))
-				this.patchesList.append(this.renderPatchTile(patch));
+			{
+				if (patch === app.homePatch)
+					continue;
+				
+				const tile = this.renderPatchTile(patch);
+				this.patchesList.append(tile);
+			}
 		}
 		
 		/** */

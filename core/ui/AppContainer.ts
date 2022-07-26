@@ -70,7 +70,7 @@ namespace Turf
 			const publisher = Publisher.getCurrent(this.meta);
 			if (!publisher?.canPublish())
 			{
-				const message = "You must setup your publish settings before doing this."
+				const message = "You must setup your publish settings before doing this.";
 				
 				if (TAURI)
 					await Tauri.dialog.message(message);

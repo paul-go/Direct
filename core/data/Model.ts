@@ -1,4 +1,4 @@
-/// <reference path="Record.ts" />
+/// <reference path="Database.ts" />
 
 namespace Turf
 {
