@@ -20,19 +20,20 @@ namespace Turf
 		minify = false;
 		
 		/** */
-		emit(element: HTMLElement)
+		emit(element: HTMLElement, folderDepth = 0)
 		{
 			const em = new Emitter(this.minify);
-			this.emitUpperHtml(em);
+			this.emitUpperHtml(em, folderDepth);
 			this.emitStoryHtml(em, element);
 			this.emitLowerHtml(em);
 			return em.toString();
 		}
 		
 		/** */
-		private emitUpperHtml(em: Emitter)
+		private emitUpperHtml(em: Emitter, folderDepth: number)
 		{
 			const nocache = this.minify ? "" : "?" + Date.now();
+			const relative = "../".repeat(folderDepth);
 			
 			em.line("<!DOCTYPE html>");
 			em.tag("html", { lang: this.language });
@@ -54,16 +55,16 @@ namespace Turf
 			em.tag("link", {
 				rel: "stylesheet",
 				type: "text/css",
-				href: ConstS.cssFileNameGeneral + nocache,
+				href: relative + ConstS.cssFileNameGeneral + nocache,
 			});
 			
 			em.tag("link", {
 				rel: "stylesheet",
 				type: "text/css",
-				href: ConstS.cssFileNameSpecific + nocache,
+				href: relative + ConstS.cssFileNameSpecific + nocache,
 			});
 			
-			em.tag("script", { src: ConstS.jsFileName + nocache }, "");
+			em.tag("script", { src: relative + ConstS.jsFileName + nocache }, "");
 			
 			if (this.customHeaderHtml)
 				em.line(this.customHeaderHtml);

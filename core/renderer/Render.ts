@@ -103,7 +103,7 @@ namespace Turf
 			{
 				const storyDiv = Render.createPatchFinal(patch, meta);
 				const htmlFile = new HtmlFile();
-				const htmlText = htmlFile.emit(storyDiv);
+				const htmlText = htmlFile.emit(storyDiv, folderName ? 1 : 0);
 				
 				files.push({
 					data: htmlText,
