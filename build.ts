@@ -7,23 +7,13 @@ namespace Build
 	const Proc = require("child_process") as typeof import("child_process");
 	const Terser = require("terser") as typeof import("terser");
 	
-	const buildDir = Path.join(__dirname, "build");
-	const playerDir = Path.join(__dirname, "core", "player");
-	const tempDir = Path.join(__dirname, "+");
-	const tsConfigPath = Path.join(tempDir, "tsconfig.json");
-	
 	/** */
-	export function copyResources()
+	export namespace Dir
 	{
-		const files = [
-			"medium-editor.default.min.css",
-			"medium-editor.min.css",
-			"medium-editor.min.js",
-		];
-		
-		for (const fileName of files)
-			Fs.copyFileSync("./lib/" + fileName, "./build/" + fileName);
-	}
+		export const build = Path.join(__dirname, "build");
+		export const player = Path.join(__dirname, "core", "player");
+		export const temp = Path.join(__dirname, "+");
+	};
 	
 	/** */
 	export function emitHtml()
@@ -35,23 +25,23 @@ namespace Build
 			`<meta name="theme-color" content="#000000">`,
 			`<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">`,
 			`<meta name="apple-mobile-web-app-capable" content="yes">`,
-			`<script src="app.js"></script>`,
+			`<script src="${ConstS.jsFileNameApp}"></script>`,
 			`</html>`
 		].join("\n");
 		
-		Fs.writeFileSync(Path.join(buildDir, "index.html"), lines);
+		Fs.writeFileSync(Path.join(Dir.build, "index.html"), lines);
 	}
 	
 	/** */
 	export async function compilePlayer()
 	{
-		if (!Fs.existsSync(tempDir))
-			Fs.mkdirSync(tempDir);
+		if (!Fs.existsSync(Dir.temp))
+			Fs.mkdirSync(Dir.temp);
 		
 		// Stores the files to include in the player JS file,
 		// with paths relative to the ./core/player directory.
 		const copyFiles = [
-			...Fs.readdirSync(playerDir),
+			...Fs.readdirSync(Dir.player),
 			"../!.ts",
 			"../Definitions.ts",
 		];
@@ -61,15 +51,16 @@ namespace Build
 			if (!sourceFileName.endsWith(".ts"))
 				continue;
 			
-			const sourcePath = Path.join(playerDir, sourceFileName);
-			const targetPath = Path.join(tempDir, Path.basename(sourcePath));
+			const sourcePath = Path.join(Dir.player, sourceFileName);
+			const targetPath = Path.join(Dir.temp, Path.basename(sourcePath));
 			Fs.copyFileSync(sourcePath, targetPath);
 		}
 		
+		const tsConfigPath = Path.join(Dir.temp, "tsconfig.json");
 		Fs.writeFileSync(tsConfigPath, JSON.stringify(
 			{
 				"compilerOptions": {
-					"outFile": "./" + ConstS.jsFileName,
+					"outFile": "./" + ConstS.jsFileNamePlayer,
 					"module": "system",
 					"moduleResolution": "node",
 					"declaration": false,
@@ -81,40 +72,37 @@ namespace Build
 			},
 			null, "\t"));
 		
-		Proc.execSync("tsc", { cwd: tempDir });
+		Proc.execSync("tsc", { cwd: Dir.temp });
 		
-		const inJsFilePath = Path.join(tempDir, ConstS.jsFileName);
+		const inJsFilePath = Path.join(Dir.temp, ConstS.jsFileNamePlayer);
 		const inJsCode = Fs.readFileSync(inJsFilePath, "utf8");
 		const result = await Terser.minify(inJsCode);
 		const jsCode = result.code || "";
-		const outJsFilePathMin = Path.join(buildDir, ConstS.jsFileNameMin);
-		const outJsFilePath = Path.join(buildDir, ConstS.jsFileName);
+		const outJsFilePathMin = Path.join(Dir.build, ConstS.jsFileNamePlayerMin);
+		const outJsFilePath = Path.join(Dir.build, ConstS.jsFileNamePlayer);
 		Fs.writeFileSync(outJsFilePathMin, jsCode);
 		Fs.writeFileSync(outJsFilePath, inJsCode);
-		Fs.rmdirSync(tempDir, { recursive: true });
+		Fs.rmdirSync(Dir.temp, { recursive: true });
 	}
-	
-	/** */
-	export function deploy()
-	{
-		copyResources();
-	}
-	
-	setTimeout(() =>
-	{
-		const fnName = process.argv.at(-1) || "";
-		const fn = (Build as any)[fnName];
-		
-		if (typeof fn === "function")
-		{
-			fn();
-			console.log("Build function executed: " + fnName);
-		}
-		else
-		{
-			console.error("Build function not found: " + fnName);
-		}
-	});
-	
-	(globalThis as any).Build = Build;
 }
+
+globalThis.Build = Build;
+
+// Function runner
+setTimeout(() =>
+{
+	const args = process.argv.slice(process.argv.findIndex(s => s.startsWith(__dirname)) + 1);
+	const fnName = args.shift() || "";
+	const fn = (globalThis.Build as any)[fnName];
+	
+	if (typeof fn === "function")
+	{
+		fn(...args);
+		console.log("Build function executed: " + fnName);
+	}
+	else
+	{
+		console.error("Build function not found: " + fnName);
+	}
+},
+10);

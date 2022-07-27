@@ -64,7 +64,7 @@ namespace Turf
 				href: relative + ConstS.cssFileNameSpecific + nocache,
 			});
 			
-			em.tag("script", { src: relative + ConstS.jsFileName + nocache }, "");
+			em.tag("script", { src: relative + ConstS.jsFileNamePlayer + nocache }, "");
 			
 			if (this.customHeaderHtml)
 				em.line(this.customHeaderHtml);

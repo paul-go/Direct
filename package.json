@@ -14,7 +14,8 @@
 	},
 	"scripts": {
 		"tauri": "tauri",
-		"native": "npm run tauri dev"
+		"native": "npm run tauri dev",
+		"bundle": "npm run tauri build"
 	},
 	"main": "turf.js",
 	"dependencies": {

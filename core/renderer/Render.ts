@@ -36,12 +36,12 @@ namespace Turf
 			
 			// JS file
 			{
-				const jsFileText = await readStandardFile(ConstS.jsFileName, "utf8");
+				const jsFileText = await readStandardFile(ConstS.jsFileNamePlayer, "utf8");
 				
 				files.push({
 					data: jsFileText,
 					mime: MimeType.js,
-					fileName: ConstS.jsFileName,
+					fileName: ConstS.jsFileNamePlayer,
 					folderName: "",
 				});
 			}

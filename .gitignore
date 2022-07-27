@@ -1,8 +1,7 @@
-build
-node_modules
 .DS_Store
 +*
-package-lock.json
 build
 src-tauri/target/*
+node_modules
+package-lock.json
 Cargo.lock
