@@ -86,17 +86,24 @@ namespace Turf
 			});
 		}
 		
-		return Htx.on("drop", async ev =>
-		{
-			const files = await FileLike.fromFiles(ev.dataTransfer?.files);
-			
-			const { x, y } = getLayerCoords(
-				ev.target as Element,
-				ev.clientX,
-				ev.clientY);
-			
-			handler(files, x, y);
-		});
+		return Htx.call(() =>
+		[
+			Htx.on("dragover", ev =>
+			{
+				ev.preventDefault();
+			}),
+			Htx.on("drop", async ev =>
+			{
+				const files = await FileLike.fromFiles(ev.dataTransfer?.files);
+				
+				const { x, y } = getLayerCoords(
+					ev.target as Element,
+					ev.clientX,
+					ev.clientY);
+				
+				handler(files, x, y);
+			})
+		]);
 	}
 	
 	/** */
