@@ -5,37 +5,100 @@ namespace Turf
 	export class LocalPublisher extends Publisher
 	{
 		/** */
-		setSettings(folder: string)
+		constructor(patch: PatchRecord, meta: MetaRecord)
 		{
-			this.meta.publishDataTable[LocalPublisher.identifier] = { folder };
+			super(patch, meta);
+			
+			this.root = Htx.div(
+				"local-publisher",
+				
+				this.renderTitle("Publish folder:"),
+				
+				this.saveLocationElement = Htx.div(
+					{
+						padding: "10px 0",
+						margin: "20px 0",
+						overflow: "auto",
+						whiteSpace: "nowrap",
+						border: "3px solid " + UI.gray(70),
+						borderRadius: UI.borderRadius.default,
+						backgroundColor: "black",
+						textIndent: "10px"
+					},
+					...UI.text(this.folder, 20)
+				),
+				
+				this.renderActionButton("Change Publish Folder", () =>
+				{
+					this.requestSaveLocation();
+				}),
+				
+				this.renderPublishButton(),
+			);
+		}
+		
+		readonly root;
+		readonly key = "local";
+		readonly label = "My Device";
+		private readonly saveLocationElement;
+		
+		/** */
+		async shouldInsert()
+		{
+			if (this.folder)
+				return true;
+			
+			const loc = await this.requestSaveLocation();
+			return !!loc;
 		}
 		
 		/** */
-		getSettings(): ILocalPublishData
+		private async requestSaveLocation()
 		{
-			const id = LocalPublisher.identifier;
+			let saveFolder = "";
 			
-			if (id in this.meta.publishDataTable)
+			if (ELECTRON)
 			{
-				const data = this.meta.publishDataTable[id] as any as ILocalPublishData;
-				if (data)
-					if (data.folder && typeof data.folder === "string")
-						return data;
+				const exportsFolder = getExportsFolder();
+				const result = confirm("Set save location to exports folder?");
+				
+				if (result)
+					saveFolder = exportsFolder;
+			}
+			else if (TAURI)
+			{
+				const dialogResult = await Tauri.dialog.open({
+					recursive: true,
+					directory: true,
+					multiple: false,
+					defaultPath: saveFolder || undefined // Prevents Tauri crash
+				});
+				
+				if (typeof dialogResult === "string")
+					saveFolder = dialogResult;
 			}
 			
-			return { folder: "" };
+			if (saveFolder)
+				this.folder = saveFolder;
+			
+			return !!saveFolder;
 		}
 		
 		/** */
-		deleteSettings()
+		get folder()
 		{
-			delete this.meta.publishDataTable[LocalPublisher.identifier];
+			return this.meta.getPublishParam(this.key, "folder", "");
+		}
+		set folder(folder: string)
+		{
+			this.setPublishParam("folder", folder);
+			this.saveLocationElement.textContent = folder;
 		}
 		
 		/** */
-		hasSettings()
+		getPublishDestinationText()
 		{
-			return !!this.getSettings().folder;
+			return this.folder;
 		}
 		
 		/** */
@@ -43,8 +106,7 @@ namespace Turf
 		{
 			for (const file of files)
 			{
-				const folder = this.getSettings().folder;
-				const folderPath = await this.pathJoin(folder, file.folderName);
+				const folderPath = await this.pathJoin(this.folder, file.folderName);
 				const filePath = await this.pathJoin(folderPath, file.fileName);
 				
 				if (TAURI)
@@ -72,11 +134,5 @@ namespace Turf
 		}
 	}
 	
-	/** */
-	export interface ILocalPublishData
-	{
-		folder: string;
-	}
-	
-	setTimeout(() => Publisher.register("Local", LocalPublisher));
+	setTimeout(() => Publisher.register(LocalPublisher, 2));
 }

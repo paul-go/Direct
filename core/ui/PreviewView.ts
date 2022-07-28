@@ -33,9 +33,8 @@ namespace Turf
 					},
 					() =>
 					{
-						Util.clear(this.previewRoot);
 						const renderRoot = Render.createPatchPreview(patch, meta);
-						this.previewRoot.append(renderRoot);
+						this.previewRoot.replaceChildren(renderRoot);
 						new Player.Story(renderRoot);
 					}
 				),

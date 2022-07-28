@@ -552,7 +552,7 @@ namespace Turf
 		}
 		
 		/** */
-		export function removeOnEscape(removedFn?: () => void): Htx.Param[]
+		export function escape(removedFn?: (e: HTMLElement) => void): Htx.Param[]
 		{
 			return [
 				{
@@ -562,13 +562,21 @@ namespace Turf
 				Htx.on("keydown", async ev =>
 				{
 					if (ev.key === "Escape")
-					{
-						await UI.removeWithFade(ev.currentTarget as HTMLElement);
-						removedFn?.();
-					}
+						removedFn?.(ev.currentTarget as HTMLElement);
+				
 				}, { capture: true }),
 				e => e.focus()
 			];
+		}
+		
+		/** */
+		export function removeOnEscape(removedFn?: () => void): Htx.Param[]
+		{
+			return escape(async e =>
+			{
+				await UI.removeWithFade(e);
+				removedFn?.();
+			});
 		}
 		
 		/** */
@@ -871,6 +879,7 @@ namespace Turf
 			return Htx.div(
 				UI.clickable,
 				{
+					margin: "auto",
 					textAlign: "center",
 					fontWeight: "800",
 					padding: "25px",
@@ -888,6 +897,18 @@ namespace Turf
 					},
 				...params
 			);
+		}
+		
+		/** */
+		export function actionButtonFooter(text: string, ...params: Htx.Param[])
+		{
+			return UI.actionButton(
+				"filled", 
+				{
+					maxWidth: "400px",
+				},
+				new Text(text),
+				...params);
 		}
 		
 		/** */
@@ -1022,6 +1043,47 @@ namespace Turf
 				}),
 				...params,
 			);
+		}
+		
+		/** */
+		export function overlay(...children: Htx.Param[])
+		{
+			const flipper = createFlipper({
+				invisible: {
+					backgroundColor: UI.black(0),
+					backdropFilter: "blur(0)",
+				},
+				visible: {
+					backgroundColor: UI.black(0.5),
+					backdropFilter: "blur(5px)",
+				}
+			});
+			
+			const hide = async (e: HTMLElement) =>
+			{
+				flipper.invisible();
+				await UI.waitTransitionEnd(e);
+				e.remove();
+			}
+			
+			const element = Htx.div(
+				UI.fixed(),
+				...UI.escape(e => hide(e)),
+				...UI.click(async ev =>
+				{
+					if (ev.target === ev.currentTarget)
+						hide(ev.target as HTMLElement);
+				}),
+				{
+					transitionDuration: "0.33s",
+					transitionProperty: "background-color",
+				},
+				flipper.install(),
+				() => flipper.visible(),
+				...children,
+			);
+			
+			return { element, flipper };
 		}
 		
 		/** */

@@ -63,7 +63,7 @@ namespace Turf
 			
 			// Set the new height
 			
-			Util.clear(this.root);
+			this.root.replaceChildren();
 			
 			
 			s.overflow = storedOverflow;

@@ -134,4 +134,35 @@ namespace Cover
 		const remover = Turf.PublishStatusView.show("Local");
 		setTimeout(remover, 2500);
 	}
+	
+	/** */
+	export async function coverFlipper()
+	{
+		const flipper = Turf.createFlipper({
+			red: {
+				backgroundColor: "red"
+			},
+			blue: {
+				backgroundColor: "blue"
+			},
+		});
+		
+		const div = Htx.div(
+			flipper.install(),
+			{ padding: "100px" },
+			Htx.on("click", () =>
+			{
+				if (flipper.value === flipper.red)
+					flipper.blue();
+				else
+					flipper.red();
+			}),
+			
+			new Text("Click me")
+		);
+		
+		document.body.style.backgroundColor = "white";
+		document.body.style.padding = "100px";
+		document.body.append(div);
+	}
 }

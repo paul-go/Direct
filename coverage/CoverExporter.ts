@@ -18,14 +18,9 @@ namespace Cover
 		patch.blades.push(blade);
 		
 		const folder = getExportsFolder();
-		const files = [
-			...(await Turf.Render.getPatchFiles(patch, meta)),
-			...(await Turf.Render.getSupportFiles())
-		];
-		
-		const publisher = new Turf.LocalPublisher(meta);
-		publisher.setSettings(folder);
-		await publisher.publish(files);
+		const publisher = new Turf.LocalPublisher(patch, meta);
+		publisher.folder = folder;
+		await publisher.publish();
 		
 		console.log("Done");
 	}

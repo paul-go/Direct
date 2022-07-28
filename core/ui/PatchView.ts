@@ -73,26 +73,34 @@ namespace Turf
 				
 				this.footerElement = Htx.div(
 					"footer",
-					UI.visibleWhenNotEmpty(this.bladesElement),
 					{
+						width: "fit-content",
+						minWidth: "400px",
 						margin: "auto",
-						maxWidth: "400px",
-						padding: "20px",
+						padding: "0 20px",
 					},
-					UI.actionButton("filled", 
-						new Text("Preview"),
-						Htx.on("click", () => this.handlePreview())
+					UI.visibleWhenNotEmpty(this.bladesElement),
+					
+					UI.actionButton(
+						"filled",
+						{ maxWidth: "400px" },
+						...UI.click(() => this.handlePreview()),
+						new Text("Preview")
 					),
-					Htx.div(
-						UI.clickLabel(
-							{
-								marginTop: "10px",
-								padding: "20px",
-							},
-							Htx.on(UI.clickEvt, () => AppContainer.of(this).publish(this.record)),
-							...UI.text("Publish", 25, 800)
-						),
+					UI.clickLabel(
+						"publish-button",
+						{
+							margin: "10px auto",
+							padding: "20px",
+							width: "min-content",
+						},
+						Htx.on(UI.clickEvt, () =>
+						{
+							this.tryPublish();
+						}),
+						...UI.text("Publish", 25, 800),
 					),
+					this.publishInfoElement = Htx.div("publish-info")
 				),
 				
 				this.headerScreen = Htx.div(
@@ -131,6 +139,8 @@ namespace Turf
 				this.save();
 			});
 			
+			this.updatePublishInfo();
+			
 			Controller.set(this);
 		}
 		
@@ -141,6 +151,7 @@ namespace Turf
 		private readonly bladesElement;
 		private readonly footerElement;
 		private readonly isNewRecord: boolean;
+		private publishInfoElement;
 		
 		/** */
 		private save()
@@ -215,6 +226,74 @@ namespace Turf
 		{
 			const meta = AppContainer.of(this).meta;
 			new PreviewView(this.record, meta);
+		}
+		
+		/** */
+		private tryPublish()
+		{
+			const app = AppContainer.of(this);
+			const meta = app.meta;
+			const publisher = Publisher.getCurrentPublisher(this.record, meta);
+			
+			if (publisher?.canPublish())
+				publisher.publish();
+			else
+				this.setupPublish();
+		}
+		
+		/** */
+		private setupPublish()
+		{
+			const app = AppContainer.of(this);
+			const publishSetupView = new PublishSetupView(this.record, app);
+			this.root.append(publishSetupView.root);
+		}
+		
+		/** */
+		async updatePublishInfo()
+		{
+			Htx.defer(this.publishInfoElement, () =>
+			{
+				const meta = AppContainer.of(this).meta;
+				const publisher = Publisher.getCurrentPublisher(this.record, meta);
+				const dstText = publisher?.getPublishDestinationText() || "";
+				
+				this.publishInfoElement.replaceWith(this.publishInfoElement = Htx.div(
+					"publish-info",
+					{
+						height: "1.6em",
+						margin: "40px 0",
+						color: UI.white(0.5),
+						textAlign: "center",
+					},
+					
+					dstText && UI.settingsIcon(
+						{
+							position: "absolute",
+							right: "-1.5em",
+							width: "30px",
+							height: "30px",
+						},
+						...UI.click(() => this.setupPublish())
+					),
+					
+					dstText && Htx.span(
+						...UI.text("Publish to: ", 24, 600)
+					),
+					
+					dstText && Htx.span(
+						{
+							maxWidth: "8em",
+							verticalAlign: "bottom",
+							overflow: "hidden",
+							display: "inline-block",
+							textOverflow: "ellipsis",
+							whiteSpace: "nowrap",
+						},
+						...UI.text(dstText, 24, 800)
+					),
+				))
+			});
 		}
 	}
 }

@@ -36,23 +36,15 @@ namespace Turf
 				"box-sizing": "border-box",
 				"-webkit-margin-collapse": "separate",
 				"-webkit-font-smoothing": "antialiased",
+				"color": "inherit",
+				"font-size": "inherit",
+				"font-weight": "inherit",
 			}),
 			rule("HTML", {
 				"background-color": "black",
 				"color": "white",
 				"font-size": "20px",
 				"font-family": "-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif",
-			}),
-			rule("INPUT, TEXTAREA, BUTTON, TABLE, TR, TD, LEGEND, FIELDSET", {
-				"font-size": "1em",
-				"font-weight": "inherit",
-			}),
-			rule("H1, H2, H3, H4, H5, H6, TH", {
-				"font-size": "inherit",
-				"font-weight": "inherit",
-			}),
-			rule("A", {
-				"color": "inherit",
 			}),
 			
 			// Player CSS

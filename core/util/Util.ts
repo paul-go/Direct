@@ -81,15 +81,6 @@ namespace Turf
 		const includedScripts = new Set<string>();
 		
 		/**
-		 * Removes all child nodes from the specified Element.
-		 */
-		export function clear(e: Element)
-		{
-			for (let i = e.childNodes.length; i-- > 0;)
-				e.childNodes[i].remove();
-		}
-		
-		/**
 		 * Returns the two specified Node instances in DOM order.
 		 */
 		export function orderElements<T extends Node>(nodeA: T, nodeB: T): [T, T]

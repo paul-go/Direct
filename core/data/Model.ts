@@ -10,20 +10,53 @@ namespace Turf
 		htmlHeader = "";
 		htmlFooter = "";
 		
+		homePatch = Database.reference(PatchRecord);
+		
 		/** Stores the method of publishing used in this Turf. */
 		publishMethod = "";
 		
 		/**
-		 * Stores an object where the keys line up with a particular staticIdentifier
-		 * referring to a publish method, and the values refer to objects whose
+		 * Stores an object where the keys line up with a particular label
+		 * refering to a publish method, and the values refer to objects whose
 		 * structure differs depending on the publish method.
 		 * 
 		 * There should be a separate entry in the top-level publishData object
 		 * for each publish method that has been configured.
 		 */
-		publishDataTable: Literal<string, Literal<string, string | number | boolean>> = {};
+		publishParams: Literal<string, Literal<string, string | number | boolean>> = {};
 		
-		homePatch = Database.reference(PatchRecord);
+		/** */
+		getPublishParam<T extends string | number | boolean>(
+			publishKey: string,
+			paramKey: string,
+			fallback: T): T
+		{
+			let out = this.publishParams[publishKey]?.[paramKey];
+			if (out !== undefined)
+				return out as T;
+			
+			this.setPublishParam(publishKey, paramKey, fallback);
+			return fallback;
+		}
+		
+		/**
+		 * Sets a value in a publish parameter table.
+		 * Returns a boolean value indicating whether the value was changed;
+		 */
+		setPublishParam(
+			publisherKey: string,
+			paramKey: string,
+			value: string | number | boolean): boolean
+		{
+			const p = this.publishParams;
+			const changed = p[publisherKey]?.[paramKey] === value;
+			(p[publisherKey] ||= {})[paramKey] = value;
+			
+			if (changed)
+				this.save();
+			
+			return changed;
+		}
 	}
 	
 	/** */

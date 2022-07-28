@@ -2,99 +2,159 @@
 namespace Turf
 {
 	/** */
-	export type PublisherCtor = new(meta: MetaRecord) => Publisher;
+	export type PublisherCtor = new(patch: PatchRecord, meta: MetaRecord) => Publisher;
 	
 	/** */
 	export abstract class Publisher
 	{
 		/** */
-		static register(staticIdentifier: string, ctor: PublisherCtor)
+		static register(publisherCtor: PublisherCtor, position = 0)
 		{
-			this.publishers.set(staticIdentifier, ctor);
+			this.registrations.splice(position, 0, publisherCtor);
 		}
-		
-		/** */
-		static get identifier()
-		{
-			for (const [staticIdentifier, pub] of this.publishers)
-				if (pub === (this as any) || pub instanceof this)
-					return staticIdentifier;
-			
-			throw "Publisher not found.";
-		}
+		private static readonly registrations: PublisherCtor[] = [];
 		
 		/**
-		 * Stores a map where the keys are the staticIdentifiers of a Publisher, and the 
-		 * values are either a Publisher or a Publisher constructor, depending on whether
-		 * a publisher of each type has been created (the values are converted from Publisher
-		 * constructors to Publisher instances when the user configures one).
+		 * 
 		 */
-		private static readonly publishers = new Map<string, Publisher | PublisherCtor>();
-		
-		/**
-		 * Returns the publisher of the specified type.
-		 */
-		static get(ctor: typeof Publisher, meta: MetaRecord)
+		static getPublishers(patch: PatchRecord, meta: MetaRecord)
 		{
-			for (const pub of this.publishers.values())
-				if (pub instanceof ctor)
-					return pub;
+			const publishers: Publisher[] = [];
 			
-			const pub = new (ctor as any as PublisherCtor)(meta);
-			const staticIdentifier = (ctor as any as typeof Publisher).identifier;
-			this.publishers.set(staticIdentifier, pub);
-			return pub;
+			for (const ctor of this.registrations)
+			{
+				const pub = new ctor(patch, meta);
+				publishers.push(pub);
+			}
+			
+			return publishers;
 		}
 		
 		/**
 		 * Returns the Publisher that is currently set for use.
 		 */
-		static getCurrent(meta: MetaRecord)
+		static getCurrentPublisher(patch: PatchRecord, meta: MetaRecord)
 		{
-			const staticIdentifier = meta.publishMethod;
-			if (!staticIdentifier)
+			const key = meta.publishMethod;
+			if (!key)
 				return null;
 			
-			const pub = this.publishers.get(staticIdentifier);
-			if (!pub)
-				return null;
+			for (const ctor of this.registrations)
+			{
+				const pub = new ctor(patch, meta);
+				if (pub.key === key)
+					return pub;
+			}
 			
-			if (pub instanceof Publisher)
-				return pub;
-			
-			const publisherInstance = new pub(meta);
-			this.publishers.set(staticIdentifier, publisherInstance);
-			return publisherInstance;
+			return null;
 		}
 		
 		/** */
-		constructor(protected readonly meta: MetaRecord) { }
+		constructor(
+			readonly patch: PatchRecord,
+			protected readonly meta: MetaRecord) { }
 		
 		/** */
-		get identifier()
+		abstract readonly root: HTMLElement;
+		
+		/** */
+		abstract readonly key: string;
+		
+		/** */
+		abstract readonly label: string;
+		
+		/** */
+		shouldInsert()
 		{
-			return (this.constructor as typeof Publisher).identifier;
+			return Promise.resolve(true);
 		}
 		
 		/** */
-		abstract getSettings(): object;
+		renderLink()
+		{
+			return UI.text(this.label, 22, 700);
+		}
 		
 		/** */
-		abstract hasSettings(): boolean;
+		renderTitle(text: string)
+		{
+			return Htx.div(
+				{
+					marginBottom: "1em",
+				},
+				...UI.text(text, 30, 700)
+			);
+		}
 		
 		/** */
-		abstract deleteSettings(): void;
+		renderActionButton(label: string, callback: () => void)
+		{
+			return UI.actionButton(
+				"filled",
+				{
+					marginTop: "40px",
+					maxWidth: "400px",
+					backgroundColor: UI.gray(60),
+				},
+				...UI.click(callback),
+				new Text(label),
+			);
+		}
+		
+		/** */
+		renderPublishButton()
+		{
+			return Htx.div(
+				{
+					marginTop: "40px",
+				},
+				...UI.text("Publish", 25, 800),
+				...UI.click(() =>
+				{
+					this.close();
+					this.publish();
+				})
+			);
+		}
+		
+		/**
+		 * Gets a string description of the location where the publish
+		 * action is going to write the files. If an empty string is returned,
+		 * this indicates that this Publisher is currently incapable of publishing.
+		 */
+		getPublishDestinationText()
+		{
+			return "";
+		}
 		
 		/** */
 		canPublish()
 		{
-			return true;
+			return !!this.getPublishDestinationText();
 		}
 		
 		/** */
-		async publish(files: IRenderedFile[])
+		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
-			const removeFn = PublishStatusView.show(this.identifier);
+			this.meta.setPublishParam(this.key, paramKey, value);
+			Htx.defer(this.root, () => Controller.over(this, PatchView).updatePublishInfo());
+		}
+		
+		/** */
+		protected close()
+		{
+			Controller.over(this, PublishSetupView)?.close();
+		}
+		
+		/** */
+		async publish()
+		{
+			const files = [
+				...(await Render.getPatchFiles(this.patch, this.meta)),
+				...(await Render.getSupportFiles()),
+			];
+			
+			const removeFn = PublishStatusView.show(this.label);
 			const maybeError = await this.executePublish(files);
 			
 			if (maybeError)

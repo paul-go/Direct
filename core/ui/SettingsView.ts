@@ -79,23 +79,6 @@ namespace Turf
 			);
 			
 			this.addSection({
-				label: "Publishing",
-				params: [
-					this.publishConfiguratorsElement = Htx.div("publish-configurators")
-				]
-			}),
-			
-			Htx.defer(this.root, () =>
-			{
-				for (const configurator of PublishConfigurator.all)
-				{
-					const cfg = new configurator(this.meta);
-					cfg.selected = cfg.publisherType.identifier === this.meta.publishMethod;
-					this.publishConfiguratorsElement.append(cfg.root);
-				}
-			});
-			
-			this.addSection({
 				label: "Color Scheme",
 				params: [
 					Htx.div(...this.colorSchemeViews.map(v => v.root))
@@ -108,7 +91,6 @@ namespace Turf
 		readonly root;
 		readonly windowContents;
 		private readonly colorSchemeViews;
-		private readonly publishConfiguratorsElement;
 		
 		/** */
 		private addSection(options: { label: string, params: Htx.Param[] })

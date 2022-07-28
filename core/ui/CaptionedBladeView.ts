@@ -169,14 +169,12 @@ namespace Turf
 			}
 			else
 			{
-				Util.clear(this.contentImageContainer);
-				
 				this.contentImage = Htx.img(
 					CssClass.captionSceneContentImage,
 					{ src: mediaRecord.getBlobUrl() }
 				);
 				
-				this.contentImageContainer.append(this.contentImage);
+				this.contentImageContainer.replaceChildren(this.contentImage);
 			}
 		}
 		
