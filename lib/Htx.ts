@@ -22,10 +22,11 @@ namespace Htx { { } }
 			switch (name)
 			{
 				case "on": return on;
-				case "from": return from;
+				case "call": return call;
 				case "defer": return defer;
 				case "css": return css;
 				case "animation": return animation;
+				case "from": return from;
 			}
 			
 			return (...params: Htx.Param[]) => create(name, params);
@@ -44,6 +45,12 @@ namespace Htx { { } }
 			readonly handler: (ev: Event) => void,
 			readonly options: AddEventListenerOptions = {})
 		{ }
+	}
+	
+	/** */
+	class HtxCall
+	{
+		constructor(readonly fn: (e: Element) => Htx.Param | Htx.Param[]) { }
 	}
 	
 	/** */
@@ -131,6 +138,14 @@ namespace Htx { { } }
 							evt.options);
 					}
 				}
+				break; case HtxCall:
+				{
+					const call = param as HtxCall;
+					const subParams = call.fn(e);
+					
+					if (subParams)
+						apply(e, Array.isArray(subParams) ? subParams : [subParams]);
+				}
 				break; case String:
 				{
 					e.classList.add(param as string);
@@ -167,6 +182,14 @@ namespace Htx { { } }
 	}
 	
 	let cssPropertySet: Set<string> | null = null;
+	
+	/**
+	 * 
+	 */
+	function call(fn: (e: Element) => void)
+	{
+		return new HtxCall(fn);
+	}
 	
 	/**
 	 * Invokes the specified callback function when the specified HTMLElement
@@ -509,6 +532,8 @@ namespace Htx
 		string |
 		// Event connections
 		Event |
+		// Immediate closure
+		Call |
 		// Defered closure
 		((e: HTMLElement) => void) |
 		// Conditionals
@@ -663,7 +688,13 @@ namespace Htx
 	}
 	
 	/** */
-	export declare function from<E extends Element>(e: E, ...others: HTMLElement[]): (...params: Param[]) => E;
+	export declare class Call
+	{
+		private _call: undefined;
+	}
+	
+	/** */
+	export declare function call(fn: (e: HTMLElement) => Htx.Param | Htx.Param[]): Htx.Call;
 	
 	/**
 	 * Invokes the specified callback function when the specified HTMLElement
@@ -680,6 +711,9 @@ namespace Htx
 	 * 
 	 */
 	export declare function animation(name: string, style: Record<number, Htx.Style>): Htx.Style
+	
+	/** */
+	export declare function from<E extends Element>(e: E, ...others: HTMLElement[]): (...params: Param[]) => E;
 }
 
 if (typeof module === "object")
