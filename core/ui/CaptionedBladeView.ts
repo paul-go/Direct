@@ -357,6 +357,7 @@ namespace Turf
 			const titleData = titleDatas[titleIdx];
 			titleData.size = size;
 			this.titleView.setFontSize(titleIdx, size);
+			this.record.titles = titleDatas;
 		}
 		
 		/** */
