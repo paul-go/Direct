@@ -59,7 +59,7 @@ namespace When
 		
 		maybeInstallRootObserver();
 		
-		const phase1 = (e: HTMLElement) =>
+		const execute = (e: HTMLElement) =>
 		{
 			if (e.isConnected)
 				awaiting.push([e, callback, false]);
@@ -68,9 +68,9 @@ namespace When
 		}
 		
 		if (!element)
-			return (e: HTMLElement) => void awaiting.push([e, callback, false]);
+			return (e: HTMLElement) => execute(e);
 		
-		phase1(element);
+		execute(element);
 	}
 	
 	/** */
