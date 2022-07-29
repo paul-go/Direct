@@ -165,4 +165,41 @@ namespace Cover
 		document.body.style.padding = "100px";
 		document.body.append(div);
 	}
+	
+	/** */
+	export async function coverWhen()
+	{
+		let nested: HTMLElement;
+		
+		const root = Htx.div(Htx.div(nested = Htx.div(
+			{
+				id: "the-element",
+			},
+			When.connected(div =>
+			{
+				console.log("Connected (inline): " + div.id);
+			}),
+			When.disconnected(div =>
+			{
+				console.log("Disconnected (inline): " + div.id);
+			}),
+			Htx.on("click", ev =>
+			{
+				(ev.target as Element).remove();
+			}),
+			new Text("Click to disconnect")
+		)));
+		
+		When.connected(nested, e =>
+		{
+			console.log("Connected (non-inline): " + e.id);
+		});
+		
+		When.disconnected(nested, e =>
+		{
+			console.log("Disconnected (non-inline): " + e.id);
+		})
+		
+		document.body.append(root);
+	}
 }
