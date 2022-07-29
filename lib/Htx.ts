@@ -22,8 +22,6 @@ namespace Htx { { } }
 			switch (name)
 			{
 				case "on": return on;
-				case "call": return call;
-				case "defer": return defer;
 				case "css": return css;
 				case "animation": return animation;
 				case "from": return from;
@@ -45,12 +43,6 @@ namespace Htx { { } }
 			readonly handler: (ev: Event) => void,
 			readonly options: AddEventListenerOptions = {})
 		{ }
-	}
-	
-	/** */
-	class HtxCall
-	{
-		constructor(readonly fn: (e: Element) => Htx.Param | Htx.Param[]) { }
 	}
 	
 	/** */
@@ -138,14 +130,6 @@ namespace Htx { { } }
 							evt.options);
 					}
 				}
-				break; case HtxCall:
-				{
-					const call = param as HtxCall;
-					const subParams = call.fn(e);
-					
-					if (subParams)
-						apply(e, Array.isArray(subParams) ? subParams : [subParams]);
-				}
 				break; case String:
 				{
 					e.classList.add(param as string);
@@ -173,7 +157,14 @@ namespace Htx { { } }
 				}
 				break; case Function:
 				{
-					defer(e as HTMLElement, param as (e: HTMLElement) => void);
+					if (e instanceof HTMLElement)
+					{
+						const fn = param as Htx.Closure;
+						const subParams = fn(e);
+						
+						if (subParams)
+							apply(e, Array.isArray(subParams) ? subParams : [subParams]);
+					}
 				}
 			}
 		}
@@ -182,75 +173,6 @@ namespace Htx { { } }
 	}
 	
 	let cssPropertySet: Set<string> | null = null;
-	
-	/**
-	 * 
-	 */
-	function call(fn: (e: Element) => void)
-	{
-		return new HtxCall(fn);
-	}
-	
-	/**
-	 * Invokes the specified callback function when the specified HTMLElement
-	 * is inserted into the DOM. If the element is already connected to the DOM,
-	 * the callback function is invoked immediately.
-	 */
-	function defer(e: HTMLElement, callbackFn: (e: HTMLElement) => void)
-	{
-		if (e.isConnected)
-			return void callbackFn(e);
-		
-		if (!hasSetupAwaitInsert)
-		{
-			let css = `keyframes ${insertName} { from { widows: 1; } to { widows: 1; } }`;
-			css = ["@", "@-webkit-", "@-moz-"].map(s => s + css).join(" ");
-			css += 
-				"." + insertName + 
-				"{" +
-					["", "-webkit", "-moz"]
-						.map(s => 
-							s + "animation-duration: 0.1ms; " + 
-							s + "animation-name: " + insertName + ";")
-						.join("") +
-				"}";
-			
-			document.head.append(Htx.style("defer-sheet", new Text(css)));
-			
-			const listener = (ev: AnimationEvent) =>
-			{
-				if (ev.animationName === insertName && ev.target instanceof HTMLElement)
-				{
-					const fnList = callbackMap.get(ev.target);
-					if (fnList)
-					{
-						callbackMap.delete(ev.target);
-						ev.target.classList.remove(insertName);
-						
-						for (const fn of fnList)
-							fn(ev.target);
-					}
-				}
-			};
-			
-			document.addEventListener("animationstart", listener);
-			document.addEventListener("webkitAnimationStart", listener as any);
-			document.addEventListener("mozAnimationStart", listener as any);
-			hasSetupAwaitInsert = true;
-		}
-		
-		e.classList.add(insertName);
-		
-		const callbacks = callbackMap.get(e) || [];
-		callbacks.push(callbackFn);
-		callbackMap.set(e, callbacks);
-	}
-	
-	let callbackMap = new WeakMap<HTMLElement, ((e: HTMLElement) => void)[]>();
-	let insertName = "__track_insert";
-	let hasSetupAwaitInsert = false;
-	
-	(window as any).callbackMap = callbackMap;
 	
 	/** */
 	function css(selectorOrStyles: string | Htx.Style, maybeStyles?: Htx.Style)
@@ -527,15 +449,16 @@ namespace Htx
 	export type Style = Partial<CSSStyleDeclaration>;
 	
 	/** */
+	export type Closure = ((e: HTMLElement) => Param | Param[]);
+	
+	/** */
 	export type Param<T = ElementAttribute> =
 		// Single class name
 		string |
 		// Event connections
 		Event |
-		// Immediate closure
-		Call |
-		// Defered closure
-		((e: HTMLElement) => void) |
+		// Immediately invoked closure
+		Closure |
 		// Conditionals
 		false | undefined | null | void |
 		NodeLike |
@@ -688,22 +611,6 @@ namespace Htx
 	}
 	
 	/** */
-	export declare class Call
-	{
-		private _call: undefined;
-	}
-	
-	/** */
-	export declare function call(fn: (e: HTMLElement) => Htx.Param | Htx.Param[]): Htx.Call;
-	
-	/**
-	 * Invokes the specified callback function when the specified HTMLElement
-	 * is inserted into the DOM. If the element is already connected to the DOM,
-	 * the callback function is invoked immediately.
-	 */
-	export declare function defer(e: Element, callbackFn: () => void): void;
-	
-	/** */
 	export declare function css(selectorSuffix: string, properties: Htx.Style): string;
 	export declare function css(properties: Htx.Style): string;
 	
@@ -717,7 +624,4 @@ namespace Htx
 }
 
 if (typeof module === "object")
-{
-	Object.assign(module.exports, { Html: Htx });
-	global["Htx"] = Htx;
-}
+	Object.assign(module.exports, { Htx });
