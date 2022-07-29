@@ -60,7 +60,7 @@ namespace Turf
 				...options.params || []
 			);
 			
-			Htx.defer(this.root, () =>
+			When.connected(this.root, () =>
 			{
 				this.root.style.opacity = "1";
 				this.root.style.transform = UI.translateZ(0);
@@ -97,7 +97,7 @@ namespace Turf
 				closer.textContent = UI.mul;
 				closer.addEventListener(UI.clickEvt, () => this.close());
 				
-				Htx.defer(this.root, () =>
+				When.connected(this.root, () =>
 				{
 					this.root.insertAdjacentElement("afterend", closer);
 				});
@@ -123,7 +123,7 @@ namespace Turf
 				this.close("accept");
 			});
 			
-			Htx.defer(this.root, () =>
+			When.connected(this.root, () =>
 			{
 				this.root.insertAdjacentElement("afterend", accepter);
 			});

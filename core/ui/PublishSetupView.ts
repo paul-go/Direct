@@ -47,7 +47,7 @@ namespace Turf
 						transitionProperty: "transform, opacity",
 					},
 					this.windowFlipper.install(),
-					e =>
+					When.connected(e =>
 					{
 						this.windowFlipper.visible();
 						
@@ -55,14 +55,14 @@ namespace Turf
 						{
 							this.root.addEventListener("transitionstart", () => this.windowFlipper.invisible());
 						});
-					},
+					}),
 					
 					this.contents = Htx.div(
 						"contents",
 						{
 							minWidth: "400px",
 						},
-						Htx.call(() =>
+						() =>
 						{
 							const publishers = Publisher.getPublishers(record, app.meta);
 							
@@ -76,7 +76,7 @@ namespace Turf
 									...publishers.map(pub => this.renderOption(pub))
 								)
 							);
-						}),
+						},
 					),
 				)
 			);

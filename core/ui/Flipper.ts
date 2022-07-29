@@ -20,11 +20,12 @@ namespace Turf
 		let element: HTMLElement;
 		let currentValue: (() => void) | undefined = undefined;
 		
-		flipper.install = () => Htx.call(e =>
+		flipper.install = () => (e: HTMLElement) =>
 		{
 			element = e;
 			currentValue?.();
-		});
+		};
+		
 		const cssClasses: string[] = [];
 		
 		for (const [name, style] of Object.entries(states))

@@ -128,7 +128,7 @@ namespace Turf
 					),
 				),
 				
-				() => this.updateBackgroundColor()
+				When.connected(() => this.updateBackgroundColor())
 			);
 			
 			// Populate this with data in the future.

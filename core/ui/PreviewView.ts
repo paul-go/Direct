@@ -31,12 +31,12 @@ namespace Turf
 						overflowY: "auto",
 						borderRadius: "inherit",
 					},
-					() =>
+					When.connected(() =>
 					{
 						const renderRoot = Render.createPatchPreview(patch, meta);
 						this.previewRoot.replaceChildren(renderRoot);
 						new Player.Story(renderRoot);
-					}
+					})
 				),
 				
 				Htx.div(

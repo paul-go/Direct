@@ -14,7 +14,7 @@ namespace Turf
 					justifyContent: "center",
 					marginTop: "10px",
 				},
-				() => this.render()
+				When.connected(() => this.render())
 			);
 			
 			Controller.set(this);
@@ -55,11 +55,11 @@ namespace Turf
 				color.l > 20 ? {} : { border: "1px solid " + UI.white(0.2) },
 				UI.clickable,
 				Htx.on(UI.clickEvt, () => this.select()),
-				() =>
+				When.connected(() =>
 				{
 					if (record.backgroundColorIndex === colorIndex)
 						this.select();
-				}
+				})
 			);
 		}
 		

@@ -60,7 +60,7 @@ namespace Turf
 						})
 					)
 				),
-				() =>
+				When.connected(() =>
 				{
 					const s = windowElement.style;
 					s.opacity = "1";
@@ -75,7 +75,7 @@ namespace Turf
 						return;
 					
 					view.select();
-				}
+				})
 			);
 			
 			this.addSection({

@@ -14,7 +14,7 @@ namespace Turf
 					"patches-list",
 					...UI.spaceFor(() => this.renderHomePatchButton()),
 					this.addPatchButton = this.renderAddPatchButton(),
-					() => this.populatePatches()
+					When.connected(() => this.populatePatches())
 				)
 			);
 		}

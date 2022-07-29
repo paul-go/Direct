@@ -31,7 +31,7 @@ namespace Turf
 				},
 				UI.backdropBlur(5),
 				this.hide,
-				() => Htx.from(this.root)(this.show),
+				When.connected(() => Htx.from(this.root)(this.show)),
 				Htx.span(
 					{
 						opacity: "0.8",

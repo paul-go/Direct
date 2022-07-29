@@ -57,7 +57,7 @@ namespace Turf
 						Surface.accept(root);
 				});
 				
-				Htx.defer(input, () =>
+				When.connected(input, () =>
 				{
 					setTimeout(() => input.focus());
 				});

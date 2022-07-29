@@ -252,7 +252,7 @@ namespace Turf
 		/** */
 		async updatePublishInfo()
 		{
-			Htx.defer(this.publishInfoElement, () =>
+			When.connected(this.publishInfoElement, () =>
 			{
 				const meta = AppContainer.of(this).meta;
 				const publisher = Publisher.getCurrentPublisher(this.record, meta);

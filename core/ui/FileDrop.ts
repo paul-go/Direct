@@ -86,7 +86,7 @@ namespace Turf
 			});
 		}
 		
-		return Htx.call(() =>
+		return () =>
 		[
 			Htx.on("dragover", ev =>
 			{
@@ -103,7 +103,7 @@ namespace Turf
 				
 				handler(files, x, y);
 			})
-		]);
+		];
 	}
 	
 	/** */

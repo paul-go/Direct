@@ -10,7 +10,7 @@ namespace Turf
 			...params: Htx.Param[])
 		{
 			this.root = Htx.div(
-				() => this.updateTextColor(),
+				When.connected(() => this.updateTextColor()),
 				...params
 			);
 			

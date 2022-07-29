@@ -137,7 +137,7 @@ namespace Turf
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
 			this.meta.setPublishParam(this.key, paramKey, value);
-			Htx.defer(this.root, () => Controller.over(this, PatchView).updatePublishInfo());
+			When.connected(this.root, () => Controller.over(this, PatchView).updatePublishInfo());
 		}
 		
 		/** */

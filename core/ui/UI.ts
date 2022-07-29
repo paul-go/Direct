@@ -428,14 +428,14 @@ namespace Turf
 			const comment = document.createComment("pending");
 			return [
 				comment,
-				() =>
+				When.connected(() =>
 				{
 					const returnedElement = fn();
 					if (returnedElement)
 						comment.replaceWith(returnedElement);
 					else
 						comment.remove();
-				}
+				})
 			];
 		}
 		
@@ -470,7 +470,7 @@ namespace Turf
 		/** */
 		export function visibleWhenEmpty(watchTarget: HTMLElement): Htx.Param
 		{
-			return e => installVisibilityObserver(e, watchTarget, true);
+			return When.connected(e => installVisibilityObserver(e, watchTarget, true));
 		}
 		
 		/** */
@@ -482,7 +482,7 @@ namespace Turf
 		/** */
 		export function visibleWhenNotEmpty(watchTarget: HTMLElement): Htx.Param
 		{
-			return e => installVisibilityObserver(e, watchTarget, false);
+			return When.connected(e => installVisibilityObserver(e, watchTarget, false));
 		}
 		
 		/** */
@@ -521,8 +521,8 @@ namespace Turf
 			(async () =>
 			{
 				await new Promise<void>(r =>
-					Htx.defer(contingent, () =>
-						Htx.defer(target, () =>
+					When.connected(contingent, () =>
+						When.connected(target, () =>
 							r())));
 				
 				if (!contingent.parentElement)
@@ -565,7 +565,7 @@ namespace Turf
 						removedFn?.(ev.currentTarget as HTMLElement);
 				
 				}, { capture: true }),
-				e => e.focus()
+				When.connected(e => e.focus())
 			];
 		}
 		
@@ -974,7 +974,7 @@ namespace Turf
 						);
 					}),
 					
-					e =>
+					When.connected(e =>
 					{
 						if (target instanceof Element)
 						{
@@ -997,7 +997,7 @@ namespace Turf
 						
 						e.style.visibility = "visible";
 						e.focus();
-					}
+					})
 				)
 			);
 			
@@ -1079,7 +1079,7 @@ namespace Turf
 					transitionProperty: "background-color",
 				},
 				flipper.install(),
-				() => flipper.visible(),
+				When.connected(() => flipper.visible()),
 				...children,
 			);
 			
