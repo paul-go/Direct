@@ -56,6 +56,9 @@ namespace Controller
 		array.push(controller);
 		controllers.set(controller.root, array);
 		(controller.root as any)._controller = controller;
+		
+		const ctorClassName = getConstructorClassName(controller);
+		controller.root.classList.add(ctorClassName);
 	}
 	
 	/**
@@ -81,6 +84,49 @@ namespace Controller
 		}
 		
 		throw new Error("Controller not found.");
+	}
+	
+	/**
+	 * Finds all descendent elements that have an attached controller of the
+	 * specified type, that exist underneath the specified Node or controller,
+	 * The specified function is executed against each controller, if it is provided.
+	 * 
+	 * @returns The first matching controller, or null if no matching controller
+	 * was found.
+	 */
+	export function under<T extends IController>(
+		via: Node | IController,
+		type: Constructor<T>,
+		execFn?: (controller: T) => void)
+	{
+		const e = 
+			via instanceof Element ? via : 
+			via instanceof Node ? via.parentElement :
+			via.root;
+		
+		if (!e)
+			throw "Cannot perform this method using the specified node.";
+		
+		const className = controllerClassNames.get(type);
+		if (!className)
+			throw "This controller type hasn't been registered.";
+		
+		const descendents = e.getElementsByClassName(className);
+		const controllers: T[] = [];
+		
+		for (let i = -1; ++i < descendents.length;)
+		{
+			const descendent = descendents[i];
+			const ctrl = Controller.get(descendent, type);
+			if (ctrl)
+				controllers.push(ctrl);
+		}
+		
+		if (execFn)
+			for (const c of controllers)
+				execFn(c);
+		
+		return controllers.length > 0 ? controllers[0] : null;
 	}
 	
 	/**
@@ -133,10 +179,8 @@ namespace Controller
 		}
 	}
 	
-	const controllers = new WeakMap<Element, object[]>();
-	
 	/** */
-	const childrenOf = <T extends IController>(e: Element, controllerType?: Constructor<T>) =>
+	function childrenOf<T extends IController>(e: Element, controllerType?: Constructor<T>)
 	{
 		let children = globalThis.Array.from(e.children);
 		
@@ -145,6 +189,27 @@ namespace Controller
 		
 		return children;
 	}
+	
+	/**
+	 * Returns a unique CSS class name that corresponds to the type
+	 * of the controller. This is used for querying via the .under() function.
+	 */
+	function getConstructorClassName(controller: IController)
+	{
+		const ctor = controller.constructor;
+		let className = controllerClassNames.get(ctor);
+		if (!className)
+		{
+			className = "__ctrl_" + (++nameIdx) + "__";
+			controllerClassNames.set(ctor, className);
+		}
+		
+		return className;
+	}
+	
+	let nameIdx = 0;
+	const controllerClassNames = new WeakMap<Function, string>();
+	const controllers = new WeakMap<Element, object[]>();
 	
 	/**
 	 * 
