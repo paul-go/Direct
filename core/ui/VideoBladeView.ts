@@ -108,7 +108,7 @@ namespace Turf
 			const videoFillerTag = RenderUtil.createVideoFiller(this.videoTag);
 			
 			this.videoContainer.append(videoFillerTag, this.videoTag);
-			UI.removeTogether(this.videoTag, videoFillerTag);
+			When.disconnected(this.videoTag, () => videoFillerTag.remove());
 		}
 		
 		private videoTag: HTMLVideoElement | null = null;

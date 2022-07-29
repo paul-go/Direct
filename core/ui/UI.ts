@@ -516,29 +516,6 @@ namespace Turf
 		}
 		
 		/** */
-		export function removeTogether(contingent: HTMLElement, target: HTMLElement)
-		{
-			(async () =>
-			{
-				await new Promise<void>(r =>
-					When.connected(contingent, () =>
-						When.connected(target, () =>
-							r())));
-				
-				if (!contingent.parentElement)
-					return;
-				
-				new MutationObserver(records =>
-				{
-					for (const rec of records)
-						if (Array.from(rec.removedNodes).includes(contingent))
-							target.remove();
-					
-				}).observe(contingent.parentElement, { childList: true });
-			})();
-		}
-		
-		/** */
 		export async function removeWithFade(e: HTMLElement)
 		{
 			const s = e.style;

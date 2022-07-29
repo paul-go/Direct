@@ -102,7 +102,7 @@ namespace Turf
 					this.root.insertAdjacentElement("afterend", closer);
 				});
 				
-				UI.removeTogether(this.root, closer);
+				When.disconnected(this.root, () => closer.remove());
 			}
 			
 			const accepter = Htx.div(
@@ -128,7 +128,7 @@ namespace Turf
 				this.root.insertAdjacentElement("afterend", accepter);
 			});
 			
-			UI.removeTogether(this.root, accepter);
+			When.disconnected(this.root, () => accepter.remove());
 			
 			if (options.class)
 				this.root.classList.add(options.class);

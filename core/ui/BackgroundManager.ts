@@ -98,7 +98,7 @@ namespace Turf
 					Htx.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
 						"Move Up": () => {},
 						"Move Down": () => {},
-						"Delete": () => this.root.remove(),
+						"Delete": () => this.delete(),
 					})),
 					
 					new Text("•••"),
@@ -116,7 +116,6 @@ namespace Turf
 				this.setUsingCover(record.size < 0);
 			}
 			
-			UI.removeTogether(this.root, this.preview.root);
 			Controller.set(this);
 		}
 		
@@ -177,6 +176,13 @@ namespace Turf
 			
 			this.record.size = usingCover ? -1 : this.sizeSlider.progress;
 			this.preview.setSize(this.record.size);
+		}
+		
+		/** */
+		private delete()
+		{
+			this.root.remove();
+			this.preview.root.remove();
 		}
 	}
 	
