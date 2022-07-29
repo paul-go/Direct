@@ -1,6 +1,7 @@
 
 namespace Turf
 {
+	/** */
 	export interface IBladeButtonViewOptions
 	{
 		selectable?: boolean;
@@ -104,7 +105,7 @@ namespace Turf
 			this._selected = value;
 			
 			const indicator = this.getIndicator();
-			const s = indicator.style
+			const s = indicator.style;
 			
 			if (wasSelected)
 			{
@@ -160,12 +161,6 @@ namespace Turf
 		}
 		
 		private _indicator: HTMLElement | null = null;
-		
-		/** */
-		setAction(fn: () => void)
-		{
-			
-		}
 		
 		/** */
 		setSelectedChangedFn(fn: () => void)
