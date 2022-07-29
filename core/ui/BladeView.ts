@@ -126,7 +126,9 @@ namespace Turf
 					UI.plusButton(
 						Htx.on(UI.clickEvt, () => this.handleAdd("afterend")),
 					),
-				)
+				),
+				
+				() => this.updateBackgroundColor()
 			);
 			
 			// Populate this with data in the future.
@@ -147,7 +149,16 @@ namespace Turf
 		readonly sceneContainer;
 		readonly configuratorButtonsContainer;
 		readonly configuratorContainer;
-		readonly backgroundChanged = new Force();
+		
+		/** */
+		updateBackgroundColor()
+		{
+			Controller.under(this, ForegroundView)?.updateTextColor();
+			const meta = AppContainer.of(this).meta;
+			const colorIndex = this.record.backgroundColorIndex;
+			const color = RenderUtil.resolveBackgroundColor(colorIndex, meta);
+			this.sceneContainer.style.backgroundColor = UI.color(color);
+		}
 		
 		/** */
 		protected setBladeButtons(

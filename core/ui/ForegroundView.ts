@@ -10,22 +10,17 @@ namespace Turf
 			...params: Htx.Param[])
 		{
 			this.root = Htx.div(
-				() =>
-				{
-					this.updateTextColor();
-					Force.watch(this.root, BladeView).backgroundChanged(() =>
-					{
-						this.updateTextColor();
-					});
-				},
+				() => this.updateTextColor(),
 				...params
 			);
+			
+			Controller.set(this);
 		}
 		
 		readonly root;
 		
 		/** */
-		private updateTextColor()
+		updateTextColor()
 		{
 			const meta = AppContainer.of(this).meta;
 			const colorIndex = this.record.backgroundColorIndex;

@@ -7,7 +7,7 @@ namespace Turf
 		/** */
 		constructor(
 			private readonly record: CaptionedBladeRecord,
-			private readonly renderTarget: HTMLElement)
+			readonly root: HTMLElement)
 		{
 			let imagesConfigurators: HTMLElement;
 			
@@ -19,10 +19,10 @@ namespace Turf
 						marginBottom: "20px",
 					}
 				),
-				new ColorConfigurator(this.record, this.renderTarget).root
+				new ColorConfigurator(this.record).root
 			);
 			
-			this.previews = new Controller.Array(this.renderTarget, BackgroundPreview);
+			this.previews = new Controller.Array(this.root, BackgroundPreview);
 			this.configurators = new Controller.Array(imagesConfigurators, BackgroundConfigurator);
 			
 			for (const bg of record.backgrounds)
@@ -34,6 +34,8 @@ namespace Turf
 				const records = this.configurators!.toArray().map(r => r.record);
 				this.record.backgrounds = records;
 			});
+			
+			Controller.set(this);
 		}
 		
 		readonly configuratorElement;

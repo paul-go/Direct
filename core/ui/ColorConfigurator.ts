@@ -5,9 +5,7 @@ namespace Turf
 	export class ColorConfigurator
 	{
 		/** */
-		constructor(
-			readonly record: BladeRecord,
-			readonly target: HTMLElement)
+		constructor(readonly record: BladeRecord)
 		{
 			this.root = Htx.div(
 				"color-configurator",
@@ -31,12 +29,7 @@ namespace Turf
 			for (let index = -1; ++index < meta.colorScheme.length;)
 			{
 				const color = meta.colorScheme[index];
-				const configurator = new ColorConfiguratorOption(
-					this.record,
-					color,
-					index,
-					this.target);
-				
+				const configurator = new ColorConfiguratorOption(this.record, index, color);
 				this.root.append(configurator.root);
 			}
 		}
@@ -48,9 +41,8 @@ namespace Turf
 		/** */
 		constructor(
 			private readonly record: BladeRecord,
-			private readonly color: UI.IColor,
 			private readonly colorIndex: number,
-			private readonly target: HTMLElement)
+			color: UI.IColor)
 		{
 			this.root = Htx.div(
 				{
@@ -74,7 +66,7 @@ namespace Turf
 		readonly root;
 		
 		/** */
-		select()
+		private select()
 		{
 			this.record.backgroundColorIndex = this.colorIndex;
 			
@@ -85,13 +77,7 @@ namespace Turf
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			
-			// If the background color being used is black, we actually just switch to
-			// transparent. This is so that the faint lines on the top and bottom of the
-			// scene container are visible, and the black background of the application
-			// shows through.
-			const htmlColor = this.color.l === 0 ? "transparent" : UI.color(this.color);
-			this.target.style.backgroundColor = htmlColor;
-			Force.use(this, BladeView).backgroundChanged();
+			Controller.over(this, BladeView).updateBackgroundColor();
 		}
 	}
 }
