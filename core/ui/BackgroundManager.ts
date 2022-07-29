@@ -51,6 +51,31 @@ namespace Turf
 			const cfg = new BackgroundConfigurator(backgroundRecord, preview);
 			this.configurators.insert(cfg);
 			this.previews.insert(cfg.preview);
+			
+			if (preview instanceof BackgroundImagePreview)
+				this.manageSelectionBox(cfg, preview);
+		}
+		
+		/** */
+		private manageSelectionBox(
+			configurator: BackgroundConfigurator,
+			preview: BackgroundImagePreview)
+		{
+			const update = () =>
+			{
+				const ancestors = Query.ancestors(document.activeElement);
+				const visible = 
+					ancestors.includes(configurator.root) ||
+					ancestors.includes(preview.root);
+				
+				preview.toggleSelectionBox(visible);
+			};
+			
+			Htx.from(configurator.root, preview.root)(
+				{ tabIndex: 0 },
+				Htx.on("focusout", () => update()),
+				Htx.on("focusin", () => update()),
+			);
 		}
 	}
 	
@@ -102,7 +127,7 @@ namespace Turf
 					})),
 					
 					new Text("•••"),
-				),
+				)
 			);
 			
 			if (this.preview instanceof BackgroundImagePreview)
@@ -237,7 +262,6 @@ namespace Turf
 			this.root = Htx.div(
 				"background-image-preview",
 				UI.anchor(),
-				
 				Htx.on("pointerdown", () =>
 				{
 					this.imgContainer.setPointerCapture(1);
@@ -255,12 +279,16 @@ namespace Turf
 					"image-boundary",
 					this.imgContainer = Htx.div(
 						"image-container",
-						Htx.css(":before", {
-							content: `""`,
-							...UI.anchor(-4),
-							border: "3px dashed white",
-							borderRadius: UI.borderRadius.default
-						}),
+						
+						this.selectionBox = Htx.div(
+							"selection-box",
+							{
+								...UI.anchor(-4),
+								border: "3px dashed white",
+								borderRadius: UI.borderRadius.default,
+								pointerEvents: "none"
+							}
+						),
 						{
 							userSelect: "none",
 							cursor: "move",
@@ -290,9 +318,21 @@ namespace Turf
 		private readonly imgContainer;
 		private readonly imgBoundary;
 		private readonly img;
+		private readonly selectionBox;
 		
 		private imgWidth = 0;
 		private imgHeight = 0;
+		
+		/** */
+		toggleSelectionBox(visible: boolean)
+		{
+			const s = this.selectionBox.style;
+			
+			if (!visible)
+				s.display = "none";
+			else
+				s.removeProperty("display");
+		}
 		
 		/** */
 		async setSize(size: number)
