@@ -166,6 +166,7 @@ namespace Turf
 			...bladeButtons: BladeButtonView[])
 		{
 			this._bladeButtons = bladeButtons;
+			this.bladeButtonsSelectedChangedFn = changedFn;
 			
 			for (const bb of bladeButtons)
 			{
@@ -177,6 +178,31 @@ namespace Turf
 				...bladeButtons.map(bb => bb.root),
 				this.moreButton.root
 			);
+		}
+		
+		private bladeButtonsSelectedChangedFn = () => {};
+		
+		/**
+		 * Deselects all blade buttons, and hides any displayed configurators,
+		 * and runs the provided selected changed function.
+		 */
+		protected deselectBladeButtons()
+		{
+			let changed = false;
+			
+			for (const bb of this.bladeButtons)
+			{
+				if (bb.selected)
+					changed = true;
+				
+				bb.selected = false;
+			}
+			
+			if (changed)
+			{
+				this.setBladeConfigurator(null);
+				this.bladeButtonsSelectedChangedFn();
+			}
 		}
 		
 		/** */

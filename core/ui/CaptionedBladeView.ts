@@ -137,7 +137,11 @@ namespace Turf
 						marginRight: "20px"
 					}
 				),
-				...UI.click(click),
+				...UI.click(() =>
+				{
+					this.deselectBladeButtons();
+					click();
+				}),
 				new Text(label)
 			);
 		}
