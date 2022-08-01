@@ -1046,7 +1046,7 @@ namespace Turf
 			const element = Htx.div(
 				UI.fixed(),
 				...UI.escape(e => hide(e)),
-				...UI.click(async ev =>
+				Htx.on("click", async ev =>
 				{
 					if (ev.target === ev.currentTarget)
 						hide(ev.target as HTMLElement);
