@@ -108,8 +108,14 @@ namespace Controller
 			throw "Cannot perform this method using the specified node.";
 		
 		const className = controllerClassNames.get(type);
+		
+		// If there is no class name found for the specified controller type,
+		// this could possibly be an error (meaning that the controller type
+		// wasn't registered). But it could also be a legitimate case of the
+		// controller simply not having been registered at the time of this
+		// function being called.
 		if (!className)
-			throw "This controller type hasn't been registered.";
+			return;
 		
 		const descendents = e.getElementsByClassName(className);
 		const controllers: T[] = [];
