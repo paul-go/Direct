@@ -98,6 +98,30 @@ namespace Turf
 			});
 		}
 		
+		/**
+		 * Deletes all databases in the system.
+		 * Only used during debug.
+		 */
+		private static clear()
+		{
+			if (!DEBUG)
+				return;
+			
+			(async () =>
+			{
+				const dbs = await indexedDB.databases();
+				
+				for (const db of dbs)
+				{
+					if (db.name)
+					{
+						indexedDB.deleteDatabase(db.name);
+						console.log("Deleted database: " + db.name);
+					}
+				}
+			})();
+		}
+		
 		/** */
 		static array<T extends RecordType>(type: T): InstanceType<T>[]
 		{
