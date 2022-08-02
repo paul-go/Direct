@@ -36,6 +36,32 @@ namespace When
 	}
 	
 	/**
+	 * Provides similar functionality to When.connected, but the callback
+	 * is invoked after a setTimeout call. Code executed in this call can modify
+	 * the style of the element in order to trigger transitions immediately
+	 * after being inserted.
+	 */
+	export function rendered(callback: Callback): Callback;
+	/**
+	 * Provides similar functionality to When.connected, but the callback
+	 * is invoked after a setTimeout call. Code executed in this call can modify
+	 * the style of the element in order to trigger transitions immediately
+	 * after being inserted.
+	 * 
+	 * (This overload is intended for use as an argument to an element creation
+	 * function in the Htx library).
+	 */
+	export function rendered(element: HTMLElement, callback: Callback): void;
+	export function rendered(a: any, b?: any): Callback | void
+	{
+		const element = a instanceof HTMLElement ? a : null;
+		const callback = (b || a) as Callback;
+		return element ?
+			When.connected(element, () => setTimeout(() => callback(element))) :
+			When.connected(element => setTimeout(() => callback(element)));
+	}
+	
+	/**
 	 * Returns a function that can be called, which invokes the specified callback 
 	 * function when the specified HTMLElement is disconnected from the DOM. 
 	 * If the element isn't connected to the DOM at the time this function is called,
