@@ -5,12 +5,6 @@
  */
 namespace Turf.RenderUtil
 {
-	/** */
-	export function getCaptionSceneParams()
-	{
-		
-	}
-	
 	/**
 	 * Returns the aspect ratio of the specified image.
 	 */
