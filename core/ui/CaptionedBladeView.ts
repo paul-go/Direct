@@ -82,6 +82,8 @@ namespace Turf
 			
 			this.setDescriptionText(this.record.description);
 			this.setDescriptionSize(this.record.descriptionSize);
+			
+			this.setContrast(this.record.textContrast);
 		}
 		
 		private readonly foregroundContainer;
