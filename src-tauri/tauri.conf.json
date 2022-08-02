@@ -5,7 +5,7 @@
 		"beforeBuildCommand": "",
 		"beforeDevCommand": "",
 		"devPath": "../build",
-		"distDir": "../bundle"
+		"distDir": "../+bundle"
 	},
 	"package": {
 		"productName": "Turf",

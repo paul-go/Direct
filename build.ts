@@ -13,10 +13,11 @@ namespace Build
 		export const build = Path.join(__dirname, "build");
 		export const player = Path.join(__dirname, "core", "player");
 		export const temp = Path.join(__dirname, "+");
+		export const bundle = Path.join(__dirname, "+bundle");
 	};
 	
 	/** */
-	export function emitHtml()
+	export function compileHtml(saveDir = Build.Dir.build)
 	{
 		const lines = [
 			`<!DOCTYPE html>`,
@@ -29,11 +30,60 @@ namespace Build
 			`</html>`
 		].join("\n");
 		
-		Fs.writeFileSync(Path.join(Dir.build, "index.html"), lines);
+		const targetPath = Path.join(saveDir, ConstS.htmlFileName);
+		Fs.writeFileSync(targetPath, lines);
+		console.log("Wrote HTML file to: " + targetPath);
 	}
 	
 	/** */
-	export async function compilePlayer()
+	export async function compileAppJs(saveDir = Build.Dir.build)
+	{
+		Proc.execSync("tsc");
+		const inJsFilePath = Path.join(Build.Dir.build, ConstS.jsFileNameApp);
+		const inJsCode = Fs.readFileSync(inJsFilePath, "utf8");
+		
+		const defs = {
+			DEBUG: false,
+			ELECTRON: false,
+			TAURI: true
+		};
+		
+		const minified = await Terser.minify(inJsCode, {
+			compress: {
+				unsafe_math: true,
+				drop_console: true,
+				global_defs: defs
+			},
+			sourceMap: false,
+		});
+		
+		const targetPath = Path.join(saveDir, ConstS.jsFileNameApp);
+		Fs.writeFileSync(targetPath, minified.code || "");
+		console.log("Wrote App JS file to: " + targetPath);
+	}
+	
+	/** */
+	export async function compileAppMacBundle(saveDir = Build.Dir.bundle)
+	{
+		if (!Fs.existsSync(saveDir))
+			Fs.mkdirSync(saveDir);
+		
+		console.log("Writing macOS app bundle. This may take a while...");
+		Proc.execSync("npm run tauri build");
+		
+		const dmgPath = Path.join(__dirname, "src-tauri", "target", "release", "bundle", "dmg");
+		const files = Fs.readdirSync(dmgPath, "utf8").filter(name => name.endsWith(".dmg"));
+		
+		for (const file of files)
+		{
+			Fs.copyFileSync(
+				Path.join(dmgPath, file),
+				Path.join(saveDir, file));
+		}
+	}
+	
+	/** */
+	export async function compilePlayer(saveDir = Build.Dir.build)
 	{
 		if (!Fs.existsSync(Dir.temp))
 			Fs.mkdirSync(Dir.temp);
@@ -78,11 +128,14 @@ namespace Build
 		const inJsCode = Fs.readFileSync(inJsFilePath, "utf8");
 		const result = await Terser.minify(inJsCode);
 		const jsCode = result.code || "";
-		const outJsFilePathMin = Path.join(Dir.build, ConstS.jsFileNamePlayerMin);
-		const outJsFilePath = Path.join(Dir.build, ConstS.jsFileNamePlayer);
+		const outJsFilePathMin = Path.join(saveDir, ConstS.jsFileNamePlayerMin);
+		const outJsFilePath = Path.join(saveDir, ConstS.jsFileNamePlayer);
 		Fs.writeFileSync(outJsFilePathMin, jsCode);
 		Fs.writeFileSync(outJsFilePath, inJsCode);
 		Fs.rmdirSync(Dir.temp, { recursive: true });
+		
+		console.log("Wrote Player JS file to: " + outJsFilePath);
+		console.log("Wrote Player JS file to: " + outJsFilePathMin);
 	}
 }
 
