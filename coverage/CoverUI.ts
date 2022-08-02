@@ -202,4 +202,21 @@ namespace Cover
 		
 		document.body.append(root);
 	}
+	
+	/** */
+	export async function coverUI()
+	{
+		const s = document.body.style;
+		s.fontSize = "80px";
+		s.color = "white";
+		s.backgroundColor = "black";
+		document.body.append("LOREM IPSUM ".repeat(1000));
+		const modal = new Turf.LoadingModal(document.body);
+		
+		setTimeout(() =>
+		{
+			modal.terminate();
+		},
+		3000);
+	}
 }

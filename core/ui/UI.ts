@@ -448,7 +448,11 @@ namespace Turf
 		/** */
 		export async function waitTransitionEnd(e: Element)
 		{
-			await new Promise<void>(r => e.addEventListener("transitionend", () => r()));
+			await new Promise<void>(r => e.addEventListener("transitionend", ev =>
+			{
+				if (ev.target === e)
+					r();
+			}));
 		}
 		
 		/** */

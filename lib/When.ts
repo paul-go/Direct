@@ -57,8 +57,8 @@ namespace When
 		const element = a instanceof HTMLElement ? a : null;
 		const callback = (b || a) as Callback;
 		return element ?
-			When.connected(element, () => setTimeout(() => callback(element))) :
-			When.connected(element => setTimeout(() => callback(element)));
+			When.connected(element, () => setTimeout(() => callback(element), 1)) :
+			When.connected(element => setTimeout(() => callback(element), 1));
 	}
 	
 	/**

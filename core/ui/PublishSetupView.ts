@@ -32,7 +32,7 @@ namespace Turf
 				{
 					overflow: "hidden",
 				},
-				Htx.div(
+				this.windowElement = Htx.div(
 					"window-element",
 					UI.anchorBottom(40),
 					{
@@ -53,7 +53,11 @@ namespace Turf
 						
 						UI.waitTransitionEnd(e).then(() =>
 						{
-							this.root.addEventListener("transitionstart", () => this.windowFlipper.invisible());
+							this.root.addEventListener("transitionstart", ev =>
+							{
+								if (ev.target === this.root)
+									this.windowFlipper.invisible();
+							});
 						});
 					}),
 					
@@ -88,6 +92,7 @@ namespace Turf
 		}
 		
 		readonly root;
+		readonly windowElement;
 		private readonly overlayFlipper;
 		private readonly windowFlipper;
 		private readonly contents;
