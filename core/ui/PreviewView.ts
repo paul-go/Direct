@@ -53,12 +53,12 @@ namespace Turf
 					Htx.on(UI.clickEvt, () => UI.removeWithFade(this.root))
 				),
 				
-				When.connected(e => setTimeout(() =>
+				When.rendered(e =>
 				{
 					e.style.opacity = "1";
 					e.style.borderRadius = "0";
 					e.style.transform = "scale(1)";
-				}))
+				})
 			);
 			
 			document.body.append(this.root);

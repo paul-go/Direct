@@ -53,7 +53,7 @@ namespace Turf
 				"scroll-snap-type": "y mandatory",
 				"overflow-x": "hidden",
 				"overflow-y": "auto",
-				"height": "100%",
+				"height": "100vh",
 			}),
 			rule("." + CssClass.scene, {
 				"min-height": "100%",
