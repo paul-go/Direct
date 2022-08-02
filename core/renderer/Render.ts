@@ -390,7 +390,8 @@ namespace Turf
 				{
 					if (regions.length > 0 && 
 						regions[regions.length - 1].bold === bold &&
-						regions[regions.length - 1].href === href)
+						regions[regions.length - 1].href === href && 
+						regions[regions.length - 1] !== empty)
 					{
 						regions[regions.length - 1].text += node.textContent || "";
 					}
