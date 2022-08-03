@@ -20,11 +20,9 @@ namespace Turf
 			})();
 			
 			this.isNewRecord = !record;
-			const minHeight: Htx.Param = { minHeight: "85vh" };
 			
 			this.root = Htx.div(
 				"patch-view",
-				
 				Htx.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
 				
 				UI.anchorTop(),
@@ -41,7 +39,8 @@ namespace Turf
 					"blades-element",
 					minHeight,
 				),
-				Htx.p(
+				
+				Htx.div(
 					"no-blades-message",
 					UI.anchor(),
 					UI.flexCenter,
@@ -50,25 +49,7 @@ namespace Turf
 					{
 						zIndex: "1",
 					},
-					Htx.div(
-						"add-first-blade",
-						Htx.div(
-							UI.presentational,
-							{
-								fontSize: "30px",
-								fontWeight: "600",
-								marginBottom: "30px",
-							},
-							new Text("This patch has no blades."),
-						),
-						UI.actionButton("filled", 
-							{
-								marginTop: "10px",
-							},
-							Htx.on(UI.clickEvt, () => this.handleAddFirst()),
-							new Text("Add One"),
-						)
-					),
+					(this.noBladesBox = new HeightBox(this.renderNoBlades())).root,
 				),
 				
 				this.footerElement = Htx.div(
@@ -154,8 +135,42 @@ namespace Turf
 		private readonly headerScreen;
 		private readonly bladesElement;
 		private readonly footerElement;
+		private readonly noBladesBox;
 		private readonly isNewRecord: boolean;
 		private publishInfoElement;
+		
+		/** */
+		private renderNoBlades()
+		{
+			return Htx.div(
+				"add-first-blade",
+				Htx.div(
+					UI.presentational,
+					{
+						fontSize: "30px",
+						fontWeight: "600",
+						marginBottom: "30px",
+					},
+					new Text("This patch has no blades."),
+				),
+				UI.actionButton("filled", 
+					{
+						marginTop: "10px",
+					},
+					Htx.on(UI.clickEvt, () =>
+					{
+						const ibv = new InsertBladeView("v");
+						ibv.setCancelCallback(() => this.noBladesBox.back());
+						ibv.setInsertCallback(blade =>
+						{
+							this.bladesElement.append(blade.root);
+						});
+						this.noBladesBox.push(ibv.root);
+					}),
+					new Text("Add One"),
+				)
+			);
+		}
 		
 		/** */
 		private save()
@@ -215,14 +230,6 @@ namespace Turf
 				
 				this.backFn();
 			}
-		}
-		
-		/** */
-		private async handleAddFirst()
-		{
-			const bladeView = await AddBladeView.show(this.root);
-			if (bladeView)
-				this.bladesElement.append(bladeView.root);
 		}
 		
 		/** */
@@ -300,4 +307,6 @@ namespace Turf
 			});
 		}
 	}
+	
+	const minHeight: Htx.Param = { minHeight: "85vh" };
 }

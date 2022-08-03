@@ -1,6 +1,8 @@
 
 namespace Turf
 {
+	const headerPadding = "25px";
+	
 	/** */
 	export abstract class BladeView
 	{
@@ -24,11 +26,8 @@ namespace Turf
 		/** */
 		constructor(readonly record: BladeRecord)
 		{
-			const headerPadding = "25px";
-			
 			this.root = Htx.div(
 				"blade-view",
-				
 				{
 					backgroundColor: UI.darkGrayBackground
 				},
@@ -37,42 +36,13 @@ namespace Turf
 				Htx.css(":first-of-type .transition-configurator", { visibility: "hidden" }),
 				
 				// 
-				Htx.css(":not(:last-of-type) .final-add", { display: "none" }),
+				Htx.css(":not(:last-of-type) .footer-box", { display: "none" }),
 				
 				// Controls header
 				Htx.div(
 					"blade-header",
-					{
-						display: "flex",
-						height: BladeView.headerHeight,
-						paddingLeft: headerPadding,
-						paddingRight: headerPadding,
-					},
-					Htx.div(
-						"transition-configurator",
-						{
-							display: "flex",
-							alignItems: "stretch",
-							flex: "1 0",
-						},
-						this.transitionAnchor = Htx.a(
-							UI.clickable,
-							{
-								fontSize: "25px",
-							},
-							UI.flexVCenter,
-							Htx.on(UI.clickEvt, () => this.handleTransition())
-						),
-					),
-					Htx.div(
-						UI.flexVCenter,
-						UI.plusButton(
-							Htx.on(UI.clickEvt, () => this.handleAdd("beforebegin")),
-						),
-					),
-					...UI.dripper(
-						new Text("Add Here"),
-					)
+					(this.headerBox = new HeightBox(this.renderDefaultHeader())).root,
+					...UI.dripper(new Text("Add Here"))
 				),
 				
 				//
@@ -113,20 +83,10 @@ namespace Turf
 				)).root,
 				
 				// Final add
-				Htx.div(
-					"final-add",
-					{
-						direction: "rtl",
-						padding: headerPadding,
-						paddingLeft: "0",
-					},
-					UI.plusButton(
-						Htx.on(UI.clickEvt, () => this.handleAdd("afterend")),
-					),
-				),
+				(this.footerBox = new HeightBox("footer-box", this.renderDefaultFooter())).root,
 				
 				When.connected(() => this.updateBackgroundColor())
-			);
+			)
 			
 			// Populate this with data in the future.
 			this.transition = Transitions.slide;
@@ -143,9 +103,82 @@ namespace Turf
 		}
 		
 		readonly root: HTMLDivElement;
+		private readonly headerBox;
+		private readonly footerBox;
 		readonly sceneContainer;
 		readonly configuratorButtonsContainer;
 		readonly configuratorContainer;
+		private transitionAnchor: HTMLAnchorElement | null = null;
+		
+		/** */
+		private renderDefaultHeader(): HTMLElement
+		{
+			return Htx.div(
+				"default-header",
+				{
+					display: "flex",
+					height: BladeView.headerHeight,
+					paddingLeft: headerPadding,
+					paddingRight: headerPadding,
+				},
+				Htx.div(
+					"transition-configurator",
+					{
+						display: "flex",
+						alignItems: "stretch",
+						flex: "1 0",
+					},
+					this.transitionAnchor = Htx.a(
+						UI.clickable,
+						{
+							fontSize: "25px",
+						},
+						UI.flexVCenter,
+						Htx.on(UI.clickEvt, () => this.handleTransition())
+					),
+				),
+				Htx.div(
+					UI.flexVCenter,
+					UI.plusButton(
+						Htx.on(UI.clickEvt, () => this.renderInsertBlade(this.headerBox, "beforebegin")),
+					),
+				)
+			);
+		}
+		
+		/** */
+		private renderDefaultFooter(): HTMLElement
+		{
+			return Htx.div(
+				"insert-footer",
+				{
+					direction: "rtl",
+					padding: headerPadding,
+					paddingLeft: "0",
+				},
+				UI.plusButton(
+					Htx.on(UI.clickEvt, () => 
+					{
+						const view = this.renderInsertBlade(this.footerBox, "afterend");
+						Htx.from(view.root)({ marginBottom: "100px" });
+					}),
+				)
+			);
+		}
+		
+		/** */
+		private renderInsertBlade(box: HeightBox, where: InsertPosition)
+		{
+			const ibv = new InsertBladeView("h");
+			ibv.setInsertCallback(blade =>
+			{
+				this.root.insertAdjacentElement(where, blade.root);
+				box.back();
+			});
+			ibv.setCancelCallback(() => box.back());
+			box.push(ibv.root);
+			return ibv;
+		}
 		
 		/** */
 		updateBackgroundColor()
@@ -216,15 +249,7 @@ namespace Turf
 		/** */
 		protected setBladeConfigurator(e: HTMLElement | null)
 		{
-			this.configuratorContainer.setItem(e);
-		}
-		
-		/** */
-		private async handleAdd(where: InsertPosition)
-		{
-			const view = await AddBladeView.show(this.root);
-			if (view)
-				this.root.insertAdjacentElement(where, view.root);
+			this.configuratorContainer.replace(e);
 		}
 		
 		/** */
@@ -241,11 +266,11 @@ namespace Turf
 		set transition(value: Animation)
 		{
 			this._transition = value;
-			this.transitionAnchor.innerHTML = `<b>Transition</b>&nbsp;&#8212; ${value.label}`;
+			
+			if (this.transitionAnchor)
+				this.transitionAnchor.innerHTML = `<b>Transition</b>&nbsp;&#8212; ${value.label}`;
 		}
 		private _transition = Transitions.slide;
-		
-		private readonly transitionAnchor: HTMLAnchorElement;
 		
 		/** */
 		protected createMediaRecords(

@@ -594,7 +594,7 @@ namespace Htx
 		options?: boolean | EventListenerOptions): Event;
 	/** */
 	export declare function on<K extends keyof HTMLElementEventMap>(
-		contingent: Node | Window,
+		remoteTarget: Node | Window,
 		type: K,
 		listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
 		options?: boolean | EventListenerOptions): Event;

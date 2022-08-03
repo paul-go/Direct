@@ -21,16 +21,21 @@ namespace Turf
 		
 		readonly root;
 		
-		private currentItem: HTMLElement | null = null;
+		private readonly elementStack: HTMLElement[] = [];
 		
 		/** */
-		async setItem(e: HTMLElement | null)
+		async replace(e: HTMLElement | null)
 		{
-			this.currentItem?.remove();
-			this.currentItem = e;
+			for (const visibleElement of this.elementStack)
+				visibleElement.remove();
+			
+			this.elementStack.length = 0;
 			
 			if (e)
+			{
+				this.elementStack.push(e);
 				this.root.append(e);
+			}
 			
 			/*
 			const s = this.root.style;
@@ -69,6 +74,23 @@ namespace Turf
 			s.overflow = storedOverflow;
 			
 			*/
+		}
+		
+		/** */
+		async push(e: HTMLElement)
+		{
+			this.elementStack.push(...Query.children(this.root));
+			this.root.replaceChildren();
+			this.root.append(e);
+		}
+		
+		/** */
+		async back()
+		{
+			this.root.replaceChildren();
+			const next = this.elementStack.pop();
+			if (next)
+				this.root.append(next);
 		}
 	}
 }
