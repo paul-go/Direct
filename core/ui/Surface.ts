@@ -60,7 +60,7 @@ namespace Turf
 				...options.params || []
 			);
 			
-			When.connected(this.root, () =>
+			When.rendered(this.root, () =>
 			{
 				this.root.style.opacity = "1";
 				this.root.style.transform = UI.translateZ(0);

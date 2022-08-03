@@ -47,7 +47,7 @@ namespace Turf
 						transitionProperty: "transform, opacity",
 					},
 					this.windowFlipper.install(),
-					When.connected(e =>
+					When.rendered(e =>
 					{
 						this.windowFlipper.visible();
 						

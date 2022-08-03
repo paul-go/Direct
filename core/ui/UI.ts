@@ -955,7 +955,7 @@ namespace Turf
 						);
 					}),
 					
-					When.connected(e =>
+					When.rendered(e =>
 					{
 						if (target instanceof Element)
 						{
@@ -1060,7 +1060,7 @@ namespace Turf
 					transitionProperty: "background-color",
 				},
 				flipper.install(),
-				When.connected(() => flipper.visible()),
+				When.rendered(() => flipper.visible()),
 				...children,
 			);
 			

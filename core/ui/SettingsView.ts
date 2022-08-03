@@ -60,7 +60,7 @@ namespace Turf
 						})
 					)
 				),
-				When.connected(() =>
+				When.rendered(() =>
 				{
 					const s = windowElement.style;
 					s.opacity = "1";
