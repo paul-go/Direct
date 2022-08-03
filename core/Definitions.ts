@@ -11,6 +11,7 @@ const enum ConstS
 	jsFileNamePlayer = "player.js",
 	jsFileNamePlayerMin = "player.min.js",
 	jsFileNameApp = "app.js",
+	jsFileNameAppMin = "app.min.js",
 	textContrastBlackName = "res.blur-black.png",
 	textContrastWhiteName = "res.blur-white.png",
 	debugExportsFolderName = "+exports",
