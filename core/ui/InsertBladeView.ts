@@ -34,7 +34,10 @@ namespace Turf
 				Htx.on(document.body, "keydown", ev =>
 				{
 					if (ev.key === "Escape")
+					{
+						ev.preventDefault();
 						this.cancelCallback?.();
+					}
 				}),
 				Htx.on(document.body, "click", ev =>
 				{

@@ -543,8 +543,11 @@ namespace Turf
 				Htx.on("keydown", async ev =>
 				{
 					if (ev.key === "Escape")
+					{
+						ev.preventDefault();
 						removedFn?.(ev.currentTarget as HTMLElement);
-				
+					}
+					
 				}, { capture: true }),
 				When.connected(e => e.focus())
 			];
@@ -914,8 +917,10 @@ namespace Turf
 				Htx.on("keydown", ev =>
 				{
 					if (ev.key === "Escape")
+					{
+						ev.preventDefault();
 						overlay.remove();
-					
+					}
 				}, { capture: true }),
 				
 				Htx.div(
