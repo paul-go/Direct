@@ -127,6 +127,10 @@ namespace Turf
 							top: "20px",
 							left: "3px"
 						},
+						!TAURI && {
+							top: "12px",
+							left: "5px",
+						},
 					),
 				),
 			);
