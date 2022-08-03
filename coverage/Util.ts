@@ -23,4 +23,7 @@ namespace Cover
 	{
 		Query.find(CssClass.appRoot)[0].append(controller.root);
 	}
+	
+	if (typeof module !== "undefined")
+		Object.assign(module.exports, { Cover });
 }
