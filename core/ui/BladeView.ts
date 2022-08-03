@@ -18,9 +18,6 @@ namespace Turf
 			if (record instanceof ProseBladeRecord)
 				return new ProseBladeView(record);
 			
-			if (record instanceof VideoBladeRecord)
-				return new VideoBladeView(record);
-			
 			throw "Unknown record type.";
 		}
 		

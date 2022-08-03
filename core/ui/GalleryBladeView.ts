@@ -49,7 +49,7 @@ namespace Turf
 				),
 				
 				UI.getMediaDropCue(
-					"Click or drop an image here.",
+					"Click or drop an image or video here.",
 					files => this.importMedia(files),
 					UI.visibleWhenEmpty(this.galleryContainer),
 				),
@@ -85,7 +85,7 @@ namespace Turf
 		/** */
 		private async importMedia(files: FileLike[], dropOffsetX = 0)
 		{
-			const mediaRecords = this.createMediaRecords(files, [MimeClass.image]);
+			const mediaRecords = this.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
 			if (mediaRecords.length === 0)
 				return;
 			
@@ -155,6 +155,31 @@ namespace Turf
 		constructor(readonly record: FrameRecord)
 		{
 			const media = record.media!;
+			const isImage = MimeType.getClass(media.type) === MimeClass.image;
+			let filler: HTMLElement;
+			
+			if (isImage)
+			{
+				this.mediaElement = Htx.img({
+					src: media.getBlobUrl()
+				});
+				
+				filler = RenderUtil.createImageFiller(media.getBlobCssUrl());
+			}
+			else
+			{
+				this.mediaElement = Htx.video({
+					src: media.getBlobUrl()
+				});
+				
+				this.mediaElement.controls = true;
+				filler = RenderUtil.createVideoFiller(this.mediaElement);
+			}
+			
+			const s = this.mediaElement.style;
+			s.width = "100%";
+			s.height = "100%";
+			s.objectFit = "contain";
 			
 			this.root = Htx.div(
 				{
@@ -164,15 +189,8 @@ namespace Turf
 					width: "100%",
 					height: "100%",
 				},
-				RenderUtil.createImageFiller(media.getBlobCssUrl()),
-				this.imageElement = Htx.img(
-					{
-						src: media.getBlobUrl(),
-						width: "100%",
-						height: "100%",
-						objectFit: "contain",
-					}
-				),
+				filler,
+				this.mediaElement,
 				
 				UI.toolButton(
 					UI.anchorTopRight(20),
@@ -181,24 +199,18 @@ namespace Turf
 				)
 			);
 			
-			this.setSize(record.size);
+			this.setSize(record.size)
 			Controller.set(this);
 		}
 		
 		readonly root;
-		private readonly imageElement;
+		private readonly mediaElement;
 		
 		/** */
 		setSize(sizeMethod: SizeMethod)
 		{
 			this.record.size = sizeMethod;
-			this.imageElement.style.objectFit = sizeMethod;
+			this.mediaElement.style.objectFit = sizeMethod;
 		}
-	}
-	
-	/** */
-	const enum Class
-	{
-		imageContainer = "image-container",
 	}
 }

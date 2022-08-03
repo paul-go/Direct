@@ -38,11 +38,7 @@ namespace Turf
 					{
 						resultFn(new CaptionedBladeView());
 					}),
-					this.renderButton("Add Video", () =>
-					{
-						resultFn(new VideoBladeView());
-					}),
-					this.renderButton("Add Photo Gallery", () =>
+					this.renderButton("Add Images & Videos", () =>
 					{
 						resultFn(new GalleryBladeView());
 					}),

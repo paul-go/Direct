@@ -50,16 +50,6 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPatchViewWithVideo()
-	{
-		const app = await Turf.createApp({ shell: true, clear: true });
-		const pv = new Turf.PatchView(app.homePatch);
-		const bv = new Turf.VideoBladeView();
-		pv.blades.insert(bv);
-		Cover.display(pv);
-	}
-	
-	/** */
 	export async function coverPatchViewWithProse()
 	{
 		const app = await Turf.createApp({ shell: true, clear: true });
