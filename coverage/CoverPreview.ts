@@ -48,31 +48,6 @@ namespace Cover
 		
 		const blade3 = new Turf.ProseBladeRecord();
 		
-		blade3.html = `
-			<h2>Heading Level 2</h2>
-			<p>
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-			</p>
-			<p>
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-			</p>
-			<h2>Heading Level 2</h2>
-			<p>
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-			</p>
-			<p>
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-				Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-			</p>
-		`;
-		
 		patch.blades.push(blade1, blade2, blade3);
 		render(patch, meta);
 	}
