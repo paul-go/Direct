@@ -7,7 +7,7 @@ namespace Cover
 		log("Building the development version...");
 		
 		const defs = new Defs();
-		emitHtml(Dir.build, ConstS.jsFileNameAppMin);
+		emitHtml(Dir.build, ConstS.jsFileNameApp);
 		await emitPlayerJs(Dir.build, defs);
 		copyDependencies(Dir.build);
 	}
