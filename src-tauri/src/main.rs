@@ -60,7 +60,8 @@ impl<R: Runtime> WindowExt for Window<R>
 }
 
 /** */
-fn main() {
+fn main()
+{
 	let context = tauri::generate_context!();
 	tauri::Builder::default()
 		.setup(|app|
