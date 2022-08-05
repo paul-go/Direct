@@ -18,6 +18,16 @@ namespace Cover
 	}
 	
 	/** */
+	export async function coverPatchViewWithProse()
+	{
+		const app = await Turf.createApp({ shell: true, clear: true });
+		const pv = new Turf.PatchView(app.homePatch);
+		const bv = new Turf.ProseBladeView();
+		pv.blades.insert(bv);
+		Cover.display(pv);
+	}
+	
+	/** */
 	export async function coverPatchViewWithCaptioned()
 	{
 		const app = await Turf.createApp({ shell: true, clear: true });
@@ -45,16 +55,6 @@ namespace Cover
 		const app = await Turf.createApp({ shell: true, clear: true });
 		const pv = new Turf.PatchView(app.homePatch);
 		const bv = new Turf.GalleryBladeView();
-		pv.blades.insert(bv);
-		Cover.display(pv);
-	}
-	
-	/** */
-	export async function coverPatchViewWithProse()
-	{
-		const app = await Turf.createApp({ shell: true, clear: true });
-		const pv = new Turf.PatchView(app.homePatch);
-		const bv = new Turf.ProseBladeView();
 		pv.blades.insert(bv);
 		Cover.display(pv);
 	}

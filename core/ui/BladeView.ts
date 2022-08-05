@@ -52,26 +52,30 @@ namespace Turf
 						overflow: "hidden",
 						height: UI.vsize(100), 
 						backgroundColor: "black",
-						boxShadow:
-							"inset 0 1px 0 " + UI.white(0.15) + ", " +
-							"inset 0 -1px 0 " + UI.white(0.15)
 					},
 				),
 				
 				//
-				this.configuratorButtonsContainer = Htx.div(
-					"config-buttons-container",
+				Htx.div(
 					{
-						width: "max-content",
-						maxWidth: "100%",
-						margin: "auto",
-						paddingBottom: "20px",
-						overflowX: "auto",
-						overflowY: "scroll",
-						color: "white",
-						textAlign: "center",
-						whiteSpace: "nowrap",
-					}
+						backgroundColor: UI.darkGrayBackground,
+						position: "sticky",
+						bottom: "0",
+					},
+					this.configuratorButtonsContainer = Htx.div(
+						"config-buttons-container",
+						{
+							width: "max-content",
+							maxWidth: "100%",
+							margin: "auto",
+							paddingBottom: "20px",
+							overflowX: "auto",
+							overflowY: "scroll",
+							color: "white",
+							textAlign: "center",
+							whiteSpace: "nowrap",
+						}
+					),
 				),
 				
 				//
@@ -188,6 +192,49 @@ namespace Turf
 			const colorIndex = this.record.backgroundColorIndex;
 			const color = RenderUtil.resolveBackgroundColor(colorIndex, meta);
 			this.sceneContainer.style.backgroundColor = UI.color(color);
+		}
+		
+		/** */
+		protected createToolsHeader(...params: Htx.Param[])
+		{
+			return Htx.div(
+				"tool-buttons",
+				UI.anchorTop(),
+				UI.flexCenter,
+				...params,
+			);
+		}
+		
+		/**
+		 * Creates a tool button for the toolbar that renders on top of the blade.
+		 * If the label is prefixed with +, this is converted into a UI plus button.
+		 */
+		protected createToolButton(label: string, click: () => void)
+		{
+			const hasPlus = label.startsWith("+");
+			
+			if (hasPlus)
+				label = label.slice(1).trim();
+			
+			return UI.toolButton(
+				{
+					margin: "10px 5px 0",
+				},
+				hasPlus && UI.plusButton(
+					{
+						width: "15px",
+						height: "15px",
+						marginRight: "20px"
+					}
+				),
+				...UI.click(ev =>
+				{
+					ev.preventDefault();
+					this.deselectBladeButtons();
+					click();
+				}),
+				new Text(label)
+			);
 		}
 		
 		/** */

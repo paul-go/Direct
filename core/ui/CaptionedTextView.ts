@@ -32,7 +32,7 @@ namespace Turf
 		/** */
 		protected hide(hide = true)
 		{
-			if (UI.hide(this.root, hide))
+			if (UI.toggle(this.root, !hide))
 				this.hideChangedHandler(hide);
 		}
 		

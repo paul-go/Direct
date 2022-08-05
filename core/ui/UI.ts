@@ -69,6 +69,14 @@ namespace Turf
 		};
 		
 		/** */
+		export const toolButtonTheme: Htx.Style = {
+			backgroundColor: UI.gray(40, 0.5),
+			backdropFilter: "blur(5px)",
+			borderRadius: UI.borderRadius.large,
+			color: "white",
+		};
+		
+		/** */
 		export const clickable: Htx.Style = {
 			userSelect: "none",
 			webkitUserSelect: "none",
@@ -121,12 +129,9 @@ namespace Turf
 		export function toolButton(...params: Htx.Param[])
 		{
 			return UI.clickLabel(
+				UI.toolButtonTheme,
 				{
-					padding: "20px 30px",
-					backgroundColor: UI.black(0.5),
-					backdropFilter: "blur(5px)",
-					borderRadius: UI.borderRadius.large,
-					color: "white",
+					padding: "10px 30px",
 				},
 				...params
 			);
@@ -165,16 +170,16 @@ namespace Turf
 		 * Returns a boolean value that indicates whether the
 		 * hidden state was changed.
 		 */
-		export function hide(e: Element, hide = true)
+		export function toggle(e: Element, show = true)
 		{
-			const hidden = e.classList.contains(CssClass.hide);
+			const stored = e.classList.contains(CssClass.hide);
 			
-			if (hide)
-				e.classList.add(CssClass.hide);
-			else
+			if (show)
 				e.classList.remove(CssClass.hide);
+			else
+				e.classList.add(CssClass.hide);
 				
-			return hidden !== e.classList.contains(CssClass.hide);
+			return stored !== e.classList.contains(CssClass.hide);
 		}
 		
 		/** */

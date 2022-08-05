@@ -523,15 +523,100 @@ namespace Turf
 	 */
 	function renderProseBlade(bun: Bundle<ProseBladeRecord>)
 	{
-		const proseNodes = tempProseConverter(bun.blade.html);
+		if (!bun.blade.content)
+			return [];
 		
 		return [
 			CssClass.proseScene,
 			Htx.div(
 				CssClass.proseSceneForeground,
-				...proseNodes
+				...renderProseDocument(bun.blade.content)
 			)
 		];
+	}
+	
+	/**
+	 * 
+	 */
+	function renderProseDocument(content: ITrixSerializedObject)
+	{
+		const elements: HTMLElement[] = [];
+		
+		for (const block of content.document)
+		{
+			if (block.attributes.includes("heading1"))
+			{
+				elements.push(Htx.h2(
+					...block.text
+						.filter(obj => !obj.attributes.blockBreak)
+						.map(obj => obj.string)
+						.join("")
+						.split("\n")
+						.map(s => s.trim())
+						.filter(s => !!s)
+						.flatMap(s => [Htx.br(), new Text(s)])
+						.slice(1)
+				));
+			}
+			else
+			{
+				const paragraphs: HTMLElement[] = [Htx.p()];
+				
+				for (const trixNode of block.text)
+				{
+					if (trixNode.attributes.blockBreak)
+						continue;
+					
+					const currentPara = paragraphs.at(-1);
+					
+					// Defensive
+					if (!currentPara)
+						continue;
+					
+					const wrapNode = (textContent: string) =>
+					{
+						let domNodes: Node[] = textContent
+							.split(/\n/g)
+							.map(s => s.trim())
+							.filter(s => !!s)
+							.flatMap(s => [Htx.br(), new Text(s)])
+							.slice(1);
+						
+						if (trixNode.attributes.bold)
+							domNodes = [Htx.strong(...domNodes)];
+						
+						if (trixNode.attributes.italic)
+							domNodes = [Htx.em(...domNodes)];
+						
+						if (trixNode.attributes.href)
+							domNodes = [Htx.a({ href: trixNode.attributes.href }, ...domNodes)];
+						
+						return domNodes;
+					}
+					
+					const paragraphTexts = trixNode.string
+						.split(/\n\s*\n/g)
+						.map(s => s.trim())
+						.filter(s => !!s);
+					
+					// Defensive
+					if (paragraphTexts.length === 0)
+						continue;
+					
+					currentPara.append(...wrapNode(paragraphTexts[0]));
+					
+					for (let i = 0; ++i < paragraphTexts.length;)
+					{
+						const text = paragraphTexts[i];
+						paragraphs.push(Htx.p(...wrapNode(text)));
+					}
+				}
+				
+				elements.push(...paragraphs);
+			}
+		}
+		
+		return elements;
 	}
 	
 	/**

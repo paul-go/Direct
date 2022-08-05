@@ -38,7 +38,6 @@ namespace Turf
 				"-webkit-font-smoothing": "antialiased",
 				"color": "inherit",
 				"font-size": "inherit",
-				"font-weight": "inherit",
 			}),
 			rule("HTML", {
 				"background-color": "black",
@@ -161,11 +160,11 @@ namespace Turf
 				"padding-top": "12vmin",
 				"padding-bottom": "33vmin",
 			}),
-			rule("." + CssClass.proseScene + " H2", {
+			rule(`.${CssClass.proseScene} H1, .${CssClass.proseScene} H2`, {
 				"font-size": "40px",
 				"font-weight": "700",
 			}),
-			rule("." + CssClass.proseScene + " * + H2", {
+			rule(`.${CssClass.proseScene} * + H1, .${CssClass.proseScene} * + H2`, {
 				"margin-top": "1.5em"
 			}),
 			rule("." + CssClass.proseScene, {
@@ -293,6 +292,10 @@ namespace Turf
 				"transform": "scale(0.33333)",
 				"width": "300%",
 				"z-index": "-1",
+			}),
+			
+			rule("TRIX-TOOLBAR ", {
+				
 			})
 		];
 	}

@@ -9,209 +9,338 @@ namespace Turf
 		{
 			super(record);
 			
+			this.trixEditorElement = this.createTrixEditor();
+			
 			Htx.from(this.sceneContainer)(
+				{
+					height: "auto",
+				},
 				Htx.div(
 					CssClass.proseScene,
 					{
-						height: "auto",
+						display: "flex",
+						flexDirection: "column",
 						minHeight: UI.vsize(100),
 					},
 					Htx.div(
 						CssClass.proseSceneForeground,
 						{
-							height: "auto",
-							minHeight: UI.vsize(100),
+							display: "flex",
+							flex: "1 0",
+							
+							// These values are different from what gets rendered in the output.
+							paddingTop: "10vmin",
+							paddingBottom: "10vmin",
 						},
 						UI.keyable,
-						(this.textBox = new TextBox()).root
+						
+						Htx.from(this.trixEditorElement)({
+							flex: "1 0",
+							outline: "0",
+						}),
+						
+						this.linkTextBoxContainer = Htx.div(
+							"link-input",
+							UI.anchorCenter("fit-content"),
+							UI.toolButtonTheme,
+							{
+								top: "auto",
+								padding: "10px 20px",
+							},
+							(this.linkTextBox = this.createLinkTextBox()).root
+						)
 					)
-				)
+				),
+				When.connected(() => this.updateButtons())
 			);
 			
-			this.textBox.isMultiLine = true;
-			this.textBox.html = record.html;
-			
 			this.setBladeButtons(
-				() =>
-				{
-					
-				},
-				/*
-				this.boldButton,
-				this.linkButton,
-				this.headingButton,
-				this.paragraphButton,
-				*/
+				() => this.updateButtons(),
+				this.setupButton(this.headingButton, "heading1"),
+				this.setupButton(this.paragraphButton, "heading1"),
+				this.setupButton(this.boldButton, "bold"),
+				this.setupButton(this.italicButton, "italic"),
+				this.setupButton(this.linkButton, "href"),
 				this.backgroundButton,
 			);
 			
-			/*
-			this.boldButton.visible = false;
-			this.linkButton.visible = false;
-			
-			this.headingButton.onSelected(() =>
+			this.trixEditorElement.addEventListener("trix-selection-change", () => 
 			{
-				this.textBox.setCurrentBlockElement("h2");
+				if (!this.blockSelectionChangeEvents)
+					this.updateButtons();
 			});
 			
-			this.paragraphButton.onSelected(() =>
+			// Prevents images from being dragged and dropped
+			this.trixEditorElement.addEventListener("trix-file-accept", ev =>
 			{
-				this.textBox.setCurrentBlockElement("");
+				ev.preventDefault();
 			});
 			
-			this.boldButton.onSelected(() =>
+			this.trixEditorElement.addEventListener("trix-blur", () =>
 			{
-				document.execCommand("bold");
+				this.save();
 			});
 			
-			document.addEventListener("selectionchange", () =>
+			this.setupAutoSaver();
+			
+			When.connected(this.root, () =>
 			{
-				this.updateBladeButtons();
+				if (record.content)
+				{
+					// Awkward: You need to clone the JSON object
+					// because the record object has a bunch of proxies
+					// installed in it, and this is causing Trix to get confused.
+					const content = Util.cloneObject(record.content);
+					this.trixEditorElement.editor.loadJSON(content);
+				}
 			});
-			*/
 		}
 		
-		private readonly textBox: TextBox;
-		
 		/** */
+		private get editor() { return this.trixEditorElement.editor; }
+		
+		private readonly trixEditorElement: HTMLTrixElement;
+		
+		private readonly linkTextBoxContainer;
+		private readonly linkTextBox: TextBox;
+		
 		private readonly headingButton = new BladeButtonView("Heading", {
-			selectable: true,
-			unselectable: false,
+			independent: true,
+			selectable: false,
+			unselectable: false
 		});
 		
-		/** */
 		private readonly paragraphButton = new BladeButtonView("Paragraph", {
-			selectable: true,
-			unselectable: false,
+			independent: true,
+			selectable: false,
+			unselectable: false
 		});
 		
-		/** */
 		private readonly boldButton = new BladeButtonView("Bold", {
-			selectable: true,
-			unselectable: true,
 			independent: true,
+			selectable: false,
+			unselectable: false
 		});
 		
-		/** */
+		private readonly italicButton = new BladeButtonView("Italic", {
+			independent: true,
+			selectable: false,
+			unselectable: false
+		});
+		
 		private readonly linkButton = new BladeButtonView("Link", {
-			selectable: true,
-			unselectable: true,
 			independent: true,
+			selectable: false,
+			unselectable: false
 		});
 		
-		/** */
 		private readonly backgroundButton = new BladeButtonView("Background", {
 			selectable: true,
 			unselectable: true,
 		});
 		
-		/** */
-		private readonly typeButtons = [
-			this.headingButton,
-			this.paragraphButton
-		] as const;
-		
-		/** */
-		private readonly formatButtons = [
-			this.boldButton,
-			this.linkButton,
-		] as const;
-		
-		/** */
-		private readonly allButtons = [...this.typeButtons, ...this.formatButtons] as const;
-		
-		/** */
-		private updateBladeButtons()
+		/**
+		 * Creates a Trix editor element and it's associated toolbar element, and returns
+		 * both of these elements which can be inserted anywhere in the DOM.
+		 */
+		private createTrixEditor()
 		{
-			const sel = window.getSelection();
-			if (!sel)
-				return;
+			const trixEditor = document.createElement("trix-editor") as HTMLTrixElement;
 			
-			const hasRangeSelection = 
-				sel.anchorNode !== sel.focusNode || 
-				sel.anchorOffset !== sel.focusOffset;
+			const tempElement = Htx.div(
+				"temp-element",
+				UI.anchor(),
+				{ left: "-99999px", pointerEvents: "none", opacity: "0" },
+				trixEditor
+			);
 			
-			const selectedRoots = this.textBox.getSelectedRoots();
+			document.body.append(tempElement);
+			tempElement.remove();
 			
-			const hasMultiElementRangeSelection = (() =>
+			return trixEditor;
+		}
+		
+		/** */
+		private setupButton(button: BladeButtonView, attribute: TrixAttribute)
+		{
+			button.root.addEventListener("click", ev =>
 			{
-				if (selectedRoots.at(0) instanceof HTMLBRElement)
-					selectedRoots.shift();
+				ev.preventDefault();
 				
-				if (selectedRoots.at(-1) instanceof HTMLBRElement)
-					selectedRoots.pop();
-				
-				if (selectedRoots.length < 2)
-					return false;
-				
-				if (selectedRoots.find(n => 
-					n instanceof HTMLBRElement || 
-					n instanceof HTMLHeadingElement))
-					return true;
-				
-				return false;
-			})();
-			
-			this.allButtons.map(b => b.visible = hasMultiElementRangeSelection);
-			
-			if (hasMultiElementRangeSelection)
-				return;
-			
-			if (selectedRoots.length === 0)
-				return;
-			
-			if (selectedRoots.length === 1 && selectedRoots[0] instanceof HTMLHeadingElement)
-			{
-				this.formatButtons.map(b => b.visible = false);
-				this.typeButtons.map(b => b.visible = true);
-				this.headingButton.selected = true;
-				this.paragraphButton.selected = false;
-				return;
-			}
-			
-			this.formatButtons.map(b => b.visible = hasRangeSelection);
-			this.typeButtons.map(b => b.visible = !hasRangeSelection);
-			
-			// Update the format buttons
-			if (hasRangeSelection)
-			{
-				const range = sel.getRangeAt(0);
-				const frag = range.cloneContents();
-				const textNodes = Array.from(Query.recurse(frag))
-					.filter((n): n is Text => n instanceof Text);
-				
-				if (textNodes.length === 0)
-					throw Exception.unknownState();
-				
-				let hasBold = true;
-				let hasLink = true;
-				
-				for (const textNode of textNodes)
+				if (this.editor.attributeIsActive(attribute))
 				{
-					const ancestors = Query.ancestors(textNode, this.textBox.editableElement)
-						.filter((e): e is HTMLElement => e instanceof HTMLElement);
+					if (this.isCollapsed)
+					{
+						this.editor.recordUndoEntry("(Collapsed) Deactivate Attribute: " + attribute);
+						this.doTemporarySelectionExpansion(attribute, () =>
+						{
+							this.editor.deactivateAttribute(attribute);
+						});
+					}
+					else
+					{
+						this.editor.recordUndoEntry("Deactivate Attribute: " + attribute);
+						this.editor.deactivateAttribute(attribute);
+					}
 					
-					if (!ancestors.find(e => e.tagName === "B" || e.tagName === "STRONG"))
-						hasBold = false;
+					this.updateButtons();
+				}
+				else
+				{
+					this.editor.recordUndoEntry("Activate: " + attribute);
 					
-					if (!ancestors.find(e => e.tagName === "A"))
-						hasLink = false;
+					if (button === this.linkButton)
+					{
+						this.editor.activateAttribute(attribute, "");
+						this.updateButtons();
+						this.linkTextBox.focus();
+					}
+					else
+					{
+						this.editor.activateAttribute(attribute);
+						this.updateButtons();
+					}
+				}
+			});
+			
+			return button;
+		}
+		
+		/** */
+		private updateButtons()
+		{
+			const [start, finish] = this.editor.getSelectedRange();
+			const hasRangeSelection = start !== finish;
+			const hasHeading = this.editor.attributeIsActive("heading1");
+			const hasBold = this.editor.attributeIsActive("bold");
+			const hasItalic = this.editor.attributeIsActive("italic");
+			const hasLink = this.editor.attributeIsActive("href");
+			const hasContent = (this.trixEditorElement.textContent?.trim() || "").length > 0;
+			
+			UI.toggle(this.headingButton.root, hasContent && !hasRangeSelection && !hasHeading);
+			UI.toggle(this.paragraphButton.root, hasContent && !hasRangeSelection && hasHeading);
+			UI.toggle(this.boldButton.root, hasContent && !hasHeading && (hasRangeSelection || hasBold));
+			UI.toggle(this.italicButton.root, hasContent && !hasHeading && (hasRangeSelection || hasItalic));
+			UI.toggle(this.linkButton.root, hasContent && !hasHeading && (hasRangeSelection || hasLink));
+			UI.toggle(this.linkTextBoxContainer, hasLink);
+			
+			if (hasLink)
+				this.linkTextBox.html = this.getCurrentHref();
+		}
+		
+		/** */
+		private createLinkTextBox()
+		{
+			const box = new TextBox();
+			box.placeholder = "Enter the link URL";
+			
+			const commit = () =>
+			{
+				if (this.getCurrentHref() === box.text)
+					return;
+				
+				const url = box.text;
+				this.editor.recordUndoEntry("Update Link");
+				
+				const update = () =>
+				{
+					if (url)
+						this.editor.activateAttribute("href", url);
+					else
+						this.editor.deactivateAttribute("href");
 				}
 				
-				this.boldButton.selected = hasBold;
-				this.linkButton.selected = hasLink;
-			}
-			// Update the type buttons
-			else
-			{
-				if (selectedRoots.length !== 1)
-					throw Exception.unknownState();
-				
-				if (selectedRoots[0] instanceof HTMLHeadingElement)
-					this.headingButton.selected = true;
+				if (this.isCollapsed)
+					this.doTemporarySelectionExpansion("href", update);
 				else
-					this.paragraphButton.selected = true;
-			}
+					update();
+			};
+			
+			Htx.from(box.editableElement)(
+				{
+					minWidth: "200px",
+				},
+				Htx.on("focusout", () => commit()),
+				Htx.on("keydown", ev =>
+				{
+					if (ev.key === "Enter")
+					{
+						commit();
+						ev.preventDefault();
+						ev.stopImmediatePropagation();
+					}
+				}, { capture: true })
+			);
+			
+			return box;
+		}
+		
+		/** */
+		private getCurrentHref(): string
+		{
+			const editor = this.editor as any;
+			return editor.composition?.getCurrentAttributes()?.href || "";
+		}
+		
+		/** */
+		private get isCollapsed()
+		{
+			const [start, end] = this.editor.getSelectedRange();
+			return start === end;
+		}
+		
+		/**
+		 * Expands the selection to include the range with common formatting,
+		 * then executes the specified function, and then returns the selection
+		 * back to it's original state.
+		 */
+		private doTemporarySelectionExpansion(attribute: TrixAttribute, fn: () => void)
+		{
+			this.blockSelectionChangeEvents = true;
+			const [start, end] = this.editor.getSelectedRange();
+			const doc = this.editor.getDocument();
+			const range = doc.getRangeOfCommonAttributeAtPosition(attribute, start);
+			this.editor.setSelectedRange(range);
+			fn();
+			this.editor.setSelectedRange([start, end]);
+			this.blockSelectionChangeEvents = false;
+		}
+		private blockSelectionChangeEvents = false;
+		
+		/**
+		 * Sets up a recursive auto-saver that runs every 4 seconds, if an edit has occured.
+		 */
+		private setupAutoSaver()
+		{
+			let isDirty = false;
+			
+			const maybeSave = () =>
+			{
+				setTimeout(() =>
+				{
+					if (isDirty)
+					{
+						this.save();
+						isDirty = false;
+					}
+					
+					maybeSave();
+				},
+				500);
+			};
+			
+			maybeSave();
+			
+			this.trixEditorElement.addEventListener("trix-change", () =>
+			{
+				isDirty = true;
+			});
+		}
+		
+		/** */
+		private save()
+		{
+			this.record.content = Util.cloneObject(this.editor.toJSON());
 		}
 	}
 }

@@ -25,14 +25,25 @@ namespace Turf
 			options.database :
 			ConstS.mainDatabaseName;
 		
-		if (DEBUG && options?.clear)
-			await Turf.Database.delete(dbName);
+		let app: AppContainer = null!;
 		
-		const database = await createDatabase(dbName);
-		
-		Turf.appendCss();
-		const container = options?.container ?? document.body;
-		const app = await AppContainer.new(container, database);
+		// Do the database initialization stuff while we're loading the trix editor,
+		// to improve load time where possible.
+		await Promise.all([
+			Turf.Util.include("trix.js"),
+			new Promise<void>(async r =>
+			{
+				if (DEBUG && options?.clear)
+					await Turf.Database.delete(dbName);
+				
+				const database = await createDatabase(dbName);
+				
+				Turf.appendCss();
+				const container = options?.container ?? document.body;
+				app = await AppContainer.new(container, database);
+				r();
+			})
+		]);
 		
 		if (options?.shell !== true)
 		{

@@ -122,7 +122,7 @@ namespace Turf
 	/** */
 	export class ProseBladeRecord extends BladeRecord
 	{
-		html = "";
+		content: ITrixSerializedObject | null = null;
 	}
 	
 	/** */

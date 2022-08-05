@@ -185,17 +185,10 @@ namespace Cover
 		await db.save(patch);
 		
 		const prose1 = new Turf.ProseBladeRecord();
-		prose1.html = "prose1";
-		
 		const prose2 = new Turf.ProseBladeRecord();
-		prose2.html = "prose2";
 		patch.blades.push(prose1, prose2);
-		
 		await Turf.UI.wait(100);
-		
 		const prose3 = new Turf.ProseBladeRecord();
-		prose3.html = "prose3";
-		
 		await Turf.UI.wait(100);
 		
 		console.log("Patch1: " + patch.id);

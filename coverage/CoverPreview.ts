@@ -252,26 +252,66 @@ namespace Cover
 	{
 		const { patch, meta } = setup();
 		
-		const html = (n: number) => `
-			<h2>Heading ${n}</h2>
-			<p>
-				Social media platforms have done great work in facilitating new connections between people. However, they are increasingly transforming into parasitic entities. Their primary goal is to enrich the platforms themselves, as well as their direct corporate and buerocratic stakeholders, oftentimes at the expense of the users they are purported to serve.
-			</p>
-			<p>
-				Numerous solutions have been tabled to purportedly "fix social media". However, they range from complete technological digressions (blockchain-centric solutions), attempts to move the problem around rather than actually solve it (alternative social networks), and unscalable designs with unsolvable user experience issues (federated models).
-			</p>
-		`;
+		const createBlocks = (n: number): ITrixSerializedBlock[] => [
+			{
+				text: [
+					{
+						type: "string",
+						attributes: {},
+						string: "Heading " + n
+					},
+				],
+				attributes: [
+					"heading1"
+				]
+			},
+			{
+				text: [
+					{
+						type: "string",
+						attributes: {},
+						string: "Social media platforms have done great work in facilitating new connections between people. However, they are increasingly transforming into parasitic entities. Their primary goal is to enrich the platforms themselves, as well as their direct corporate and buerocratic stakeholders, oftentimes at the expense of the users they are purported to serve."
+					},
+					{
+						type: "string",
+						attributes: {
+							blockBreak: true
+						},
+						string: "\n"
+					},
+					{
+						type: "string",
+						attributes: {},
+						string: `Numerous solutions have been tabled to purportedly "fix social media". However, they range from complete technological digressions (blockchain-centric solutions), attempts to move the problem around rather than actually solve it (alternative social networks), and unscalable designs with unsolvable user experience issues (federated models).`
+					}
+				],
+				attributes: []
+			}
+		];
+		
+		const getContent = (count: number): ITrixSerializedObject =>
+		{
+			const document: ITrixSerializedBlock[] = [];
+			
+			for (let i = -1; ++i < count;)
+				document.push(...createBlocks(i));
+			
+			return {
+				document,
+				selectedRange: [0, 0]
+			}
+		};
 		
 		const blade1 = new Turf.ProseBladeRecord();
-		blade1.html = html(1) + html(2) + html(3) + html(4) + html(5);
+		blade1.content = getContent(5);
 		blade1.backgroundColorIndex = Turf.ColorScheme.whiteIndex;
 		
 		const blade2 = new Turf.ProseBladeRecord();
-		blade2.html = html(1) + html(2) + html(3) + html(4) + html(5);
+		blade2.content = getContent(5);
 		blade2.backgroundColorIndex = Turf.ColorScheme.blackIndex;
 		
 		const blade3 = new Turf.ProseBladeRecord();
-		blade3.html = html(1);
+		blade3.content = getContent(1);
 		blade3.backgroundColorIndex = 1;
 		
 		patch.blades.push(blade1, blade2, blade3);

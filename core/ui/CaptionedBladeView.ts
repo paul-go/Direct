@@ -44,11 +44,7 @@ namespace Turf
 					)
 				).root,
 				
-				// Content Buttons
-				
-				Htx.div(
-					UI.anchorTop(),
-					UI.flexCenter,
+				this.createToolsHeader(
 					...this.createToolButtons()
 				)
 			);
@@ -110,41 +106,18 @@ namespace Turf
 		/** */
 		private createToolButtons()
 		{
-			const imageTool = this.createToolButton("Image", () => { });
-			const titleTool = this.createToolButton("Title", () => this.titleView.focus());
-			const descTool = this.createToolButton("Description", () => this.descriptionView.focus());
+			const imageTool = this.createToolButton("+ Image", () => { });
+			const titleTool = this.createToolButton("+ Title", () => this.titleView.focus());
+			const descTool = this.createToolButton("+ Description", () => this.descriptionView.focus());
 			
-			this.titleView.setHideChangedHandler(hidden => UI.hide(titleTool, !hidden));
-			this.descriptionView.setHideChangedHandler(hidden => UI.hide(descTool, !hidden));
+			this.titleView.setHideChangedHandler(hidden => UI.toggle(titleTool, hidden));
+			this.descriptionView.setHideChangedHandler(hidden => UI.toggle(descTool, hidden));
 			
 			return [
 				imageTool,
 				titleTool,
 				descTool,
 			];
-		}
-		
-		/** */
-		private createToolButton(label: string, click: () => void)
-		{
-			return UI.toolButton(
-				{
-					margin: "10px 5px 0",
-				},
-				UI.plusButton(
-					{
-						width: "15px",
-						height: "15px",
-						marginRight: "20px"
-					}
-				),
-				...UI.click(() =>
-				{
-					this.deselectBladeButtons();
-					click();
-				}),
-				new Text(label)
-			);
 		}
 		
 		/** */

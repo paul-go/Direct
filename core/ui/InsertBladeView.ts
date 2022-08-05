@@ -46,7 +46,7 @@ namespace Turf
 				}),
 				renderButton("+ Captioned", CaptionedBladeView),
 				renderButton("+ Images & Videos", GalleryBladeView),
-				renderButton("+ Write Up", ProseBladeView),
+				renderButton("+ Prose", ProseBladeView),
 			);
 		}
 		

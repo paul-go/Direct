@@ -38,7 +38,7 @@ namespace Turf
 		export async function include(src: string)
 		{
 			if (includedScripts.has(src))
-				return;
+				return Promise.resolve(true);
 			
 			includedScripts.add(src);
 			
@@ -109,6 +109,12 @@ namespace Turf
 			}
 			
 			return `url(${url})`;
+		}
+		
+		/** */
+		export function cloneObject(object: object)
+		{
+			return JSON.parse(JSON.stringify(object));
 		}
 		
 		//# Record Related
