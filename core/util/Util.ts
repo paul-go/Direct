@@ -44,8 +44,21 @@ namespace Turf
 			
 			if (DEBUG && ELECTRON)
 			{
+				const fs = require("fs") as typeof import("fs");
 				const path = require("path") as typeof import("path");
-				src = "file://" + path.join(__dirname, src);
+				
+				// Attempt to load from the build directory first
+				let tryPath = path.join(__dirname, src);
+				
+				if (!fs.existsSync(tryPath))
+				{
+					// If the file doesn't exist in the build directory, attempt the /lib directory
+					tryPath = path.join(__dirname, "../lib", src);
+					if (!fs.existsSync(tryPath))
+						throw "Could not locate file: " + src;
+				}
+				
+				src = "file://" + tryPath;
 			}
 			
 			return new Promise<boolean>(resolve =>

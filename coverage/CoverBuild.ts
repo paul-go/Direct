@@ -2,6 +2,17 @@
 namespace Cover
 {
 	/** */
+	export async function coverBuildDev()
+	{
+		log("Building the development version...");
+		
+		const defs = new Defs();
+		emitHtml(Dir.build, ConstS.jsFileNameAppMin);
+		await emitPlayerJs(Dir.build, defs);
+		copyDependencies(Dir.build);
+	}
+	
+	/** */
 	export async function coverBuildWeb()
 	{
 		log("Building minified web version...");
@@ -10,6 +21,7 @@ namespace Cover
 		emitHtml(Dir.bundleWeb, ConstS.jsFileNameAppMin);
 		await emitAppJs(Dir.bundleWeb, defs);
 		await emitPlayerJs(Dir.bundleWeb, defs);
+		copyDependencies(Dir.bundleWeb);
 	}
 	
 	/** */
@@ -20,6 +32,7 @@ namespace Cover
 		emitHtml(Dir.bundleWeb, ConstS.jsFileNameApp);
 		await emitAppJs(Dir.bundleWeb);
 		await emitPlayerJs(Dir.bundleWeb);
+		copyDependencies(Dir.bundleWeb);
 	}
 	
 	/** */
@@ -36,6 +49,7 @@ namespace Cover
 		await emitAppJs(Dir.bundleMacOS, defs);
 		await emitPlayerJs(Dir.bundleMacOS, defs);
 		await emitMacInstaller(Dir.bundleMacOS);
+		copyDependencies(Dir.bundleMacOS);
 	}
 	
 	/** */
@@ -48,12 +62,28 @@ namespace Cover
 			WINDOWS: true
 		});
 		
-		emitHtml(Dir.bundleMacOS, ConstS.jsFileNameApp);
-		await emitAppJs(Dir.bundleMacOS, defs);
-		await emitPlayerJs(Dir.bundleMacOS, defs);
+		emitHtml(Dir.bundleWindows, ConstS.jsFileNameApp);
+		await emitAppJs(Dir.bundleWindows, defs);
+		await emitPlayerJs(Dir.bundleWindows, defs);
+		copyDependencies(Dir.bundleWindows);
 	}
 	
 	//# Helper Functions
+	
+	/** */
+	function copyDependencies(targetDirectory: string)
+	{
+		const copyOne = (fileName: string) =>
+		{
+			const targetPath = Path.join(targetDirectory, fileName);
+			Fs.copyFileSync(Path.join(Dir.lib, fileName), targetPath);
+			log("Copied dependency to: " + targetPath);
+		}
+		
+		copyOne("trix.js");
+		copyOne("res.blur-black.png");
+		copyOne("res.blur-white.png");
+	}
 	
 	/** */
 	async function emitMacInstaller(saveDirectory: string)
@@ -231,6 +261,7 @@ namespace Cover
 		export const temp = Path.join(cwd, "+");
 		export const bundle = Path.join(cwd, "+bundle");
 		export const tauriDmg = Path.join(Dir.cwd, "src-tauri", "target", "release", "bundle", "dmg");
+		export const lib = Path.join(cwd, "lib");
 		
 		export const bundleWeb = Path.join(bundle, "web");
 		export const bundleMacOS = Path.join(bundle, "macOS");
