@@ -145,15 +145,16 @@ namespace App
 			{
 				this.backgroundManager.addBackground(mediaRecord);
 			}
-			else
+			else (async () =>
 			{
-				this.contentImage = Htx.img(
-					CssClass.captionSceneContentImage,
-					{ src: mediaRecord.getBlobUrl() }
-				);
+				const src = mediaRecord.getBlobUrl();
+				const [width, height] = await RenderUtil.getDimensions(src);
 				
+				this.contentImage = Htx.img(CssClass.captionSceneContentImage, { src });
+				this.contentImage.style.aspectRatio = width + " / " + height;
 				this.contentImageContainer.replaceChildren(this.contentImage);
-			}
+				this.setContentImageSize(15);
+			})();
 		}
 		
 		/** */
