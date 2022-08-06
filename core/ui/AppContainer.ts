@@ -66,5 +66,13 @@ namespace App
 		{
 			return Not.nullable(this.meta.homePost);
 		}
+		
+		/** */
+		async restartFromScratch()
+		{
+			await Database.clear();
+			localStorage.clear();
+			window.location.reload();
+		}
 	}
 }

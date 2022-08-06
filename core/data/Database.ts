@@ -102,15 +102,11 @@ namespace App
 		 * Deletes all databases in the system.
 		 * Only used during debug.
 		 */
-		private static clear()
+		static clear()
 		{
-			if (!DEBUG)
-				return;
-			
-			(async () =>
+			return new Promise<void>(async resolve =>
 			{
 				const dbs = await indexedDB.databases();
-				
 				for (const db of dbs)
 				{
 					if (db.name)
@@ -119,7 +115,9 @@ namespace App
 						console.log("Deleted database: " + db.name);
 					}
 				}
-			})();
+				
+				resolve();
+			});
 		}
 		
 		/** */

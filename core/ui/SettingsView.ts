@@ -45,7 +45,10 @@ namespace App
 							UI.borderRadius.large + " " +
 							UI.borderRadius.large + " 0 0",
 					},
-					Htx.div(...UI.text("Settings", 35, 600)),
+					this.settingsTitle = Htx.div(
+						Htx.on(document.body, "click", ev => this.doSecretClick(ev.target)),
+						...UI.text("Settings", 35, 600)
+					),
 					this.windowContents = Htx.div(
 						"window-contents",
 					),
@@ -91,6 +94,33 @@ namespace App
 		readonly root;
 		readonly windowContents;
 		private readonly colorSchemeViews;
+		private readonly settingsTitle;
+		
+		/** */
+		private doSecretClick(target: EventTarget | null)
+		{
+			if (target instanceof Node)
+			{
+				const clickedSecret = [target, ...Query.ancestors(target)].includes(this.settingsTitle);
+				if (clickedSecret)
+				{
+					this.secretClickCount++;
+					
+					if (this.secretClickCount > 4)
+					{
+						this.secretClickCount = 0;
+						const message = 
+							"Are you sure you want to clear your ENTIRE cache?\n\n" +
+							"This will delete EVERYTHING and there is no going back.";
+						
+						if (confirm(message))
+							AppContainer.of(this).restartFromScratch();
+					}
+				}
+			}
+			else this.secretClickCount = 0;
+		}
+		private secretClickCount = 0;
 		
 		/** */
 		private addSection(options: { label: string, params: Htx.Param[] })
