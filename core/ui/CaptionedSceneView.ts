@@ -1,12 +1,12 @@
 
 /** */
-namespace Turf
+namespace App
 {
 	/** */
-	export class CaptionedBladeView extends BladeView
+	export class CaptionedSceneView extends SceneView
 	{
 		/** */
-		constructor(readonly record = new CaptionedBladeRecord())
+		constructor(readonly record = new CaptionedSceneRecord())
 		{
 			super(record);
 			
@@ -49,7 +49,7 @@ namespace Turf
 				)
 			);
 			
-			this.setBladeButtons(
+			this.setSceneButtons(
 				() => this.handleSelectionChange(),
 				//this.animationButton,
 				this.originButton,
@@ -96,12 +96,12 @@ namespace Turf
 		private weightPicker: ElementPicker | null = null;
 		private originPicker: OriginPicker | null = null;
 		
-		private readonly animationButton = new BladeButtonView("Animation");
-		private readonly originButton = new BladeButtonView("Position");
-		private readonly sizeButton = new BladeButtonView("Size");
-		private readonly weightButton = new BladeButtonView("Bold");
-		private readonly contrastButton = new BladeButtonView("Contrast");
-		private readonly backgroundsButton = new BladeButtonView("Backgrounds");
+		private readonly animationButton = new SceneButtonView("Animation");
+		private readonly originButton = new SceneButtonView("Position");
+		private readonly sizeButton = new SceneButtonView("Size");
+		private readonly weightButton = new SceneButtonView("Bold");
+		private readonly contrastButton = new SceneButtonView("Contrast");
+		private readonly backgroundsButton = new SceneButtonView("Backgrounds");
 		
 		/** */
 		private createToolButtons()
@@ -175,7 +175,7 @@ namespace Turf
 			if (this.originButton.selected)
 			{
 				this.renderOriginConfigurator();
-				this.setBladeConfigurator(null);
+				this.setSceneConfigurator(null);
 			}
 			else this.originPicker?.remove();
 			
@@ -183,7 +183,7 @@ namespace Turf
 			{
 				this.foregroundContainer.style.filter = "blur(3px)";
 				this.foregroundContainer.style.pointerEvents = "none";
-				this.setBladeConfigurator(this.backgroundManager.configuratorElement);
+				this.setSceneConfigurator(this.backgroundManager.configuratorElement);
 			}
 			else
 			{
@@ -192,8 +192,8 @@ namespace Turf
 				this.backgroundManager.configuratorElement.remove();
 			}
 			
-			if (!this.bladeButtons.some(bb => bb.selected))
-				this.setBladeConfigurator(null);
+			if (!this.sceneButtons.some(bb => bb.selected))
+				this.setSceneConfigurator(null);
 		}
 		
 		/** */
@@ -258,7 +258,7 @@ namespace Turf
 			}
 			
 			const slider = new Slider();
-			this.setBladeConfigurator(slider.root);
+			this.setSceneConfigurator(slider.root);
 			
 			const updatePick = () =>
 			{
@@ -368,7 +368,7 @@ namespace Turf
 			}
 			
 			const slider = new Slider();
-			this.setBladeConfigurator(slider.root);
+			this.setSceneConfigurator(slider.root);
 			
 			const updatePick = () =>
 			{
@@ -425,7 +425,7 @@ namespace Turf
 			const slider = new Slider();
 			slider.max = 100;
 			slider.progress = this.record.textContrast;
-			this.setBladeConfigurator(slider.root);
+			this.setSceneConfigurator(slider.root);
 			slider.setProgressChangeFn(() => this.setContrast(slider.progress));
 		}
 		

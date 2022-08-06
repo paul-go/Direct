@@ -1,11 +1,11 @@
 
-namespace Turf
+namespace App
 {
 	/** */
-	export class ProseBladeView extends BladeView
+	export class ProseSceneView extends SceneView
 	{
 		/** */
-		constructor(readonly record = new ProseBladeRecord())
+		constructor(readonly record = new ProseSceneRecord())
 		{
 			super(record);
 			
@@ -54,7 +54,7 @@ namespace Turf
 				When.connected(() => this.updateButtons())
 			);
 			
-			this.setBladeButtons(
+			this.setSceneButtons(
 				() => this.updateButtons(),
 				this.setupButton(this.headingButton, "heading1"),
 				this.setupButton(this.paragraphButton, "heading1"),
@@ -104,37 +104,37 @@ namespace Turf
 		private readonly linkTextBoxContainer;
 		private readonly linkTextBox: TextBox;
 		
-		private readonly headingButton = new BladeButtonView("Heading", {
+		private readonly headingButton = new SceneButtonView("Heading", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly paragraphButton = new BladeButtonView("Paragraph", {
+		private readonly paragraphButton = new SceneButtonView("Paragraph", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly boldButton = new BladeButtonView("Bold", {
+		private readonly boldButton = new SceneButtonView("Bold", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly italicButton = new BladeButtonView("Italic", {
+		private readonly italicButton = new SceneButtonView("Italic", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly linkButton = new BladeButtonView("Link", {
+		private readonly linkButton = new SceneButtonView("Link", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly backgroundButton = new BladeButtonView("Background", {
+		private readonly backgroundButton = new SceneButtonView("Background", {
 			selectable: true,
 			unselectable: true,
 		});
@@ -161,7 +161,7 @@ namespace Turf
 		}
 		
 		/** */
-		private setupButton(button: BladeButtonView, attribute: TrixAttribute)
+		private setupButton(button: SceneButtonView, attribute: TrixAttribute)
 		{
 			button.root.addEventListener("click", ev =>
 			{

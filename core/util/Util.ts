@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export type Constructor<T = any> = 
@@ -146,7 +146,7 @@ namespace Turf
 		/**
 		 * 
 		 */
-		export function generatePatchSlug()
+		export function generatePostSlug()
 		{
 			const date = new Date();
 			return (

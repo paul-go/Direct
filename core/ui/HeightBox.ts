@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	/**
 	 * A class that wraps a <div> that performs a height adjustment

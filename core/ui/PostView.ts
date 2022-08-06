@@ -1,28 +1,28 @@
 
-namespace Turf
+namespace App
 {
 	/** */
-	export class PatchView
+	export class PostView
 	{
 		/**
-		 * Creates a new PatchView instance, which is populated with data
-		 * from the specified PatchRecord. If the PatchRecord argument is
-		 * omitted, this indicates that this PatchView should create it a new, 
+		 * Creates a new PostView instance, which is populated with data
+		 * from the specified PostRecord. If the PostRecord argument is
+		 * omitted, this indicates that this PostView should create it a new, 
 		 * unsaved record.
 		 */
-		constructor(record?: PatchRecord)
+		constructor(record?: PostRecord)
 		{
 			this.record = record || (() =>
 			{
-				const patch = new PatchRecord();
-				patch.slug = Util.generatePatchSlug();
-				return patch;
+				const post = new PostRecord();
+				post.slug = Util.generatePostSlug();
+				return post;
 			})();
 			
 			this.isNewRecord = !record;
 			
 			this.root = Htx.div(
-				"patch-view",
+				"post-view",
 				Htx.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
 				
 				UI.anchorTop(),
@@ -35,21 +35,21 @@ namespace Turf
 					opacity: "1",
 				},
 				minHeight,
-				this.bladesElement = Htx.div(
-					"blades-element",
+				this.scenesElement = Htx.div(
+					"scenes-element",
 					minHeight,
 				),
 				
 				Htx.div(
-					"no-blades-message",
+					"no-scenes-message",
 					UI.anchor(),
 					UI.flexCenter,
-					UI.visibleWhenEmpty(this.bladesElement),
+					UI.visibleWhenEmpty(this.scenesElement),
 					minHeight,
 					{
 						zIndex: "1",
 					},
-					(this.noBladesBox = new HeightBox(this.renderNoBlades())).root,
+					(this.noScenesBox = new HeightBox(this.renderNoScenes())).root,
 				),
 				
 				this.footerElement = Htx.div(
@@ -60,7 +60,7 @@ namespace Turf
 						margin: "auto",
 						padding: "0 20px",
 					},
-					UI.visibleWhenNotEmpty(this.bladesElement),
+					UI.visibleWhenNotEmpty(this.scenesElement),
 					
 					UI.actionButton(
 						"filled",
@@ -91,11 +91,11 @@ namespace Turf
 						top: "0",
 						left: "0",
 						borderBottomRightRadius: UI.borderRadius.large,
-						height: BladeView.headerHeight,
+						height: SceneView.headerHeight,
 						transitionDuration: "0.33s",
 						transitionProperty: "background-color",
 						padding: "25px",
-						// Elevate the chevron so that it goes above the "no blades" message
+						// Elevate the chevron so that it goes above the "no scenes" message
 						zIndex: "1",
 					},
 					UI.clickable,
@@ -116,11 +116,11 @@ namespace Turf
 				),
 			);
 			
-			this.blades = new Controller.Array(this.bladesElement, BladeView);
-			this.blades.insert(...this.record.blades.map(b => BladeView.new(b)));
-			this.blades.observe(() =>
+			this.scenes = new Controller.Array(this.scenesElement, SceneView);
+			this.scenes.insert(...this.record.scenes.map(b => SceneView.new(b)));
+			this.scenes.observe(() =>
 			{
-				this.footerElement.style.display = this.blades.length > 0 ? "block" : "none";
+				this.footerElement.style.display = this.scenes.length > 0 ? "block" : "none";
 				this.save();
 			});
 			
@@ -130,20 +130,20 @@ namespace Turf
 		}
 		
 		readonly root;
-		readonly blades;
+		readonly scenes;
 		private readonly record;
 		private readonly headerScreen;
-		private readonly bladesElement;
+		private readonly scenesElement;
 		private readonly footerElement;
-		private readonly noBladesBox;
+		private readonly noScenesBox;
 		private readonly isNewRecord: boolean;
 		private publishInfoElement;
 		
 		/** */
-		private renderNoBlades()
+		private renderNoScenes()
 		{
 			return Htx.div(
-				"add-first-blade",
+				"add-first-scene",
 				Htx.div(
 					UI.presentational,
 					{
@@ -151,7 +151,7 @@ namespace Turf
 						fontWeight: "600",
 						marginBottom: "30px",
 					},
-					new Text("This patch has no blades."),
+					new Text("This post has no scenes."),
 				),
 				UI.actionButton("filled", 
 					{
@@ -159,13 +159,13 @@ namespace Turf
 					},
 					Htx.on(UI.clickEvt, () =>
 					{
-						const ibv = new InsertBladeView("v");
-						ibv.setCancelCallback(() => this.noBladesBox.back());
-						ibv.setInsertCallback(blade =>
+						const ibv = new InsertSceneView("v");
+						ibv.setCancelCallback(() => this.noScenesBox.back());
+						ibv.setInsertCallback(scene =>
 						{
-							this.bladesElement.append(blade.root);
+							this.scenesElement.append(scene.root);
 						});
-						this.noBladesBox.push(ibv.root);
+						this.noScenesBox.push(ibv.root);
 					}),
 					new Text("Add One"),
 				)
@@ -175,17 +175,17 @@ namespace Turf
 		/** */
 		private save()
 		{
-			this.record.blades = this.blades
+			this.record.scenes = this.scenes
 				.toArray()
 				.map(view => view.record);
 		}
 		
 		/** */
-		setKeepCallback(fn: (patch: PatchRecord) => void)
+		setKeepCallback(fn: (post: PostRecord) => void)
 		{
 			this.keepFn = fn;
 		}
-		private keepFn = (patch: PatchRecord) => {};
+		private keepFn = (post: PostRecord) => {};
 		
 		/** */
 		setBackCallback(fn: () => void)
@@ -208,14 +208,14 @@ namespace Turf
 		{
 			this.save();
 			
-			// If there is no PatchesView sitting behind this PatchView, its because
-			// the application launched directly into a PatchView for editing the
-			// home page, and so we need to insert a new PatchesView.
-			if (Query.find(CssClass.patchesView, AppContainer.of(this).root).length === 0)
+			// If there is no BlogView sitting behind this PostView, its because
+			// the application launched directly into a PostView for editing the
+			// home page, and so we need to insert a new BlogView.
+			if (Query.find(CssClass.blogView, AppContainer.of(this).root).length === 0)
 			{
-				const patchesView = new PatchesView();
+				const blogView = new BlogView();
 				const app = AppContainer.of(this);
-				app.root.prepend(patchesView.root);
+				app.root.prepend(blogView.root);
 				await UI.wait();
 				const s = this.root.style;
 				s.opacity = "0";
@@ -225,7 +225,7 @@ namespace Turf
 			}
 			else
 			{
-				if (this.isNewRecord && this.blades.length > 0)
+				if (this.isNewRecord && this.scenes.length > 0)
 					this.keepFn(this.record);
 				
 				this.backFn();

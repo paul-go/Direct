@@ -1,12 +1,12 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class BackgroundManager
 	{
 		/** */
 		constructor(
-			private readonly record: CaptionedBladeRecord,
+			private readonly record: CaptionedSceneRecord,
 			readonly root: HTMLElement)
 		{
 			let imagesConfigurators: HTMLElement;

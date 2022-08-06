@@ -1,8 +1,8 @@
 
-namespace Turf
+namespace App
 {
 	/**
-	 * Base class for text objects that can render on the CaptionedBlade
+	 * Base class for text objects that can render on the CaptionedScene
 	 */
 	export abstract class CaptionedTextView
 	{

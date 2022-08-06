@@ -1,11 +1,11 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class PublishSetupView
 	{
 		/** */
-		static show(via: Controller.IController, record: PatchRecord)
+		static show(via: Controller.IController, record: PostRecord)
 		{
 			const app = AppContainer.of(via);
 			const view = new PublishSetupView(record, app);
@@ -14,7 +14,7 @@ namespace Turf
 		
 		/** */
 		constructor(
-			record: PatchRecord,
+			record: PostRecord,
 			private readonly app: AppContainer)
 		{
 			this.windowFlipper = createFlipper({

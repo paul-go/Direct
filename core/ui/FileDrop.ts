@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	let cursorX = 0;
 	let cursorY = 0;

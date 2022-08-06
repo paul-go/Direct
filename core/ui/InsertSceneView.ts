@@ -1,13 +1,13 @@
 
-namespace Turf
+namespace App
 {
 	/** */
-	export class InsertBladeView
+	export class InsertSceneView
 	{
 		/** */
 		constructor(orientation: "v" | "h")
 		{
-			const renderButton = (label: string, bladeCtor: new() => BladeView) =>
+			const renderButton = (label: string, sceneCtor: new() => SceneView) =>
 				UI.actionButton("filled",
 					{
 						margin: "10px 5px",
@@ -17,13 +17,13 @@ namespace Turf
 					new Text(label),
 					...UI.click(() =>
 					{
-						const blade = new bladeCtor();
-						this.insertCallback?.(blade);
+						const scene = new sceneCtor();
+						this.insertCallback?.(scene);
 					})
 				);
 			
 			this.root = Htx.div(
-				"insert-blade-view",
+				"insert-scene-view",
 				{
 					display: orientation === "v" ? "block" : "flex",
 					margin: "auto",
@@ -44,20 +44,20 @@ namespace Turf
 					if (!Query.ancestors(ev.target).includes(this.root))
 						this.cancelCallback?.();
 				}),
-				renderButton("+ Captioned", CaptionedBladeView),
-				renderButton("+ Images & Videos", GalleryBladeView),
-				renderButton("+ Prose", ProseBladeView),
+				renderButton("+ Captioned", CaptionedSceneView),
+				renderButton("+ Images & Videos", GallerySceneView),
+				renderButton("+ Prose", ProseSceneView),
 			);
 		}
 		
 		readonly root;
 		
 		/** */
-		setInsertCallback(fn: (blade: BladeView) => void)
+		setInsertCallback(fn: (scene: SceneView) => void)
 		{
 			this.insertCallback = fn;
 		}
-		private insertCallback?: (blade: BladeView) => void;
+		private insertCallback?: (scene: SceneView) => void;
 		
 		/** */
 		setCancelCallback(fn: () => void)

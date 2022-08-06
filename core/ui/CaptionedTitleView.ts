@@ -1,6 +1,6 @@
 /// <reference path="CaptionedTextView.ts" />
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class CaptionedTitleView extends CaptionedTextView

@@ -1,11 +1,11 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class ColorConfigurator
 	{
 		/** */
-		constructor(readonly record: BladeRecord)
+		constructor(readonly record: SceneRecord)
 		{
 			this.root = Htx.div(
 				"color-configurator",
@@ -40,7 +40,7 @@ namespace Turf
 	{
 		/** */
 		constructor(
-			private readonly record: BladeRecord,
+			private readonly record: SceneRecord,
 			private readonly colorIndex: number,
 			color: UI.IColor)
 		{
@@ -77,7 +77,7 @@ namespace Turf
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			
-			Controller.over(this, BladeView).updateBackgroundColor();
+			Controller.over(this, SceneView).updateBackgroundColor();
 		}
 	}
 }

@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class IterableWeakMap<K, V extends object> extends Map<K, V>

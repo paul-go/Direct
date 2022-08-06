@@ -1,8 +1,8 @@
 
-namespace Turf
+namespace App
 {
 	/** */
-	export type PublisherCtor = new(patch: PatchRecord, meta: MetaRecord) => Publisher;
+	export type PublisherCtor = new(post: PostRecord, meta: MetaRecord) => Publisher;
 	
 	/** */
 	export abstract class Publisher
@@ -17,13 +17,13 @@ namespace Turf
 		/**
 		 * 
 		 */
-		static getPublishers(patch: PatchRecord, meta: MetaRecord)
+		static getPublishers(post: PostRecord, meta: MetaRecord)
 		{
 			const publishers: Publisher[] = [];
 			
 			for (const ctor of this.registrations)
 			{
-				const pub = new ctor(patch, meta);
+				const pub = new ctor(post, meta);
 				publishers.push(pub);
 			}
 			
@@ -33,7 +33,7 @@ namespace Turf
 		/**
 		 * Returns the Publisher that is currently set for use.
 		 */
-		static getCurrentPublisher(patch: PatchRecord, meta: MetaRecord)
+		static getCurrentPublisher(post: PostRecord, meta: MetaRecord)
 		{
 			const key = meta.publishMethod;
 			if (!key)
@@ -41,7 +41,7 @@ namespace Turf
 			
 			for (const ctor of this.registrations)
 			{
-				const pub = new ctor(patch, meta);
+				const pub = new ctor(post, meta);
 				if (pub.key === key)
 					return pub;
 			}
@@ -51,7 +51,7 @@ namespace Turf
 		
 		/** */
 		constructor(
-			readonly patch: PatchRecord,
+			readonly post: PostRecord,
 			protected readonly meta: MetaRecord) { }
 		
 		/** */
@@ -137,7 +137,7 @@ namespace Turf
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
 			this.meta.setPublishParam(this.key, paramKey, value);
-			When.connected(this.root, () => Controller.over(this, PatchView).updatePublishInfo());
+			When.connected(this.root, () => Controller.over(this, PostView).updatePublishInfo());
 		}
 		
 		/** */
@@ -150,7 +150,7 @@ namespace Turf
 		async publish()
 		{
 			const files = [
-				...(await Render.getPatchFiles(this.patch, this.meta)),
+				...(await Render.getPostFiles(this.post, this.meta)),
 				...(await Render.getSupportFiles()),
 			];
 			

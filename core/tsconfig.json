@@ -7,6 +7,7 @@
 		"../lib/*.ts",
 		"renderer/Publisher.ts",
 		"ui/PublisherConfigurator.ts",
+		"ui/SceneView.ts",
 		"ui/*.ts",
 		"**/*.ts",
 		"**/*.tsx",

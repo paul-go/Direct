@@ -3,7 +3,7 @@
  * Stores a namespace of functions that handle the functionality
  * that is shared between the renderer and the editor.
  */
-namespace Turf.RenderUtil
+namespace App.RenderUtil
 {
 	/**
 	 * Returns the aspect ratio of the specified image.

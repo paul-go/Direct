@@ -30,7 +30,7 @@ declare namespace Tauri
  * The folder is created if it does not already exist.
  * Only available in debugging mode.
  */
-declare function getExportsFolder(turfName?: string): string;
+declare function getExportsFolder(blogName?: string): string;
 
 declare namespace Electron
 {
@@ -68,15 +68,15 @@ else if (ELECTRON)
 		path: require("path")
 	});
 	
-	g.getExportsFolder = (turfName?: string) =>
+	g.getExportsFolder = (blogName?: string) =>
 	{
-		turfName ||= Moduless.getRunningFunctionName();
+		blogName ||= Moduless.getRunningFunctionName();
 		
 		const path = Electron.path.join(
 			__dirname,
 			"..",
 			ConstS.debugExportsFolderName,
-			turfName);
+			blogName);
 		
 		return path;
 	};

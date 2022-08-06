@@ -4,19 +4,19 @@ namespace Cover
 	/** */
 	export function coverSlider()
 	{
-		Turf.appendCss();
+		App.appendCss();
 		
-		const slider1 = new Turf.Slider();
+		const slider1 = new App.Slider();
 		
-		const slider2 = new Turf.Slider();
+		const slider2 = new App.Slider();
 		slider2.max = 30;
 		slider2.progress = 10;
 		
-		const slider3 = new Turf.Slider();
+		const slider3 = new App.Slider();
 		slider3.max = 1000;
 		slider3.progress = 100;
 		
-		const slider4 = new Turf.Slider();
+		const slider4 = new App.Slider();
 		slider4.max = 10;
 		slider4.progress = 5;
 		
@@ -43,7 +43,7 @@ namespace Cover
 	/** */
 	export async function coverElementPicker()
 	{
-		Turf.appendCss();
+		App.appendCss();
 		
 		let element1: HTMLElement;
 		let element2: HTMLElement;
@@ -61,7 +61,7 @@ namespace Cover
 					height: "3vw",
 					margin: "20px",
 				},
-				Htx.div("inner", Turf.UI.anchor()),
+				Htx.div("inner", App.UI.anchor()),
 			),
 			element2 = Htx.div(
 				"e2",
@@ -71,7 +71,7 @@ namespace Cover
 					height: "50px",
 					margin: "20px auto",
 				},
-				Htx.div("inner", Turf.UI.anchor()),
+				Htx.div("inner", App.UI.anchor()),
 			),
 			element3 = Htx.div(
 				"e3",
@@ -82,16 +82,16 @@ namespace Cover
 					margin: "20px",
 					marginLeft: "100px",
 				},
-				Htx.div("inner", Turf.UI.anchor()),
+				Htx.div("inner", App.UI.anchor()),
 			),
 		);
 		
 		document.body.style.padding = "30px";
 		document.body.append(root);
 		
-		await Turf.UI.wait();
+		await App.UI.wait();
 		
-		const picker = new Turf.ElementPicker(root);
+		const picker = new App.ElementPicker(root);
 		picker.registerElement(element1);
 		picker.registerElement(element2);
 		picker.registerElement(element3);
@@ -100,24 +100,24 @@ namespace Cover
 	/** */
 	export async function coverOriginPicker()
 	{
-		Turf.appendCss();
-		const np = new Turf.OriginPicker();
+		App.appendCss();
+		const np = new App.OriginPicker();
 		document.body.append(np.root);
 	}
 	
 	/** */
 	export async function coverSpinner()
 	{
-		Turf.appendCss();
-		document.body.append(Turf.UI.spinner());
+		App.appendCss();
+		document.body.append(App.UI.spinner());
 	}
 	
 	/** */
 	export async function coverSegmentedButton()
 	{
-		Turf.appendCss();
+		App.appendCss();
 		
-		const sb = new Turf.SegmentedButton();
+		const sb = new App.SegmentedButton();
 		sb.add("First");
 		sb.add("Second");
 		sb.add("Third");
@@ -130,15 +130,15 @@ namespace Cover
 	/** */
 	export async function coverPublishStatusView()
 	{
-		Turf.appendCss();
-		const remover = Turf.PublishStatusView.show("Local");
+		App.appendCss();
+		const remover = App.PublishStatusView.show("Local");
 		setTimeout(remover, 2500);
 	}
 	
 	/** */
 	export async function coverFlipper()
 	{
-		const flipper = Turf.createFlipper({
+		const flipper = App.createFlipper({
 			red: {
 				backgroundColor: "red"
 			},
@@ -211,7 +211,7 @@ namespace Cover
 		s.color = "white";
 		s.backgroundColor = "black";
 		document.body.append("LOREM IPSUM ".repeat(1000));
-		const modal = new Turf.LoadingModal(document.body);
+		const modal = new App.LoadingModal(document.body);
 		
 		setTimeout(() =>
 		{

@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export interface IRenderedFile
@@ -25,7 +25,7 @@ namespace Turf
 			
 			// CSS file
 			{
-				const cssText = Turf.createGeneralCssText();
+				const cssText = App.createGeneralCssText();
 				files.push({
 					data: cssText,
 					mime: MimeType.css,
@@ -94,14 +94,14 @@ namespace Turf
 		}
 		
 		/** */
-		export async function getPatchFiles(patch: PatchRecord, meta: MetaRecord)
+		export async function getPostFiles(post: PostRecord, meta: MetaRecord)
 		{
 			const files: IRenderedFile[] = [];
-			const folderName = patch === meta.homePatch ? "" : patch.slug;
+			const folderName = post === meta.homePost ? "" : post.slug;
 			
 			// HTML file
 			{
-				const storyDiv = Render.createPatchFinal(patch, meta);
+				const storyDiv = Render.createPostFinal(post, meta);
 				const htmlFile = new HtmlFile();
 				const htmlText = htmlFile.emit(storyDiv, folderName ? 1 : 0);
 				
@@ -118,7 +118,7 @@ namespace Turf
 			const records: MediaRecord[] = [];
 			const promises: Promise<ArrayBuffer>[] = [];
 			
-			for (const record of Util.eachDeepRecord(patch))
+			for (const record of Util.eachDeepRecord(post))
 			{
 				if (record instanceof MediaRecord)
 				{
@@ -147,31 +147,31 @@ namespace Turf
 		/**
 		 * 
 		 */
-		export function createPatchPreview(
-			patch: PatchRecord,
+		export function createPostPreview(
+			post: PostRecord,
 			meta: MetaRecord)
 		{
-			return renderPatch(patch, meta, true);
+			return renderPost(post, meta, true);
 		}
 		
 		/**
 		 * 
 		 */
-		export function createPatchFinal(
-			patch: PatchRecord,
+		export function createPostFinal(
+			post: PostRecord,
 			meta: MetaRecord)
 		{
-			return renderPatch(patch, meta, true);
+			return renderPost(post, meta, true);
 		}
 	}
 	
 	/**
 	 * 
 	 */
-	class Bundle<T extends BladeRecord = BladeRecord>
+	class Bundle<T extends SceneRecord = SceneRecord>
 	{
 		constructor(
-			readonly blade: T,
+			readonly scene: T,
 			readonly meta: MetaRecord,
 			readonly isPreview: boolean)
 		{ }
@@ -199,28 +199,28 @@ namespace Turf
 	/**
 	 * 
 	 */
-	function renderPatch(
-		patch: PatchRecord,
+	function renderPost(
+		post: PostRecord,
 		meta: MetaRecord,
 		isPreview: boolean)
 	{
 		return Htx.div(
 			"story",
-			...patch.blades.flatMap(blade => renderBlade(new Bundle(blade, meta, isPreview)))
+			...post.scenes.flatMap(scene => renderScene(new Bundle(scene, meta, isPreview)))
 		);
 	}
 	
 	/**
 	 * 
 	 */
-	function renderBlade(bun: Bundle)
+	function renderScene(bun: Bundle)
 	{
 		const foregroundColor = RenderUtil.resolveForegroundColor(
-			bun.blade.backgroundColorIndex, 
+			bun.scene.backgroundColorIndex, 
 			bun.meta);
 		
 		const backgroundColor = RenderUtil.resolveBackgroundColor(
-			bun.blade.backgroundColorIndex, 
+			bun.scene.backgroundColorIndex, 
 			bun.meta);
 		
 		let snapFooter: HTMLElement | null = null;
@@ -233,25 +233,25 @@ namespace Turf
 					color: UI.color(foregroundColor),
 					backgroundColor: UI.color(backgroundColor),
 					data: {
-						[DataAttributes.transition]: bun.useAnimation(bun.blade.transition)
+						[DataAttributes.transition]: bun.useAnimation(bun.scene.transition)
 					}
 				},
 				...(() =>
 				{
-					if (bun.blade instanceof CaptionedBladeRecord)
-						return renderCaptionedBlade(bun as Bundle<CaptionedBladeRecord>);
+					if (bun.scene instanceof CaptionedSceneRecord)
+						return renderCaptionedScene(bun as Bundle<CaptionedSceneRecord>);
 					
-					if (bun.blade instanceof ProseBladeRecord)
+					if (bun.scene instanceof ProseSceneRecord)
 					{
 						addSnapFooter();
-						return renderProseBlade(bun as Bundle<ProseBladeRecord>);
+						return renderProseScene(bun as Bundle<ProseSceneRecord>);
 					}
 					
-					if (bun.blade instanceof GalleryBladeRecord)
-						return renderGalleryBlade(bun as Bundle<GalleryBladeRecord>);
+					if (bun.scene instanceof GallerySceneRecord)
+						return renderGalleryScene(bun as Bundle<GallerySceneRecord>);
 					
-					if (bun.blade instanceof VideoBladeRecord)
-						return renderVideoBlade(bun as Bundle<VideoBladeRecord>);
+					if (bun.scene instanceof VideoSceneRecord)
+						return renderVideoScene(bun as Bundle<VideoSceneRecord>);
 					
 					return [];
 				})()
@@ -263,15 +263,15 @@ namespace Turf
 	/**
 	 * 
 	 */
-	function renderCaptionedBlade(bun: Bundle<CaptionedBladeRecord>)
+	function renderCaptionedScene(bun: Bundle<CaptionedSceneRecord>)
 	{
-		const blade = bun.blade;
+		const scene = bun.scene;
 		const out: Htx.Param[] = [
 			CssClass.captionScene
 		];
 		
 		// Background
-		out.push(...blade.backgrounds.map(bg =>
+		out.push(...scene.backgrounds.map(bg =>
 		{
 			if (bg.media)
 			{
@@ -302,35 +302,35 @@ namespace Turf
 		}).filter(b => !!b));
 		
 		// Foreground
-		if (blade.titles.length > 0 || blade.description.length > 0)
+		if (scene.titles.length > 0 || scene.description.length > 0)
 		{
 			const fg = Htx.div(
 				CssClass.captionSceneForeground,
-				blade.origin,
+				scene.origin,
 				{
 					data: {
-						[DataAttributes.transition]: bun.useAnimation(blade.effect)
+						[DataAttributes.transition]: bun.useAnimation(scene.effect)
 					},
 				},
 			);
 			
 			let textContainer: HTMLElement = fg;
 			
-			if (blade.textContrast)
+			if (scene.textContrast)
 			{
-				textContainer = RenderUtil.setContrast(Htx.div(), blade.textContrast);
+				textContainer = RenderUtil.setContrast(Htx.div(), scene.textContrast);
 				fg.append(textContainer);
 			}
 			
-			if (blade.contentImage)
+			if (scene.contentImage)
 			{
 				Htx.img(
 					CssClass.captionSceneContentImage,
-					{ src: bun.getMediaUrl(blade.contentImage) }
+					{ src: bun.getMediaUrl(scene.contentImage) }
 				);
 			}
 			
-			if (blade.titles.length > 0)
+			if (scene.titles.length > 0)
 			{
 				const h2 = Htx.h2();
 				
@@ -340,19 +340,19 @@ namespace Turf
 					new Text(title.text)
 				];
 				
-				if (blade.titles.length === 1)
-					Htx.from(h2)(...render(blade.titles[0]));
+				if (scene.titles.length === 1)
+					Htx.from(h2)(...render(scene.titles[0]));
 				
-				else for (const title of blade.titles)
+				else for (const title of scene.titles)
 					h2.append(Htx.div(...render(title)));
 				
 				textContainer.append(h2);
 			}
 			
-			if (blade.description.length > 0)
+			if (scene.description.length > 0)
 			{
-				textContainer.style.fontSize = UI.vsize(blade.descriptionSize);
-				const paragraphs = convertDescriptionToParagraphs(blade);
+				textContainer.style.fontSize = UI.vsize(scene.descriptionSize);
+				const paragraphs = convertDescriptionToParagraphs(scene);
 				textContainer.append(...paragraphs);
 			}
 			
@@ -363,13 +363,13 @@ namespace Turf
 	}
 	
 	/** */
-	function convertDescriptionToParagraphs(blade: CaptionedBladeRecord)
+	function convertDescriptionToParagraphs(scene: CaptionedSceneRecord)
 	{
 		interface IRegion { text: string, bold: boolean; href: string }
 		const regions: IRegion[] = [];
 		const empty: IRegion = { text: "", bold: false, href: "" };
 		const shim = Htx.div();
-		shim.innerHTML = blade.description;
+		shim.innerHTML = scene.description;
 		
 		const recurse = (e: Element, bold: boolean, href: string) =>
 		{
@@ -461,7 +461,7 @@ namespace Turf
 		htmlParts.push("</p>");
 		
 		const container = Htx.div({
-			fontSize: UI.vsize(blade.descriptionSize)
+			fontSize: UI.vsize(scene.descriptionSize)
 		});
 		
 		container.innerHTML = htmlParts.join("");
@@ -472,11 +472,11 @@ namespace Turf
 	/**
 	 * 
 	 */
-	function renderGalleryBlade(bun: Bundle<GalleryBladeRecord>)
+	function renderGalleryScene(bun: Bundle<GallerySceneRecord>)
 	{
 		return [
 			CssClass.galleryScene,
-			...bun.blade.frames.map(frame =>
+			...bun.scene.frames.map(frame =>
 			{
 				if (!frame.media)
 					return null;
@@ -521,16 +521,16 @@ namespace Turf
 	/**
 	 * 
 	 */
-	function renderProseBlade(bun: Bundle<ProseBladeRecord>)
+	function renderProseScene(bun: Bundle<ProseSceneRecord>)
 	{
-		if (!bun.blade.content)
+		if (!bun.scene.content)
 			return [];
 		
 		return [
 			CssClass.proseScene,
 			Htx.div(
 				CssClass.proseSceneForeground,
-				...renderProseDocument(bun.blade.content)
+				...renderProseDocument(bun.scene.content)
 			)
 		];
 	}
@@ -622,20 +622,20 @@ namespace Turf
 	/**
 	 * 
 	 */
-	function renderVideoBlade(bun: Bundle<VideoBladeRecord>)
+	function renderVideoScene(bun: Bundle<VideoSceneRecord>)
 	{
-		const blade = bun.blade;
-		const media = blade.media;
+		const scene = bun.scene;
+		const media = scene.media;
 		if (!media)
 			return [];
 		
 		const params: Htx.Param[] = [CssClass.videoScene];
 		
 		const src = bun.getMediaUrl(media);
-		const videoTag = RenderUtil.createVideo(src, media.type, blade.size);
+		const videoTag = RenderUtil.createVideo(src, media.type, scene.size);
 		params.push(videoTag);
 		
-		if (blade.size === "contain")
+		if (scene.size === "contain")
 		{
 			const videoFillerTag = RenderUtil.createVideoFiller(videoTag);
 			params.push(videoFillerTag);

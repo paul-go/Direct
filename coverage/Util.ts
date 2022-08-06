@@ -10,8 +10,8 @@ namespace Cover
 			sampleFileName);
 		
 		const buffer =  Electron.fs.readFileSync(path);
-		const media = new Turf.MediaRecord();
-		const type = Turf.MimeType.fromFileName(path);
+		const media = new App.MediaRecord();
+		const type = App.MimeType.fromFileName(path);
 		media.blob = new Blob([buffer], { type });
 		media.name = path.split("/").slice(-1)[0];
 		media.type = type;

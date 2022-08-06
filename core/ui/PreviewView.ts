@@ -1,11 +1,11 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class PreviewView
 	{
 		/** */
-		constructor(patch: PatchRecord, meta: MetaRecord)
+		constructor(post: PostRecord, meta: MetaRecord)
 		{
 			this.root = Htx.div(
 				"preview-view",
@@ -33,7 +33,7 @@ namespace Turf
 					},
 					When.connected(() =>
 					{
-						const renderRoot = Render.createPatchPreview(patch, meta);
+						const renderRoot = Render.createPostPreview(post, meta);
 						this.previewRoot.replaceChildren(renderRoot);
 						new Player.Story(renderRoot);
 					})

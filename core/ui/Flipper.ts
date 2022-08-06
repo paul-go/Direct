@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export type FlipFunctions<T> =

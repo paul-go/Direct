@@ -1,6 +1,6 @@
 /// <reference path="Database.ts" />
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class MetaRecord extends Record
@@ -10,9 +10,9 @@ namespace Turf
 		htmlHeader = "";
 		htmlFooter = "";
 		
-		homePatch = Database.reference(PatchRecord);
+		homePost = Database.reference(PostRecord);
 		
-		/** Stores the method of publishing used in this Turf. */
+		/** Stores the method of publishing used in this App. */
 		publishMethod = "";
 		
 		/**
@@ -60,7 +60,7 @@ namespace Turf
 	}
 	
 	/** */
-	export class PatchRecord extends Record
+	export class PostRecord extends Record
 	{
 		title = "";
 		description = "";
@@ -70,18 +70,18 @@ namespace Turf
 		draft = true;
 		dateCreated = Date.now();
 		datePublished = 0;
-		blades = Database.array(BladeRecord);
+		scenes = Database.array(SceneRecord);
 	}
 	
 	/** */
-	export abstract class BladeRecord extends Record
+	export abstract class SceneRecord extends Record
 	{
 		transition = Transitions.slide.name;
 		backgroundColorIndex = 0;
 	}
 	
 	/** */
-	export class CaptionedBladeRecord extends BladeRecord
+	export class CaptionedSceneRecord extends SceneRecord
 	{
 		textContrast = 50;
 		effect = Effects.none.name;
@@ -114,19 +114,19 @@ namespace Turf
 	}
 	
 	/** */
-	export class GalleryBladeRecord extends BladeRecord
+	export class GallerySceneRecord extends SceneRecord
 	{
 		frames = Database.array(FrameRecord);
 	}
 	
 	/** */
-	export class ProseBladeRecord extends BladeRecord
+	export class ProseSceneRecord extends SceneRecord
 	{
 		content: ITrixSerializedObject | null = null;
 	}
 	
 	/** */
-	export class VideoBladeRecord extends BladeRecord
+	export class VideoSceneRecord extends SceneRecord
 	{
 		size: SizeMethod = "cover";
 		media = Database.reference(MediaRecord);

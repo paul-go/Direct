@@ -1,8 +1,8 @@
 
-namespace Turf
+namespace App
 {
 	/** */
-	export interface IBladeButtonViewOptions
+	export interface ISceneButtonViewOptions
 	{
 		selectable?: boolean;
 		unselectable?: boolean;
@@ -10,10 +10,10 @@ namespace Turf
 	}
 	
 	/** */
-	export class BladeButtonView
+	export class SceneButtonView
 	{
 		/** */
-		constructor(text: string, options?: IBladeButtonViewOptions)
+		constructor(text: string, options?: ISceneButtonViewOptions)
 		{
 			this.isSelectable = options?.selectable ?? true;
 			this.isUnselectable = options?.unselectable ?? true;
@@ -100,7 +100,7 @@ namespace Turf
 			
 			const wasSelected = this._selected;
 			const siblings = Query.siblings(this.root);
-			const siblingButtons = Controller.map(siblings, BladeButtonView);
+			const siblingButtons = Controller.map(siblings, SceneButtonView);
 			siblingButtons.map(button => button._selected = false);
 			this._selected = value;
 			

@@ -1,12 +1,12 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class ForegroundView
 	{
 		/** */
 		constructor(
-			private readonly record: BladeRecord,
+			private readonly record: SceneRecord,
 			...params: Htx.Param[])
 		{
 			this.root = Htx.div(

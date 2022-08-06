@@ -1,28 +1,28 @@
 
-namespace Turf
+namespace App
 {
 	/** */
-	export class PatchesView
+	export class BlogView
 	{
 		/** */
 		constructor()
 		{
 			this.root = Htx.div(
-				CssClass.patchesView,
+				CssClass.blogView,
 				this.headerElement = this.renderHeader(),
-				this.patchesList = Htx.div(
-					"patches-list",
-					...UI.spaceFor(() => this.renderHomePatchButton()),
-					this.addPatchButton = this.renderAddPatchButton(),
-					When.connected(() => this.populatePatches())
+				this.postList = Htx.div(
+					"post-list",
+					...UI.spaceFor(() => this.renderHomePostButton()),
+					this.addPostButton = this.renderAddPostButton(),
+					When.connected(() => this.populatePosts())
 				)
 			);
 		}
 		
 		readonly root;
 		private readonly headerElement;
-		private readonly addPatchButton;
-		private readonly patchesList;
+		private readonly addPostButton;
+		private readonly postList;
 		
 		/** */
 		private renderHeader()
@@ -54,15 +54,15 @@ namespace Turf
 		}
 		
 		/** */
-		private renderHomePatchButton()
+		private renderHomePostButton()
 		{
-			const homePatch = AppContainer.of(this).homePatch;
+			const homePost = AppContainer.of(this).homePost;
 			
 			return this.renderTile([
 				{
 					backgroundImage: "linear-gradient(45deg, #222, black)",
 				},
-				homePatch.datePublished > 0 ? null : Htx.div(
+				homePost.datePublished > 0 ? null : Htx.div(
 					UI.anchorTop(15),
 					{
 						width: "max-content",
@@ -77,11 +77,11 @@ namespace Turf
 					new Text("Draft"),
 				),
 				new Text("Home"),
-			], homePatch);
+			], homePost);
 		}
 		
 		/** */
-		private renderAddPatchButton()
+		private renderAddPostButton()
 		{
 			return this.renderTile([
 				{
@@ -98,38 +98,38 @@ namespace Turf
 						},
 					),
 					Htx.div(
-						...UI.text("Add Patch", "2.5vw", 600),
+						...UI.text("Add Post", "2.5vw", 600),
 					),
 				),
 			]);
 		}
 		
 		/** */
-		private async populatePatches()
+		private async populatePosts()
 		{
 			const app = AppContainer.of(this);
 			const db = app.database;
 			
-			for await (const patch of db.each(PatchRecord, "peek"))
+			for await (const post of db.each(PostRecord, "peek"))
 			{
-				if (patch === app.homePatch)
+				if (post === app.homePost)
 					continue;
 				
-				const tile = this.renderPatchTile(patch);
-				this.patchesList.append(tile);
+				const tile = this.renderPostTile(post);
+				this.postList.append(tile);
 			}
 		}
 		
 		/** */
-		private renderPatchTile(patch: PatchRecord)
+		private renderPostTile(post: PostRecord)
 		{
-			const date = new Date(patch.dateCreated);
+			const date = new Date(post.dateCreated);
 			
 			const params: Htx.Param[] = [
 				{
 					backgroundImage: "linear-gradient(45deg, #222, black)",
 				},
-				patch.datePublished > 0 ? null : Htx.div(
+				post.datePublished > 0 ? null : Htx.div(
 					UI.anchorTop(15),
 					{
 						width: "max-content",
@@ -148,19 +148,19 @@ namespace Turf
 				new Text(date.toLocaleTimeString()),
 			];
 			
-			return this.renderTile(params, patch);
+			return this.renderTile(params, post);
 		}
 		
 		/** */
 		private renderTile(
 			previewDisplayParams: Htx.Param[],
-			patch?: PatchRecord)
+			post?: PostRecord)
 		{
 			let previewTransformable: HTMLElement;
 			let previewDisplay: HTMLElement;
 			
 			return Htx.div(
-				"patch-preview",
+				"post-preview",
 				UI.clickable,
 				{
 					display: "inline-block",
@@ -197,7 +197,7 @@ namespace Turf
 					),
 					Htx.on(UI.clickEvt, () =>
 					{
-						this.animateTile(previewTransformable, previewDisplay, patch);
+						this.animateTile(previewTransformable, previewDisplay, post);
 					})
 				),
 			)
@@ -207,9 +207,9 @@ namespace Turf
 		private animateTile(
 			transformable: HTMLElement,
 			previewDisplay: HTMLElement,
-			patch?: PatchRecord)
+			post?: PostRecord)
 		{
-			const patchView = new PatchView(patch);
+			const postView = new PostView(post);
 			const parent = transformable.parentElement!;
 			parent.style.zIndex = "2";
 			
@@ -230,9 +230,9 @@ namespace Turf
 			{
 				this.headerElement.style.transform = "translateY(-150%)";
 				
-				patchView.root.classList.add(CssClass.patchViewTransition);
+				postView.root.classList.add(CssClass.postViewTransition);
 				transformable.style.height = (window.innerWidth / 3) + "px";
-				transformable.append(patchView.root);
+				transformable.append(postView.root);
 				
 				await new Promise<void>(r => setTimeout(r));
 				
@@ -244,31 +244,31 @@ namespace Turf
 				
 				await new Promise<void>(r => transformable.addEventListener("transitionend", () => r()));
 				
-				AppContainer.of(this).root.append(patchView.root);
-				patchView.root.classList.remove(CssClass.patchViewTransition);
-				this.patchesList.style.display = "none";
+				AppContainer.of(this).root.append(postView.root);
+				postView.root.classList.remove(CssClass.postViewTransition);
+				this.postList.style.display = "none";
 			});
 			
 			let doingKeep = false;
 			
-			patchView.setKeepCallback(patch =>
+			postView.setKeepCallback(post =>
 			{
 				doingKeep = true;
-				this.addPatchButton.replaceWith(
-					this.renderAddPatchButton(),
-					this.renderPatchTile(patch));
+				this.addPostButton.replaceWith(
+					this.renderAddPostButton(),
+					this.renderPostTile(post));
 			});
 			
-			patchView.setBackCallback(() =>
+			postView.setBackCallback(() =>
 			{
 				UI.lockBody(async () =>
 				{
 					this.headerElement.style.removeProperty("transform");
-					this.patchesList.style.display = "block";
+					this.postList.style.display = "block";
 					
 					if (doingKeep)
 					{
-						const s = patchView.root.style;
+						const s = postView.root.style;
 						s.transitionDuration = "0";
 						await UI.wait();
 						s.opacity = "1";
@@ -278,8 +278,8 @@ namespace Turf
 						await UI.wait();
 						s.transform = "scale(0.3333)";
 						s.opacity = "0";
-						await UI.waitTransitionEnd(patchView.root);
-						patchView.root.remove();
+						await UI.waitTransitionEnd(postView.root);
+						postView.root.remove();
 					}
 					else
 					{
@@ -288,8 +288,8 @@ namespace Turf
 						
 						window.scroll(0, scrollY);
 						
-						transformable.append(patchView.root);
-						patchView.root.classList.add(CssClass.patchViewTransition);
+						transformable.append(postView.root);
+						postView.root.classList.add(CssClass.postViewTransition);
 						transformable.style.transitionDuration = transitionDuration;
 						
 						await UI.wait();
@@ -302,7 +302,7 @@ namespace Turf
 						
 						transformable.style.removeProperty("z-index");
 						parent.style.removeProperty("z-index");
-						patchView.root.remove();
+						postView.root.remove();
 					}
 				});
 			});

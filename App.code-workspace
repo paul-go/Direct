@@ -26,7 +26,7 @@
 	"launch": {
 		"configurations": [
 			{
-				"name": "Debug Turf Application",
+				"name": "Debug Application",
 				"type": "chrome",
 				"request": "launch",
 				"cwd": "${workspaceRoot}",
@@ -84,7 +84,7 @@
 		],
 		"tasks": [
 			{
-				"label": "Compile Turf",
+				"label": "Compile Application",
 				"type": "shell",
 				"command": "tsc",
 				"args": [

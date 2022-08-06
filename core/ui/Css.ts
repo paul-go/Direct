@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export function appendCss()
@@ -287,7 +287,7 @@ namespace Turf
 			rule("." + CaptionedButtonClass.squareFilled, {
 				"background-color": "black",
 			}),
-			rule("." + CssClass.patchViewTransition, {
+			rule("." + CssClass.postViewTransition, {
 				"transform-origin": "0 0 ",
 				"transform": "scale(0.33333)",
 				"width": "300%",

@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export interface IStartOptions
@@ -30,15 +30,15 @@ namespace Turf
 		// Do the database initialization stuff while we're loading the trix editor,
 		// to improve load time where possible.
 		await Promise.all([
-			Turf.Util.include("trix.js"),
+			App.Util.include("trix.js"),
 			new Promise<void>(async r =>
 			{
 				if (DEBUG && options?.clear)
-					await Turf.Database.delete(dbName);
+					await App.Database.delete(dbName);
 				
 				const database = await createDatabase(dbName);
 				
-				Turf.appendCss();
+				App.appendCss();
 				const container = options?.container ?? document.body;
 				app = await AppContainer.new(container, database);
 				r();
@@ -47,7 +47,7 @@ namespace Turf
 		
 		if (options?.shell !== true)
 		{
-			const view = new Turf.PatchView(app.homePatch);
+			const view = new App.PostView(app.homePost);
 			app.root.append(view.root);
 		}
 		
@@ -57,16 +57,16 @@ namespace Turf
 	/** */
 	export function createDatabase(name: string)
 	{
-		return Turf.Database.new(name,
-			{ ctor: Turf.MetaRecord, stable: 1, root: true },
-			{ ctor: Turf.PatchRecord, stable: 2, root: true },
-			{ ctor: Turf.CaptionedBladeRecord, stable: 3 },
-			{ ctor: Turf.ProseBladeRecord, stable: 4 },
-			{ ctor: Turf.VideoBladeRecord, stable: 5 },
-			{ ctor: Turf.GalleryBladeRecord, stable: 6 },
-			{ ctor: Turf.FrameRecord, stable: 7 },
-			{ ctor: Turf.MediaRecord, stable: 8 },
-			{ ctor: Turf.BackgroundRecord, stable: 9 },
+		return App.Database.new(name,
+			{ ctor: App.MetaRecord, stable: 1, root: true },
+			{ ctor: App.PostRecord, stable: 2, root: true },
+			{ ctor: App.CaptionedSceneRecord, stable: 3 },
+			{ ctor: App.ProseSceneRecord, stable: 4 },
+			{ ctor: App.VideoSceneRecord, stable: 5 },
+			{ ctor: App.GallerySceneRecord, stable: 6 },
+			{ ctor: App.FrameRecord, stable: 7 },
+			{ ctor: App.MediaRecord, stable: 8 },
+			{ ctor: App.BackgroundRecord, stable: 9 },
 		);
 	}
 	

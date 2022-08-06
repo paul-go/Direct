@@ -1,38 +1,38 @@
 
-namespace Turf
+namespace App
 {
 	const headerPadding = "25px";
 	
 	/** */
-	export abstract class BladeView
+	export abstract class SceneView
 	{
 		static readonly headerHeight = "100px";
 		
 		/** */
-		static new(record: BladeRecord)
+		static new(record: SceneRecord)
 		{
-			if (record instanceof CaptionedBladeRecord)
-				return new CaptionedBladeView(record);
+			if (record instanceof CaptionedSceneRecord)
+				return new CaptionedSceneView(record);
 			
-			if (record instanceof GalleryBladeRecord)
-				return new GalleryBladeView(record);
+			if (record instanceof GallerySceneRecord)
+				return new GallerySceneView(record);
 			
-			if (record instanceof ProseBladeRecord)
-				return new ProseBladeView(record);
+			if (record instanceof ProseSceneRecord)
+				return new ProseSceneView(record);
 			
 			throw "Unknown record type.";
 		}
 		
 		/** */
-		constructor(readonly record: BladeRecord)
+		constructor(readonly record: SceneRecord)
 		{
 			this.root = Htx.div(
-				"blade-view",
+				"scene-view",
 				{
 					backgroundColor: UI.darkGrayBackground
 				},
 				
-				// Hide the transition configurator for the first blade view
+				// Hide the transition configurator for the first scene view
 				Htx.css(":first-of-type .transition-configurator", { visibility: "hidden" }),
 				
 				// 
@@ -40,7 +40,7 @@ namespace Turf
 				
 				// Controls header
 				Htx.div(
-					"blade-header",
+					"scene-header",
 					(this.headerBox = new HeightBox(this.renderDefaultHeader())).root,
 					...UI.dripper(new Text("Add Here"))
 				),
@@ -121,7 +121,7 @@ namespace Turf
 				"default-header",
 				{
 					display: "flex",
-					height: BladeView.headerHeight,
+					height: SceneView.headerHeight,
 					paddingLeft: headerPadding,
 					paddingRight: headerPadding,
 				},
@@ -144,7 +144,7 @@ namespace Turf
 				Htx.div(
 					UI.flexVCenter,
 					UI.plusButton(
-						Htx.on(UI.clickEvt, () => this.renderInsertBlade(this.headerBox, "beforebegin")),
+						Htx.on(UI.clickEvt, () => this.renderInsertScene(this.headerBox, "beforebegin")),
 					),
 				)
 			);
@@ -163,7 +163,7 @@ namespace Turf
 				UI.plusButton(
 					Htx.on(UI.clickEvt, () => 
 					{
-						const view = this.renderInsertBlade(this.footerBox, "afterend");
+						const view = this.renderInsertScene(this.footerBox, "afterend");
 						Htx.from(view.root)({ marginBottom: "100px" });
 					}),
 				)
@@ -171,12 +171,12 @@ namespace Turf
 		}
 		
 		/** */
-		private renderInsertBlade(box: HeightBox, where: InsertPosition)
+		private renderInsertScene(box: HeightBox, where: InsertPosition)
 		{
-			const ibv = new InsertBladeView("h");
-			ibv.setInsertCallback(blade =>
+			const ibv = new InsertSceneView("h");
+			ibv.setInsertCallback(scene =>
 			{
-				this.root.insertAdjacentElement(where, blade.root);
+				this.root.insertAdjacentElement(where, scene.root);
 				box.back();
 			});
 			ibv.setCancelCallback(() => box.back());
@@ -206,7 +206,7 @@ namespace Turf
 		}
 		
 		/**
-		 * Creates a tool button for the toolbar that renders on top of the blade.
+		 * Creates a tool button for the toolbar that renders on top of the scene.
 		 * If the label is prefixed with +, this is converted into a UI plus button.
 		 */
 		protected createToolButton(label: string, click: () => void)
@@ -230,7 +230,7 @@ namespace Turf
 				...UI.click(ev =>
 				{
 					ev.preventDefault();
-					this.deselectBladeButtons();
+					this.deselectSceneButtons();
 					click();
 				}),
 				new Text(label)
@@ -238,36 +238,36 @@ namespace Turf
 		}
 		
 		/** */
-		protected setBladeButtons(
+		protected setSceneButtons(
 			changedFn: () => void,
-			...bladeButtons: BladeButtonView[])
+			...sceneButtons: SceneButtonView[])
 		{
-			this._bladeButtons = bladeButtons;
-			this.bladeButtonsSelectedChangedFn = changedFn;
+			this._sceneButtons = sceneButtons;
+			this.sceneButtonsSelectedChangedFn = changedFn;
 			
-			for (const bb of bladeButtons)
+			for (const bb of sceneButtons)
 			{
 				this.configuratorButtonsContainer.append(bb.root);
 				bb.setSelectedChangedFn(changedFn);
 			}	
 			
 			this.configuratorButtonsContainer.append(
-				...bladeButtons.map(bb => bb.root),
+				...sceneButtons.map(bb => bb.root),
 				this.moreButton.root
 			);
 		}
 		
-		private bladeButtonsSelectedChangedFn = () => {};
+		private sceneButtonsSelectedChangedFn = () => {};
 		
 		/**
-		 * Deselects all blade buttons, and hides any displayed configurators,
+		 * Deselects all scene buttons, and hides any displayed configurators,
 		 * and runs the provided selected changed function.
 		 */
-		protected deselectBladeButtons()
+		protected deselectSceneButtons()
 		{
 			let changed = false;
 			
-			for (const bb of this.bladeButtons)
+			for (const bb of this.sceneButtons)
 			{
 				if (bb.selected)
 					changed = true;
@@ -277,24 +277,24 @@ namespace Turf
 			
 			if (changed)
 			{
-				this.setBladeConfigurator(null);
-				this.bladeButtonsSelectedChangedFn();
+				this.setSceneConfigurator(null);
+				this.sceneButtonsSelectedChangedFn();
 			}
 		}
 		
 		/** */
-		get bladeButtons(): readonly BladeButtonView[]
+		get sceneButtons(): readonly SceneButtonView[]
 		{
-			return this._bladeButtons;
+			return this._sceneButtons;
 		}
-		private _bladeButtons: BladeButtonView[] = [];
+		private _sceneButtons: SceneButtonView[] = [];
 		
-		private readonly moreButton = new BladeButtonView("•••", {
+		private readonly moreButton = new SceneButtonView("•••", {
 			selectable: false,
 		});
 		
 		/** */
-		protected setBladeConfigurator(e: HTMLElement | null)
+		protected setSceneConfigurator(e: HTMLElement | null)
 		{
 			this.configuratorContainer.replace(e);
 		}

@@ -1,13 +1,13 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class S3Publisher extends Publisher
 	{
 		/** */
-		constructor(patch: PatchRecord, meta: MetaRecord)
+		constructor(post: PostRecord, meta: MetaRecord)
 		{
-			super(patch, meta);
+			super(post, meta);
 			
 			this.root = Htx.div(
 				"s3-publisher",

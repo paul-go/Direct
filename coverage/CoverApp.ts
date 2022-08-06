@@ -7,6 +7,6 @@ namespace Cover
 	 */
 	export async function coverApp()
 	{
-		await Turf.createApp();
+		await App.createApp();
 	}
 }

@@ -6,21 +6,21 @@ namespace Cover
 	{
 		const [db1, dbName] = await setup();
 		
-		const patch = new Turf.PatchRecord();
-		const blade1 = new Turf.CaptionedBladeRecord();
-		const blade2 = new Turf.ProseBladeRecord();
-		patch.blades.push(blade1, blade2);
-		await db1.save(patch, blade1, blade2);
+		const post = new App.PostRecord();
+		const scene1 = new App.CaptionedSceneRecord();
+		const scene2 = new App.ProseSceneRecord();
+		post.scenes.push(scene1, scene2);
+		await db1.save(post, scene1, scene2);
 		
-		const db2 = await Turf.createDatabase(dbName);
-		const patchOut = await db2.get<Turf.PatchRecord>(patch.id);
-		if (!patchOut)
+		const db2 = await App.createDatabase(dbName);
+		const postOut = await db2.get<App.PostRecord>(post.id);
+		if (!postOut)
 			return () => "Fail";
 		
 		return [
-			() => patchOut.blades.length === 2,
-			() => patchOut.blades[0] instanceof Turf.CaptionedBladeRecord,
-			() => patchOut.blades[1] instanceof Turf.ProseBladeRecord,
+			() => postOut.scenes.length === 2,
+			() => postOut.scenes[0] instanceof App.CaptionedSceneRecord,
+			() => postOut.scenes[1] instanceof App.ProseSceneRecord,
 		];
 	}
 	
@@ -29,12 +29,12 @@ namespace Cover
 	{
 		const [db1, dbName] = await setup();
 		
-		const media = new Turf.MediaRecord();
+		const media = new App.MediaRecord();
 		media.name = "media.jpg";
-		media.type = Turf.MimeType.jpg;
+		media.type = App.MimeType.jpg;
 		media.blob = new Blob([new Uint8Array([1, 2])]);
 		
-		const bg = new Turf.BackgroundRecord();
+		const bg = new App.BackgroundRecord();
 		bg.size = 10;
 		bg.position = [5, 6];
 		bg.zoom = 1;
@@ -42,8 +42,8 @@ namespace Cover
 		
 		await db1.save(media, bg);
 		
-		const db2 = await Turf.createDatabase(dbName);
-		const bgOut = await db2.get<Turf.BackgroundRecord>(bg.id);
+		const db2 = await App.createDatabase(dbName);
+		const bgOut = await db2.get<App.BackgroundRecord>(bg.id);
 		if (!bgOut)
 			return () => "Fail";
 		
@@ -58,14 +58,14 @@ namespace Cover
 	{
 		const [db] = await setup();
 		
-		const mo = new Turf.MediaRecord();
+		const mo = new App.MediaRecord();
 		const array = new Uint8Array([0, 1, 2, 3]);
 		const blob = new Blob([array]);
 		mo.blob = blob;
 		await db.save(mo);
 		
-		const mout1 = await db.get<Turf.MediaRecord>(mo.id);
-		const mout2 = await db.get<Turf.MediaRecord>(mo.id);
+		const mout1 = await db.get<App.MediaRecord>(mo.id);
+		const mout2 = await db.get<App.MediaRecord>(mo.id);
 		
 		return [
 			() => mo === mout1,
@@ -78,19 +78,19 @@ namespace Cover
 	{
 		const [db1, dbName] = await setup();
 		
-		const frame1 = new Turf.FrameRecord();
-		const gallery = new Turf.GalleryBladeRecord();
+		const frame1 = new App.FrameRecord();
+		const gallery = new App.GallerySceneRecord();
 		gallery.frames.push(frame1);
 		
 		await db1.save(gallery);
 		
-		const frame2 = new Turf.FrameRecord();
+		const frame2 = new App.FrameRecord();
 		gallery.frames = [frame2];
 		
 		await db1.save(gallery);
 		
-		const db2 = await Turf.createDatabase(dbName);
-		const galleryOut = await db2.get<Turf.GalleryBladeRecord>(gallery.id);
+		const db2 = await App.createDatabase(dbName);
+		const galleryOut = await db2.get<App.GallerySceneRecord>(gallery.id);
 		
 		if (!galleryOut)
 			return () => !"Fail";
@@ -110,23 +110,23 @@ namespace Cover
 	{
 		const [db1, dbName] = await setup();
 		
-		const media = new Turf.MediaRecord();
+		const media = new App.MediaRecord();
 		
-		const frame1 = new Turf.FrameRecord();
+		const frame1 = new App.FrameRecord();
 		frame1.captionLine1 = "Frame1";
 		
-		const frame2 = new Turf.FrameRecord();
+		const frame2 = new App.FrameRecord();
 		frame2.captionLine1 = "Frame2";
 		
-		const frame3 = new Turf.FrameRecord();
+		const frame3 = new App.FrameRecord();
 		frame3.captionLine1 = "Frame3";
 		
 		await db1.save(media, frame1, frame2, frame3);
 		
-		const db2 = await Turf.createDatabase(dbName);
-		const frames: Turf.FrameRecord[] = [];
+		const db2 = await App.createDatabase(dbName);
+		const frames: App.FrameRecord[] = [];
 		
-		for await (const record of db2.each(Turf.FrameRecord, "peek"))
+		for await (const record of db2.each(App.FrameRecord, "peek"))
 			frames.push(record);
 		
 		return [
@@ -142,18 +142,18 @@ namespace Cover
 	{
 		const [db] = await setup();
 		
-		const patch = new Turf.PatchRecord();
-		await db.save(patch);
+		const post = new App.PostRecord();
+		await db.save(post);
 		
-		const gallery = new Turf.GalleryBladeRecord();
-		const frame = new Turf.FrameRecord();
-		const media = new Turf.MediaRecord();
+		const gallery = new App.GallerySceneRecord();
+		const frame = new App.FrameRecord();
+		const media = new App.MediaRecord();
 		frame.media = media;
 		gallery.frames.push(frame);
-		patch.blades.push(gallery);
+		post.scenes.push(gallery);
 		
 		return [
-			() => !!patch.id,
+			() => !!post.id,
 			() => !!gallery.id,
 			() => !!frame.id,
 			() => !!media.id
@@ -165,15 +165,15 @@ namespace Cover
 	{
 		const [db] = await setup();
 		
-		const patch = new Turf.PatchRecord();
-		await db.save(patch);
+		const post = new App.PostRecord();
+		await db.save(post);
 		
-		const gallery = new Turf.GalleryBladeRecord();
-		patch.blades.push(gallery);
+		const gallery = new App.GallerySceneRecord();
+		post.scenes.push(gallery);
 		
-		await Turf.UI.wait(100);
+		await App.UI.wait(100);
 		gallery.transition = "x";
-		await Turf.UI.wait(100);
+		await App.UI.wait(100);
 	}
 	
 	/** */
@@ -181,28 +181,28 @@ namespace Cover
 	{
 		const [db] = await setup();
 		
-		const patch = new Turf.PatchRecord();
-		await db.save(patch);
+		const post = new App.PostRecord();
+		await db.save(post);
 		
-		const prose1 = new Turf.ProseBladeRecord();
-		const prose2 = new Turf.ProseBladeRecord();
-		patch.blades.push(prose1, prose2);
-		await Turf.UI.wait(100);
-		const prose3 = new Turf.ProseBladeRecord();
-		await Turf.UI.wait(100);
+		const prose1 = new App.ProseSceneRecord();
+		const prose2 = new App.ProseSceneRecord();
+		post.scenes.push(prose1, prose2);
+		await App.UI.wait(100);
+		const prose3 = new App.ProseSceneRecord();
+		await App.UI.wait(100);
 		
-		console.log("Patch1: " + patch.id);
+		console.log("Post1: " + post.id);
 		console.log("Prose1: " + prose1.id);
 		console.log("Prose2: " + prose2.id);
 		console.log("Prose3: " + prose3.id);
 		
-		patch.blades = [prose2, prose3];
+		post.scenes = [prose2, prose3];
 		
-		await Turf.UI.wait(200);
+		await App.UI.wait(200);
 		
-		const allProseRecords: Turf.Record[] = [];
+		const allProseRecords: App.Record[] = [];
 		
-		for await (const record of db.each(Turf.ProseBladeRecord, "get"))
+		for await (const record of db.each(App.ProseSceneRecord, "get"))
 			allProseRecords.push(record);
 		
 		return [
@@ -216,8 +216,8 @@ namespace Cover
 	async function setup()
 	{
 		const dbName = Moduless.getRunningFunctionName();
-		await Turf.Database.delete(dbName);
-		const db = await Turf.createDatabase(dbName);
-		return [db, dbName] as [Turf.Database, string];
+		await App.Database.delete(dbName);
+		const db = await App.createDatabase(dbName);
+		return [db, dbName] as [App.Database, string];
 	}
 }

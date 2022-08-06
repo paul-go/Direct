@@ -4,59 +4,59 @@ namespace Cover
 	/** */
 	export async function coverPreview()
 	{
-		const { patch, meta } = setup();
+		const { post, meta } = setup();
 		
-		const blade1 = new Turf.CaptionedBladeRecord();
+		const scene1 = new App.CaptionedSceneRecord();
 		
-		blade1.titles.push({
+		scene1.titles.push({
 			text: "Title1",
 			size: 3,
 			weight: 500
 		});
 		
-		blade1.titles.push({
+		scene1.titles.push({
 			text: "Title2",
 			size: 5,
 			weight: 700
 		});
 		
-		blade1.description = "Blade 1 paragraph content.";
-		blade1.backgroundColorIndex = Turf.ColorScheme.blackIndex;
+		scene1.description = "Scene 1 paragraph content.";
+		scene1.backgroundColorIndex = App.ColorScheme.blackIndex;
 		
-		const blade2 = new Turf.CaptionedBladeRecord();
+		const scene2 = new App.CaptionedSceneRecord();
 		
-		blade2.titles.push({ 
+		scene2.titles.push({ 
 			text: "Title3",
 			size: 3,
 			weight: 500
 		});
 		
-		blade2.titles.push({ 
+		scene2.titles.push({ 
 			text: "Title4",
 			size: 5,
 			weight: 700
 		});
 		
-		blade2.description = "Blade 2 paragraph content.";
-		blade2.backgroundColorIndex = Turf.ColorScheme.whiteIndex;
+		scene2.description = "Scene 2 paragraph content.";
+		scene2.backgroundColorIndex = App.ColorScheme.whiteIndex;
 		
-		const background = new Turf.BackgroundRecord();
+		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("image-5.jpg");
 		background.zoom = 1;
 		
-		blade2.backgrounds.push(background);
+		scene2.backgrounds.push(background);
 		
-		const blade3 = new Turf.ProseBladeRecord();
+		const scene3 = new App.ProseSceneRecord();
 		
-		patch.blades.push(blade1, blade2, blade3);
-		render(patch, meta);
+		post.scenes.push(scene1, scene2, scene3);
+		render(post, meta);
 	}
 	
 	/** */
 	export async function coverPreviewCaptionedVariants()
 	{
-		const { patch, meta } = setup();
-		const blade = new Turf.CaptionedBladeRecord();
+		const { post, meta } = setup();
+		const scene = new App.CaptionedSceneRecord();
 		const variants: [number, number][] = [
 			[3, 300],
 			[5, 500],
@@ -68,22 +68,22 @@ namespace Cover
 		{
 			const [size, weight] = title;
 			
-			blade.titles.push({
+			scene.titles.push({
 				text: "Title: " + size + ", " + weight,
 				size,
 				weight,
 			});
 		}
 		
-		blade.origin = Origin.center;
-		patch.blades.push(blade);
-		render(patch, meta);
+		scene.origin = Origin.center;
+		post.scenes.push(scene);
+		render(post, meta);
 	}
 	
 	/** */
 	export async function coverPreviewCaptionedContentAlignment()
 	{
-		const { patch, meta } = setup();
+		const { post, meta } = setup();
 		
 		const origins = [
 			Origin.topLeft,
@@ -99,133 +99,133 @@ namespace Cover
 		
 		for (const origin of origins)
 		{
-			const blade = new Turf.CaptionedBladeRecord();
+			const scene = new App.CaptionedSceneRecord();
 			
-			blade.titles.push({
+			scene.titles.push({
 				text: "Title1",
 				size: 3,
 				weight: 400
 			});
 			
-			blade.origin = origin;
-			patch.blades.push(blade);
+			scene.origin = origin;
+			post.scenes.push(scene);
 		}
 		
-		render(patch, meta);
+		render(post, meta);
 	}
 	
 	/** */
 	export async function coverPreviewCaptionedColoring()
 	{
-		const { patch, meta } = setup();
+		const { post, meta } = setup();
 		
-		const blade1 = new Turf.CaptionedBladeRecord();
+		const scene1 = new App.CaptionedSceneRecord();
 		
-		blade1.titles.push({
+		scene1.titles.push({
 			text: "White On Black",
 			size: 10,
 			weight: 900
 		});
 		
-		blade1.backgroundColorIndex = Turf.ColorScheme.blackIndex;
+		scene1.backgroundColorIndex = App.ColorScheme.blackIndex;
 		
-		const blade2 = new Turf.CaptionedBladeRecord();
+		const scene2 = new App.CaptionedSceneRecord();
 		
-		blade2.titles.push({
+		scene2.titles.push({
 			text: "Black On White",
 			size: 10,
 			weight: 900
 		});
 		
-		blade2.backgroundColorIndex = Turf.ColorScheme.whiteIndex;
+		scene2.backgroundColorIndex = App.ColorScheme.whiteIndex;
 		
-		patch.blades.push(blade1, blade2);
-		render(patch, meta);
+		post.scenes.push(scene1, scene2);
+		render(post, meta);
 	}
 	
 	/** */
 	export async function coverPreviewCaptionedContent()
 	{
-		const { patch, meta } = setup();
-		const blade = new Turf.CaptionedBladeRecord();
+		const { post, meta } = setup();
+		const scene = new App.CaptionedSceneRecord();
 		
-		blade.titles.push({
+		scene.titles.push({
 			text: "Title1",
 			size: 3,
 			weight: 400
 		});
 		
-		blade.titles.push({
+		scene.titles.push({
 			text: "Title2",
 			size: 5,
 			weight: 700
 		});
 		
-		blade.description = `
+		scene.description = `
 			Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
 			Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
 			Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
 		`;
 		
-		blade.origin = Origin.bottom;
-		patch.blades.push(blade);
-		render(patch, meta);
+		scene.origin = Origin.bottom;
+		post.scenes.push(scene);
+		render(post, meta);
 	}
 	
 	/** */
 	export function coverPreviewCaptionedBackgroundImage()
 	{
-		const { patch, meta } = setup();
-		const blade = new Turf.CaptionedBladeRecord();
-		const background = new Turf.BackgroundRecord();
+		const { post, meta } = setup();
+		const scene = new App.CaptionedSceneRecord();
+		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("image-5.jpg");
-		blade.backgrounds.push(background);
-		patch.blades.push(blade);
-		render(patch, meta);
+		scene.backgrounds.push(background);
+		post.scenes.push(scene);
+		render(post, meta);
 	}
 	
 	/** */
 	export function coverPreviewCaptionedBackgroundVideo()
 	{
-		const { patch, meta } = setup();
-		const blade = new Turf.CaptionedBladeRecord();
-		blade.titles.push({ text: "Video", size: 20, weight: 900 });
-		const background = new Turf.BackgroundRecord();
+		const { post, meta } = setup();
+		const scene = new App.CaptionedSceneRecord();
+		scene.titles.push({ text: "Video", size: 20, weight: 900 });
+		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("video-1.mp4");
-		blade.backgrounds.push(background);
-		patch.blades.push(blade);
-		render(patch, meta);
+		scene.backgrounds.push(background);
+		post.scenes.push(scene);
+		render(post, meta);
 	}
 	
 	/** */
 	export function coverPreviewGallery()
 	{
-		const { patch, meta } = setup();
+		const { post, meta } = setup();
 		
-		const blade = new Turf.GalleryBladeRecord();
+		const scene = new App.GallerySceneRecord();
 		
-		const frame1 = new Turf.FrameRecord();
+		const frame1 = new App.FrameRecord();
 		frame1.media = Cover.readMedia("image-1.jpg");
 		frame1.captionLine1 = "Caption Line 1";
 		frame1.size = "cover";
 		
-		const frame2 = new Turf.FrameRecord();
+		const frame2 = new App.FrameRecord();
 		frame2.media = Cover.readMedia("image-2.jpg");
 		
-		const frame3 = new Turf.FrameRecord();
+		const frame3 = new App.FrameRecord();
 		frame3.media = Cover.readMedia("image-3.jpg");
 		frame3.captionLine1 = "Caption Line 1";
 		frame3.captionLine2 = "Caption Line 2";
 		
-		blade.frames.push(frame1, frame2, frame3);
-		patch.blades.push(blade);
-		render(patch, meta);
+		scene.frames.push(frame1, frame2, frame3);
+		post.scenes.push(scene);
+		render(post, meta);
 	}
 	
 	/** */
 	export function coverPreviewProse()
 	{
-		const { patch, meta } = setup();
+		const { post, meta } = setup();
 		
 		const createBlocks = (n: number): ITrixSerializedBlock[] => [
 			{
@@ -277,60 +277,60 @@ namespace Cover
 			}
 		};
 		
-		const blade1 = new Turf.ProseBladeRecord();
-		blade1.content = getContent(5);
-		blade1.backgroundColorIndex = Turf.ColorScheme.whiteIndex;
+		const scene1 = new App.ProseSceneRecord();
+		scene1.content = getContent(5);
+		scene1.backgroundColorIndex = App.ColorScheme.whiteIndex;
 		
-		const blade2 = new Turf.ProseBladeRecord();
-		blade2.content = getContent(5);
-		blade2.backgroundColorIndex = Turf.ColorScheme.blackIndex;
+		const scene2 = new App.ProseSceneRecord();
+		scene2.content = getContent(5);
+		scene2.backgroundColorIndex = App.ColorScheme.blackIndex;
 		
-		const blade3 = new Turf.ProseBladeRecord();
-		blade3.content = getContent(1);
-		blade3.backgroundColorIndex = 1;
+		const scene3 = new App.ProseSceneRecord();
+		scene3.content = getContent(1);
+		scene3.backgroundColorIndex = 1;
 		
-		patch.blades.push(blade1, blade2, blade3);
-		render(patch, meta);
+		post.scenes.push(scene1, scene2, scene3);
+		render(post, meta);
 	}
 	
 	/** */
 	export function coverPreviewVideo()
 	{
-		const { patch, meta } = setup();
+		const { post, meta } = setup();
 		
-		const blade1 = new Turf.VideoBladeRecord();
-		blade1.media = Cover.readMedia("video-1.mp4");
-		blade1.size = "contain";
+		const scene1 = new App.VideoSceneRecord();
+		scene1.media = Cover.readMedia("video-1.mp4");
+		scene1.size = "contain";
 		
-		const blade2 = new Turf.VideoBladeRecord();
-		blade2.media = Cover.readMedia("video-1.mp4");
-		blade2.size = "cover";
+		const scene2 = new App.VideoSceneRecord();
+		scene2.media = Cover.readMedia("video-1.mp4");
+		scene2.size = "cover";
 		
-		patch.blades.push(blade1, blade2);
-		render(patch, meta);
+		post.scenes.push(scene1, scene2);
+		render(post, meta);
 	}
 	
 	/** */
 	function setup()
 	{
-		Turf.appendCss();
+		App.appendCss();
 		
-		const meta = new Turf.MetaRecord();
+		const meta = new App.MetaRecord();
 		meta.colorScheme = [
 			{ h: 215, s: 70, l: 30 },
 			{ h: 325, s: 70, l: 30 },
 		];
 		
-		const patch = new Turf.PatchRecord();
-		return { patch, meta };
+		const post = new App.PostRecord();
+		return { post, meta };
 	}
 	
 	/** */
-	function render(patch: Turf.PatchRecord, meta: Turf.MetaRecord)
+	function render(post: App.PostRecord, meta: App.MetaRecord)
 	{
-		const blade = new Turf.CaptionedBladeRecord();
-		blade.titles.push({ text: "Done", size: 4, weight: 700 });
-		patch.blades.push(blade);
-		new Turf.PreviewView(patch, meta);
+		const scene = new App.CaptionedSceneRecord();
+		scene.titles.push({ text: "Done", size: 4, weight: 700 });
+		post.scenes.push(scene);
+		new App.PreviewView(post, meta);
 	}
 }

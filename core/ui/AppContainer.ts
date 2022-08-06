@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	/** */
 	export class AppContainer
@@ -17,7 +17,7 @@ namespace Turf
 			if (!meta)
 			{
 				meta = new MetaRecord();
-				meta.homePatch = new PatchRecord();
+				meta.homePost = new PostRecord();
 				await database.save(meta);
 			}
 			
@@ -59,9 +59,9 @@ namespace Turf
 		}
 		
 		/** */
-		get homePatch()
+		get homePost()
 		{
-			return Not.nullable(this.meta.homePatch);
+			return Not.nullable(this.meta.homePost);
 		}
 	}
 }

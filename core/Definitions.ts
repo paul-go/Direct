@@ -2,7 +2,7 @@
 /** */
 const enum ConstS
 {
-	baseFolderPrefix = "patch-base-folder-",
+	baseFolderPrefix = "post-base-folder-",
 	mainDatabaseName = "main",
 	textContrastProperty = "--text-contrast",
 	htmlFileName = "index.html",
@@ -31,8 +31,8 @@ const enum CssClass
 	dragOverScreen = "drag-over-screen",
 	hide = "hide",
 	appRoot = "app-root",
-	patchesView = "patches-view",
-	patchViewTransition = "patch-view-transition",
+	blogView = "blog-view",
+	postViewTransition = "post-view-transition",
 	
 	// Player classes
 	story = "story",

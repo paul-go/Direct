@@ -4,21 +4,21 @@ namespace Cover
 	/** */
 	export async function coverExporter()
 	{
-		Turf.appendCss();
-		const meta = new Turf.MetaRecord();
-		const patch = new Turf.PatchRecord();
-		patch.slug = "slug";
-		const blade = new Turf.CaptionedBladeRecord();
-		blade.titles.push({ text: "Title", weight: 700, size: 10 });
+		App.appendCss();
+		const meta = new App.MetaRecord();
+		const post = new App.PostRecord();
+		post.slug = "slug";
+		const scene = new App.CaptionedSceneRecord();
+		scene.titles.push({ text: "Title", weight: 700, size: 10 });
 		
-		const background = new Turf.BackgroundRecord();
+		const background = new App.BackgroundRecord();
 		background.media = readMedia("image-1.jpg");
-		blade.backgrounds.push(background);
+		scene.backgrounds.push(background);
 		
-		patch.blades.push(blade);
+		post.scenes.push(scene);
 		
 		const folder = getExportsFolder();
-		const publisher = new Turf.LocalPublisher(patch, meta);
+		const publisher = new App.LocalPublisher(post, meta);
 		publisher.folder = folder;
 		await publisher.publish();
 		

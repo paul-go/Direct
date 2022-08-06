@@ -4,7 +4,7 @@ namespace Cover
 	/** */
 	export async function coverTextBox()
 	{
-		const textBox = new Turf.TextBox();
+		const textBox = new App.TextBox();
 		
 		Htx.from(textBox.root)({
 			border: "1px solid red",
@@ -13,7 +13,7 @@ namespace Cover
 		textBox.html = "Line1<br>Line2A <b>Line2B</b> Line2C<br>Line3";
 		
 		document.body.append(textBox.root);
-		await Turf.UI.wait();
+		await App.UI.wait();
 		
 		setTimeout(() =>
 		{

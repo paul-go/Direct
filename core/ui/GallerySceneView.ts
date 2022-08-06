@@ -1,11 +1,11 @@
 
-namespace Turf
+namespace App
 {
 	/** */
-	export class GalleryBladeView extends BladeView
+	export class GallerySceneView extends SceneView
 	{
 		/** */
-		constructor(readonly record = new GalleryBladeRecord())
+		constructor(readonly record = new GallerySceneRecord())
 		{
 			super(record);
 			
@@ -55,7 +55,7 @@ namespace Turf
 				),
 			);
 			
-			this.setBladeButtons(
+			this.setSceneButtons(
 				() =>
 				{
 					this.getVisibleFrame()?.setSize(this.coverButton.selected ? "cover" : "contain");
@@ -71,13 +71,13 @@ namespace Turf
 		private readonly galleryContainer: HTMLElement;
 		
 		/** */
-		private readonly coverButton = new BladeButtonView("Cover", {
+		private readonly coverButton = new SceneButtonView("Cover", {
 			selectable: true,
 			unselectable: false,
 		});
 		
 		/** */
-		private readonly containButton = new BladeButtonView("Contain", {
+		private readonly containButton = new SceneButtonView("Contain", {
 			selectable: true,
 			unselectable: false,
 		});

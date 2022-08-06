@@ -1,5 +1,5 @@
 
-namespace Turf
+namespace App
 {
 	export type RecordConstructor<R extends Record = Record> = new(id?: string) => R;
 	export type GetBehavior = "get" | "peek";
