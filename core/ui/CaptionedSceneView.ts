@@ -37,7 +37,14 @@ namespace App
 					this.record.origin,
 					this.textContainer = Htx.div(
 						"text-container",
-						this.contentImageContainer = Htx.div("content-image-container"),
+						this.contentImageContainer = Htx.div(
+							"content-image-container",
+							Htx.on("click", () =>
+							{
+								this.sizeButton.selected = true;
+								this.handleSelectionChange();
+							})
+						),
 						this.titleView.root,
 						this.descriptionView.root,
 						this.buttonsContainer,
