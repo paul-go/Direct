@@ -561,7 +561,7 @@ namespace App
 		/** */
 		export function removeOnEscape(removedFn?: () => void): Htx.Param[]
 		{
-			return escape(async e =>
+			return UI.escape(async e =>
 			{
 				await UI.removeWithFade(e);
 				removedFn?.();
@@ -906,28 +906,24 @@ namespace App
 			menu: Literal<string, () => void>)
 		{
 			const overlay = Htx.div(
-				UI.removeOnClick(),
-				...UI.removeOnEscape(),
 				UI.fixed(),
 				{
+					tabIndex: 0,
 					zIndex: "0",
 				},
-				Htx.on("pointerdown", ev =>
+				Htx.on(document.body, "pointerdown", ev =>
 				{
 					if (ev.target === overlay)
 						overlay.remove();
-					
-				}, { capture: true }),
-				
-				Htx.on("keydown", ev =>
+				}),
+				Htx.on(document.body, "keydown", ev =>
 				{
 					if (ev.key === "Escape")
 					{
 						ev.preventDefault();
 						overlay.remove();
 					}
-				}, { capture: true }),
-				
+				}),
 				Htx.div(
 					{
 						position: "absolute",
@@ -937,11 +933,6 @@ namespace App
 						borderRadius: UI.borderRadius.large,
 						overflow: "hidden",
 						visibility: "hidden",
-						transformOrigin: "50% 100%",
-						//transform: "translateZ(-500px)",
-						perspective: "1000px",
-						transitionDuration: "0.2s",
-						transitionProperty: "transform"
 					},
 					
 					...Object.entries(menu).map(([label, callbackFn]) =>
