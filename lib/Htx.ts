@@ -425,6 +425,7 @@ namespace Htx
 		disabled: boolean;
 		webkitdirectory: boolean;
 		multiple: boolean;
+		accept: string;
 	}
 	
 	/** */
