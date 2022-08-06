@@ -254,6 +254,9 @@ namespace App
 				"background-color": UI.darkGrayBackground,
 				"color": "white",
 			}),
+			rule("*", {
+				"outline": "0",
+			}),
 			rule("." + CssClass.hide, {
 				display: "none !important",
 			}),
