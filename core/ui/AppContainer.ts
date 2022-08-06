@@ -30,31 +30,34 @@ namespace App
 			readonly database: Database,
 			readonly meta: MetaRecord)
 		{
-			let titleBar: HTMLElement;
-			
 			Htx.from(root)(
 				CssClass.appRoot,
 				{
 					minHeight: "100%",
 				},
-				titleBar = Htx.div(
-					"title-bar",
-					UI.anchorTop(),
-					{
-						position: "fixed",
-						height: "28px", // Title bar height, at least on macOS
-						zIndex: "3",
-						opacity: "0",
-						backgroundColor: UI.gray(128, 0.33),
-						transitionDuration: "0.25s",
-						transitionProperty: "opacity",
-					},
-					UI.backdropBlur(8),
-					Htx.css(":hover", { opacity: "1" })
-				),
+				TAURI && (e =>
+				{
+					const titleBar = Htx.div(
+						"title-bar",
+						UI.anchorTop(),
+						{
+							position: "fixed",
+							height: "28px", // Title bar height, at least on macOS
+							zIndex: "3",
+							opacity: "0",
+							backgroundColor: UI.gray(128, 0.33),
+							transitionDuration: "0.25s",
+							transitionProperty: "opacity",
+						},
+						UI.backdropBlur(8),
+						Htx.css(":hover", { opacity: "1" })
+					);
+					
+					titleBar.setAttribute("data-tauri-drag-region", "");
+					e.prepend(titleBar)
+				})
 			);
 			
-			titleBar.setAttribute("data-tauri-drag-region", "");
 			Controller.set(this);
 		}
 		
