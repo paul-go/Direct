@@ -22,6 +22,7 @@ namespace App
 						pointerEvents: "none",
 						fontStyle: "italic",
 						opacity: "0.33",
+						padding: "inherit"
 					}
 				),
 				this.editableElement = Htx.div(

@@ -83,7 +83,6 @@ namespace App
 			cursor: "pointer"
 		} as const;
 		
-		
 		export const clickEvt = "pointerdown";
 		
 		/** */
@@ -395,16 +394,23 @@ namespace App
 		}
 		
 		/** */
-		export function text(label: string, size: number | string = 20, weight?: number)
+		export function text(label: string = "", size: number | string = 20, weight?: number): Htx.Param[]
 		{
 			return [
 				{
 					fontSize: typeof size === "number" ? size + "px" : size,
 					userSelect: "none",
-					cursor: "default",
 				},
 				weight ? UI.specificWeight(weight) : null,
-				label ? new Text(label) : null
+				label ? new Text(label) : null,
+				e =>
+				{
+					// Only apply this weakly. The goal here is to get away from the I-beam,
+					// but other uses of this function could specify a pointer or something else,
+					// so this function shouldn't overwrite that.
+					if (e.style.cursor === "")
+						e.style.cursor = "default";
+				}
 			];
 		}
 		
@@ -479,7 +485,7 @@ namespace App
 		/** */
 		export function visibleWhenEmpty(watchTarget: HTMLElement): Htx.Param
 		{
-			return When.connected(e => installVisibilityObserver(e, watchTarget, true));
+			return When.connected(e => addVisibilityObserver(e, watchTarget, true));
 		}
 		
 		/** */
@@ -491,11 +497,11 @@ namespace App
 		/** */
 		export function visibleWhenNotEmpty(watchTarget: HTMLElement): Htx.Param
 		{
-			return When.connected(e => installVisibilityObserver(e, watchTarget, false));
+			return When.connected(e => addVisibilityObserver(e, watchTarget, false));
 		}
 		
 		/** */
-		function installVisibilityObserver(
+		function addVisibilityObserver(
 			visibilityTarget: HTMLElement,
 			watchTarget: HTMLElement,
 			forEmpty: boolean)
@@ -913,6 +919,8 @@ namespace App
 				},
 				Htx.on(document.body, "pointerdown", ev =>
 				{
+					ev.preventDefault();
+					
 					if (ev.target === overlay)
 						overlay.remove();
 				}),
@@ -947,8 +955,9 @@ namespace App
 							},
 							Htx.css(":hover", { backgroundColor: "#007cd3" }),
 							UI.clickable,
-							Htx.on("click", () =>
+							Htx.on("click", ev =>
 							{
+								ev.preventDefault();
 								callbackFn();
 								overlay.remove();
 							}),
@@ -978,7 +987,6 @@ namespace App
 						}
 						
 						e.style.visibility = "visible";
-						e.focus();
 					})
 				)
 			);

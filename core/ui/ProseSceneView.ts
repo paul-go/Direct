@@ -39,16 +39,7 @@ namespace App
 							outline: "0",
 						}),
 						
-						this.linkTextBoxContainer = Htx.div(
-							"link-input",
-							UI.anchorCenter("fit-content"),
-							UI.toolButtonTheme,
-							{
-								top: "auto",
-								padding: "10px 20px",
-							},
-							(this.linkTextBox = this.createLinkTextBox()).root
-						)
+						(this.linkEditor = new LinkEditorView()).root
 					)
 				),
 				When.connected(() => this.updateButtons())
@@ -81,6 +72,7 @@ namespace App
 				this.save();
 			});
 			
+			this.linkEditor.setCommitFn(link => this.commitLink(link));
 			this.setupAutoSaver();
 			
 			When.connected(this.root, () =>
@@ -100,9 +92,7 @@ namespace App
 		private get editor() { return this.trixEditorElement.editor; }
 		
 		private readonly trixEditorElement: HTMLTrixElement;
-		
-		private readonly linkTextBoxContainer;
-		private readonly linkTextBox: TextBox;
+		private readonly linkEditor;
 		
 		private readonly headingButton = new SceneButtonView("Heading", {
 			independent: true,
@@ -193,7 +183,7 @@ namespace App
 					{
 						this.editor.activateAttribute(attribute, "");
 						this.updateButtons();
-						this.linkTextBox.focus();
+						this.linkEditor.focus();
 					}
 					else
 					{
@@ -222,57 +212,34 @@ namespace App
 			UI.toggle(this.boldButton.root, hasContent && !hasHeading && (hasRangeSelection || hasBold));
 			UI.toggle(this.italicButton.root, hasContent && !hasHeading && (hasRangeSelection || hasItalic));
 			UI.toggle(this.linkButton.root, hasContent && !hasHeading && (hasRangeSelection || hasLink));
-			UI.toggle(this.linkTextBoxContainer, hasLink);
+			UI.toggle(this.linkEditor.root, hasLink);
 			
 			if (hasLink)
-				this.linkTextBox.html = this.getCurrentHref();
+				this.linkEditor.link = this.getCurrentHref();
 		}
 		
 		/** */
-		private createLinkTextBox()
+		private commitLink(link: string)
 		{
-			const box = new TextBox();
-			box.placeholder = "Enter the link URL";
+			UI.toggle(this.linkEditor.root, false);
 			
-			const commit = () =>
+			if (this.getCurrentHref() === link)
+				return;
+			
+			this.editor.recordUndoEntry("Update Link");
+			
+			const update = () =>
 			{
-				if (this.getCurrentHref() === box.text)
-					return;
-				
-				const url = box.text;
-				this.editor.recordUndoEntry("Update Link");
-				
-				const update = () =>
-				{
-					if (url)
-						this.editor.activateAttribute("href", url);
-					else
-						this.editor.deactivateAttribute("href");
-				}
-				
-				if (this.isCollapsed)
-					this.doTemporarySelectionExpansion("href", update);
+				if (link)
+					this.editor.activateAttribute("href", link);
 				else
-					update();
-			};
+					this.editor.deactivateAttribute("href");
+			}
 			
-			Htx.from(box.editableElement)(
-				{
-					minWidth: "200px",
-				},
-				Htx.on("focusout", () => commit()),
-				Htx.on("keydown", ev =>
-				{
-					if (ev.key === "Enter")
-					{
-						commit();
-						ev.preventDefault();
-						ev.stopImmediatePropagation();
-					}
-				}, { capture: true })
-			);
-			
-			return box;
+			if (this.isCollapsed)
+				this.doTemporarySelectionExpansion("href", update);
+			else
+				update();
 		}
 		
 		/** */
