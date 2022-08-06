@@ -325,7 +325,7 @@ namespace App
 		/** */
 		protected createMediaRecords(
 			files: FileLike[],
-			accept: MimeClass[] = [MimeClass.image])
+			guardedMimes?: MimeClass[])
 		{
 			const records: MediaRecord[] = [];
 			
@@ -335,7 +335,7 @@ namespace App
 				if (!mimeType)
 					continue;
 				
-				if (!accept.includes(MimeType.getClass(file.type)))
+				if (guardedMimes && !guardedMimes.includes(MimeType.getClass(file.type)))
 					continue;
 				
 				const record = new MediaRecord();

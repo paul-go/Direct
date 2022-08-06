@@ -106,7 +106,7 @@ namespace App
 		/** */
 		private createToolButtons()
 		{
-			const imageTool = this.createToolButton("+ Image", () => { });
+			const imageTool = this.createToolButton("+ Image", () => this.beginAddContentImage());
 			const titleTool = this.createToolButton("+ Title", () => this.titleView.focus());
 			const descTool = this.createToolButton("+ Description", () => this.descriptionView.focus());
 			
@@ -132,9 +132,68 @@ namespace App
 		}
 		
 		/** */
+		private async beginAddContentImage()
+		{
+			if (TAURI)
+			{
+				const dialogResult = await Tauri.dialog.open({
+					recursive: false,
+					directory: false,
+					multiple: false,
+					filters: [{
+						name: "Images",
+						extensions: ["jpg", "jpeg", "gif", "png", "svg"]
+					}]
+				});
+				
+				if (typeof dialogResult !== "string")
+					return;
+				
+				const fileName = Util.getFileName(dialogResult);
+				const imageBytes = await Tauri.fs.readBinaryFile(dialogResult);
+				const mime = MimeType.fromFileName(fileName);
+				const fileLike = new FileLike(fileName, mime, imageBytes);
+				const mediaRecord = this.createMediaRecords([fileLike]);
+				this.addContentImage(mediaRecord[0]);
+			}
+			else
+			{
+				const input = Htx.input(
+					{
+						type: "file",
+						visibility: "hidden",
+						position: "absolute",
+						multiple: false,
+						accept: [MimeType.gif, MimeType.jpg, MimeType.png, MimeType.svg].join()
+					},
+					Htx.on("change", async () =>
+					{
+						input.remove();
+						
+						if (input.files?.length)
+						{
+							const nativeFile = input.files[0];
+							const fileLike: FileLike = { 
+								name: nativeFile.name,
+								data: await nativeFile.arrayBuffer(),
+								type: Not.nullable(MimeType.from(nativeFile.type))
+							};
+							
+							const mediaRecord = this.createMediaRecords([fileLike]);
+							this.addContentImage(mediaRecord[0]);
+						}
+					})
+				);
+				
+				document.body.append(input);
+				input.click();
+			}
+		}
+		
+		/** */
 		private handleMediaDrop(files: FileLike[], layerX: number, layerY: number)
 		{
-			const mediaRecords= this.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
+			const mediaRecords = this.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
 			if (mediaRecords.length === 0)
 				return;
 			
@@ -142,19 +201,21 @@ namespace App
 			const isBackground = layerY > this.sceneContainer.offsetHeight / 2;
 			
 			if (isBackground)
-			{
 				this.backgroundManager.addBackground(mediaRecord);
-			}
-			else (async () =>
-			{
-				const src = mediaRecord.getBlobUrl();
-				const [width, height] = await RenderUtil.getDimensions(src);
-				
-				this.contentImage = Htx.img(CssClass.captionSceneContentImage, { src });
-				this.contentImage.style.aspectRatio = width + " / " + height;
-				this.contentImageContainer.replaceChildren(this.contentImage);
-				this.setContentImageSize(15);
-			})();
+			else
+				this.addContentImage(mediaRecord);
+		}
+		
+		/** */
+		private async addContentImage(mediaRecord: MediaRecord)
+		{
+			const src = mediaRecord.getBlobUrl();
+			const [width, height] = await RenderUtil.getDimensions(src);
+			
+			this.contentImage = Htx.img(CssClass.captionSceneContentImage, { src });
+			this.contentImage.style.aspectRatio = width + " / " + height;
+			this.contentImageContainer.replaceChildren(this.contentImage);
+			this.setContentImageSize(15);
 		}
 		
 		/** */

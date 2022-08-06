@@ -180,5 +180,15 @@ namespace App
 			
 			yield * recurse(via);
 		}
+		
+		//# Unsorted
+		
+		/**
+		 * 
+		 */
+		export function getFileName(path: string)
+		{
+			return path.split(/(\/|\\)/g).filter(s => !!s).slice(-1)[0] || "";
+		}
 	}
 }
