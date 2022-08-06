@@ -409,9 +409,9 @@ namespace Htx
 	/** */
 	export interface ElementAttribute
 	{
+		name: string;
 		id: string;
 		class: string;
-		href: string;
 		contentEditable: string;
 		tabIndex: number;
 		data: Record<string, string | number | boolean>;
@@ -431,6 +431,13 @@ namespace Htx
 	export interface ImageElementAttribute extends ElementAttribute
 	{
 		src: string;
+	}
+	
+	/** */
+	export interface AnchorElementAttribute extends ElementAttribute
+	{
+		href: string;
+		target: string;
 	}
 	
 	/** */
@@ -465,7 +472,7 @@ namespace Htx
 		Style |
 		Partial<T>;
 	
-	export declare function a(...params: Param[]): HTMLAnchorElement;
+	export declare function a(...params: Param<AnchorElementAttribute>[]): HTMLAnchorElement;
 	export declare function abbr(...params: Param[]): HTMLElement;
 	export declare function address(...params: Param[]): HTMLElement;
 	export declare function area(...params: Param[]): HTMLAreaElement;

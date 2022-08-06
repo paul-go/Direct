@@ -96,9 +96,9 @@ namespace App
 		}
 		
 		/** */
-		getPublishDestinationText()
+		getPublishDestinationUI(): Htx.Param
 		{
-			return this.folder;
+			return new Text(this.folder);
 		}
 		
 		/** */

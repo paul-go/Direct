@@ -267,7 +267,7 @@ namespace App
 			{
 				const meta = AppContainer.of(this).meta;
 				const publisher = Publisher.getCurrentPublisher(this.record, meta);
-				const dstText = publisher?.getPublishDestinationText() || "";
+				const dstText = publisher?.getPublishDestinationUI() || "";
 				
 				this.publishInfoElement.replaceWith(this.publishInfoElement = Htx.div(
 					"publish-info",
@@ -300,8 +300,10 @@ namespace App
 							display: "inline-block",
 							textOverflow: "ellipsis",
 							whiteSpace: "nowrap",
+							fontSize: "24px",
+							fontWeight: "800",
 						},
-						...UI.text(dstText, 24, 800)
+						dstText
 					),
 				))
 			});

@@ -59,12 +59,11 @@ namespace App
 		}
 		
 		/** */
-		getPublishDestinationText(): string
+		getPublishDestinationUI(): Htx.Param
 		{
-			if (this.host && this.accessKey && this.secretKey)
-				return this.host;
-			
-			return "";
+			return this.host && this.accessKey && this.secretKey ?
+				new Text(this.host) :
+				null;
 		}
 		
 		/** */

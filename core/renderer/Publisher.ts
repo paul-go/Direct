@@ -119,18 +119,18 @@ namespace App
 		
 		/**
 		 * Gets a string description of the location where the publish
-		 * action is going to write the files. If an empty string is returned,
+		 * action is going to write the files. If a falsey value is returned,
 		 * this indicates that this Publisher is currently incapable of publishing.
 		 */
-		getPublishDestinationText()
+		getPublishDestinationUI(): Htx.Param
 		{
-			return "";
+			return null;
 		}
 		
 		/** */
 		canPublish()
 		{
-			return !!this.getPublishDestinationText();
+			return !!this.getPublishDestinationUI();
 		}
 		
 		/** */
