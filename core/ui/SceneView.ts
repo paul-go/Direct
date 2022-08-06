@@ -96,11 +96,14 @@ namespace App
 			this.transition = Transitions.slide;
 			
 			Htx.from(this.moreButton.root)(
-				Htx.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
-					"Move Up": () => {},
-					"Move Down": () => {},
-					"Delete": () => this.root.remove(),
-				}))
+				Htx.on(UI.clickEvt, ev =>
+				{
+					return UI.springMenu(ev.target, {
+						...(this.root.previousElementSibling ? { "Move Up": () => this.moveSceneUp() } : {}),
+						...(this.root.nextElementSibling ? { "Move Down": () => this.moveSceneDown() } : {}),
+						"Delete": () => this.root.remove(),
+					});
+				})
 			);
 			
 			Controller.set(this);
@@ -343,6 +346,20 @@ namespace App
 			}
 		
 			return records;
+		}
+		
+		/** */
+		private moveSceneUp()
+		{
+			this.root.previousElementSibling?.before(this.root);
+			this.root.scrollIntoView({ behavior: "smooth" });
+		}
+		
+		/** */
+		private moveSceneDown()
+		{
+			this.root.nextElementSibling?.after(this.root);
+			this.root.scrollIntoView({ behavior: "smooth" });
 		}
 	}
 }
