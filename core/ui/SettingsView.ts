@@ -116,9 +116,12 @@ namespace App
 						if (confirm(message))
 							AppContainer.of(this).restartFromScratch();
 					}
+					
+					return;
 				}
 			}
-			else this.secretClickCount = 0;
+			
+			this.secretClickCount = 0;
 		}
 		private secretClickCount = 0;
 		
