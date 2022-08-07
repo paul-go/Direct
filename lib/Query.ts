@@ -10,14 +10,13 @@ namespace Query
 		(new (...args: any) => T);
 	
 	/**
-	 * Returns all elements with the specified class name, 
+	 * Returns the first element with the specified class name, 
 	 * optionally as children of the specified element.
 	 */
 	export function find(cssClass: string, container?: Element)
 	{
 		const parent = container || document;
-		const array = Array.from(parent.getElementsByClassName(cssClass));
-		return array as HTMLElement[];
+		return parent.getElementsByClassName(cssClass).item(0) as HTMLElement | null;
 	}
 	
 	/**

@@ -21,7 +21,7 @@ namespace Cover
 	/** */
 	export function display(controller: Controller.IController)
 	{
-		Query.find(CssClass.appRoot)[0].append(controller.root);
+		Query.find(CssClass.appRoot)?.append(controller.root);
 	}
 	
 	if (typeof module !== "undefined")

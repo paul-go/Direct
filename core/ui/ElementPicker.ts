@@ -10,7 +10,7 @@ namespace App
 			this.overlay = Htx.div(
 				UI.anchor(),
 				{
-					zIndex: "9"
+					zIndex: "1"
 				},
 				Htx.on("pointerdown", ev =>
 				{

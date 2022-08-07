@@ -654,6 +654,7 @@ namespace App
 			};
 			
 			return Htx.div(
+				UI.plusButton.name,
 				UI.clickable,
 				{
 					width: "25px",

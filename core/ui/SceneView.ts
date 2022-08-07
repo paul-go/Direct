@@ -204,6 +204,9 @@ namespace App
 				"tool-buttons",
 				UI.anchorTop(),
 				UI.flexCenter,
+				{
+					zIndex: "2",
+				},
 				...params,
 			);
 		}
@@ -227,7 +230,11 @@ namespace App
 					{
 						width: "15px",
 						height: "15px",
-						marginRight: "20px"
+						marginRight: "20px",
+						transitionProperty: "transform",
+						transitionDuration: "0.25s",
+						transform: "rotate(0deg)",
+						transformOrigin: "50% 50%"
 					}
 				),
 				...UI.click(ev =>

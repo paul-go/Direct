@@ -43,7 +43,7 @@ namespace App
 							{
 								this.sizeButton.selected = true;
 								this.handleSelectionChange();
-							})
+							}),
 						),
 						this.titleView.root,
 						this.descriptionView.root,
@@ -113,7 +113,26 @@ namespace App
 		/** */
 		private createToolButtons()
 		{
-			const imageTool = this.createToolButton("+ Image", () => this.beginAddContentImage());
+			const imageTool = this.createToolButton("+ Image", async () =>
+			{
+				const icon = Not.nullable(Query.find(UI.plusButton.name, imageTool));
+				
+				if (this.contentImage !== null)
+				{
+					this.removeContentImage();
+					icon.style.transform = "rotate(0deg)";
+				}
+				else
+				{
+					await this.beginAddContentImage();
+					if (this.contentImage)
+					{
+						icon.classList.add("asidyuaosidfyauisfd");
+						icon.style.transform = "rotate(45deg)";
+					}
+				}
+			});
+			
 			const titleTool = this.createToolButton("+ Title", () => this.titleView.focus());
 			const descTool = this.createToolButton("+ Description", () => this.descriptionView.focus());
 			
@@ -161,9 +180,9 @@ namespace App
 				const mime = MimeType.fromFileName(fileName);
 				const fileLike = new FileLike(fileName, mime, imageBytes);
 				const mediaRecord = this.createMediaRecords([fileLike]);
-				this.addContentImage(mediaRecord[0]);
+				await this.addContentImage(mediaRecord[0]);
 			}
-			else
+			else return new Promise<void>(resolve =>
 			{
 				const input = Htx.input(
 					{
@@ -187,14 +206,16 @@ namespace App
 							};
 							
 							const mediaRecord = this.createMediaRecords([fileLike]);
-							this.addContentImage(mediaRecord[0]);
+							await this.addContentImage(mediaRecord[0]);
 						}
+						
+						resolve();
 					})
 				);
 				
 				document.body.append(input);
 				input.click();
-			}
+			});
 		}
 		
 		/** */
@@ -218,10 +239,16 @@ namespace App
 		{
 			const src = mediaRecord.getBlobUrl();
 			const [width, height] = await RenderUtil.getDimensions(src);
+			const existingContentImage = this.contentImage;
 			
 			this.contentImage = Htx.img(CssClass.captionSceneContentImage, { src });
 			this.contentImage.style.aspectRatio = width + " / " + height;
-			this.contentImageContainer.replaceChildren(this.contentImage);
+			
+			if (existingContentImage)
+				existingContentImage.replaceWith(this.contentImage);
+			else
+				this.contentImageContainer.prepend(this.contentImage);
+			
 			this.setContentImageSize(15);
 		}
 		
@@ -395,6 +422,16 @@ namespace App
 				this.contentImage.style.width = UI.vsize(size);
 			
 			this.record.contentImageWidth = size;
+		}
+		
+		/** */
+		private removeContentImage()
+		{
+			if (this.contentImage)
+			{
+				this.contentImage.remove();
+				this.contentImage = null;
+			}
 		}
 		
 		/** */
