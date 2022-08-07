@@ -211,7 +211,7 @@ namespace App
 			// If there is no BlogView sitting behind this PostView, its because
 			// the application launched directly into a PostView for editing the
 			// home page, and so we need to insert a new BlogView.
-			if (Query.find(CssClass.blogView, AppContainer.of(this).root))
+			if (!Query.find(CssClass.blogView, AppContainer.of(this).root))
 			{
 				const blogView = new BlogView();
 				const app = AppContainer.of(this);
