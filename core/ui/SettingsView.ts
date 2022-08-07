@@ -97,7 +97,7 @@ namespace App
 		private readonly settingsTitle;
 		
 		/** */
-		private doSecretClick(target: EventTarget | null)
+		private async doSecretClick(target: EventTarget | null)
 		{
 			if (target instanceof Node)
 			{
@@ -113,7 +113,11 @@ namespace App
 							"Are you sure you want to clear your ENTIRE cache?\n\n" +
 							"This will delete EVERYTHING and there is no going back.";
 						
-						if (confirm(message))
+						let confirmResult = confirm(message) as boolean | Promise<boolean>;
+						if (confirmResult instanceof Promise)
+							confirmResult = await confirmResult;
+						
+						if (confirmResult)
 							AppContainer.of(this).restartFromScratch();
 					}
 					
