@@ -86,6 +86,9 @@ namespace App
 			this.setDescriptionText(this.record.description);
 			this.setDescriptionSize(this.record.descriptionSize);
 			this.setContrast(this.record.textContrast);
+			
+			if (this.record.contentImage)
+				this.setContentImage(this.record.contentImage);
 		}
 		
 		private readonly foregroundContainer;
@@ -180,7 +183,7 @@ namespace App
 				const mime = MimeType.fromFileName(fileName);
 				const fileLike = new FileLike(fileName, mime, imageBytes);
 				const mediaRecord = this.createMediaRecords([fileLike]);
-				await this.addContentImage(mediaRecord[0]);
+				await this.setContentImage(mediaRecord[0]);
 			}
 			else return new Promise<void>(resolve =>
 			{
@@ -206,7 +209,7 @@ namespace App
 							};
 							
 							const mediaRecord = this.createMediaRecords([fileLike]);
-							await this.addContentImage(mediaRecord[0]);
+							await this.setContentImage(mediaRecord[0]);
 						}
 						
 						resolve();
@@ -231,11 +234,11 @@ namespace App
 			if (isBackground)
 				this.backgroundManager.addBackground(mediaRecord);
 			else
-				this.addContentImage(mediaRecord);
+				this.setContentImage(mediaRecord);
 		}
 		
 		/** */
-		private async addContentImage(mediaRecord: MediaRecord)
+		private async setContentImage(mediaRecord: MediaRecord)
 		{
 			const src = mediaRecord.getBlobUrl();
 			const [width, height] = await RenderUtil.getDimensions(src);
@@ -250,6 +253,7 @@ namespace App
 				this.contentImageContainer.prepend(this.contentImage);
 			
 			this.setContentImageSize(15);
+			this.record.contentImage = mediaRecord;
 		}
 		
 		/** */
