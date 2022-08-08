@@ -39,7 +39,7 @@ const enum CssClass
 	story = "story",
 	scene = "scene",
 	attentionScene = "scene-attention",
-	attentionSceneBackgroundImage = "bg",
+	attentionSceneBackground = "bg",
 	attentionSceneForeground = "fg",
 	attentionSceneContentImage = "fg-content-image",
 	proseScene = "scene-prose",

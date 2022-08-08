@@ -279,7 +279,7 @@ namespace App
 				if (cls === MimeClass.image)
 				{
 					return Htx.div(
-						CssClass.attentionSceneBackgroundImage,
+						CssClass.attentionSceneBackground,
 						{
 							backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")"
 						}
@@ -288,6 +288,7 @@ namespace App
 				else if (cls === MimeClass.video)
 				{
 					return Htx.video(
+						CssClass.attentionSceneBackground,
 						{
 							src: bun.getMediaUrl(bg.media),
 							autoplay: true,

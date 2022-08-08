@@ -73,7 +73,7 @@ namespace App
 			rule("." + CssClass.attentionScene + ", ." + CssClass.proseScene, {
 				"padding": "20px",
 			}),
-			rule("." + CssClass.attentionSceneBackgroundImage, {
+			rule("." + CssClass.attentionSceneBackground, {
 				"position": "absolute",
 				"top": 0,
 				"right": 0,
