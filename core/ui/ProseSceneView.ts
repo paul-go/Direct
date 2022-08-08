@@ -59,7 +59,10 @@ namespace App
 			this.trixEditorElement.addEventListener("trix-selection-change", () => 
 			{
 				if (!this.blockSelectionChangeEvents)
+				{
 					this.updateButtons();
+					this.maybeHideColorConfigurator();
+				}
 			});
 			
 			// Prevents images from being dragged and dropped
@@ -94,17 +97,23 @@ namespace App
 				{ tabIndex: 0 },
 				Htx.on("focusout", () => setTimeout(() =>
 				{
-					const ancestors = Query.ancestors(document.activeElement);
-					if (!ancestors.includes(this.colorConfigurator.root))
-					{
-						this.backgroundButton.selected = false;
-						this.setSceneConfigurator(null);
-					}
+					this.maybeHideColorConfigurator();
 				}))
 			);
 		}
 		
 		private readonly colorConfigurator;
+		
+		/** */
+		private maybeHideColorConfigurator()
+		{
+			const ancestors = Query.ancestors(document.activeElement);
+			if (!ancestors.includes(this.colorConfigurator.root))
+			{
+				this.backgroundButton.selected = false;
+				this.setSceneConfigurator(null);
+			}
+		}
 		
 		/** */
 		private get editor() { return this.trixEditorElement.editor; }
