@@ -37,6 +37,9 @@ namespace App
 					this.record.origin,
 					this.textContainer = Htx.div(
 						"text-container",
+						{
+							flex: "1 0"
+						},
 						this.contentImageContainer = Htx.div(
 							"content-image-container",
 							Htx.on("click", () =>
@@ -80,15 +83,12 @@ namespace App
 			
 			this.descriptionView.setTextChangedHandler(() =>
 			{
-				this.record.description = this.descriptionView.html;
+				this.record.description = this.descriptionView.text;
 			});
 			
 			this.setDescriptionText(this.record.description);
 			this.setDescriptionSize(this.record.descriptionSize);
 			this.setContrast(this.record.textContrast);
-			
-			if (this.record.contentImage)
-				this.setContentImage(this.record.contentImage);
 		}
 		
 		private readonly foregroundContainer;
@@ -183,7 +183,7 @@ namespace App
 				const mime = MimeType.fromFileName(fileName);
 				const fileLike = new FileLike(fileName, mime, imageBytes);
 				const mediaRecord = this.createMediaRecords([fileLike]);
-				await this.setContentImage(mediaRecord[0]);
+				await this.addContentImage(mediaRecord[0]);
 			}
 			else return new Promise<void>(resolve =>
 			{
@@ -209,7 +209,7 @@ namespace App
 							};
 							
 							const mediaRecord = this.createMediaRecords([fileLike]);
-							await this.setContentImage(mediaRecord[0]);
+							await this.addContentImage(mediaRecord[0]);
 						}
 						
 						resolve();
@@ -234,11 +234,11 @@ namespace App
 			if (isBackground)
 				this.backgroundManager.addBackground(mediaRecord);
 			else
-				this.setContentImage(mediaRecord);
+				this.addContentImage(mediaRecord);
 		}
 		
 		/** */
-		private async setContentImage(mediaRecord: MediaRecord)
+		private async addContentImage(mediaRecord: MediaRecord)
 		{
 			const src = mediaRecord.getBlobUrl();
 			const [width, height] = await RenderUtil.getDimensions(src);
@@ -253,7 +253,6 @@ namespace App
 				this.contentImageContainer.prepend(this.contentImage);
 			
 			this.setContentImageSize(15);
-			this.record.contentImage = mediaRecord;
 		}
 		
 		/** */
@@ -314,7 +313,7 @@ namespace App
 		private setDescriptionText(text: string)
 		{
 			this.record.description = text;
-			this.descriptionView.html = text;
+			this.descriptionView.text = text;
 		}
 		
 		/** */
@@ -350,7 +349,7 @@ namespace App
 				pickMap.set(e, titleDatas[i]);
 			}
 			
-			if (this.descriptionView.html)
+			if (this.descriptionView.text)
 			{
 				const e = this.descriptionView.root;
 				picker.registerElement(e);
