@@ -26,8 +26,8 @@ namespace App
 				Htx.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
 				
 				UI.anchorTop(),
+				UI.appMaxWidth(),
 				{
-					minHeight: "100vh",
 					paddingBottom: "10px",
 					transitionDuration: "0.5s",
 					transitionProperty: "transform, opacity",
@@ -89,7 +89,6 @@ namespace App
 					{
 						position: "fixed",
 						top: "0",
-						left: "0",
 						borderBottomRightRadius: UI.borderRadius.large,
 						height: SceneView.headerHeight,
 						transitionDuration: "0.33s",

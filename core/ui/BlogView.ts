@@ -9,6 +9,7 @@ namespace App
 		{
 			this.root = Htx.div(
 				CssClass.blogView,
+				UI.appMaxWidth(),
 				this.headerElement = this.renderHeader(),
 				this.postList = Htx.div(
 					"post-list",
@@ -72,7 +73,7 @@ namespace App
 						fontSize: "max(16px, 1vw)",
 						fontWeight: "700",
 						backgroundColor: UI.themeColor,
-						padding: "0.5vw 1.5vw",
+						padding: UI.vw(0.5) + " " + UI.vw(1.5),
 					},
 					new Text("Draft"),
 				),
@@ -93,12 +94,12 @@ namespace App
 					UI.plusButton(
 						{
 							margin: "0 auto 2.5vw",
-							width: "3.3vw",
-							height: "3.3vw",
+							width: UI.vw(3.3),
+							height: UI.vw(3.3),
 						},
 					),
 					Htx.div(
-						...UI.text("Add Post", "2.5vw", 600),
+						...UI.text("Add Post", UI.vw(2.5), 600),
 					),
 				),
 			]);
@@ -139,7 +140,7 @@ namespace App
 						fontSize: "max(16px, 1vw)",
 						fontWeight: "700",
 						backgroundColor: UI.themeColor,
-						padding: "0.5vw 1.5vw",
+						padding: UI.vw(0.5) + " " + UI.vw(1.5),
 					},
 					new Text("Draft"),
 				),
@@ -165,8 +166,8 @@ namespace App
 				{
 					display: "inline-block",
 					verticalAlign: "top",
-					width: "33.333vw",
-					height: "33.333vw",
+					width: UI.vw(33.333),
+					height: UI.vw(33.333),
 				},
 				previewTransformable = Htx.div(
 					"preview-transformable",
@@ -187,7 +188,7 @@ namespace App
 							textAlign: "center",
 							lineHeight: "1.66",
 							fontWeight: "700",
-							fontSize: "2.5vw",
+							fontSize: UI.vw(2.5),
 							aspectRatio: "1 / 1",
 							opacity: "1",
 							transitionProperty: "opacity",

@@ -22,6 +22,7 @@ const enum ConstN
 {
 	foregroundEdgeVmin = 4,
 	fillerContentBlur = 40,
+	appMaxWidth = 1000,
 }
 
 /** */

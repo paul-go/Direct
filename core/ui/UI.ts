@@ -367,11 +367,26 @@ namespace App
 		}
 		
 		/** */
+		export function vw(size: number)
+		{
+			return `min(${size}vw, ${size * 10}px)`;
+		}
+		
+		/** */
 		export function extractVSize(value: string)
 		{
 			const reg = /([0-9\.]+)vmin/;
 			const matches = value.match(reg);
 			return Number(matches?.[1]) || 5;
+		}
+		
+		/** */
+		export function appMaxWidth(): Htx.Style
+		{
+			return TAURI ? {} : {
+				maxWidth: ConstN.appMaxWidth + "px",
+				margin: "auto",
+			};
 		}
 		
 		/** */

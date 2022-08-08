@@ -35,6 +35,21 @@ namespace App
 				{
 					minHeight: "100%",
 				},
+				!TAURI && Htx.div(
+					"fake-app-width",
+					{
+						zIndex: "-1",
+						pointerEvents: "none",
+						position: "fixed",
+						left: "0",
+						right: "0",
+						bottom: "0",
+						height: "100vh",
+						margin: "auto",
+						maxWidth: ConstN.appMaxWidth + "px",
+						boxShadow: "0 0 200px black",
+					}
+				),
 				TAURI && (e =>
 				{
 					const titleBar = Htx.div(
