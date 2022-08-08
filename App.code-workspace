@@ -19,6 +19,7 @@
 			"**/build": true,
 			"**/node_modules": true,
 			"**/package-lock.json": true,
+			"**/lib/*.js": true,
 			"index.*": true
 		},
 		"typescript.tsdk": "node_modules/typescript/lib",
