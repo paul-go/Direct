@@ -11,8 +11,8 @@ namespace App
 		/** */
 		static new(record: SceneRecord)
 		{
-			if (record instanceof CaptionedSceneRecord)
-				return new CaptionedSceneView(record);
+			if (record instanceof AttentionSceneRecord)
+				return new AttentionSceneView(record);
 			
 			if (record instanceof GallerySceneRecord)
 				return new GallerySceneView(record);

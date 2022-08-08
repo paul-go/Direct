@@ -67,13 +67,13 @@ namespace App
 			rule("." + CssClass.snapFooter, {
 				"scroll-snap-align": "end",
 			}),
-			rule("." + CssClass.captionScene, {
+			rule("." + CssClass.attentionScene, {
 				"display": "flex",
 			}),
-			rule("." + CssClass.captionScene + ", ." + CssClass.proseScene, {
+			rule("." + CssClass.attentionScene + ", ." + CssClass.proseScene, {
 				"padding": "20px",
 			}),
-			rule("." + CssClass.captionSceneBackgroundImage, {
+			rule("." + CssClass.attentionSceneBackgroundImage, {
 				"position": "absolute",
 				"top": 0,
 				"right": 0,
@@ -83,7 +83,7 @@ namespace App
 				"background-position": "50% 50%",
 				"background-size": "cover",
 			}),
-			rule("." + CssClass.captionSceneForeground, {
+			rule("." + CssClass.attentionSceneForeground, {
 				"display": "flex",
 				"width": "100%",
 				"min-height": "100%",
@@ -91,7 +91,7 @@ namespace App
 				"padding": ConstN.foregroundEdgeVmin + "vmin",
 				"margin": "auto",
 			}),
-			rule("." + CssClass.captionSceneContentImage, {
+			rule("." + CssClass.attentionSceneContentImage, {
 				"display": "block",
 				"margin": "0 auto 30px",
 			}),
@@ -258,7 +258,7 @@ namespace App
 			rule("." + CssClass.hide, {
 				display: "none !important",
 			}),
-			rule("." + CaptionedButtonClass.all, {
+			rule("." + AttentionButtonClass.all, {
 				"width": "30em",
 				"display": "inline-block",
 				"padding": "0.75em",
@@ -266,26 +266,26 @@ namespace App
 				"color": "black",
 				"user-select": "none",
 			}),
-			rule("." + CaptionedButtonClass.pillOutline, {
+			rule("." + AttentionButtonClass.pillOutline, {
 				"border-radius": "100px",
 				"border": "2px solid black",
 			}),
-			rule("." + CaptionedButtonClass.pillFilled, {
+			rule("." + AttentionButtonClass.pillFilled, {
 				"border-radius": "100px",
 				"background-color": "black",
 			}),
-			rule("." + CaptionedButtonClass.roundedOutline, {
+			rule("." + AttentionButtonClass.roundedOutline, {
 				"border-radius": "8px",
 				"border": "2px solid black",
 			}),
-			rule("." + CaptionedButtonClass.roundedFilled, {
+			rule("." + AttentionButtonClass.roundedFilled, {
 				"border-radius": "8px",
 				"background-color": "black",
 			}),
-			rule("." + CaptionedButtonClass.squareOutline, {
+			rule("." + AttentionButtonClass.squareOutline, {
 				"border": "2px solid black",
 			}),
-			rule("." + CaptionedButtonClass.squareFilled, {
+			rule("." + AttentionButtonClass.squareFilled, {
 				"background-color": "black",
 			}),
 			rule("." + CssClass.postViewTransition, {

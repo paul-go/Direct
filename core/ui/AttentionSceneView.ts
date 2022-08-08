@@ -3,17 +3,17 @@
 namespace App
 {
 	/** */
-	export class CaptionedSceneView extends SceneView
+	export class AttentionSceneView extends SceneView
 	{
 		/** */
-		constructor(readonly record = new CaptionedSceneRecord())
+		constructor(readonly record = new AttentionSceneRecord())
 		{
 			super(record);
 			
-			this.titleView = new CaptionedTitleView();
-			this.descriptionView = new CaptionedDescriptionView();
+			this.titleView = new AttentionTitleView();
+			this.descriptionView = new AttentionDescriptionView();
 			this.buttonsContainer = Htx.div("buttons");
-			this.buttons = new Controller.Array(this.buttonsContainer, CaptionedButton);
+			this.buttons = new Controller.Array(this.buttonsContainer, AttentionButton);
 			
 			Htx.from(this.sceneContainer)(
 				...UI.dripper(
@@ -33,7 +33,7 @@ namespace App
 				),
 				this.foregroundContainer = new ForegroundView(
 					this.record,
-					CssClass.captionSceneForeground,
+					CssClass.attentionSceneForeground,
 					this.record.origin,
 					this.textContainer = Htx.div(
 						"text-container",
@@ -152,7 +152,7 @@ namespace App
 		/** */
 		private addButton()
 		{
-			const cb = new CaptionedButton();
+			const cb = new AttentionButton();
 			this.buttons.insert(cb);
 			
 			// It's lame that this is in a setTimeout, but I don't care.
@@ -244,7 +244,7 @@ namespace App
 			const [width, height] = await RenderUtil.getDimensions(src);
 			const existingContentImage = this.contentImage;
 			
-			this.contentImage = Htx.img(CssClass.captionSceneContentImage, { src });
+			this.contentImage = Htx.img(CssClass.attentionSceneContentImage, { src });
 			this.contentImage.style.aspectRatio = width + " / " + height;
 			
 			if (existingContentImage)
@@ -322,7 +322,7 @@ namespace App
 			type TPickable = 
 				HTMLImageElement |
 				ITitle |
-				CaptionedDescriptionView;
+				AttentionDescriptionView;
 			
 			const picker = this.sizePicker = new ElementPicker(this.sceneContainer);
 			const pickMap = new Map<HTMLElement, TPickable>();
@@ -372,7 +372,7 @@ namespace App
 				{
 					slider.progress = this.record.contentImageWidth;
 				}
-				else if (pickable instanceof CaptionedDescriptionView)
+				else if (pickable instanceof AttentionDescriptionView)
 				{
 					slider.progress = this.record.descriptionSize;
 					slider.max = 10;
@@ -405,7 +405,7 @@ namespace App
 				{
 					this.setContentImageSize(slider.progress);
 				}
-				else if (pickable instanceof CaptionedDescriptionView)
+				else if (pickable instanceof AttentionDescriptionView)
 				{
 					this.setDescriptionSize(slider.progress);
 				}

@@ -6,7 +6,7 @@ namespace App
 	{
 		/** */
 		constructor(
-			private readonly record: CaptionedSceneRecord,
+			private readonly record: AttentionSceneRecord,
 			readonly root: HTMLElement)
 		{
 			let imagesConfigurators: HTMLElement;

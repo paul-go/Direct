@@ -3,7 +3,7 @@
 namespace Player
 {
 	/** */
-	export class CaptionScene extends Scene
+	export class AttentionScene extends Scene
 	{
 		/** */
 		constructor(readonly root: HTMLElement)

@@ -60,7 +60,7 @@ namespace App
 		return App.Database.new(name,
 			{ ctor: App.MetaRecord, stable: 1, root: true },
 			{ ctor: App.PostRecord, stable: 2, root: true },
-			{ ctor: App.CaptionedSceneRecord, stable: 3 },
+			{ ctor: App.AttentionSceneRecord, stable: 3 },
 			{ ctor: App.ProseSceneRecord, stable: 4 },
 			{ ctor: App.VideoSceneRecord, stable: 5 },
 			{ ctor: App.GallerySceneRecord, stable: 6 },

@@ -81,7 +81,7 @@ namespace App
 	}
 	
 	/** */
-	export class CaptionedSceneRecord extends SceneRecord
+	export class AttentionSceneRecord extends SceneRecord
 	{
 		textContrast = 50;
 		effect = Effects.none.name;

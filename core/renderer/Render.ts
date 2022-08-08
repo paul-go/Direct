@@ -238,8 +238,8 @@ namespace App
 				},
 				...(() =>
 				{
-					if (bun.scene instanceof CaptionedSceneRecord)
-						return renderCaptionedScene(bun as Bundle<CaptionedSceneRecord>);
+					if (bun.scene instanceof AttentionSceneRecord)
+						return renderAttentionScene(bun as Bundle<AttentionSceneRecord>);
 					
 					if (bun.scene instanceof ProseSceneRecord)
 					{
@@ -263,11 +263,11 @@ namespace App
 	/**
 	 * 
 	 */
-	function renderCaptionedScene(bun: Bundle<CaptionedSceneRecord>)
+	function renderAttentionScene(bun: Bundle<AttentionSceneRecord>)
 	{
 		const scene = bun.scene;
 		const out: Htx.Param[] = [
-			CssClass.captionScene
+			CssClass.attentionScene
 		];
 		
 		// Background
@@ -280,7 +280,7 @@ namespace App
 				if (cls === MimeClass.image)
 				{
 					return Htx.div(
-						CssClass.captionSceneBackgroundImage,
+						CssClass.attentionSceneBackgroundImage,
 						{
 							backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")"
 						}
@@ -305,7 +305,7 @@ namespace App
 		if (scene.titles.length > 0 || scene.description.length > 0)
 		{
 			const fg = Htx.div(
-				CssClass.captionSceneForeground,
+				CssClass.attentionSceneForeground,
 				scene.origin,
 				{
 					data: {
@@ -325,7 +325,7 @@ namespace App
 			if (scene.contentImage)
 			{
 				Htx.img(
-					CssClass.captionSceneContentImage,
+					CssClass.attentionSceneContentImage,
 					{ src: bun.getMediaUrl(scene.contentImage) }
 				);
 			}
@@ -363,7 +363,7 @@ namespace App
 	}
 	
 	/** */
-	function convertDescriptionToParagraphs(scene: CaptionedSceneRecord)
+	function convertDescriptionToParagraphs(scene: AttentionSceneRecord)
 	{
 		interface IRegion { text: string, bold: boolean; href: string }
 		const regions: IRegion[] = [];

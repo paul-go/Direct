@@ -28,22 +28,22 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPostViewWithCaptioned()
+	export async function coverPostViewWithAttention()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
 		const pv = new App.PostView(app.homePost);
-		const sv = new App.CaptionedSceneView();
+		const sv = new App.AttentionSceneView();
 		pv.scenes.insert(sv);
 		Cover.display(pv);
 	}
 	
 	/** */
-	export async function coverPostViewWithMultipleCaptioned()
+	export async function coverPostViewWithMultipleAttention()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
 		const pv = new App.PostView(app.homePost);
-		const sv1 = new App.CaptionedSceneView();
-		const sv2 = new App.CaptionedSceneView();
+		const sv1 = new App.AttentionSceneView();
+		const sv2 = new App.AttentionSceneView();
 		pv.scenes.insert(sv1);
 		pv.scenes.insert(sv2);
 		Cover.display(pv);

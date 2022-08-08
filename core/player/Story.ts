@@ -23,7 +23,7 @@ namespace Player
 				
 				const list = child.classList;
 				const scene = 
-					list.contains(CssClass.captionScene) ? new CaptionScene(child) :
+					list.contains(CssClass.attentionScene) ? new AttentionScene(child) :
 					list.contains(CssClass.videoScene) ? new VideoScene(child) :
 					list.contains(CssClass.proseScene) ? new ProseScene(child) :
 					list.contains(CssClass.galleryScene) ? new GalleryScene(child) : null!;

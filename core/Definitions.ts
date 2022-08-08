@@ -37,10 +37,10 @@ const enum CssClass
 	// Player classes
 	story = "story",
 	scene = "scene",
-	captionScene = "scene-caption",
-	captionSceneBackgroundImage = "bg",
-	captionSceneForeground = "fg",
-	captionSceneContentImage = "fg-content-image",
+	attentionScene = "scene-attention",
+	attentionSceneBackgroundImage = "bg",
+	attentionSceneForeground = "fg",
+	attentionSceneContentImage = "fg-content-image",
 	proseScene = "scene-prose",
 	proseSceneForeground = "scene-prose-fg",
 	galleryScene = "scene-gallery",
@@ -68,7 +68,7 @@ enum Origin
 }
 
 /** */
-const enum CaptionedButtonClass
+const enum AttentionButtonClass
 {
 	all = "cb",
 	pillOutline = "cb-po",

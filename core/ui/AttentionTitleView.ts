@@ -1,15 +1,15 @@
-/// <reference path="CaptionedTextView.ts" />
+/// <reference path="AttentionTextView.ts" />
 
 namespace App
 {
 	/** */
-	export class CaptionedTitleView extends CaptionedTextView
+	export class AttentionTitleView extends AttentionTextView
 	{
 		/** */
 		constructor()
 		{
 			super();
-			this.root.classList.add("captioned-title-view");
+			this.root.classList.add("attention-title-view");
 		}
 		
 		/** */

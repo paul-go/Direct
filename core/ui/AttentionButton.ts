@@ -2,17 +2,17 @@
 namespace App
 {
 	/** */
-	export class CaptionedButton
+	export class AttentionButton
 	{
 		/** */
 		constructor(
 			text = "",
 			href = "",
-			cls = CaptionedButtonClass.pillOutline,
+			cls = AttentionButtonClass.pillOutline,
 		)
 		{
 			this.root = Htx.div(
-				"captioned-button",
+				"attention-button",
 				{
 					marginTop: "20px",
 				}
@@ -50,7 +50,7 @@ namespace App
 			);
 			
 			// Lame
-			this.button.root.classList.add(CaptionedButtonClass.all);
+			this.button.root.classList.add(AttentionButtonClass.all);
 			this.class = this.class;
 			
 			Controller.set(this);
@@ -81,13 +81,13 @@ namespace App
 		{
 			return this._class;
 		}
-		set class(cls: CaptionedButtonClass)
+		set class(cls: AttentionButtonClass)
 		{
 			this.button.root.classList.remove(this._class);
 			this._class = cls;
 			this.button.root.classList.add(cls);
 		}
-		private _class = CaptionedButtonClass.pillOutline;
+		private _class = AttentionButtonClass.pillOutline;
 		
 		/** */
 		focus()

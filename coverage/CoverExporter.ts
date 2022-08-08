@@ -8,7 +8,7 @@ namespace Cover
 		const meta = new App.MetaRecord();
 		const post = new App.PostRecord();
 		post.slug = "slug";
-		const scene = new App.CaptionedSceneRecord();
+		const scene = new App.AttentionSceneRecord();
 		scene.titles.push({ text: "Title", weight: 700, size: 10 });
 		
 		const background = new App.BackgroundRecord();

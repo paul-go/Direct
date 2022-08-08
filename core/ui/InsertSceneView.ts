@@ -44,7 +44,7 @@ namespace App
 					if (!Query.ancestors(ev.target).includes(this.root))
 						this.cancelCallback?.();
 				}),
-				renderButton("+ Captioned", CaptionedSceneView),
+				renderButton("+ Attention Grabber", AttentionSceneView),
 				renderButton("+ Images & Videos", GallerySceneView),
 				renderButton("+ Prose", ProseSceneView),
 			);

@@ -7,7 +7,7 @@ namespace Cover
 		const [db1, dbName] = await setup();
 		
 		const post = new App.PostRecord();
-		const scene1 = new App.CaptionedSceneRecord();
+		const scene1 = new App.AttentionSceneRecord();
 		const scene2 = new App.ProseSceneRecord();
 		post.scenes.push(scene1, scene2);
 		await db1.save(post, scene1, scene2);
@@ -19,7 +19,7 @@ namespace Cover
 		
 		return [
 			() => postOut.scenes.length === 2,
-			() => postOut.scenes[0] instanceof App.CaptionedSceneRecord,
+			() => postOut.scenes[0] instanceof App.AttentionSceneRecord,
 			() => postOut.scenes[1] instanceof App.ProseSceneRecord,
 		];
 	}

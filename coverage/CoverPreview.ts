@@ -6,7 +6,7 @@ namespace Cover
 	{
 		const { post, meta } = setup();
 		
-		const scene1 = new App.CaptionedSceneRecord();
+		const scene1 = new App.AttentionSceneRecord();
 		
 		scene1.titles.push({
 			text: "Title1",
@@ -23,7 +23,7 @@ namespace Cover
 		scene1.description = "Scene 1 paragraph content.";
 		scene1.backgroundColorIndex = App.ColorScheme.blackIndex;
 		
-		const scene2 = new App.CaptionedSceneRecord();
+		const scene2 = new App.AttentionSceneRecord();
 		
 		scene2.titles.push({ 
 			text: "Title3",
@@ -53,10 +53,10 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPreviewCaptionedVariants()
+	export async function coverPreviewAttentionVariants()
 	{
 		const { post, meta } = setup();
-		const scene = new App.CaptionedSceneRecord();
+		const scene = new App.AttentionSceneRecord();
 		const variants: [number, number][] = [
 			[3, 300],
 			[5, 500],
@@ -81,7 +81,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPreviewCaptionedContentAlignment()
+	export async function coverPreviewAttentionContentAlignment()
 	{
 		const { post, meta } = setup();
 		
@@ -99,7 +99,7 @@ namespace Cover
 		
 		for (const origin of origins)
 		{
-			const scene = new App.CaptionedSceneRecord();
+			const scene = new App.AttentionSceneRecord();
 			
 			scene.titles.push({
 				text: "Title1",
@@ -115,11 +115,11 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPreviewCaptionedColoring()
+	export async function coverPreviewAttentionColoring()
 	{
 		const { post, meta } = setup();
 		
-		const scene1 = new App.CaptionedSceneRecord();
+		const scene1 = new App.AttentionSceneRecord();
 		
 		scene1.titles.push({
 			text: "White On Black",
@@ -129,7 +129,7 @@ namespace Cover
 		
 		scene1.backgroundColorIndex = App.ColorScheme.blackIndex;
 		
-		const scene2 = new App.CaptionedSceneRecord();
+		const scene2 = new App.AttentionSceneRecord();
 		
 		scene2.titles.push({
 			text: "Black On White",
@@ -144,10 +144,10 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPreviewCaptionedContent()
+	export async function coverPreviewAttentionContent()
 	{
 		const { post, meta } = setup();
-		const scene = new App.CaptionedSceneRecord();
+		const scene = new App.AttentionSceneRecord();
 		
 		scene.titles.push({
 			text: "Title1",
@@ -173,10 +173,10 @@ namespace Cover
 	}
 	
 	/** */
-	export function coverPreviewCaptionedBackgroundImage()
+	export function coverPreviewAttentionBackgroundImage()
 	{
 		const { post, meta } = setup();
-		const scene = new App.CaptionedSceneRecord();
+		const scene = new App.AttentionSceneRecord();
 		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("image-5.jpg");
 		scene.backgrounds.push(background);
@@ -185,10 +185,10 @@ namespace Cover
 	}
 	
 	/** */
-	export function coverPreviewCaptionedBackgroundVideo()
+	export function coverPreviewAttentionBackgroundVideo()
 	{
 		const { post, meta } = setup();
-		const scene = new App.CaptionedSceneRecord();
+		const scene = new App.AttentionSceneRecord();
 		scene.titles.push({ text: "Video", size: 20, weight: 900 });
 		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("video-1.mp4");
@@ -328,7 +328,7 @@ namespace Cover
 	/** */
 	function render(post: App.PostRecord, meta: App.MetaRecord)
 	{
-		const scene = new App.CaptionedSceneRecord();
+		const scene = new App.AttentionSceneRecord();
 		scene.titles.push({ text: "Done", size: 4, weight: 700 });
 		post.scenes.push(scene);
 		new App.PreviewView(post, meta);

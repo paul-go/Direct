@@ -1,15 +1,15 @@
-/// <reference path="CaptionedTextView.ts" />
+/// <reference path="AttentionTextView.ts" />
 
 namespace App
 {
 	/** */
-	export class CaptionedDescriptionView extends CaptionedTextView
+	export class AttentionDescriptionView extends AttentionTextView
 	{
 		/** */
 		constructor()
 		{
 			super();
-			this.root.classList.add("captioned-description-view");
+			this.root.classList.add("attention-description-view");
 			
 			this.textArea = createExpandingTextArea({
 				contentEditable: "plaintext-only",
