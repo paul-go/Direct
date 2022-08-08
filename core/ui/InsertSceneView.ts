@@ -10,8 +10,10 @@ namespace App
 			const renderButton = (label: string, sceneCtor: new() => SceneView) =>
 				UI.actionButton("filled",
 					{
-						margin: "10px 5px",
-						fontSize: UI.vsize(2.2),
+						margin: "10px " + UI.vw(0.5),
+						paddingLeft: UI.vw(2.5),
+						paddingRight: UI.vw(2.5),
+						fontSize: UI.vw(2.2),
 						flex: "1 0",
 					},
 					new Text(label),
@@ -27,7 +29,7 @@ namespace App
 				{
 					display: orientation === "v" ? "block" : "flex",
 					margin: "auto",
-					padding: "20 25px",
+					padding: "0 " + UI.vw(5),
 					maxWidth: "1000px",
 					width: orientation === "v" ? "500px" : "auto"
 				},
