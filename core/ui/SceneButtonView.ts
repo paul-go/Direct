@@ -98,20 +98,24 @@ namespace App
 			if (this._selected === value)
 				return;
 			
-			const wasSelected = this._selected;
 			const siblings = Query.siblings(this.root);
-			const siblingButtons = Controller.map(siblings, SceneButtonView);
-			siblingButtons.map(button => button._selected = false);
-			this._selected = value;
 			
+			for (const b of Controller.map(siblings, SceneButtonView))
+				if (b !== this)
+					b._selected = false;
+			
+			this._selected = value;
+			this.updateIndicator();
+		}
+		private _selected = false;
+		
+		/** */
+		updateIndicator()
+		{
 			const indicator = this.getIndicator();
 			const s = indicator.style;
 			
-			if (wasSelected)
-			{
-				s.opacity = "0";
-			}
-			else
+			if (this.selected)
 			{
 				const left = this.isIndependent ? 0 : this.root.offsetLeft;
 				const width = this.root.offsetWidth;
@@ -119,8 +123,11 @@ namespace App
 				s.width = width + "px";
 				s.opacity = "1";
 			}
+			else
+			{
+				s.opacity = "0";
+			}
 		}
-		private _selected = false;
 		
 		/** */
 		private getIndicator()

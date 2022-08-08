@@ -255,16 +255,27 @@ namespace App
 			this._sceneButtons = sceneButtons;
 			this.sceneButtonsSelectedChangedFn = changedFn;
 			
-			for (const bb of sceneButtons)
+			for (const btn of sceneButtons)
 			{
-				this.configuratorButtonsContainer.append(bb.root);
-				bb.setSelectedChangedFn(changedFn);
-			}	
+				this.configuratorButtonsContainer.append(btn.root);
+				btn.setSelectedChangedFn(changedFn);
+			}
 			
 			this.configuratorButtonsContainer.append(
 				...sceneButtons.map(bb => bb.root),
 				this.moreButton.root
 			);
+			
+			new MutationObserver(() =>
+			{
+				sceneButtons.map(b => b.selected && b.updateIndicator());
+				
+			}).observe(this.configuratorButtonsContainer, { 
+				childList: true,
+				subtree: true,
+				characterData: true,
+				attributes: true
+			});
 		}
 		
 		private sceneButtonsSelectedChangedFn = () => {};
