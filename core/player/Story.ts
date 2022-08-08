@@ -8,11 +8,9 @@ namespace Player
 		constructor(root: HTMLElement | string)
 		{
 			// Needs to go through the root and create all the scenes.
-			
-			if (root instanceof HTMLElement)
-				this.root = root;
-			else
-				this.root = document.getElementById(root) as HTMLElement;
+			this.root = typeof root === "string" ?
+				document.getElementById(root) as HTMLElement :
+				root;
 			
 			const scenes: Scene[] = [];
 			
