@@ -22,6 +22,7 @@ namespace App
 						flexDirection: "column",
 						minHeight: UI.vsize(100),
 					},
+					e => void new ForegroundMixin(e, this.record),
 					Htx.div(
 						CssClass.proseSceneForeground,
 						{
@@ -86,7 +87,24 @@ namespace App
 					this.trixEditorElement.editor.loadJSON(content);
 				}
 			});
+			
+			this.colorConfigurator = new ColorConfigurator(this.record);
+			
+			Htx.from(this.colorConfigurator.root)(
+				{ tabIndex: 0 },
+				Htx.on("focusout", () => setTimeout(() =>
+				{
+					const ancestors = Query.ancestors(document.activeElement);
+					if (!ancestors.includes(this.colorConfigurator.root))
+					{
+						this.backgroundButton.selected = false;
+						this.setSceneConfigurator(null);
+					}
+				}))
+			);
 		}
+		
+		private readonly colorConfigurator;
 		
 		/** */
 		private get editor() { return this.trixEditorElement.editor; }
@@ -216,6 +234,11 @@ namespace App
 			
 			if (hasLink)
 				this.linkEditor.link = this.getCurrentHref();
+			
+			this.setSceneConfigurator(
+				this.backgroundButton.selected ?
+					this.colorConfigurator.root :
+					null);
 		}
 		
 		/** */

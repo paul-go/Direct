@@ -31,8 +31,8 @@ namespace App
 					"backgrounds-container",
 					UI.anchor()
 				),
-				this.foregroundContainer = new ForegroundView(
-					this.record,
+				this.foregroundContainer = Htx.div(
+					e => void new ForegroundMixin(e, this.record),
 					CssClass.attentionSceneForeground,
 					this.record.origin,
 					this.textContainer = Htx.div(
@@ -52,7 +52,7 @@ namespace App
 						this.descriptionView.root,
 						this.buttonsContainer,
 					)
-				).root,
+				),
 				
 				this.createToolsHeader(
 					...this.createToolButtons()
@@ -280,14 +280,14 @@ namespace App
 			
 			if (this.backgroundsButton.selected)
 			{
-				this.foregroundContainer.style.filter = "blur(3px)";
-				this.foregroundContainer.style.pointerEvents = "none";
+				this.textContainer.style.filter = "blur(3px)";
+				this.textContainer.style.pointerEvents = "none";
 				this.setSceneConfigurator(this.backgroundManager.configuratorElement);
 			}
 			else
 			{
-				this.foregroundContainer.style.removeProperty("filter");
-				this.foregroundContainer.style.removeProperty("pointer-events");
+				this.textContainer.style.removeProperty("filter");
+				this.textContainer.style.removeProperty("pointer-events");
 				this.backgroundManager.configuratorElement.remove();
 			}
 			

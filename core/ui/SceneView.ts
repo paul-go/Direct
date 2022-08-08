@@ -190,7 +190,7 @@ namespace App
 		/** */
 		updateBackgroundColor()
 		{
-			Controller.under(this, ForegroundView)?.updateTextColor();
+			Controller.under(this, ForegroundMixin)?.updateTextColor();
 			const meta = AppContainer.of(this).meta;
 			const colorIndex = this.record.backgroundColorIndex;
 			const color = RenderUtil.resolveBackgroundColor(colorIndex, meta);

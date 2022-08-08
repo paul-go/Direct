@@ -2,22 +2,20 @@
 namespace App
 {
 	/** */
-	export class ForegroundView
+	export class ForegroundMixin
 	{
 		/** */
 		constructor(
-			private readonly record: SceneRecord,
-			...params: Htx.Param[])
+			readonly root: HTMLElement,
+			private readonly record: SceneRecord)
 		{
-			this.root = Htx.div(
+			Htx.from(this.root)(
+				"foreground-view",
 				When.connected(() => this.updateTextColor()),
-				...params
 			);
 			
 			Controller.set(this);
 		}
-		
-		readonly root;
 		
 		/** */
 		updateTextColor()
