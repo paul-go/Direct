@@ -11,21 +11,23 @@ namespace App
 			super();
 			this.root.classList.add("captioned-description-view");
 			
-			this.textBox = new TextBox();
-			this.textBox.acceptedCommands.add(InputCommand.formatBold);
-			this.root.append(this.textBox.root);
+			this.textArea = createExpandingTextArea({
+				contentEditable: "plaintext-only",
+				width: "100%",
+				lineHeight: "1.5",
+			});
 			
+			this.root.append(this.textArea);
 			this.fontSize = 4;
 			this.fontWeight = 400;
-			this.textBox.root.style.lineHeight = "1.5";
 		}
 		
-		private readonly textBox;
+		private readonly textArea;
 		
 		/** */
 		protected get isEmpty()
 		{
-			return !this.html;
+			return !this.text;
 		}
 		
 		/** */
@@ -33,7 +35,7 @@ namespace App
 		{
 			this.hide(false);
 			await UI.wait();
-			this.textBox.focus();
+			this.textArea.focus();
 		}
 		
 		/** */
@@ -44,24 +46,24 @@ namespace App
 		set fontSize(size: number)
 		{
 			this._fontSize = size;
-			this.textBox.root.style.fontSize = UI.vsize(size);
+			this.textArea.style.fontSize = UI.vsize(size);
 		}
 		private _fontSize = 0;
 		
 		/** */
 		get fontWeight()
 		{
-			return Number(this.textBox.root.style.fontWeight) || 400;
+			return Number(this.textArea.style.fontWeight) || 400;
 		}
 		set fontWeight(weight: number)
 		{
-			this.textBox.root.style.fontVariationSettings = "'wght' " + weight;
+			this.textArea.style.fontVariationSettings = "'wght' " + weight;
 		}
 		
 		/** */
 		createLink(href: string)
 		{
-			if (document.activeElement !== this.textBox.root)
+			if (document.activeElement !== this.textArea)
 				return;
 			
 			document.execCommand(InputCommand.createLink, false, href);
@@ -85,14 +87,14 @@ namespace App
 		}
 		
 		/** */
-		get html()
+		get text()
 		{
-			return this.textBox.html;
+			return this.textArea.textContent || "";
 		}
-		set html(html: string)
+		set text(text: string)
 		{
-			this.hide(!html);
-			this.textBox.html = html;
+			this.hide(!text);
+			this.textArea.textContent = text;
 		}
 	}
 }
