@@ -56,10 +56,7 @@ namespace App
 			);
 			
 			this.setSceneButtons(
-				() =>
-				{
-					this.getVisibleFrame()?.setSize(this.coverButton.selected ? "cover" : "contain");
-				},
+				() => this.getVisibleFrame()?.setSize(this.coverButton.selected ? "cover" : "contain"),
 				this.coverButton,
 				this.containButton,
 			);
@@ -130,20 +127,21 @@ namespace App
 		/** */
 		private updateButtons()
 		{
-			const currentVisibleFrame = this.getVisibleFrame();
+			const visibleFrame = this.getVisibleFrame();
 			
-			if (currentVisibleFrame === null)
+			if (visibleFrame === null)
 			{
-				this.coverButton.enabled = false;
-				this.containButton.enabled = false;
+				UI.toggle(this.coverButton.root, false);
+				UI.toggle(this.containButton.root, false);
 			}
 			else
 			{
-				this.coverButton.enabled = true;
-				this.containButton.enabled = true;
-				const cover = currentVisibleFrame.record.size === "cover";
+				UI.toggle(this.coverButton.root, true);
+				UI.toggle(this.containButton.root, true);
+				const cover = visibleFrame.record.size === "cover";
 				this.coverButton.selected = cover;
 				this.containButton.selected = !cover;
+				visibleFrame.setSize(this.coverButton.selected ? "cover" : "contain");
 			}
 		}
 	}

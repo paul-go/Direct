@@ -65,16 +65,6 @@ namespace App
 		}
 		
 		/** */
-		get visible()
-		{
-			return this.root.style.display !== "none";
-		}
-		set visible(visible: boolean)
-		{
-			this.root.style.display = visible ? "block" : "none";
-		}
-		
-		/** */
 		get enabled()
 		{
 			return this._enabled;
