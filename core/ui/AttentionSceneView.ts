@@ -37,9 +37,6 @@ namespace App
 					this.record.origin,
 					this.textContainer = Htx.div(
 						"text-container",
-						{
-							flex: "1 0"
-						},
 						this.contentImageContainer = Htx.div(
 							"content-image-container",
 							Htx.on("click", () =>
