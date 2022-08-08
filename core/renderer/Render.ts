@@ -224,7 +224,27 @@ namespace App
 			bun.meta);
 		
 		let snapFooter: HTMLElement | null = null;
-		const addSnapFooter = () => snapFooter = Htx.div(CssClass.snapFooter);
+		const includeSnapFooter = () => snapFooter = Htx.div(CssClass.snapFooter);
+		
+		const sceneParams = (() =>
+		{
+			if (bun.scene instanceof AttentionSceneRecord)
+				return renderAttentionScene(bun as Bundle<AttentionSceneRecord>);
+			
+			if (bun.scene instanceof ProseSceneRecord)
+			{
+				includeSnapFooter();
+				return renderProseScene(bun as Bundle<ProseSceneRecord>);
+			}
+			
+			if (bun.scene instanceof GallerySceneRecord)
+				return renderGalleryScene(bun as Bundle<GallerySceneRecord>);
+			
+			if (bun.scene instanceof VideoSceneRecord)
+				return renderVideoScene(bun as Bundle<VideoSceneRecord>);
+			
+			return [];
+		})();
 		
 		return [
 			Htx.section(
@@ -236,25 +256,7 @@ namespace App
 						[DataAttributes.transition]: bun.useAnimation(bun.scene.transition)
 					}
 				},
-				...(() =>
-				{
-					if (bun.scene instanceof AttentionSceneRecord)
-						return renderAttentionScene(bun as Bundle<AttentionSceneRecord>);
-					
-					if (bun.scene instanceof ProseSceneRecord)
-					{
-						addSnapFooter();
-						return renderProseScene(bun as Bundle<ProseSceneRecord>);
-					}
-					
-					if (bun.scene instanceof GallerySceneRecord)
-						return renderGalleryScene(bun as Bundle<GallerySceneRecord>);
-					
-					if (bun.scene instanceof VideoSceneRecord)
-						return renderVideoScene(bun as Bundle<VideoSceneRecord>);
-					
-					return [];
-				})()
+				...sceneParams
 			),
 			snapFooter,
 		];
@@ -523,9 +525,6 @@ namespace App
 	 */
 	function renderProseScene(bun: Bundle<ProseSceneRecord>)
 	{
-		if (!bun.scene.content)
-			return [];
-		
 		return [
 			CssClass.proseScene,
 			Htx.div(
@@ -538,10 +537,12 @@ namespace App
 	/**
 	 * 
 	 */
-	function renderProseDocument(content: ITrixSerializedObject)
+	function renderProseDocument(content: ITrixSerializedObject | null)
 	{
-		const elements: HTMLElement[] = [];
+		if (!content)
+			return [];
 		
+		const elements: HTMLElement[] = [];
 		for (const block of content.document)
 		{
 			if (block.attributes.includes("heading1"))
