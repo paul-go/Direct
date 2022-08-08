@@ -204,7 +204,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverUI()
+	export async function coverLoadingModal()
 	{
 		const s = document.body.style;
 		s.fontSize = "80px";
