@@ -83,7 +83,11 @@ namespace App
 					"config-container",
 					{
 						padding: "0 30px 30px"
-					}
+					},
+					Htx.on(document.body, "keydown", ev =>
+					{
+						ev.key === "Escape" && this.deselectSceneButtons();
+					})
 				)).root,
 				
 				// Final add
