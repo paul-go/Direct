@@ -94,6 +94,7 @@ namespace App
 			}),
 			Htx.on("drop", async ev =>
 			{
+				ev.preventDefault();
 				const files = await FileLike.fromFiles(ev.dataTransfer?.files);
 				
 				const { x, y } = getLayerCoords(

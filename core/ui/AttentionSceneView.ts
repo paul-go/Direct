@@ -23,7 +23,7 @@ namespace App
 					),
 					Htx.div(
 						UI.dripperStyle("bottom"),
-						new Text("Add Background Image")
+						new Text("Add Background")
 					),
 					onFileDrop((files, x, y) => this.handleMediaDrop(files, x, y)),
 				),
