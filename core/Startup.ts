@@ -62,7 +62,6 @@ namespace App
 			{ ctor: App.PostRecord, stable: 2, root: true },
 			{ ctor: App.AttentionSceneRecord, stable: 3 },
 			{ ctor: App.ProseSceneRecord, stable: 4 },
-			{ ctor: App.VideoSceneRecord, stable: 5 },
 			{ ctor: App.GallerySceneRecord, stable: 6 },
 			{ ctor: App.FrameRecord, stable: 7 },
 			{ ctor: App.MediaRecord, stable: 8 },

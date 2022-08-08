@@ -204,6 +204,9 @@ namespace Cover
 		
 		const scene = new App.GallerySceneRecord();
 		
+		const frame0 = new App.FrameRecord();
+		frame0.media = Cover.readMedia("video-1.mp4");
+		
 		const frame1 = new App.FrameRecord();
 		frame1.media = Cover.readMedia("image-1.jpg");
 		frame1.captionLine1 = "Caption Line 1";
@@ -217,7 +220,7 @@ namespace Cover
 		frame3.captionLine1 = "Caption Line 1";
 		frame3.captionLine2 = "Caption Line 2";
 		
-		scene.frames.push(frame1, frame2, frame3);
+		scene.frames.push(frame0, frame1, frame2, frame3);
 		post.scenes.push(scene);
 		render(post, meta);
 	}
@@ -290,23 +293,6 @@ namespace Cover
 		scene3.backgroundColorIndex = 1;
 		
 		post.scenes.push(scene1, scene2, scene3);
-		render(post, meta);
-	}
-	
-	/** */
-	export function coverPreviewVideo()
-	{
-		const { post, meta } = setup();
-		
-		const scene1 = new App.VideoSceneRecord();
-		scene1.media = Cover.readMedia("video-1.mp4");
-		scene1.size = "contain";
-		
-		const scene2 = new App.VideoSceneRecord();
-		scene2.media = Cover.readMedia("video-1.mp4");
-		scene2.size = "cover";
-		
-		post.scenes.push(scene1, scene2);
 		render(post, meta);
 	}
 	

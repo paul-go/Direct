@@ -240,9 +240,6 @@ namespace App
 			if (bun.scene instanceof GallerySceneRecord)
 				return renderGalleryScene(bun as Bundle<GallerySceneRecord>);
 			
-			if (bun.scene instanceof VideoSceneRecord)
-				return renderVideoScene(bun as Bundle<VideoSceneRecord>);
-			
 			return [];
 		})();
 		
@@ -618,30 +615,5 @@ namespace App
 		}
 		
 		return elements;
-	}
-	
-	/**
-	 * 
-	 */
-	function renderVideoScene(bun: Bundle<VideoSceneRecord>)
-	{
-		const scene = bun.scene;
-		const media = scene.media;
-		if (!media)
-			return [];
-		
-		const params: Htx.Param[] = [CssClass.videoScene];
-		
-		const src = bun.getMediaUrl(media);
-		const videoTag = RenderUtil.createVideo(src, media.type, scene.size);
-		params.push(videoTag);
-		
-		if (scene.size === "contain")
-		{
-			const videoFillerTag = RenderUtil.createVideoFiller(videoTag);
-			params.push(videoFillerTag);
-		}
-		
-		return params;
 	}
 }

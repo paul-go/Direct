@@ -126,13 +126,6 @@ namespace App
 	}
 	
 	/** */
-	export class VideoSceneRecord extends SceneRecord
-	{
-		size: SizeMethod = "cover";
-		media = Database.reference(MediaRecord);
-	}
-	
-	/** */
 	export class FrameRecord extends Record
 	{
 		captionLine1 = "";
