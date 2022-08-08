@@ -70,8 +70,11 @@ namespace Htx { { } }
 	{
 		return (...params: Htx.Param[]) =>
 		{
-			elements.forEach(e => apply(e, params));
-			return elements.length ? elements[0] : null;
+			for (const e of elements)
+				if (e instanceof Element)
+					apply(e, params);
+			
+			return elements[0] || null;
 		};
 	}
 	
