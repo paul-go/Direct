@@ -535,7 +535,7 @@ namespace App
 	/**
 	 * 
 	 */
-	function renderProseDocument(content: ITrixSerializedObject | null)
+	export function renderProseDocument(content: ITrixSerializedObject | null)
 	{
 		if (!content)
 			return [];

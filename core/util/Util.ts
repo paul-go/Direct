@@ -125,9 +125,23 @@ namespace App
 		}
 		
 		/** */
-		export function cloneObject(object: object)
+		export function deepObjectClone(object: object)
 		{
 			return JSON.parse(JSON.stringify(object));
+		}
+		
+		/** */
+		export function deepObjectEquals(a: object, b: object)
+		{
+			if (a === b)
+				return true;
+			
+			if (typeof a !== typeof b || !a  || !b)
+				return false;
+			
+			const entriesA = Object.entries(a).sort().toString();
+			const entriesB = Object.entries(b).sort().toString();
+			return entriesA === entriesB;
 		}
 		
 		//# Record Related

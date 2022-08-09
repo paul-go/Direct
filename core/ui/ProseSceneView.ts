@@ -56,6 +56,20 @@ namespace App
 				this.backgroundButton,
 			);
 			
+			this.root.addEventListener("paste", ev =>
+			{
+				ev.preventDefault();
+				
+				const htmlText = ev.clipboardData?.getData("text/html");
+				if (!htmlText)
+					return;
+				
+				const htmlTextSanitized = App.sanitizeArbitraryHtml(htmlText);
+				this.trixEditorElement.editor.recordUndoEntry("Paste HTML");
+				this.trixEditorElement.editor.insertHTML(htmlTextSanitized);
+				
+			}, { capture: true });
+			
 			this.trixEditorElement.addEventListener("trix-selection-change", () => 
 			{
 				if (!this.blockSelectionChangeEvents)
@@ -86,7 +100,7 @@ namespace App
 					// Awkward: You need to clone the JSON object
 					// because the record object has a bunch of proxies
 					// installed in it, and this is causing Trix to get confused.
-					const content = Util.cloneObject(record.content);
+					const content = Util.deepObjectClone(record.content);
 					this.trixEditorElement.editor.loadJSON(content);
 				}
 			});
@@ -339,7 +353,7 @@ namespace App
 		/** */
 		private save()
 		{
-			this.record.content = Util.cloneObject(this.editor.toJSON());
+			this.record.content = Util.deepObjectClone(this.editor.toJSON());
 		}
 	}
 }
