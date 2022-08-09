@@ -191,7 +191,6 @@ namespace Htx { { } }
 		const styles = maybeStyles || selectorOrStyles as Htx.Style;
 		const cssClass = "c" + (index++);
 		const ruleText = "." + cssClass + selector + "{}";
-		
 		const idx = inlineRuleSheet.insertRule(ruleText);
 		const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
 		
