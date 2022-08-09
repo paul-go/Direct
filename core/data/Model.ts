@@ -49,7 +49,8 @@ namespace App
 			value: string | number | boolean): boolean
 		{
 			const p = this.publishParams;
-			const changed = p[publisherKey]?.[paramKey] === value;
+			const current = p[publisherKey]?.[paramKey];
+			const changed = current !== value;
 			(p[publisherKey] ||= {})[paramKey] = value;
 			
 			if (changed)
