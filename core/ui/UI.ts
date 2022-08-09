@@ -498,21 +498,27 @@ namespace App
 		}
 		
 		/** */
-		export function visibleWhenEmpty(watchTarget: HTMLElement): Htx.Param
-		{
-			return When.connected(e => addVisibilityObserver(e, watchTarget, true));
-		}
-		
-		/** */
 		export function visibleWhenNotAlone()
 		{
 			return Htx.css(":only-child", { display: "none" });
 		}
 		
 		/** */
+		export function visibleWhenEmpty(watchTarget: HTMLElement): Htx.Param
+		{
+			return () => [
+				watchTarget.children.length === 0 ? "" : CssClass.hide,
+				When.connected(e => addVisibilityObserver(e, watchTarget, true)),
+			];
+		}
+		
+		/** */
 		export function visibleWhenNotEmpty(watchTarget: HTMLElement): Htx.Param
 		{
-			return When.connected(e => addVisibilityObserver(e, watchTarget, false));
+			return () => [
+				watchTarget.children.length === 0 ? CssClass.hide : "",
+				When.connected(e => addVisibilityObserver(e, watchTarget, false)),
+			];
 		}
 		
 		/** */
