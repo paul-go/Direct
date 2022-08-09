@@ -219,4 +219,22 @@ namespace Cover
 		},
 		3000);
 	}
+	
+	/** */
+	export async function coverEditable()
+	{
+		Htx.from(document.body)(
+			{
+				padding: "20px",
+			},
+			Htx.span(
+				{
+					border: "1px solid red",
+					padding: "10px",
+					margin: "20px",
+				},
+				App.Editable.single({ placeholder: "Enter the value here." }),
+			)
+		);
+	}
 }
