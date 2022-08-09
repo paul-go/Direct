@@ -11,11 +11,13 @@ namespace App
 			super();
 			this.root.classList.add("attention-description-view");
 			
-			this.textArea = createExpandingTextArea({
-				contentEditable: "plaintext-only",
-				width: "100%",
-				lineHeight: "1.5",
-			});
+			this.textArea = Htx.div(
+				Editable.multi(),
+				{
+					width: "100%",
+					lineHeight: "1.5",
+				}
+			)
 			
 			this.root.append(this.textArea);
 			this.fontSize = 4;

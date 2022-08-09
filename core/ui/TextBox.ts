@@ -85,7 +85,7 @@ namespace App
 		/** */
 		isMultiLine = true;
 		
-		/** */
+		/** (unused) */
 		get characterPosition()
 		{
 			const sel = document.getSelection();
@@ -98,7 +98,7 @@ namespace App
 			return 0;
 		}
 		
-		/** */
+		/** (unused) */
 		get characterCount()
 		{
 			return this.editableElement.textContent?.length || 0;
