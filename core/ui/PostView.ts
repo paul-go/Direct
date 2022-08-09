@@ -83,7 +83,21 @@ namespace App
 								this.tryPublish();
 							}),
 							...UI.text("Publish", 25, 800),
-						),
+							this.settingsButtonElement = UI.settingsIcon(
+								CssClass.hide,
+								{
+									position: "absolute",
+									right: "-2.75em",
+									width: "30px",
+									height: "30px",
+								},
+								Htx.on(UI.clickEvt, ev =>
+								{
+									this.setupPublish();
+									ev.stopPropagation();
+								}),
+							)
+						)
 					),
 					this.publishInfoElement = Htx.div("publish-info")
 				),
@@ -128,7 +142,6 @@ namespace App
 			});
 			
 			this.updatePublishInfo();
-			
 			Controller.set(this);
 		}
 		
@@ -138,6 +151,7 @@ namespace App
 		private readonly headerScreen;
 		private readonly scenesElement;
 		private readonly footerElement;
+		private readonly settingsButtonElement;
 		private readonly noScenesBox;
 		private readonly isNewRecord: boolean;
 		private publishInfoElement;
@@ -270,7 +284,7 @@ namespace App
 			{
 				const meta = AppContainer.of(this).meta;
 				const publisher = Publisher.getCurrentPublisher(this.record, meta);
-				const dstText = publisher?.getPublishDestinationUI() || "";
+				const dstUI = publisher?.getPublishDestinationUI();
 				
 				this.publishInfoElement.replaceWith(this.publishInfoElement = Htx.div(
 					"publish-info",
@@ -281,34 +295,29 @@ namespace App
 						textAlign: "center",
 					},
 					
-					dstText && Htx.div(
-						...UI.text("Goes to: ", 24, 600)
+					dstUI && Htx.span(
+						{
+							paddingRight: "10px",
+							opacity: "0.66"
+						},
+						...UI.text("Publishes to:", 24, 600)
 					),
 					
-					dstText && Htx.div(
+					dstUI && Htx.span(
 						{
 							verticalAlign: "bottom",
 							overflow: "hidden",
-							display: "inline-block",
 							textOverflow: "ellipsis",
 							whiteSpace: "nowrap",
 							fontSize: "24px",
 							fontWeight: "800",
 							lineHeight: "2.5"
 						},
-						dstText
+						dstUI
 					),
-					
-					dstText && UI.actionButton("filled",
-						{
-							width: "min-content",
-							marginTop: "15px",
-							padding: "10px 20px",
-						},
-						...UI.click(() => this.setupPublish()),
-						...UI.text("Change", 20, 700),
-					)
 				));
+				
+				UI.toggle(this.settingsButtonElement, !!publisher);
 			});
 		}
 	}
