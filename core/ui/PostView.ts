@@ -55,31 +55,35 @@ namespace App
 				this.footerElement = Htx.div(
 					"footer",
 					{
-						width: "fit-content",
-						minWidth: "400px",
-						margin: "auto",
 						padding: "0 20px",
 					},
 					UI.visibleWhenNotEmpty(this.scenesElement),
 					
-					UI.actionButton(
-						"filled",
-						{ maxWidth: "400px" },
-						...UI.click(() => this.handlePreview()),
-						new Text("Preview")
-					),
-					UI.clickLabel(
-						"publish-button",
+					Htx.div(
 						{
-							margin: "10px auto",
-							padding: "20px",
-							width: "min-content",
+							width: "fit-content",
+							minWidth: "400px",
+							margin: "auto",
 						},
-						Htx.on(UI.clickEvt, () =>
-						{
-							this.tryPublish();
-						}),
-						...UI.text("Publish", 25, 800),
+						UI.actionButton(
+							"filled",
+							{ maxWidth: "400px" },
+							...UI.click(() => this.handlePreview()),
+							new Text("Preview")
+						),
+						UI.clickLabel(
+							"publish-button",
+							{
+								margin: "10px auto",
+								padding: "20px",
+								width: "min-content",
+							},
+							Htx.on(UI.clickEvt, () =>
+							{
+								this.tryPublish();
+							}),
+							...UI.text("Publish", 25, 800),
+						),
 					),
 					this.publishInfoElement = Htx.div("publish-info")
 				),
@@ -271,29 +275,18 @@ namespace App
 				this.publishInfoElement.replaceWith(this.publishInfoElement = Htx.div(
 					"publish-info",
 					{
-						height: "1.6em",
 						margin: "40px 0",
+						paddingBottom: "50px",
 						color: UI.white(0.5),
 						textAlign: "center",
 					},
 					
-					dstText && UI.settingsIcon(
-						{
-							position: "absolute",
-							right: "-1.5em",
-							width: "30px",
-							height: "30px",
-						},
-						...UI.click(() => this.setupPublish())
+					dstText && Htx.div(
+						...UI.text("Goes to: ", 24, 600)
 					),
 					
-					dstText && Htx.span(
-						...UI.text("Publish to: ", 24, 600)
-					),
-					
-					dstText && Htx.span(
+					dstText && Htx.div(
 						{
-							maxWidth: "8em",
 							verticalAlign: "bottom",
 							overflow: "hidden",
 							display: "inline-block",
@@ -301,10 +294,21 @@ namespace App
 							whiteSpace: "nowrap",
 							fontSize: "24px",
 							fontWeight: "800",
+							lineHeight: "2.5"
 						},
 						dstText
 					),
-				))
+					
+					dstText && UI.actionButton("filled",
+						{
+							width: "min-content",
+							marginTop: "15px",
+							padding: "10px 20px",
+						},
+						...UI.click(() => this.setupPublish()),
+						...UI.text("Change", 20, 700),
+					)
+				));
 			});
 		}
 	}

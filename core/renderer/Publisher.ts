@@ -144,6 +144,10 @@ namespace App
 		protected close()
 		{
 			Controller.over(this, PublishSetupView)?.close();
+			
+			// Scroll the window to the bottom, in order to make sure
+			// that the publishing information is visible.
+			window.scrollTo({ top: Number.MAX_SAFE_INTEGER, behavior: "smooth" });
 		}
 		
 		/** */
