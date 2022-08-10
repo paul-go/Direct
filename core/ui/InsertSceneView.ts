@@ -21,6 +21,12 @@ namespace App
 					{
 						const scene = new sceneCtor();
 						this.insertCallback?.(scene);
+						
+						setTimeout(() => scene.root.scrollIntoView({
+							behavior: "smooth",
+							block: "nearest",
+							inline: "nearest"
+						}));
 					})
 				);
 			
@@ -46,9 +52,9 @@ namespace App
 					if (!Query.ancestors(ev.target).includes(this.root))
 						this.cancelCallback?.();
 				}),
-				renderButton("+ Attention Grabber", AttentionSceneView),
-				renderButton("+ Images & Videos", GallerySceneView),
-				renderButton("+ Prose", ProseSceneView),
+				renderButton("Canvas", AttentionSceneView),
+				renderButton("Images & Videos", GallerySceneView),
+				renderButton("Prose", ProseSceneView),
 			);
 		}
 		
