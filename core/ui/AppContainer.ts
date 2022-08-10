@@ -5,9 +5,9 @@ namespace App
 	export class AppContainer
 	{
 		/** */
-		static of(target: Element | Controller.IController)
+		static of(target: Element | Cage.ICage)
 		{
-			return Controller.over(target, AppContainer as any as new() => AppContainer);
+			return Cage.over(target, AppContainer as any as new() => AppContainer);
 		}
 		
 		/** */
@@ -73,7 +73,7 @@ namespace App
 				})
 			);
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		/** */

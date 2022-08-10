@@ -51,7 +51,7 @@ namespace App
 				(this.linkTextBox = this.createLinkTextBox()).root
 			);
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

@@ -18,26 +18,26 @@ namespace App
 		/** */
 		export function open(options: ISurfaceOptions)
 		{
-			return new SurfaceController(options).root;
+			return new SurfaceCage(options).root;
 		}
 		
 		/** */
 		export function close(surfaceElement: HTMLElement)
 		{
-			const ctl = Controller.get(surfaceElement, SurfaceController);
+			const ctl = Cage.get(surfaceElement, SurfaceCage);
 			ctl?.close();
 		}
 		
 		/** */
 		export function accept(surfaceElement: HTMLElement)
 		{
-			const ctl = Controller.get(surfaceElement, SurfaceController);
+			const ctl = Cage.get(surfaceElement, SurfaceCage);
 			ctl?.close("accept");
 		}
 	}
 	
 	/** */
-	class SurfaceController
+	class SurfaceCage
 	{
 		constructor(private readonly options: ISurfaceOptions)
 		{
@@ -133,7 +133,7 @@ namespace App
 			if (options.class)
 				this.root.classList.add(options.class);
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root: HTMLElement;

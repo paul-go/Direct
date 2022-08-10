@@ -110,7 +110,7 @@ namespace App
 				})
 			);
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root: HTMLDivElement;
@@ -194,7 +194,7 @@ namespace App
 		/** */
 		updateBackgroundColor()
 		{
-			Controller.under(this, ForegroundMixin)?.updateTextColor();
+			Cage.under(this, ForegroundMixin)?.updateTextColor();
 			const meta = AppContainer.of(this).meta;
 			const colorIndex = this.record.backgroundColorIndex;
 			const color = RenderUtil.resolveBackgroundColor(colorIndex, meta);

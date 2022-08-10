@@ -13,7 +13,7 @@ namespace App
 			this.titleView = new AttentionTitleView();
 			this.descriptionView = new AttentionDescriptionView();
 			this.buttonsContainer = Htx.div("buttons");
-			this.buttons = new Controller.Array(this.buttonsContainer, AttentionButton);
+			this.buttons = new Cage.Array(this.buttonsContainer, AttentionButton);
 			
 			Htx.from(this.sceneContainer)(
 				...UI.dripper(

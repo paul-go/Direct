@@ -21,7 +21,7 @@ namespace App
 			);
 			
 			this.hide();
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

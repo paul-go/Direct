@@ -45,7 +45,7 @@ namespace App
 				});
 			}
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;
@@ -90,7 +90,7 @@ namespace App
 			
 			const siblings = Query.siblings(this.root);
 			
-			for (const b of Controller.map(siblings, SceneButtonView))
+			for (const b of Cage.map(siblings, SceneButtonView))
 				if (b !== this)
 					b._selected = false;
 			

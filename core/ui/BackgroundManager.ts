@@ -22,8 +22,8 @@ namespace App
 				new ColorConfigurator(this.record).root
 			);
 			
-			this.previews = new Controller.Array(this.root, BackgroundPreview);
-			this.configurators = new Controller.Array(imagesConfigurators, BackgroundConfigurator);
+			this.previews = new Cage.Array(this.root, BackgroundPreview);
+			this.configurators = new Cage.Array(imagesConfigurators, BackgroundConfigurator);
 			
 			for (const bg of record.backgrounds)
 				if (bg.media)
@@ -35,7 +35,7 @@ namespace App
 				this.record.backgrounds = records;
 			});
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly configuratorElement;
@@ -141,7 +141,7 @@ namespace App
 				this.setUsingCover(record.size < 0);
 			}
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;
@@ -245,7 +245,7 @@ namespace App
 				RenderUtil.createVideoBackground(blobUrl, mimeType)
 			);
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;
@@ -311,7 +311,7 @@ namespace App
 			);
 			
 			this.size = record.size;
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

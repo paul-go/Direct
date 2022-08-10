@@ -5,7 +5,7 @@ namespace App
 	export class PublishSetupView
 	{
 		/** */
-		static show(via: Controller.IController, record: PostRecord)
+		static show(via: Cage.ICage, record: PostRecord)
 		{
 			const app = AppContainer.of(via);
 			const view = new PublishSetupView(record, app);
@@ -88,7 +88,7 @@ namespace App
 			this.root = overlay.element;
 			this.overlayFlipper = overlay.flipper;
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

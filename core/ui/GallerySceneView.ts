@@ -110,7 +110,7 @@ namespace App
 			
 			await UI.wait();
 			
-			this.record.frames = Controller
+			this.record.frames = Cage
 				.map(this.galleryContainer, FrameView)
 				.map(v => v.record);
 		}
@@ -120,7 +120,7 @@ namespace App
 		{
 			const gc = this.galleryContainer;
 			const index = Math.round(gc.scrollLeft / gc.offsetWidth) || 0;
-			const frameViews = Controller.map(Query.children(gc), FrameView);
+			const frameViews = Cage.map(Query.children(gc), FrameView);
 			return frameViews.length > 0 ? frameViews[index] : null;
 		}
 		
@@ -198,7 +198,7 @@ namespace App
 			);
 			
 			this.setSize(record.size)
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

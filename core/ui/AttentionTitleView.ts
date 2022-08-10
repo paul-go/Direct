@@ -63,13 +63,13 @@ namespace App
 						}
 						else if (atEnd)
 						{
-							const next = Controller.next(textbox.root, TextBox);
+							const next = Cage.next(textbox.root, TextBox);
 							const tb = this.insertTitle("", next);
 							tb.focus();
 						}
 						else
 						{
-							const next = Controller.next(textbox.root, TextBox);
+							const next = Cage.next(textbox.root, TextBox);
 							const text = textbox.text.slice(charPos);
 							const newTextBox = this.insertTitle(text, next);
 							newTextBox.focus();
@@ -82,7 +82,7 @@ namespace App
 					{
 						if (atStart)
 						{
-							const prev = Controller.previous(textbox.root, TextBox);
+							const prev = Cage.previous(textbox.root, TextBox);
 							if (prev)
 							{
 								const position = prev.text.length;
@@ -97,7 +97,7 @@ namespace App
 					{
 						if (atEnd)
 						{
-							const next = Controller.next(textbox.root, TextBox);
+							const next = Cage.next(textbox.root, TextBox);
 							if (next)
 							{
 								const position = textbox.text.length;
@@ -110,13 +110,13 @@ namespace App
 					}
 					break; case "ArrowUp":
 					{
-						const previous = Controller.previous(textbox.root, TextBox);
+						const previous = Cage.previous(textbox.root, TextBox);
 						if (previous)
 							previous.focus({ position: previous.text.length });
 					}
 					break; case "ArrowDown":
 					{
-						const next = Controller.next(textbox.root, TextBox);
+						const next = Cage.next(textbox.root, TextBox);
 						if (next)
 							next.focus({ position: next.text.length });
 					}
@@ -124,7 +124,7 @@ namespace App
 					{
 						if (atStart)
 						{
-							const previous = Controller.previous(textbox.root, TextBox);
+							const previous = Cage.previous(textbox.root, TextBox);
 							if (previous)
 								previous.focus({ position: previous.text.length });
 						}
@@ -133,7 +133,7 @@ namespace App
 					{
 						if (atEnd)
 						{
-							const next = Controller.next(textbox.root, TextBox);
+							const next = Cage.next(textbox.root, TextBox);
 							if (next)
 								next.focus({ position: next.text.length });
 						}
@@ -164,13 +164,13 @@ namespace App
 		getTextBox(index: number)
 		{
 			const e = Query.children(this.root)[index];
-			return e ? Controller.get(e, TextBox) : null;
+			return e ? Cage.get(e, TextBox) : null;
 		}
 		
 		/** */
 		getTextBoxes()
 		{
-			return Controller.map(Query.children(this.root), TextBox);
+			return Cage.map(Query.children(this.root), TextBox);
 		}
 		
 		/** */
@@ -220,7 +220,7 @@ namespace App
 		/** */
 		getTitleData()
 		{
-			const textBoxes = Controller.map(Query.children(this.root), TextBox);
+			const textBoxes = Cage.map(Query.children(this.root), TextBox);
 			const data: ITitle[] = [];
 			
 			for (let i = -1; ++i < textBoxes.length;)

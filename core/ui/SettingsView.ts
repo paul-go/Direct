@@ -88,7 +88,7 @@ namespace App
 				]
 			});
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;
@@ -194,7 +194,7 @@ namespace App
 				})
 			);
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

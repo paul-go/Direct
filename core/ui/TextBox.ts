@@ -70,7 +70,7 @@ namespace App
 			
 			this.updatePlaceholder();
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		/** */

@@ -14,7 +14,7 @@ namespace App
 				When.connected(() => this.updateTextColor()),
 			);
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		/** */

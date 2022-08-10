@@ -50,7 +50,7 @@ namespace App
 			);
 			
 			setTimeout(() => this.updateThumb());
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

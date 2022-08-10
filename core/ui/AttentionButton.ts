@@ -53,7 +53,7 @@ namespace App
 			this.button.root.classList.add(AttentionButtonClass.all);
 			this.class = this.class;
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

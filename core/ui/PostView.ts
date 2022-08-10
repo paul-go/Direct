@@ -133,7 +133,7 @@ namespace App
 				),
 			);
 			
-			this.scenes = new Controller.Array(this.scenesElement, SceneView);
+			this.scenes = new Cage.Array(this.scenesElement, SceneView);
 			this.scenes.insert(...this.record.scenes.map(b => SceneView.new(b)));
 			this.scenes.observe(() =>
 			{
@@ -142,7 +142,7 @@ namespace App
 			});
 			
 			this.updatePublishInfo();
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;

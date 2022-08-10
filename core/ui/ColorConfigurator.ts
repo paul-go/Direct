@@ -17,7 +17,7 @@ namespace App
 				When.connected(() => this.render())
 			);
 			
-			Controller.set(this);
+			Cage.set(this);
 		}
 		
 		readonly root;
@@ -77,7 +77,7 @@ namespace App
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			
-			Controller.over(this, SceneView).updateBackgroundColor();
+			Cage.over(this, SceneView).updateBackgroundColor();
 		}
 	}
 }

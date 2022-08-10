@@ -137,13 +137,13 @@ namespace App
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
 			this.meta.setPublishParam(this.key, paramKey, value);
-			When.connected(this.root, () => Controller.over(this, PostView).updatePublishInfo());
+			When.connected(this.root, () => Cage.over(this, PostView).updatePublishInfo());
 		}
 		
 		/** */
 		protected close()
 		{
-			Controller.over(this, PublishSetupView)?.close();
+			Cage.over(this, PublishSetupView)?.close();
 			
 			// Scroll the window to the bottom, in order to make sure
 			// that the publishing information is visible.
