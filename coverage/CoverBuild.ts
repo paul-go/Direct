@@ -84,6 +84,10 @@ namespace Cover
 		copyOne("res.blur-black.png");
 		copyOne("res.blur-white.png");
 		copyOne("favicon.ico");
+		
+		for (const fontFile of Fs.readdirSync(Dir.lib))
+			if (fontFile.startsWith("font-"))
+				copyOne(fontFile);
 	}
 	
 	/** */
@@ -239,7 +243,7 @@ namespace Cover
 		
 		if (typeof document !== "undefined")
 		{
-			document.body.append(Htx.div(
+			const logDiv = Htx.div(
 				{
 					padding: "10px",
 					margin: "10px",
@@ -248,7 +252,10 @@ namespace Cover
 					fontSize: "20px"
 				},
 				new Text(value)
-			));
+			);
+			
+			document.body.append(logDiv);
+			setTimeout(() => logDiv.scrollIntoView({ behavior: "smooth" }));
 		}
 	}
 	
