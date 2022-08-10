@@ -28,7 +28,7 @@ namespace App
 	function createGeneralCss()
 	{
 		return [
-			...(TAURI ? [] : createFontsCss()),
+			...(DEBUG || TAURI ? [] : createFontsCss()),
 			rule("*", {
 				"position": "relative",
 				"margin": 0,
@@ -44,7 +44,7 @@ namespace App
 				"background-color": "black",
 				"color": "white",
 				"font-size": "20px",
-				"font-family": TAURI ? 
+				"font-family": DEBUG || TAURI ? 
 					"-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif" :
 					"Inter",
 			}),
