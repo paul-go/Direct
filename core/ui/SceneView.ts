@@ -339,8 +339,8 @@ namespace App
 		{
 			this._transition = value;
 			
-			if (this.transitionAnchor)
-				this.transitionAnchor.innerHTML = `<b>Transition</b>&nbsp;&#8212; ${value.label}`;
+			//if (this.transitionAnchor)
+			//	this.transitionAnchor.innerHTML = `<b>Transition</b>&nbsp;&#8212; ${value.label}`;
 		}
 		private _transition = Transitions.slide;
 		
