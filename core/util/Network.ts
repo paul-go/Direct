@@ -103,7 +103,7 @@ namespace App
 			const xhr = new XMLHttpRequest();
 			xhr.open(params.method ?? "GET", url);
 			xhr.responseType = "arraybuffer";
-			xhr.withCredentials = true;
+			//xhr.withCredentials = true;
 			
 			const headers = params.headers || [];
 			for (const [headerName, headerValue] of headers)
