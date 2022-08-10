@@ -43,7 +43,11 @@ namespace App
 						(this.linkEditor = new LinkEditorView()).root
 					)
 				),
-				When.connected(() => this.updateButtons())
+				When.connected(() =>
+				{
+					this.updateButtons();
+					this.trixEditorElement.focus({ preventScroll: false });
+				})
 			);
 			
 			this.setSceneButtons(
