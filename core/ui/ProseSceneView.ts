@@ -94,6 +94,14 @@ namespace App
 				this.save();
 			});
 			
+			// Setup the placeholder
+			this.trixEditorElement.setAttribute("placeholder", "Write something inspiring here...");
+			Htx.from(this.trixEditorElement)(
+				Htx.css(":before", {
+					fontSize: "30px"
+				})
+			);
+			
 			this.linkEditor.setCommitFn(link => this.commitLink(link));
 			this.setupAutoSaver();
 			
