@@ -35,8 +35,7 @@ namespace App
 				{
 					display: orientation === "v" ? "block" : "flex",
 					margin: "auto",
-					padding: "0 " + UI.vw(5),
-					maxWidth: "1000px",
+					maxWidth: "650px",
 					width: orientation === "v" ? "500px" : "auto"
 				},
 				Htx.on(document.body, "keydown", ev =>
@@ -53,7 +52,7 @@ namespace App
 						this.cancelCallback?.();
 				}),
 				renderButton("Canvas", AttentionSceneView),
-				renderButton("Images & Videos", GallerySceneView),
+				renderButton("Gallery", GallerySceneView),
 				renderButton("Prose", ProseSceneView),
 			);
 		}
