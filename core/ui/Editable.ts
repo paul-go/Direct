@@ -106,12 +106,13 @@ namespace App
 				}),
 				
 				Htx.css(":empty:before", {
-					content: `"${options?.placeholder || ""}"`,
+					content: `"${options?.placeholderText || ""}"`,
 					pointerEvents: "none",
 					height: "0",
 					display: "inline-block",
 					opacity: "0.5",
 					zIndex: "-1",
+					...options?.placeholderCss
 				}),
 				Htx.on("keydown", ev =>
 				{
@@ -141,7 +142,8 @@ namespace App
 		/** */
 		export interface ISingleOptions
 		{
-			placeholder: string;
+			placeholderText: string;
+			placeholderCss: Htx.Style;
 		}
 		
 		/** */

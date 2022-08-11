@@ -52,7 +52,10 @@ namespace App
 		/** */
 		constructor(
 			readonly post: PostRecord,
-			protected readonly meta: MetaRecord) { }
+			protected readonly meta: MetaRecord)
+		{
+			this.canHaveSlug = post !== meta.homePost;
+		}
 		
 		/** */
 		abstract readonly root: HTMLElement;
@@ -62,6 +65,9 @@ namespace App
 		
 		/** */
 		abstract readonly label: string;
+		
+		/** */
+		readonly canHaveSlug: boolean;
 		
 		/** */
 		shouldInsert()
@@ -118,19 +124,19 @@ namespace App
 		}
 		
 		/**
-		 * Gets a string description of the location where the publish
+		 * Gets a string that describes the location of where the publish
 		 * action is going to write the files. If a falsey value is returned,
 		 * this indicates that this Publisher is currently incapable of publishing.
 		 */
-		getPublishDestinationUI(): Htx.Param
+		getPublishDestinationRoot()
 		{
-			return null;
+			return "";
 		}
 		
 		/** */
 		canPublish()
 		{
-			return !!this.getPublishDestinationUI();
+			return !!this.getPublishDestinationRoot();
 		}
 		
 		/** */

@@ -96,16 +96,10 @@ namespace App
 		}
 		
 		/** */
-		getPublishDestinationUI(): Htx.Param
+		getPublishDestinationRoot()
 		{
-			return () => [
-				{
-					title: this.folder,
-					display: "inline-block",
-					wordBreak: "break-all",
-				},
-				new Text(this.folder),
-			];
+			let f = this.folder;
+			return f.endsWith("/") ? f : f + "/";
 		}
 		
 		/** */
@@ -141,5 +135,8 @@ namespace App
 		}
 	}
 	
-	setTimeout(() => Publisher.register(LocalPublisher, 2));
+	setTimeout(() =>
+	{
+		Publisher.register(LocalPublisher, 2);
+	});
 }

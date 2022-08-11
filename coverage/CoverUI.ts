@@ -233,7 +233,7 @@ namespace Cover
 					padding: "10px",
 					margin: "20px",
 				},
-				App.Editable.single({ placeholder: "Enter the value here." }),
+				App.Editable.single({ placeholderText: "Enter the value here." }),
 			)
 		);
 	}

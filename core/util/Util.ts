@@ -144,6 +144,30 @@ namespace App
 			return entriesA === entriesB;
 		}
 		
+		//# Dialogs
+		
+		/** */
+		export async function confirm(message: string): Promise<boolean>
+		{
+			let result = false;
+			
+			if (TAURI)
+				result = await (confirm(message) as any as Promise<boolean>);
+			else
+				result = !!confirm(message);
+			
+			return result;
+		}
+		
+		/** */
+		export async function alert(message: string): Promise<void>
+		{
+			if (TAURI)
+				await (window.alert(message) as any);
+			else
+				window.alert(message);
+		}
+		
 		//# Record Related
 		
 		/**
@@ -169,6 +193,12 @@ namespace App
 				("0" + (date.getMonth() + 1)).slice(-2) + 
 				"-" +
 				("0" + (date.getDate() + 1)).slice(-2));
+		}
+		
+		/** */
+		export function isSlugValid(slug: string)
+		{
+			return !!slug && /^[a-z0-9]+(-[a-z0-9]+)*$/i.test(slug);
 		}
 		
 		/**

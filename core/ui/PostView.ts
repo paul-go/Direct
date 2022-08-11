@@ -257,16 +257,28 @@ namespace App
 		}
 		
 		/** */
-		private tryPublish()
+		private async tryPublish()
 		{
 			const app = AppContainer.of(this);
 			const meta = app.meta;
 			const publisher = Publisher.getCurrentPublisher(this.record, meta);
 			
 			if (publisher?.canPublish())
-				publisher.publish();
-			else
-				this.setupPublish();
+			{
+				if (publisher.canHaveSlug &&  !Util.isSlugValid(this.slugInput?.textContent || ""))
+				{
+					await Util.alert("Please enter a valid slug before publishing.");
+					
+					// Need to wait after the alert has been closed
+					// before setting the focus, or it won't work.
+					setTimeout(() => this.slugInput?.focus(), 100);
+				}
+				else
+				{
+					publisher.publish();
+				}
+			}
+			else this.setupPublish();
 		}
 		
 		/** */
@@ -284,7 +296,7 @@ namespace App
 			{
 				const meta = AppContainer.of(this).meta;
 				const publisher = Publisher.getCurrentPublisher(this.record, meta);
-				const dstUI = publisher?.getPublishDestinationUI();
+				const dstRoot = publisher?.getPublishDestinationRoot();
 				
 				this.publishInfoElement.replaceWith(this.publishInfoElement = Htx.div(
 					"publish-info",
@@ -297,7 +309,7 @@ namespace App
 						verticalAlign: "top",
 					},
 					
-					dstUI && Htx.span(
+					dstRoot && Htx.span(
 						{
 							paddingRight: "10px",
 							opacity: "0.66",
@@ -306,7 +318,7 @@ namespace App
 						...UI.text("Publishes to:", 24, 600)
 					),
 					
-					dstUI && Htx.span(
+					dstRoot && Htx.span(
 						{
 							display: "inline-block",
 							maxWidth: (ConstN.appMaxWidth - 250) + "px",
@@ -314,14 +326,45 @@ namespace App
 							fontWeight: "800",
 							verticalAlign: "top",
 							textAlign: "left",
+							wordBreak: "break-all"
 						},
-						dstUI
+						new Text(dstRoot),
+						
+						publisher?.canHaveSlug && this.renderSlugEditor()
 					),
 				));
 				
 				UI.toggle(this.settingsButtonElement, !!publisher);
 			});
 		}
+		
+		/** */
+		private renderSlugEditor()
+		{
+			return this.slugInput = Htx.span(e => [
+				Editable.single({
+					placeholderText: "...Enter a slug...",
+					placeholderCss: {
+						opacity: "1"
+					}
+				}),
+				{
+					color: "white",
+					textAlign: "left",
+				},
+				Htx.on("input", () =>
+				{
+					const slug = e.textContent = (e.textContent || "").toLocaleLowerCase();
+					const valid = Util.isSlugValid(slug);
+					e.style.color = !slug || valid ? "white" : "red";
+					
+					if (valid)
+						this.record.slug = slug;
+				}),
+				this.record.slug ? new Text(this.record.slug) : null
+			]);
+		}
+		private slugInput: HTMLElement | null = null;
 	}
 	
 	const minHeight: Htx.Param = { minHeight: "85vh" };
