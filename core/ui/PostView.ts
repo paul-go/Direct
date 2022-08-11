@@ -289,29 +289,31 @@ namespace App
 				this.publishInfoElement.replaceWith(this.publishInfoElement = Htx.div(
 					"publish-info",
 					{
-						margin: "40px 0",
+						margin: "40px auto",
 						paddingBottom: "50px",
 						color: UI.white(0.5),
 						textAlign: "center",
+						lineHeight: "1.5",
+						verticalAlign: "top",
 					},
 					
 					dstUI && Htx.span(
 						{
 							paddingRight: "10px",
-							opacity: "0.66"
+							opacity: "0.66",
+							whiteSpace: "nowrap",
 						},
 						...UI.text("Publishes to:", 24, 600)
 					),
 					
 					dstUI && Htx.span(
 						{
-							verticalAlign: "bottom",
-							overflow: "hidden",
-							textOverflow: "ellipsis",
-							whiteSpace: "nowrap",
+							display: "inline-block",
+							maxWidth: (ConstN.appMaxWidth - 250) + "px",
 							fontSize: "24px",
 							fontWeight: "800",
-							lineHeight: "2.5"
+							verticalAlign: "top",
+							textAlign: "left",
 						},
 						dstUI
 					),

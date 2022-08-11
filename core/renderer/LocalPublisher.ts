@@ -98,7 +98,14 @@ namespace App
 		/** */
 		getPublishDestinationUI(): Htx.Param
 		{
-			return new Text(this.folder);
+			return () => [
+				{
+					title: this.folder,
+					display: "inline-block",
+					wordBreak: "break-all",
+				},
+				new Text(this.folder),
+			];
 		}
 		
 		/** */
