@@ -296,6 +296,10 @@ namespace App
 			
 			for (const [key, value] of Object.entries(memberLayout))
 			{
+				// Safety check
+				if (!(key in raw))
+					continue;
+				
 				const rawValue = raw[key];
 				
 				if (value.type instanceof ArrayMarker)
@@ -311,7 +315,7 @@ namespace App
 				}
 				else if (value.type instanceof ReferenceMarker)
 				{
-					if (behavior === "peek" || rawValue === null)
+					if (behavior === "peek" || rawValue === null || !(rawValue > 0))
 						recordAny[key] = null;
 					else
 						recordAny[key] = await this.get(rawValue);
