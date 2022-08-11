@@ -53,7 +53,7 @@ if (typeof ELECTRON === "undefined")
 	Object.assign(globalThis, { ELECTRON: typeof screen + typeof require === "objectfunction" });
 
 if (typeof TAURI === "undefined")
-	Object.assign(globalThis, { TAURI: typeof (window as any).__TAURI__ !== "undefined" });
+	Object.assign(globalThis, { TAURI: typeof window !== "undefined" && typeof (window as any).__TAURI__ !== "undefined" });
 
 if (TAURI)
 {

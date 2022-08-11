@@ -69,6 +69,7 @@ namespace App
 		);
 	}
 	
-	if (document.documentElement.hasAttribute("data-autostart"))
+	if (typeof document !== "undefined" && 
+		document.documentElement.hasAttribute("data-autostart"))
 		setTimeout(() => createApp());
 }

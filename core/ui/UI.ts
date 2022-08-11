@@ -141,6 +141,8 @@ namespace App
 		 */
 		export function createPublishButton(label: string, clickFn: () => void)
 		{
+			toolButtonCls ||= Htx.css(":not(:first-child)", { marginTop: "10px" });
+			
 			return UI.toolButton(
 				toolButtonCls,
 				...UI.text(label),
@@ -149,7 +151,7 @@ namespace App
 				},
 				Htx.on(UI.clickEvt, clickFn));
 		}
-		const toolButtonCls = Htx.css(":not(:first-child)", { marginTop: "10px" });
+		let toolButtonCls = "";
 		
 		/** */
 		export const presentational: Htx.Style = {
