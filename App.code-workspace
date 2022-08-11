@@ -108,6 +108,18 @@
 				"isBackground": true
 			},
 			{
+				"label": "Mass Update Player JS",
+				"type": "shell",
+				"command": "node",
+				"args": [
+					"./node_modules/moduless/build/moduless.js",
+					"call",
+					"massUpdatePlayerJs"
+				],
+				"isBackground": true,
+				"problemMatcher": []
+			},
+			{
 				"label": "Serve HTTP site",
 				"type": "shell",
 				"command": "http-server",
