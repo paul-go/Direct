@@ -5,26 +5,26 @@ namespace Player
 	 * Causes the playback of the two videos to be synchronized.
 	 */
 	export function synchronizeVideos(
-		srcVideo: HTMLVideoElement,
+		mainVideo: HTMLVideoElement,
 		fillerVideo: HTMLVideoElement)
 	{
-		srcVideo.onplay = () =>
+		mainVideo.onplay = () =>
 		{
 			fillerVideo.play();
 		};
 		
-		srcVideo.onpause = () => fillerVideo.pause();
-		srcVideo.onstalled = () => fillerVideo.pause();
-		srcVideo.onended = () => fillerVideo.pause();
+		mainVideo.onpause = () => fillerVideo.pause();
+		mainVideo.onstalled = () => fillerVideo.pause();
+		mainVideo.onended = () => fillerVideo.pause();
 		
-		srcVideo.onseeked = () =>
+		mainVideo.onseeked = () =>
 		{
-			fillerVideo.currentTime = srcVideo.currentTime || 0;
+			fillerVideo.currentTime = mainVideo.currentTime || 0;
 		};
 		
-		srcVideo.onseeking = () =>
+		mainVideo.onseeking = () =>
 		{
-			fillerVideo.currentTime = srcVideo.currentTime || 0;
+			fillerVideo.currentTime = mainVideo.currentTime || 0;
 		}
 	}
 }
