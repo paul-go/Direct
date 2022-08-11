@@ -120,6 +120,14 @@
 				"problemMatcher": []
 			},
 			{
+				"label": "Launch Native App",
+				"type": "shell",
+				"command": "npm",
+				"args": ["run", "native"],
+				"isBackground": true,
+				"problemMatcher": []
+			},
+			{
 				"label": "Serve HTTP site",
 				"type": "shell",
 				"command": "http-server",
