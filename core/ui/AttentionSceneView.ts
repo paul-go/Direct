@@ -115,7 +115,7 @@ namespace App
 		{
 			const imageTool = this.createToolButton("+ Image", async () =>
 			{
-				const icon = Not.nullable(Query.find(UI.plusButton.name, imageTool));
+				const icon = Not.nullable(Query.find(Icon.plus.name, imageTool));
 				
 				if (this.contentImage !== null)
 				{

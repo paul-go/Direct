@@ -41,7 +41,7 @@ namespace App
 					transitionDuration,
 					transitionProperty: "transform",
 				},
-				UI.settingsIcon(
+				Icon.settings(
 					{
 						width: "30px",
 						height: "30px",
@@ -91,7 +91,7 @@ namespace App
 				Htx.div(
 					UI.presentational,
 					UI.anchorCenter("max-content"),
-					UI.plusButton(
+					Icon.plus(
 						{
 							margin: "0 auto 2.5vw",
 							width: UI.vw(3.3),

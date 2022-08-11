@@ -24,7 +24,7 @@ namespace App
 				}),
 				Htx.div(
 					UI.anchorCenter("30px"),
-					UI.chevron(origin),
+					Icon.chevron(origin),
 				)
 			);
 			

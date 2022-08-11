@@ -150,7 +150,7 @@ namespace App
 				),
 				Htx.div(
 					UI.flexVCenter,
-					UI.plusButton(
+					Icon.plus(
 						Htx.on(UI.clickEvt, () => this.renderInsertScene(this.headerBox, "beforebegin")),
 					),
 				)
@@ -167,7 +167,7 @@ namespace App
 					padding: headerPadding,
 					paddingLeft: "0",
 				},
-				UI.plusButton(
+				Icon.plus(
 					Htx.on(UI.clickEvt, () => 
 					{
 						const view = this.renderInsertScene(this.footerBox, "afterend");
@@ -230,7 +230,7 @@ namespace App
 				{
 					margin: "10px 5px 0",
 				},
-				hasPlus && UI.plusButton(
+				hasPlus && Icon.plus(
 					{
 						width: "15px",
 						height: "15px",
@@ -238,7 +238,7 @@ namespace App
 						transitionProperty: "transform",
 						transitionDuration: "0.25s",
 						transform: "rotate(0deg)",
-						transformOrigin: "50% 50%"
+						transformOrigin: "50% 50%",
 					}
 				),
 				...UI.click(ev =>

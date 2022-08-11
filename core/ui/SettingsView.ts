@@ -56,7 +56,7 @@ namespace App
 						"closer",
 						UI.clickable,
 						UI.anchorBottomRight(20),
-						UI.checkmark({ filter: "invert(1)" }),
+						Icon.checkmark({ filter: "invert(1)" }),
 						Htx.on(UI.clickEvt, () =>
 						{
 							UI.removeWithFade(this.root);

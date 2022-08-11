@@ -49,7 +49,7 @@ namespace App
 						padding: "20px",
 					},
 					UI.backdropBlur(10),
-					UI.plusButton(),
+					Icon.plus(),
 					Htx.on(UI.clickEvt, () => UI.removeWithFade(this.root))
 				),
 				

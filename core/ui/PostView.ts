@@ -83,7 +83,7 @@ namespace App
 								this.tryPublish();
 							}),
 							...UI.text("Publish", 25, 800),
-							this.settingsButtonElement = UI.settingsIcon(
+							this.settingsButtonElement = Icon.settings(
 								CssClass.hide,
 								{
 									position: "absolute",
@@ -117,7 +117,7 @@ namespace App
 					},
 					UI.clickable,
 					Htx.on("click", () => this.handleBack()),
-					UI.chevron(
+					Icon.chevron(
 						Origin.left,
 						TAURI && {
 							width: "20px",
