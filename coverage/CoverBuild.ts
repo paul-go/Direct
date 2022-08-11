@@ -68,6 +68,28 @@ namespace Cover
 		copyDependencies(Dir.bundleWindows);
 	}
 	
+	/**
+	 * Recompiles the player.js file, and writes the updated file to every
+	 * folder in the +exports directory (in order to update all test cases)
+	 */
+	export async function massUpdatePlayerJs()
+	{
+		const playerJs = await emitPlayerJs();
+		const exportsPath = Path.join(Dir.cwd, ConstS.debugExportsFolderName);
+		const dirs = Fs.readdirSync(exportsPath);
+		
+		for (const dir of dirs)
+		{
+			const fullDir = Path.join(exportsPath, dir);
+			if (!Fs.lstatSync(fullDir).isDirectory())
+				continue;
+			
+			const writePath = Path.join(fullDir, ConstS.jsFileNamePlayer);
+			Fs.writeFileSync(writePath, playerJs);
+			log("Wrote player.js file to: " + writePath);
+		}
+	}
+	
 	//# Helper Functions
 	
 	/** */
@@ -159,9 +181,11 @@ namespace Cover
 	}
 	
 	/** */
-	export async function emitPlayerJs(saveDirectory: string, defs?: Defs)
+	export async function emitPlayerJs(saveDirectory?: string, defs?: Defs)
 	{
-		Fs.mkdirSync(saveDirectory, { recursive: true });
+		if (saveDirectory)
+			Fs.mkdirSync(saveDirectory, { recursive: true });
+		
 		Fs.mkdirSync(Dir.temp, { recursive: true });
 		
 		// Stores the files to include in the player JS file,
@@ -202,18 +226,29 @@ namespace Cover
 		
 		const inJsFilePath = Path.join(Dir.temp, ConstS.jsFileNamePlayer);
 		const inJsCode = Fs.readFileSync(inJsFilePath, "utf8");
-		const outJsFilePath = Path.join(saveDirectory, ConstS.jsFileNamePlayer);
-		Fs.writeFileSync(outJsFilePath, inJsCode);
-		log("Wrote Player JS file to: " + outJsFilePath);
-		Fs.rmdirSync(Dir.temp, { recursive: true });
+		
+		if (saveDirectory)
+		{
+			const outJsFilePath = Path.join(saveDirectory, ConstS.jsFileNamePlayer);
+			Fs.writeFileSync(outJsFilePath, inJsCode);
+			log("Wrote Player JS file to: " + outJsFilePath);
+			Fs.rmdirSync(Dir.temp, { recursive: true });
+		}
 		
 		if (defs)
 		{
 			const minifiedCode = await minify(inJsCode, defs);
-			const outJsFilePathMin = Path.join(saveDirectory, ConstS.jsFileNamePlayerMin);
-			Fs.writeFileSync(outJsFilePathMin, minifiedCode);
-			log("Wrote Player JS file to: " + outJsFilePathMin);
+			
+			if (saveDirectory)
+			{
+				const outJsFilePathMin = Path.join(saveDirectory, ConstS.jsFileNamePlayerMin);
+				Fs.writeFileSync(outJsFilePathMin, minifiedCode);
+				log("Wrote Player JS file to: " + outJsFilePathMin);
+				return minifiedCode;
+			}
 		}
+		
+		return inJsCode;
 	}
 	
 	/** */
