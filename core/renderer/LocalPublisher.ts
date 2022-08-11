@@ -137,6 +137,7 @@ namespace App
 	
 	setTimeout(() =>
 	{
-		Publisher.register(LocalPublisher, 2);
+		if (!TAURI && !ELECTRON)
+			Publisher.register(LocalPublisher, 2);
 	});
 }
