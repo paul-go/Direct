@@ -73,6 +73,9 @@ namespace App
 				else if (!value)
 					continue;
 				
+				else if (typeof value === "string" && value.includes(`"`))
+					text += ` ${key}='${value}'`;
+				
 				else
 					text += ` ${key}="${value}"`;
 			}

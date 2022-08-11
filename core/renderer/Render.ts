@@ -161,7 +161,7 @@ namespace App
 			post: PostRecord,
 			meta: MetaRecord)
 		{
-			return renderPost(post, meta, true);
+			return renderPost(post, meta, false);
 		}
 	}
 	
