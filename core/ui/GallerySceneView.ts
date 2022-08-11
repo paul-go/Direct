@@ -154,6 +154,7 @@ namespace App
 		{
 			const media = record.media!;
 			const isImage = MimeType.getClass(media.type) === MimeClass.image;
+			const src = media.getBlobCssUrl();
 			let filler: HTMLElement;
 			
 			if (isImage)
@@ -162,7 +163,7 @@ namespace App
 					src: media.getBlobUrl()
 				});
 				
-				filler = RenderUtil.createImageFiller(media.getBlobCssUrl());
+				filler = RenderUtil.createImageFiller(src);
 			}
 			else
 			{
@@ -171,7 +172,7 @@ namespace App
 				});
 				
 				this.mediaElement.controls = true;
-				filler = RenderUtil.createVideoFiller(this.mediaElement);
+				filler = RenderUtil.createVideoFiller(src, this.mediaElement);
 			}
 			
 			const s = this.mediaElement.style;

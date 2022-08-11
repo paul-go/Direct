@@ -122,12 +122,10 @@ namespace App.RenderUtil
 	/**
 	 * 
 	 */
-	export function createVideoFiller(srcVideo: HTMLVideoElement)
+	export function createVideoFiller(src: string, srcVideo: HTMLVideoElement)
 	{
-		const src = srcVideo.src;
 		const type = srcVideo.getAttribute("type") || "";
-		
-		let fillerVideoTag: HTMLVideoElement;
+		let fillerVideo: HTMLVideoElement;
 		
 		const container = Htx.div(
 			"video-filler",
@@ -136,7 +134,7 @@ namespace App.RenderUtil
 				overflow: "hidden",
 				zIndex: "-1",
 			},
-			fillerVideoTag = Htx.video({
+			fillerVideo = Htx.video({
 				src,
 				type,
 				controls: false,
@@ -151,25 +149,7 @@ namespace App.RenderUtil
 			})
 		);
 		
-		srcVideo.onplay = () =>
-		{
-			fillerVideoTag.play();
-		};
-		
-		srcVideo.onpause = () => fillerVideoTag.pause();
-		srcVideo.onstalled = () => fillerVideoTag.pause();
-		srcVideo.onended = () => fillerVideoTag.pause();
-		
-		srcVideo.onseeked = () =>
-		{
-			fillerVideoTag.currentTime = srcVideo.currentTime || 0;
-		};
-		
-		srcVideo.onseeking = () =>
-		{
-			fillerVideoTag.currentTime = srcVideo.currentTime || 0;
-		}
-		
+		Player.synchronizeVideos(srcVideo, fillerVideo);
 		return container;
 	}
 	

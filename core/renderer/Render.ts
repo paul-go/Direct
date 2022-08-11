@@ -482,17 +482,33 @@ namespace App
 				if (!frame.media)
 					return null;
 				
-				const src = bun.getMediaUrl(frame.media);
-				const bgImage = bun.getMediaUrl(frame.media, "css");
+				const frameDiv = Htx.div(CssClass.galleryFrame);
+				const htmlSrc = bun.getMediaUrl(frame.media);
+				const isImage = MimeType.getClass(frame.media.type) === MimeClass.image;
 				
-				const frameDiv = Htx.div(
-					CssClass.galleryFrame,
-					frame.size === "contain" && RenderUtil.createImageFiller(bgImage),
-					Htx.img(
-						{ src },
-						frame.size === "cover" ? { objectFit: "cover" } : {}
-					)
-				);
+				if (isImage)
+				{
+					const cssSrc = bun.getMediaUrl(frame.media, "css");
+					Htx.from(frameDiv)(
+						frame.size === "contain" && RenderUtil.createImageFiller(cssSrc),
+						Htx.img(
+							{ src: htmlSrc },
+							frame.size === "cover" ? { objectFit: "cover" } : {}
+						)
+					);
+				}
+				else
+				{
+					const mainVideo = RenderUtil.createVideo(htmlSrc, frame.media.type, frame.size);
+					const fillerVideo = frame.size === "contain" ?
+						RenderUtil.createVideoFiller(htmlSrc, mainVideo) :
+						null;
+					
+					Htx.from(frameDiv)(
+						fillerVideo,
+						mainVideo,
+					);
+				}
 				
 				if (frame.captionLine1 || frame.captionLine2)
 				{
@@ -506,7 +522,7 @@ namespace App
 					{
 						(async () =>
 						{
-							const [width, height] = await RenderUtil.getDimensions(src);
+							const [width, height] = await RenderUtil.getDimensions(htmlSrc);
 							legend.style.aspectRatio = width + " / " + height;
 							frameDiv.append(legend);
 						})();
