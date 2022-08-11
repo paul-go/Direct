@@ -15,12 +15,12 @@ namespace App
 		{
 			let meta = await database.first(MetaRecord);
 			if (!meta)
-			{
 				meta = new MetaRecord();
-				meta.homePost = new PostRecord();
-				await database.save(meta);
-			}
 			
+			if (!meta.homePost)
+				meta.homePost = new PostRecord();
+			
+			await database.save(meta);
 			return new AppContainer(root, database, meta);
 		}
 		
