@@ -182,7 +182,8 @@ namespace App
 			if (this.isPreview)
 				return css ? media.getBlobCssUrl() : media.getBlobUrl();
 			
-			return media.getHttpUrl();
+			const url = media.getHttpUrl();
+			return css ? `url(${url})` : url;
 		}
 		
 		/** */

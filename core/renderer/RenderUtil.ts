@@ -141,7 +141,6 @@ namespace App.RenderUtil
 				type,
 				controls: false,
 				playsInline: true,
-				
 				objectFit: "fill",
 				position: "absolute",
 				top: -(ConstN.fillerContentBlur * 4) + "px",
