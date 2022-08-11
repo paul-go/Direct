@@ -237,4 +237,13 @@ namespace Cover
 			)
 		);
 	}
+	
+	/** */
+	export async function coverOpenExternal()
+	{
+		App.appendCss();
+		const icon = App.Icon.openExternal();
+		document.body.style.padding = "100px";
+		document.body.append(icon);
+	}
 }

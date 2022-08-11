@@ -330,7 +330,14 @@ namespace App
 						},
 						new Text(dstRoot),
 						
-						publisher?.canHaveSlug && this.renderSlugEditor()
+						publisher?.canHaveSlug && this.renderSlugEditor(),
+						dstRoot && Icon.openExternal(
+							{
+								top: "0.25em",
+								left: "0.75em",
+							},
+							...UI.click(() => publisher?.openOutput())
+						)
 					),
 				));
 				

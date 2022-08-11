@@ -87,10 +87,68 @@ namespace App.Icon
 		);
 	}
 	
-	/** */
-	export function openExternal(...params: Htx.Param[])
+	/**
+	 * Creates an "open in external" icon.
+	 * The color of the icon can be configured by modifying the border color.
+	 */
+	export function openExternal(...params: Htx.Param<Htx.AnchorElementAttribute>[])
 	{
+		const thickness = 3;
+		const rounding = thickness + 2;
 		
+		return Htx.a(
+			{
+				width: "30px",
+				height: "30px",
+				borderColor: "white",
+				display: "inline-block",
+				textDecoration: "none",
+			},
+			Htx.span(
+				UI.anchorLeft(),
+				{
+					width: "50%",
+					borderWidth: thickness + "px",
+					borderStyle: "solid",
+					borderColor: "inherit",
+					borderRightColor: "transparent",
+					borderRadius: `${rounding}px 0 0 ${rounding}px`,
+				},
+			),
+			Htx.span(
+				UI.anchorBottom(),
+				{
+					height: "50%",
+					borderWidth: thickness + "px",
+					borderStyle: "solid",
+					borderColor: "inherit",
+					borderTopColor: "transparent",
+					borderRadius: `0 0 ${rounding}px ${rounding}px`,
+				},
+			),
+			Htx.span(
+				UI.anchorTopRight(-thickness, -thickness),
+				{
+					width: "40%",
+					height: "40%",
+					borderWidth: thickness + "px",
+					borderBottomWidth: "0",
+					borderLeftWidth: "0",
+					borderStyle: "solid",
+					borderColor: "inherit",
+				},
+				Htx.span(
+					UI.anchorTopRight(-thickness, -thickness + 1),
+					{
+						border: "inherit",
+						height: "250%",
+						transformOrigin: "0 0",
+						transform: "rotate(45deg)",
+					}
+				),
+			),
+			...params
+		);
 	}
 	
 	/** */

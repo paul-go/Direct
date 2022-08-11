@@ -1,6 +1,9 @@
 
 namespace App
 {
+	//@ts-ignore
+	if (!TAURI && !ELECTRON) return;
+	
 	/** */
 	export class LocalPublisher extends Publisher
 	{
@@ -96,6 +99,20 @@ namespace App
 		}
 		
 		/** */
+		async openOutput()
+		{
+			if (TAURI)
+			{
+				const uri = "file://" + this.getPublishDestinationRoot() + this.post.slug;
+				await Tauri.shell.open(uri);
+			}
+			else if (ELECTRON)
+			{
+				Util.alert("Not supported in debug mode.");
+			}
+		}
+		
+		/** */
 		getPublishDestinationRoot()
 		{
 			let f = this.folder;
@@ -135,9 +152,5 @@ namespace App
 		}
 	}
 	
-	setTimeout(() =>
-	{
-		if (!TAURI && !ELECTRON)
-			Publisher.register(LocalPublisher, 2);
-	});
+	setTimeout(() => Publisher.register(LocalPublisher, 2));
 }

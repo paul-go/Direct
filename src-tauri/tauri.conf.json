@@ -23,6 +23,9 @@
 				"scope": [
 					"*"
 				]
+			},
+			"shell": {
+				"open": "^(https?|file)?://"
 			}
 		},
 		"bundle": {

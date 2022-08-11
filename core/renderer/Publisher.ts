@@ -124,6 +124,11 @@ namespace App
 		}
 		
 		/**
+		 * Opens the output in the operating system's default handler.
+		 */
+		async openOutput() { }
+		
+		/**
 		 * Gets a string that describes the location of where the publish
 		 * action is going to write the files. If a falsey value is returned,
 		 * this indicates that this Publisher is currently incapable of publishing.
