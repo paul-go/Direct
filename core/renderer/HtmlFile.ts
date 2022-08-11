@@ -58,12 +58,6 @@ namespace App
 				href: relative + ConstS.cssFileNameGeneral + nocache,
 			});
 			
-			em.tag("link", {
-				rel: "stylesheet",
-				type: "text/css",
-				href: relative + ConstS.cssFileNameSpecific + nocache,
-			});
-			
 			em.tag("script", { src: relative + ConstS.jsFileNamePlayer + nocache }, "");
 			
 			if (this.customHeaderHtml)
@@ -105,8 +99,9 @@ namespace App
 					for (const child of Array.from(e.childNodes))
 					{
 						if (child instanceof Text && child.nodeValue)
+						{
 							em.line(child.nodeValue);
-						
+						}
 						else if (child instanceof HTMLElement)
 						{
 							// Avoid emitting custom elements
