@@ -1,13 +1,18 @@
 
 namespace Cover
 {
+	const Fs = require("fs") as typeof import("fs");
+	const Path = require("path") as typeof import("path");
+	const Proc = require("child_process") as typeof import("child_process");
+	const Terser = require("terser") as typeof import("terser");
+	
 	/** */
 	export async function coverBuildDev()
 	{
 		log("Building the development version...");
 		
-		const defs = new Defs();
 		emitHtml(Dir.build, ConstS.jsFileNameApp);
+		const defs = new Defs();
 		await emitPlayerJs(Dir.build, defs);
 		copyDependencies(Dir.build);
 	}
@@ -17,8 +22,8 @@ namespace Cover
 	{
 		log("Building minified web version...");
 		
-		const defs = new Defs();
 		emitHtml(Dir.bundleWeb, ConstS.jsFileNameAppMin);
+		const defs = new Defs();
 		await emitAppJs(Dir.bundleWeb, defs);
 		await emitPlayerJs(Dir.bundleWeb, defs);
 		copyDependencies(Dir.bundleWeb);
@@ -265,11 +270,6 @@ namespace Cover
 		
 		return minified.code || "";
 	}
-	
-	const Fs = require("fs") as typeof import("fs");
-	const Path = require("path") as typeof import("path");
-	const Proc = require("child_process") as typeof import("child_process");
-	const Terser = require("terser") as typeof import("terser");
 	
 	/** */
 	export function log(value: string)
