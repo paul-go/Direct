@@ -314,6 +314,7 @@ namespace App
 							paddingRight: "10px",
 							opacity: "0.66",
 							whiteSpace: "nowrap",
+							verticalAlign: "bottom",
 						},
 						...UI.text("Publishes to:", 24, 600)
 					),
@@ -324,7 +325,7 @@ namespace App
 							maxWidth: (ConstN.appMaxWidth - 250) + "px",
 							fontSize: "24px",
 							fontWeight: "800",
-							verticalAlign: "top",
+							verticalAlign: "bottom",
 							textAlign: "left",
 							wordBreak: "break-all"
 						},
