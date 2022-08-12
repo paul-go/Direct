@@ -44,9 +44,7 @@ namespace App
 				"background-color": "black",
 				"color": "white",
 				"font-size": "20px",
-				"font-family": DEBUG || TAURI ? 
-					"-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif" :
-					"Inter",
+				"font-family": "Inter, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, roboto, noto, arial, sans-serif"
 			}),
 			
 			// Player CSS
