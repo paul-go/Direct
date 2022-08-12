@@ -1,7 +1,7 @@
 
 # Note: This project is super early. 
 
-It's not in a usable state at this point. Though I'm working on this full-time, and it's moving ahead at a fast pace. Having said that, you can see an online demo of Turf at https://app.turf.cx.
+It's not in a usable state at this point. Though I'm working on this full-time, and it's moving ahead at a fast pace. Having said that, you can see an online demo of Direct at https://app.directblog.org.
 
 # Preface
 

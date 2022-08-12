@@ -8,7 +8,7 @@
 		"distDir": "../+bundle"
 	},
 	"package": {
-		"productName": "Turf",
+		"productName": "Direct",
 		"version": "0.1.0"
 	},
 	"tauri": {
@@ -43,7 +43,7 @@
 				"icons/icon.icns",
 				"icons/icon.ico"
 			],
-			"identifier": "cx.turf.app",
+			"identifier": "org.directblog",
 			"longDescription": "",
 			"macOS": {
 				"entitlements": null,
@@ -71,7 +71,7 @@
 			"fullscreen": false,
 			"height": 600,
 			"resizable": true,
-			"title": "Turf",
+			"title": "Direct",
 			"width": 800
 		}]
 	}

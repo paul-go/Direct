@@ -1,5 +1,5 @@
 {
-	"name": "turf",
+	"name": "direct",
 	"version": "0.1.0",
 	"description": "",
 	"author": "Paul Go",
@@ -7,17 +7,17 @@
 	"keywords": [],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/paul-go/Turf"
+		"url": "https://github.com/paul-go/Direct"
 	},
 	"bugs": {
-		"url": "https://github.com/paul-go/Turf/issues"
+		"url": "https://github.com/paul-go/Direct/issues"
 	},
 	"scripts": {
 		"tauri": "tauri",
 		"native": "npm run tauri dev",
 		"bundle": "npm run tauri build"
 	},
-	"main": "turf.js",
+	"main": "app.js",
 	"dependencies": {
 		"@tauri-apps/api": "^1.0.2"
 	},
