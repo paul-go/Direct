@@ -152,9 +152,9 @@ namespace App
 			let result = false;
 			
 			if (TAURI)
-				result = await (confirm(message) as any as Promise<boolean>);
+				result = await (Tauri.dialog.confirm(message) as any as Promise<boolean>);
 			else
-				result = !!confirm(message);
+				result = window.confirm(message) as any as boolean;
 			
 			return result;
 		}
