@@ -32,6 +32,31 @@ namespace App
 		let lastNow = 0;
 		
 		/**
+		 * 
+		 */
+		export function randomChars(length: number)
+		{
+			const bytes = new Uint8Array(length);
+			crypto.getRandomValues(bytes);
+			let id = "";
+			
+			for (let i = -1; ++i < bytes.length;)
+			{
+				let b = (bytes[i] % 62) + 48;
+				
+				if (b > 57)
+					b += 7;
+				
+				if (b > 90)
+					b += 6;
+				
+				id += String.fromCharCode(b);
+			}
+			
+			return id;
+		}
+		
+		/**
 		 * Loads the specified JavaScript code file into the browser,
 		 * if it has not already done so.
 		 */

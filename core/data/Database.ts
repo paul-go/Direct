@@ -52,7 +52,7 @@ namespace App
 		{
 			const databaseId = this.getDatabaseId(databaseName) || (() =>
 			{
-				const id = Date.now().toString();
+				const id = generateDatabaseId();
 				localStorage.setItem(dbNamePrefix + databaseName, id);
 				return id;
 			})();
@@ -964,6 +964,14 @@ namespace App
 		return Date.now() * 1000 + (nextId++);
 	}
 	let nextId = 0;
+	
+	/**
+	 * Generates a globally unique ID for the database.
+	 */
+	function generateDatabaseId()
+	{
+		return Date.now().toString() + "-" + Util.randomChars(16);
+	}
 	
 	/** */
 	type Ctor = new(id?: string) => Record;
