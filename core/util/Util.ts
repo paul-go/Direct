@@ -32,7 +32,9 @@ namespace App
 		let lastNow = 0;
 		
 		/**
-		 * 
+		 * Generates a string of the specified length containing 
+		 * cryptographically random alpha-numeric characters,
+		 * in both upper and lower case.
 		 */
 		export function randomChars(length: number)
 		{
