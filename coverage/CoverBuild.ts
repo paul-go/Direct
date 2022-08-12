@@ -262,7 +262,6 @@ namespace Cover
 		const minified = await Terser.minify(jsCode, {
 			compress: {
 				unsafe_math: true,
-				drop_console: true,
 				global_defs: defs
 			},
 			sourceMap: false,
