@@ -15,6 +15,7 @@ namespace Cover
 		const defs = new Defs();
 		await emitPlayerJs(Dir.build, defs);
 		copyDependencies(Dir.build);
+		log("Done.");
 	}
 	
 	/** */
@@ -27,6 +28,7 @@ namespace Cover
 		await emitAppJs(Dir.bundleWeb, defs);
 		await emitPlayerJs(Dir.bundleWeb, defs);
 		copyDependencies(Dir.bundleWeb);
+		log("Done.");
 	}
 	
 	/** */
@@ -38,6 +40,7 @@ namespace Cover
 		await emitAppJs(Dir.bundleWeb);
 		await emitPlayerJs(Dir.bundleWeb);
 		copyDependencies(Dir.bundleWeb);
+		log("Done.");
 	}
 	
 	/** */
@@ -55,6 +58,7 @@ namespace Cover
 		await emitPlayerJs(Dir.bundleMacOS, defs);
 		await emitMacInstaller(Dir.bundleMacOS);
 		copyDependencies(Dir.bundleMacOS);
+		log("Done.");
 	}
 	
 	/** */
@@ -71,6 +75,7 @@ namespace Cover
 		await emitAppJs(Dir.bundleWindows, defs);
 		await emitPlayerJs(Dir.bundleWindows, defs);
 		copyDependencies(Dir.bundleWindows);
+		log("Done.");
 	}
 	
 	/**
@@ -170,7 +175,12 @@ namespace Cover
 		
 		Proc.execSync("tsc");
 		const inJsFilePath = Path.join(Dir.build, ConstS.jsFileNameApp);
-		const inJsCode = Fs.readFileSync(inJsFilePath, "utf8");
+		const date = new Date();
+		const inJsCode = Fs.readFileSync(inJsFilePath, "utf8")
+			// Assign the build message
+			.replace(
+				/const\s+consoleWelcomeMessage\s*=\s*""/g,
+				`const consoleWelcomeMessage = "Welcome to Direct. Last updated: ${date.toDateString()} ${date.toLocaleTimeString()}"`);
 		
 		const targetPath = Path.join(saveDirectory, ConstS.jsFileNameApp);
 		Fs.writeFileSync(targetPath, inJsCode);

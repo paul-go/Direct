@@ -21,6 +21,14 @@ namespace App
 	/** */
 	export async function createApp(options?: ICreateAppOptions)
 	{
+		{
+			// This value is set in a find/replace process in the build
+			// process. Do not alter this code.
+			const consoleWelcomeMessage = "";
+			if (consoleWelcomeMessage)
+				console.log(consoleWelcomeMessage);
+		}
+		
 		const dbName = options?.database ? 
 			options.database :
 			ConstS.mainDatabaseName;
