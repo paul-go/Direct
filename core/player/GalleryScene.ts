@@ -17,9 +17,12 @@ namespace Player
 			for (const frame of frames)
 			{
 				const videos = frame.getElementsByTagName("video");
-				const fillerVideo = videos.item(0)!;
-				const mainVideo = videos.item(1)!;
-				Player.synchronizeVideos(mainVideo, fillerVideo);
+				if (videos.length > 1)
+				{
+					const fillerVideo = videos.item(0)!;
+					const mainVideo = videos.item(1)!;
+					Player.synchronizeVideos(mainVideo, fillerVideo);
+				}
 			}
 		}
 	}
