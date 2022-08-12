@@ -44,6 +44,8 @@ namespace App
 		 */
 		static request(url: string, params: NetworkRequestParams = {})
 		{
+			console.log("Making network request to: " + url);
+			
 			return new Promise<NetworkResponse | FailResponse>(resolve =>
 			{
 				// A false navigator.onLine value indicates that the internet connection is 
