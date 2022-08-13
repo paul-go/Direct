@@ -18,7 +18,7 @@ namespace App
 	{
 		name?: string;
 		id?: string;
-		strings?: string[];
+		objects?: RecordJson<any>[];
 		blobs?: Map<string, Blob>;
 	}
 	
@@ -94,26 +94,24 @@ namespace App
 					const idb = openRequest.result;
 					const database = new Database(id, idb, configurations);
 					
-					if (about.strings?.length)
+					if (about.objects?.length)
 					{
 						const blobs = about.blobs || new Map<string, Blob>();
 						const tx = idb.transaction(objectTableName, "readwrite");
 						const store = tx.objectStore(objectTableName);
 						const promises: Promise<any>[] = [];
 						
-						for (const str of about.strings)
+						for (const object of about.objects)
 						{
-							const object: RecordJson<any> = JSON.parse(str, (k, v) =>
+							for (const [k, v] of Object.entries(object))
 							{
 								if (v && v.constructor === Object && exportedBlobKey in v)
 								{
 									const blobFileName = v[exportedBlobKey] as string;
 									const blob = blobs.get(blobFileName) || null;
-									return blob;
+									(object as any)[k] = blob;
 								}
-								
-								return v;
-							});
+							}
 							
 							const req = store.put(object, object.id);
 							promises.push(new Promise<void>(r => req.onsuccess = () => r()));
@@ -524,9 +522,7 @@ namespace App
 		//# Exporting
 		
 		/**
-		 * Exports the entire database. Returns a series of strings that are
-		 * JSON-serialized versions of each record. Also returned is a Map
-		 * object whose keys are blob file names, and whose values are Blobs.
+		 * Exports the entire database into an IDatabaseAbout object.
 		 */
 		async export()
 		{
@@ -534,23 +530,24 @@ namespace App
 			const about: Required<IDatabaseAbout> = {
 				name,
 				id: this.id,
-				strings: [],
-				blobs: new Map()
+				objects: [],
+				blobs: new Map(),
 			};
 			
-			for await (const object of this.iterate())
+			for await (const databaseObject of this.iterate())
 			{
-				about.strings.push(JSON.stringify(object, (key, value) =>
+				for (const [k, v] of Object.entries(databaseObject))
 				{
-					if (!(value instanceof Blob))
-						return value;
-					
-					const ext = MimeType.getExtension(value.type);
-					const blobFileName = about.blobs.size + ext;
-					about.blobs.set(blobFileName, value);
-					
-					return { [exportedBlobKey]: blobFileName };
-				}));
+					if (v instanceof Blob)
+					{
+						const ext = MimeType.getExtension(v.type);
+						const blobFileName = about.blobs.size + ext;
+						about.blobs.set(blobFileName, v);
+						(databaseObject as any)[k] = { [exportedBlobKey]: blobFileName };
+					}
+				}
+				
+				about.objects.push(databaseObject);
 			}
 			
 			return about;
@@ -579,7 +576,7 @@ namespace App
 				if (!cursor.result)
 					break;
 				
-				yield cursor.result.value as object;
+				yield cursor.result.value as RecordJson<any>;
 			}
 		}
 		
