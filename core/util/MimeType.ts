@@ -51,11 +51,11 @@ namespace App
 		}
 		
 		/** */
-		export function getExtension(mimeType: MimeType)
+		export function getExtension(mimeType: string)
 		{
 			for (const [ext, mime] of mimes)
 				if (mime === mimeType)
-					return ext;
+					return ext.split("+")[0];
 			
 			return "";
 		}

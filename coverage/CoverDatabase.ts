@@ -4,7 +4,7 @@ namespace Cover
 	/** */
 	export async function coverDatabaseBasic()
 	{
-		const [db1, dbName] = await setup();
+		const [db1, name] = await setup();
 		
 		const post = new App.PostRecord();
 		const scene1 = new App.AttentionSceneRecord();
@@ -12,7 +12,7 @@ namespace Cover
 		post.scenes.push(scene1, scene2);
 		await db1.save(post, scene1, scene2);
 		
-		const db2 = await App.createDatabase(dbName);
+		const db2 = await App.createDatabase({ name });
 		const postOut = await db2.get<App.PostRecord>(post.id);
 		if (!postOut)
 			return () => "Fail";
@@ -27,7 +27,7 @@ namespace Cover
 	/** */
 	export async function coverDatabaseInstance()
 	{
-		const [db1, dbName] = await setup();
+		const [db1, name] = await setup();
 		
 		const media = new App.MediaRecord();
 		media.name = "media.jpg";
@@ -42,7 +42,7 @@ namespace Cover
 		
 		await db1.save(media, bg);
 		
-		const db2 = await App.createDatabase(dbName);
+		const db2 = await App.createDatabase({ name });
 		const bgOut = await db2.get<App.BackgroundRecord>(bg.id);
 		if (!bgOut)
 			return () => "Fail";
@@ -76,7 +76,7 @@ namespace Cover
 	/** */
 	export async function coverDatabaseArrayReassignment()
 	{
-		const [db1, dbName] = await setup();
+		const [db1, name] = await setup();
 		
 		const frame1 = new App.FrameRecord();
 		const gallery = new App.GallerySceneRecord();
@@ -89,7 +89,7 @@ namespace Cover
 		
 		await db1.save(gallery);
 		
-		const db2 = await App.createDatabase(dbName);
+		const db2 = await App.createDatabase({ name });
 		const galleryOut = await db2.get<App.GallerySceneRecord>(gallery.id);
 		
 		if (!galleryOut)
@@ -108,7 +108,7 @@ namespace Cover
 	/** */
 	export async function coverDatabaseIteration()
 	{
-		const [db1, dbName] = await setup();
+		const [db1, name] = await setup();
 		
 		const media = new App.MediaRecord();
 		
@@ -123,7 +123,7 @@ namespace Cover
 		
 		await db1.save(media, frame1, frame2, frame3);
 		
-		const db2 = await App.createDatabase(dbName);
+		const db2 = await App.createDatabase({ name });
 		const frames: App.FrameRecord[] = [];
 		
 		for await (const record of db2.each(App.FrameRecord, "peek"))
@@ -213,11 +213,40 @@ namespace Cover
 	}
 	
 	/** */
+	export async function coverExport()
+	{
+		const [db] = await setup();
+		
+		const media = new App.MediaRecord();
+		media.blob = new Blob([new Uint8Array([80])], { type: "text/plain" });
+		
+		const frame = new App.FrameRecord();
+		frame.media = media;
+		
+		await db.save(media, frame);
+		
+		const exported = await db.export();
+		exported.id = "new" + exported.id;
+		exported.name = "new" + Math.random().toString().slice(-10);
+		
+		const newDatabase = await App.createDatabase(exported);
+		const frameNew = await newDatabase.get(frame.id);
+		const mediaNew = await newDatabase.get(media.id);
+		
+		return [
+			() => frameNew instanceof App.FrameRecord,
+			() => mediaNew instanceof App.MediaRecord,
+			() => (mediaNew as App.MediaRecord).blob instanceof Blob,
+			() => (mediaNew as App.MediaRecord).blob.size === 1,
+		];
+	}
+	
+	/** */
 	async function setup()
 	{
-		const dbName = Moduless.getRunningFunctionName();
-		await App.Database.delete(dbName);
-		const db = await App.createDatabase(dbName);
-		return [db, dbName] as [App.Database, string];
+		const name = Moduless.getRunningFunctionName();
+		await App.Database.delete(name);
+		const db = await App.createDatabase({ name });
+		return [db, name] as [App.Database, string];
 	}
 }

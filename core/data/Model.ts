@@ -3,6 +3,21 @@
 namespace App
 {
 	/** */
+	export function createDatabase(about: IDatabaseAbout)
+	{
+		return App.Database.new(about,
+			{ ctor: App.MetaRecord, stable: 1, root: true },
+			{ ctor: App.PostRecord, stable: 2, root: true },
+			{ ctor: App.AttentionSceneRecord, stable: 3 },
+			{ ctor: App.ProseSceneRecord, stable: 4 },
+			{ ctor: App.GallerySceneRecord, stable: 6 },
+			{ ctor: App.FrameRecord, stable: 7 },
+			{ ctor: App.MediaRecord, stable: 8 },
+			{ ctor: App.BackgroundRecord, stable: 9 },
+		);
+	}
+	
+	/** */
 	export class MetaRecord extends Record
 	{
 		colorScheme = ColorScheme.default.colors;

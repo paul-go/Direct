@@ -11,8 +11,10 @@ namespace App
 		}
 		
 		/** */
-		static async new(root: HTMLElement, database: Database)
+		static async new(root: HTMLElement, databaseName: string)
 		{
+			const database = await App.createDatabase({ name: databaseName });
+			
 			let meta = await database.first(MetaRecord);
 			if (!meta)
 				meta = new MetaRecord();

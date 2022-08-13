@@ -44,11 +44,9 @@ namespace App
 				if (DEBUG && options?.clear)
 					await App.Database.delete(dbName);
 				
-				const database = await createDatabase(dbName);
-				
 				App.appendCss();
 				const container = options?.container ?? document.body;
-				app = await AppContainer.new(container, database);
+				app = await AppContainer.new(container, dbName);
 				r();
 			})
 		]);
@@ -60,21 +58,6 @@ namespace App
 		}
 		
 		return app;
-	}
-	
-	/** */
-	export function createDatabase(name: string)
-	{
-		return App.Database.new(name,
-			{ ctor: App.MetaRecord, stable: 1, root: true },
-			{ ctor: App.PostRecord, stable: 2, root: true },
-			{ ctor: App.AttentionSceneRecord, stable: 3 },
-			{ ctor: App.ProseSceneRecord, stable: 4 },
-			{ ctor: App.GallerySceneRecord, stable: 6 },
-			{ ctor: App.FrameRecord, stable: 7 },
-			{ ctor: App.MediaRecord, stable: 8 },
-			{ ctor: App.BackgroundRecord, stable: 9 },
-		);
 	}
 	
 	if (typeof document !== "undefined" && 

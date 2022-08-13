@@ -14,13 +14,24 @@ namespace App
 	}
 	
 	/** */
+	export interface IDatabaseAbout
+	{
+		name?: string;
+		id?: string;
+		strings?: string[];
+		blobs?: Map<string, Blob>;
+	}
+	
+	/** */
 	export class Database
 	{
 		/** */
 		static rename(currentName: string, newName: string)
 		{
+			if (currentName)
+				localStorage.removeItem(dbNamePrefix + currentName);
+			
 			const id = this.getDatabaseId(currentName);
-			localStorage.removeItem(dbNamePrefix + currentName);
 			localStorage.setItem(dbNamePrefix + newName, id);
 		}
 		
@@ -48,18 +59,19 @@ namespace App
 		 * in IndexedDB with the specified name. Creates a new database if one
 		 * does not already exist.
 		 */
-		static async new(databaseName: string, ...configurations: IConfig[])
+		static async new(about: IDatabaseAbout, ...configurations: IConfig[])
 		{
-			const databaseId = this.getDatabaseId(databaseName) || (() =>
+			const name = about.name || "untitled-" + Math.random().toString().slice(4);
+			const id = about.id || this.getDatabaseId(name) || (() =>
 			{
 				const id = generateDatabaseId();
-				localStorage.setItem(dbNamePrefix + databaseName, id);
+				localStorage.setItem(dbNamePrefix + name, id);
 				return id;
 			})();
 			
 			return new Promise<Database>(r =>
 			{
-				const openRequest = indexedDB.open(databaseId, 1);
+				const openRequest = indexedDB.open(id, 1);
 				
 				openRequest.onupgradeneeded = () =>
 				{
@@ -74,13 +86,43 @@ namespace App
 				
 				openRequest.onerror = () =>
 				{
-					console.error("Could not open the database: " + databaseName);
+					console.error("Could not open the database: " + name);
 				};
 				
 				openRequest.onsuccess = async () =>
 				{
-					const db = new Database(openRequest.result, configurations);
-					r(db);
+					const idb = openRequest.result;
+					const database = new Database(id, idb, configurations);
+					
+					if (about.strings?.length)
+					{
+						const blobs = about.blobs || new Map<string, Blob>();
+						const tx = idb.transaction(objectTableName, "readwrite");
+						const store = tx.objectStore(objectTableName);
+						const promises: Promise<any>[] = [];
+						
+						for (const str of about.strings)
+						{
+							const object: RecordJson<any> = JSON.parse(str, (k, v) =>
+							{
+								if (v && v.constructor === Object && exportedBlobKey in v)
+								{
+									const blobFileName = v[exportedBlobKey] as string;
+									const blob = blobs.get(blobFileName) || null;
+									return blob;
+								}
+								
+								return v;
+							});
+							
+							const req = store.put(object, object.id);
+							promises.push(new Promise<void>(r => req.onsuccess = () => r()));
+						}
+						
+						await Promise.allSettled(promises);
+					}
+					
+					r(database);
 				};
 			});
 		}
@@ -139,10 +181,35 @@ namespace App
 		}
 		
 		/** */
+		private static getDatabaseName(id: string)
+		{
+			for (let i = -1; ++i < localStorage.length;)
+			{
+				const key = localStorage.key(i);
+				if (key?.startsWith(dbNamePrefix))
+					if (localStorage.getItem(key) === id)
+						return key.slice(dbNamePrefix.length);
+			}
+			
+			return null;
+		}
+		
+		/** */
 		private constructor(
+			private readonly id: string,
 			readonly idb: IDBDatabase,
 			private readonly configurations: IConfig[])
 		{ }
+		
+		/** */
+		get name()
+		{
+			return Database.getDatabaseName(this.id) || "";
+		}
+		set name(name: string)
+		{
+			Database.rename(this.name, name);
+		}
 		
 		/** */
 		get<R extends Record>(id: ID)
@@ -372,8 +439,8 @@ namespace App
 			
 			return new Promise<void>(resolve =>
 			{
-				const transaction = this.idb.transaction(objectTableName, "readwrite");
-				const store = transaction.objectStore(objectTableName);
+				const tx = this.idb.transaction(objectTableName, "readwrite");
+				const store = tx.objectStore(objectTableName);
 				let completed = 0;
 				
 				const maybeResolve = () =>
@@ -452,6 +519,68 @@ namespace App
 					}
 				}
 			});
+		}
+		
+		//# Exporting
+		
+		/**
+		 * Exports the entire database. Returns a series of strings that are
+		 * JSON-serialized versions of each record. Also returned is a Map
+		 * object whose keys are blob file names, and whose values are Blobs.
+		 */
+		async export()
+		{
+			const name = Database.getDatabaseName(this.id) || "untitled";
+			const about: Required<IDatabaseAbout> = {
+				name,
+				id: this.id,
+				strings: [],
+				blobs: new Map()
+			};
+			
+			for await (const object of this.iterate())
+			{
+				about.strings.push(JSON.stringify(object, (key, value) =>
+				{
+					if (!(value instanceof Blob))
+						return value;
+					
+					const ext = MimeType.getExtension(value.type);
+					const blobFileName = about.blobs.size + ext;
+					about.blobs.set(blobFileName, value);
+					
+					return { [exportedBlobKey]: blobFileName };
+				}));
+			}
+			
+			return about;
+		}
+		
+		/**
+		 * Iterates through all entries in the database, yielding each raw JSON value. 
+		 * This method is intended for handling database exportation.
+		 */
+		private async * iterate()
+		{
+			const tx = this.idb.transaction(objectTableName, "readonly");
+			const store = tx.objectStore(objectTableName);
+			const cursor = store.openCursor();
+			
+			for (;;)
+			{
+				await new Promise<void>(r =>
+				{
+					if (cursor.readyState === "done")
+						cursor.result!.continue();
+					
+					cursor.onsuccess = () => r();
+				});
+				
+				if (!cursor.result)
+					break;
+				
+				yield cursor.result.value as object;
+			}
 		}
 		
 		//# Dirty Management
@@ -908,6 +1037,7 @@ namespace App
 		return layout;
 	}
 	
+	const exportedBlobKey = "$$blob$$";
 	const dbNamePrefix = "database-";
 	const objectTableName = "objects";
 	const stableIndexName = "stable-index";
