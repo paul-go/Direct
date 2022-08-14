@@ -21,7 +21,7 @@ namespace App
 		/** */
 		export function color(values: Partial<IColor>)
 		{
-			const h = values.h ?? 135;
+			const h = values.h ?? 335;
 			const s = values.s ?? 50;
 			const l = values.l ?? 50;
 			const a = values.a ?? 1;
@@ -31,7 +31,7 @@ namespace App
 		}
 		
 		/** */
-		export const themeColor = UI.color({ s: 70, l: 30 });
+		export const themeColor = UI.color({ s: 90, l: 33 });
 		
 		/** */
 		export const darkGrayBackground = "rgb(20, 20, 20)";
@@ -715,43 +715,6 @@ namespace App
 			});
 			
 			return [dripper, evt];
-		}
-		
-		/** */
-		export function getMediaDropCue(
-			label: string,
-			filesFn: (files: FileLike[]) => void,
-			...params: Htx.Param[])
-		{
-			let input: HTMLInputElement;
-			
-			return Htx.div(
-				"drop-cue",
-				UI.anchor(),
-				UI.flexCenter,
-				UI.clickable,
-				Htx.on(UI.clickEvt, () => input.click()),
-				
-				onFileDrop(files => filesFn(files)),
-				
-				input = Htx.input(
-					{
-						type: "file",
-						position: "absolute",
-						left: "-99999px",
-						pointerEvents: "none",
-						visibility: "hidden",
-					},
-					Htx.on("change", async () =>
-					{
-						const files = await FileLike.fromFiles(input.files);
-						if (files.length)
-							filesFn(files)
-					}),
-				),
-				...UI.cueLabel(label),
-				...params,
-			);
 		}
 		
 		/** */

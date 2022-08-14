@@ -48,11 +48,31 @@ namespace App
 					onFileDrop((files, x, y) => this.importMedia(files, x))
 				),
 				
-				UI.getMediaDropCue(
-					"Click or drop an image or video here.",
-					files => this.importMedia(files),
-					UI.visibleWhenEmpty(this.galleryContainer),
+				this.hiddenInput = Htx.input(
+					{
+						type: "file",
+						position: "absolute",
+						visibility: "hidden",
+					},
+					Htx.on("change", async () =>
+					{
+						const files = await FileLike.fromFiles(this.hiddenInput.files);
+						if (files.length)
+							this.importMedia(files);
+					}),
 				),
+				
+				Htx.div(
+					"cue",
+					UI.anchor(),
+					UI.flexCenter,
+					UI.clickable,
+					UI.visibleWhenEmpty(this.galleryContainer),
+					...UI.cueLabel("Click or drop an image or video here."),
+					{ pointerEvents: "none" },
+				),
+				
+				Htx.on("click", () => this.hiddenInput.click()),
 			);
 			
 			this.setSceneButtons(
@@ -66,6 +86,7 @@ namespace App
 		}
 		
 		private readonly galleryContainer: HTMLElement;
+		private readonly hiddenInput: HTMLInputElement;
 		
 		/** */
 		private readonly coverButton = new SceneButtonView("Cover", {
@@ -193,7 +214,11 @@ namespace App
 				
 				UI.toolButton(
 					UI.anchorTopRight(20),
-					...UI.click(() => this.root.remove()),
+					...UI.click(ev => 
+					{
+						this.root.remove();
+						ev.stopPropagation();
+					}),
 					new Text("Delete"),
 				)
 			);
