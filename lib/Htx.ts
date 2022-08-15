@@ -97,8 +97,13 @@ namespace Htx { { } }
 			cssPropertySet = new Set(propertyNames);
 		}
 		
-		for (const param of params)
+		// CAUTION: This code is performance critical. It uses constructor
+		// checks instead of instanceof and typeof for performance reasons.
+		// Be careful of changing this code without having full knowledge
+		// of what you're doing.
+		for (let i = -1, length = params.length; ++i < length;)
 		{
+			const param = params[i];
 			if (!param)
 				continue;
 			
@@ -106,8 +111,10 @@ namespace Htx { { } }
 			{
 				e.append(param as Node);
 			}
-			// This code is performance critical. It uses constructor checks 
-			// instead of instanceof and typeof for performance reasons.
+			else if (Array.isArray(param))
+			{
+				apply(e, param);
+			}
 			else switch (param.constructor)
 			{
 				case HtxEvent:
@@ -469,6 +476,8 @@ namespace Htx
 		Event |
 		// Immediately invoked closure
 		Closure |
+		// Arrays of Params
+		Param<T>[] |
 		// Conditionals
 		false | undefined | null | void |
 		NodeLike |
