@@ -14,25 +14,21 @@ namespace App
 		static async new(root: HTMLElement, databaseName: string)
 		{
 			const database = await App.createDatabase({ name: databaseName });
-			
-			let meta = await database.first(MetaRecord);
-			if (!meta)
-				meta = new MetaRecord();
-			
-			if (!meta.homePost)
-				meta.homePost = new PostRecord();
-			
-			await database.save(meta);
+			const meta = await getDatabaseMeta(database);
 			return new AppContainer(root, database, meta);
 		}
 		
 		/** */
 		private constructor(
 			readonly root: HTMLElement,
-			readonly database: Database,
-			readonly meta: MetaRecord)
+			database: Database,
+			meta: MetaRecord)
 		{
+			this._database = database;
+			this._meta = meta;
+			
 			Htx.from(root)(
+				
 				CssClass.appRoot,
 				{
 					minHeight: "100%",
@@ -79,9 +75,37 @@ namespace App
 		}
 		
 		/** */
+		get database()
+		{
+			return this._database;
+		}
+		private _database: Database;
+		
+		/** */
+		get meta()
+		{
+			return this._meta;
+		}
+		private _meta: MetaRecord;
+		
+		/** */
 		get homePost()
 		{
 			return Not.nullable(this.meta.homePost);
+		}
+		
+		/** */
+		async importBlogFile(blogFile: FileLike)
+		{
+			const bytes = new Uint8Array(blogFile.data);
+			const databaseAbout = await BlogFile.parse(bytes);
+			
+			if (!databaseAbout)
+				return void await Util.alert(`This .zip archive wasn't exported from ${ConstS.appName}.`);
+			
+			this._database = await App.createDatabase(databaseAbout);
+			this._meta = await getDatabaseMeta(this.database);
+			this.root.replaceChildren(new App.BlogView().root);
 		}
 		
 		/** */
@@ -91,5 +115,19 @@ namespace App
 			localStorage.clear();
 			window.location.reload();
 		}
+	}
+	
+	/** */
+	async function getDatabaseMeta(database: Database)
+	{
+		let meta = await database.first(MetaRecord);
+		if (!meta)
+			meta = new MetaRecord();
+		
+		if (!meta.homePost)
+			meta.homePost = new PostRecord();
+		
+		await database.save(meta);
+		return meta;
 	}
 }

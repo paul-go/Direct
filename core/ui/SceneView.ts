@@ -42,7 +42,11 @@ namespace App
 				Htx.div(
 					"scene-header",
 					(this.headerBox = new HeightBox(this.renderDefaultHeader())).root,
-					...UI.dripper(new Text("Add Here"))
+					Drop.here({
+						accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
+						dropFn: files => this.insertGalleryScene(files),
+						cover: new Text("Add Here")
+					})
 				),
 				
 				//
@@ -57,13 +61,14 @@ namespace App
 				
 				//
 				Htx.div(
+					"config-buttons-footer",
 					{
 						backgroundColor: UI.darkGrayBackground,
 						position: "sticky",
 						bottom: "0",
 					},
 					this.configuratorButtonsContainer = Htx.div(
-						"config-buttons-container",
+						"config-buttons-width",
 						{
 							width: "max-content",
 							maxWidth: "100%",
@@ -382,6 +387,14 @@ namespace App
 		{
 			this.root.nextElementSibling?.after(this.root);
 			this.root.scrollIntoView({ behavior: "smooth" });
+		}
+		
+		/** */
+		private insertGalleryScene(files: FileLike[])
+		{
+			const galleryScene = new GallerySceneView();
+			galleryScene.importMedia(files);
+			this.root.before(galleryScene.root);
 		}
 	}
 }

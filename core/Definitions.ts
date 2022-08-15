@@ -15,6 +15,8 @@ const enum ConstS
 	textContrastBlackName = "res.blur-black.png",
 	textContrastWhiteName = "res.blur-white.png",
 	debugExportsFolderName = "+exports",
+	portableExtension = "zip",
+	appName = "Direct",
 }
 
 /** */

@@ -113,6 +113,7 @@ namespace Cover
 		}
 		
 		copyOne("trix.js");
+		copyOne("jszip.js");
 		copyOne("res.blur-black.png");
 		copyOne("res.blur-white.png");
 		copyOne("favicon.ico");

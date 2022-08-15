@@ -431,21 +431,6 @@ namespace App
 			];
 		}
 		
-		/** */
-		export function dripperStyle(position: "top" | "right" | "bottom" | "left")
-		{
-			return <Htx.Style>{
-				pointerEvents: "none",
-				...UI.flexCenter,
-				...(position === "top" || position === "bottom" ? { height: "50%" } : {}),
-				...(position === "left" || position === "right" ? { width: "50%" } : {}),
-				...(position === "top" ? UI.anchorTop() : {}),
-				...(position === "right" ? UI.anchorRight() : {}),
-				...(position === "bottom" ? UI.anchorBottom() : {}),
-				...(position === "left" ? UI.anchorLeft() : {}),
-			};
-		}
-		
 		/**
 		 * Returns a placeholder DOM Node that is replaced with the contents
 		 * of the specified function, when the attached element is connected
@@ -666,55 +651,6 @@ namespace App
 			
 			document.body.style.removeProperty("overflow");
 			document.body.style.removeProperty("pointer-events");
-		}
-		
-		/** */
-		export function dripper(...params: Htx.Param[]): [HTMLElement, Htx.Event]
-		{
-			const dripper = Htx.div(
-				"dripper",
-				CssClass.hide,
-				UI.anchor(),
-				UI.flexCenter,
-				{
-					margin: "auto",
-					zIndex: "9",
-					
-					backgroundColor: UI.color({ l: 20, a: 0.85 }),
-					border: "3px solid " + UI.color({ l: 20 }),
-					borderRadius: UI.borderRadius.default,
-					fontSize: "40px",
-					fontWeight: "700",
-					color: "white"
-				},
-				Htx.css(" *", { pointerEvents: "none" }),
-				Htx.on("dragleave", ev =>
-				{
-					ev.preventDefault();
-					dripper.classList.add(CssClass.hide);
-				}),
-				Htx.on("dragend", ev =>
-				{
-					dripper.classList.add(CssClass.hide);
-				}),
-				Htx.on("dragenter", ev =>
-				{
-					ev.preventDefault();
-				}),
-				onFileDrop(() =>
-				{
-					dripper.classList.add(CssClass.hide);
-				}),
-				...params
-			);
-			
-			const evt = Htx.on("dragenter", ev =>
-			{
-				ev.preventDefault();
-				dripper.classList.remove(CssClass.hide);
-			});
-			
-			return [dripper, evt];
 		}
 		
 		/** */

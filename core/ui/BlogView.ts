@@ -73,7 +73,7 @@ namespace App
 						fontSize: UI.vw(2),
 						fontWeight: "700",
 						backgroundColor: UI.themeColor,
-						padding: UI.vw(0.5) + " " + UI.vw(1.5),
+						padding: UI.vw(0.5) + " " + UI.vw(2),
 					},
 					new Text("Draft"),
 				),

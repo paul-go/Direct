@@ -171,6 +171,22 @@ namespace App
 			return entriesA === entriesB;
 		}
 		
+		/**
+		 * Parses the specified string as JSON text in a try/catch block
+		 * to avoid unhandled exceptions being generated.
+		 */
+		export function tryParseJson<T = any>(jsonText: string): T | null
+		{
+			try
+			{
+				return JSON.parse(jsonText);
+			}
+			catch (e)
+			{
+				return null;
+			}
+		}
+		
 		//# Dialogs
 		
 		/** */

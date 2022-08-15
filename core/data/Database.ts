@@ -540,8 +540,8 @@ namespace App
 				{
 					if (v instanceof Blob)
 					{
-						const ext = MimeType.getExtension(v.type);
-						const blobFileName = about.blobs.size + ext;
+						const ext = MimeType.getExtension(v.type) || "txt";
+						const blobFileName = about.blobs.size + "." + ext;
 						about.blobs.set(blobFileName, v);
 						(databaseObject as any)[k] = { [exportedBlobKey]: blobFileName };
 					}
@@ -563,20 +563,29 @@ namespace App
 			const store = tx.objectStore(objectTableName);
 			const cursor = store.openCursor();
 			
+			let resolver: (() => void) | null = null;
+			let object: any = null;
+			
+			cursor.onsuccess = () =>
+			{
+				if (cursor.result)
+				{
+					object = cursor.result!.value;
+					cursor.result!.continue();
+				}
+				else object = null;
+				
+				if (resolver)
+					resolver();
+			};
+			
 			for (;;)
 			{
-				await new Promise<void>(r =>
-				{
-					if (cursor.readyState === "done")
-						cursor.result!.continue();
-					
-					cursor.onsuccess = () => r();
-				});
-				
-				if (!cursor.result)
+				await new Promise<void>(r => resolver = r);
+				if (!object)
 					break;
 				
-				yield cursor.result.value as RecordJson<any>;
+				yield object as RecordJson<any>;
 			}
 		}
 		

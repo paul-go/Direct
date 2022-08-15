@@ -25,28 +25,17 @@ namespace App
 					
 					...this.record.frames.map(f => new FrameView(f).root)
 				),
-				...UI.dripper(
-					
-					// Empty Dripper
-					Htx.div(
-						UI.visibleWhenEmpty(this.galleryContainer),
-						new Text("Drop"),
-					),
-					
-					// Non-Empty Dripper
-					Htx.div(
-						UI.visibleWhenNotEmpty(this.galleryContainer),
-						UI.dripperStyle("left"),
+				
+				Drop.here({
+					accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
+					dropFn: (files, x) => this.importMedia(files, x),
+					left: [
 						new Text("Add to the left"),
-					),
-					Htx.div(
-						UI.visibleWhenNotEmpty(this.galleryContainer),
-						UI.anchorRight(),
-						UI.dripperStyle("right"),
+					],
+					right: [
 						new Text("Add to the right"),
-					),
-					onFileDrop((files, x, y) => this.importMedia(files, x))
-				),
+					],
+				}),
 				
 				this.hiddenInput = Htx.input(
 					{
@@ -101,7 +90,7 @@ namespace App
 		});
 		
 		/** */
-		private async importMedia(files: FileLike[], dropOffsetX = 0)
+		async importMedia(files: FileLike[], dropOffsetX = 0)
 		{
 			const mediaRecords = this.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
 			if (mediaRecords.length === 0)
@@ -175,7 +164,6 @@ namespace App
 		{
 			const media = record.media!;
 			const isImage = MimeType.getClass(media.type) === MimeClass.image;
-			const src = media.getBlobCssUrl();
 			let filler: HTMLElement;
 			
 			if (isImage)
@@ -184,6 +172,7 @@ namespace App
 					src: media.getBlobUrl()
 				});
 				
+				const src = media.getBlobCssUrl();
 				filler = RenderUtil.createImageFiller(src);
 			}
 			else
@@ -193,6 +182,7 @@ namespace App
 				});
 				
 				this.mediaElement.controls = true;
+				const src = media.getBlobUrl();
 				filler = RenderUtil.createVideoFiller(src, this.mediaElement);
 			}
 			

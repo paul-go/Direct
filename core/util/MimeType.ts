@@ -23,7 +23,7 @@ namespace App
 		// Text
 		html = "text/html",
 		css = "text/css",
-		js = "text/javascript"
+		js = "text/javascript",
 	}
 	
 	/** */
@@ -32,6 +32,7 @@ namespace App
 		other = "",
 		image = "image",
 		video = "video",
+		text = "text",
 	}
 	
 	/** */
@@ -71,6 +72,12 @@ namespace App
 			}
 			
 			return MimeClass.other;
+		}
+		
+		/** */
+		export function ofClass(...classes: MimeClass[])
+		{
+			return [...mimes.values()].filter(m => classes.includes(getClass(m)));
 		}
 		
 		/**

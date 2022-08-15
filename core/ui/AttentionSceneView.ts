@@ -16,17 +16,13 @@ namespace App
 			this.buttons = new Cage.Array(this.buttonsContainer, AttentionButton);
 			
 			Htx.from(this.sceneContainer)(
-				...UI.dripper(
-					Htx.div(
-						UI.dripperStyle("top"),
-						new Text("Add Content Image")
-					),
-					Htx.div(
-						UI.dripperStyle("bottom"),
-						new Text("Add Background")
-					),
-					onFileDrop((files, x, y) => this.handleMediaDrop(files, x, y)),
-				),
+				Drop.here({
+					accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
+					dropFn: (files, x, y) => this.handleMediaDrop(files, x, y),
+					top: new Text("Add Content Image"),
+					bottom: new Text("Add Background"),
+				}),
+				
 				this.backgroundsContainer = Htx.div(
 					"backgrounds-container",
 					UI.anchor()

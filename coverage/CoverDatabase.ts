@@ -217,8 +217,8 @@ namespace Cover
 	{
 		const [db] = await setup();
 		
-		const media = new App.MediaRecord();
-		media.blob = new Blob([new Uint8Array([80])], { type: "text/plain" });
+		const media = Cover.readMedia("image-5.jpg");
+		const mediaSize = media.blob.size;
 		
 		const frame = new App.FrameRecord();
 		frame.media = media;
@@ -229,7 +229,21 @@ namespace Cover
 		exported.id = "new" + exported.id;
 		exported.name = "new" + Math.random().toString().slice(-10);
 		
-		const newDatabase = await App.createDatabase(exported);
+		const blogBytesOut = await App.BlogFile.create(exported);
+		
+		const path = Electron.path.join(
+			process.cwd(),
+			ConstS.debugExportsFolderName,
+			"database.zip");
+		
+		Electron.fs.writeFileSync(path, blogBytesOut);
+		
+		const blogBytesIn = new Uint8Array(Electron.fs.readFileSync(path));
+		const databaseAbout = await App.BlogFile.parse(blogBytesIn);
+		if (!databaseAbout)
+			throw "Invalid .zip file";
+		
+		const newDatabase = await App.createDatabase(databaseAbout);
 		const frameNew = await newDatabase.get(frame.id);
 		const mediaNew = await newDatabase.get(media.id);
 		
@@ -237,7 +251,7 @@ namespace Cover
 			() => frameNew instanceof App.FrameRecord,
 			() => mediaNew instanceof App.MediaRecord,
 			() => (mediaNew as App.MediaRecord).blob instanceof Blob,
-			() => (mediaNew as App.MediaRecord).blob.size === 1,
+			() => (mediaNew as App.MediaRecord).blob.size === mediaSize,
 		];
 	}
 	

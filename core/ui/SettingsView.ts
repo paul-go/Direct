@@ -88,6 +88,16 @@ namespace App
 				]
 			});
 			
+			this.addSection({
+				label: "Export",
+				params: [
+					Htx.button(
+						Htx.on("click", () => this.doExport()),
+						new Text("Export")
+					)
+				]
+			});
+			
 			Cage.set(this);
 		}
 		
@@ -145,6 +155,52 @@ namespace App
 			return this._meta || (this._meta = AppContainer.of(this).meta);
 		}
 		private _meta: MetaRecord | null = null;
+		
+		/** */
+		private async doExport()
+		{
+			const db = AppContainer.of(this).database;
+			
+			const createBytes = async () =>
+			{
+				const about = await db.export();
+				const blogFileBytes = await BlogFile.create(about);
+				return blogFileBytes;
+			};
+			
+			if (TAURI)
+			{
+				const savePath = await Tauri.dialog.save({
+					filters: [{
+						extensions: [ConstS.portableExtension],
+						name: db.name,
+					}]
+				});
+				
+				if (!savePath)
+					return;
+				
+				const bytes = await createBytes();
+				await Tauri.fs.writeBinaryFile(savePath, bytes);
+			}
+			else if (DEBUG && ELECTRON)
+			{
+				const bytes = await createBytes();
+				const fs = require("node:fs") as typeof import("node:fs");
+				const path = require("node:path") as typeof import("node:path");
+				const savePath = path.join(
+					process.cwd(), 
+					ConstS.debugExportsFolderName,
+					Date.now() + "." + ConstS.portableExtension);
+				
+				fs.writeFileSync(savePath, bytes);
+			}
+			else
+			{
+				const bytes = await createBytes();
+				BlogFile.triggerDownload("File." + ConstS.portableExtension, bytes);
+			}
+		}
 		
 		/** */
 		save()
