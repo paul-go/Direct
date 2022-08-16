@@ -153,15 +153,15 @@ namespace Cage
 	 * Returns the element succeeding the specified element in the DOM
 	 * that is connected to a cage of the specified type.
 	 */
-	export function next<T extends ICage>(e: Element, type: Constructor<T>): T | null
+	export function next<T extends ICage>(via: Element, type: Constructor<T>): T | null
 	{
 		for (;;)
 		{
-			e = e.nextElementSibling as Element;
-			if (!(e instanceof Element))
+			via = via.nextElementSibling as Element;
+			if (!(via instanceof Element))
 				return null;
 			
-			const cage = get(e, type);
+			const cage = get(via, type);
 			if (cage)
 				return cage;
 		}
@@ -171,15 +171,15 @@ namespace Cage
 	 * Returns the element preceeding the specified element in the DOM
 	 * that is connected to a cage of the specified type.
 	 */
-	export function previous<T extends ICage>(e: Element, type: Constructor<T>): T | null
+	export function previous<T extends ICage>(via: Element, type: Constructor<T>): T | null
 	{
 		for (;;)
 		{
-			e = e.previousElementSibling as Element;
-			if (!(e instanceof Element))
+			via = via.previousElementSibling as Element;
+			if (!(via instanceof Element))
 				return null;
 			
-			const cage = get(e, type);
+			const cage = get(via, type);
 			if (cage)
 				return cage;
 		}
