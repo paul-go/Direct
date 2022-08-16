@@ -21,7 +21,7 @@ namespace Cover
 	/** */
 	export function display(cage: Cage.ICage)
 	{
-		Query.find(CssClass.appRoot)?.append(cage.root);
+		Query.find(CssClass.appContainer)?.append(cage.root);
 	}
 	
 	if (typeof module !== "undefined")

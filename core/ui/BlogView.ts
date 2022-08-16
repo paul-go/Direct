@@ -49,7 +49,7 @@ namespace App
 				),
 				Htx.on(UI.clickEvt, () =>
 				{
-					AppContainer.of(this).root.append(new SettingsView().root);
+					AppContainer.of(this).showBlogPalette();
 				})
 			);
 		}

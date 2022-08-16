@@ -2,10 +2,42 @@
 
 namespace App
 {
-	/** */
-	export function createDatabase(about: IDatabaseAbout)
+	/**
+	 * Returns a reference to the Database object with the specified name.
+	 * If the database exists in storage, but has not been loaded into an object,
+	 * it's loaded before being returned.
+	 */
+	export async function getDatabase(name: string)
 	{
-		return App.Database.new(about,
+		let db = Database.get(name);
+		if (db)
+			return db;
+		
+		const id = Database.getId(name);
+		if (!id)
+			return null;
+		
+		return App.createDatabase({ id });
+	}
+	
+	/** */
+	export async function getDatabaseMeta(database: Database)
+	{
+		let meta = await database.first(MetaRecord);
+		if (!meta)
+			meta = new MetaRecord();
+		
+		if (!meta.homePost)
+			meta.homePost = new PostRecord();
+		
+		await database.save(meta);
+		return meta;
+	}
+	
+	/** */
+	export async function createDatabase(about: IDatabaseAbout)
+	{
+		const database = await App.Database.new(about,
 			{ ctor: App.MetaRecord, stable: 1, root: true },
 			{ ctor: App.PostRecord, stable: 2, root: true },
 			{ ctor: App.AttentionSceneRecord, stable: 3 },
@@ -15,6 +47,8 @@ namespace App
 			{ ctor: App.MediaRecord, stable: 8 },
 			{ ctor: App.BackgroundRecord, stable: 9 },
 		);
+		
+		return database;
 	}
 	
 	/** */

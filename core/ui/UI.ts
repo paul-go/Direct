@@ -552,25 +552,48 @@ namespace App
 		}
 		
 		/** */
-		export function escape(removedFn?: (e: HTMLElement) => void): Htx.Param[]
+		export function enter(pressedFn?: (e: HTMLElement) => void): Htx.Param[]
 		{
 			return [
 				{
 					tabIndex: 0,
 					outline: "0",
 				},
-				Htx.on("keydown", async ev =>
+				e => Htx.on("keydown", async ev =>
 				{
-					if (ev.key === "Escape")
+					if (ev.key === "Enter")
 					{
+						ev.stopImmediatePropagation();
 						ev.preventDefault();
-						removedFn?.(ev.currentTarget as HTMLElement);
+						pressedFn?.(e);
 					}
-					
-				}, { capture: true }),
+				}),
 				When.connected(e => e.focus())
 			];
 		}
+		
+		
+		/** */
+		export function escape(pressedFn?: (e: HTMLElement) => void): Htx.Param[]
+		{
+			return [
+				{
+					tabIndex: 0,
+					outline: "0",
+				},
+				e => Htx.on("keydown", async ev =>
+				{
+					if (ev.key === "Escape")
+					{
+						ev.stopImmediatePropagation();
+						ev.preventDefault();
+						pressedFn?.(e);
+					}
+				}),
+				When.connected(e => e.focus())
+			];
+		}
+		
 		
 		/** */
 		export function removeOnEscape(removedFn?: () => void): Htx.Param[]
@@ -592,8 +615,7 @@ namespace App
 					await UI.removeWithFade(ev.currentTarget as HTMLElement);
 					removedFn?.();
 				}
-				
-			}, { capture: true });
+			});
 		}
 		
 		/** */
@@ -696,10 +718,18 @@ namespace App
 			target: EventTarget | null,
 			menu: Literal<string, () => void>)
 		{
+			let previouslyFocused: HTMLElement | null = null;
+			
+			const cancel = () =>
+			{
+				overlay.remove();
+				if (previouslyFocused)
+					previouslyFocused.focus();
+			}
+			
 			const overlay = Htx.div(
 				UI.fixed(),
 				{
-					tabIndex: 0,
 					zIndex: "0",
 				},
 				Htx.on(document.body, "pointerdown", ev =>
@@ -707,18 +737,11 @@ namespace App
 					ev.preventDefault();
 					
 					if (ev.target === overlay)
-						overlay.remove();
-				}),
-				Htx.on(document.body, "keydown", ev =>
-				{
-					if (ev.key === "Escape")
-					{
-						ev.preventDefault();
-						overlay.remove();
-					}
+						cancel();
 				}),
 				Htx.div(
 					{
+						tabIndex: 0,
 						position: "absolute",
 						minWidth: "200px",
 						backgroundColor: UI.gray(100, 0.5),
@@ -727,6 +750,15 @@ namespace App
 						overflow: "hidden",
 						visibility: "hidden",
 					},
+					Htx.on("keydown", ev =>
+					{
+						if (ev.key === "Escape")
+						{
+							ev.preventDefault();
+							ev.stopPropagation();
+							cancel();
+						}
+					}),
 					
 					...Object.entries(menu).map(([label, callbackFn]) =>
 					{
@@ -743,13 +775,18 @@ namespace App
 							Htx.on("click", ev =>
 							{
 								ev.preventDefault();
+								cancel();
 								callbackFn();
-								overlay.remove();
 							}),
 							new Text(label),
 						);
 					}),
 					
+					When.connected(() =>
+					{
+						if (document.activeElement instanceof HTMLElement)
+							previouslyFocused = document.activeElement;
+					}),
 					When.rendered(e =>
 					{
 						if (target instanceof Element)
@@ -772,6 +809,7 @@ namespace App
 						}
 						
 						e.style.visibility = "visible";
+						e.focus();
 					})
 				)
 			);

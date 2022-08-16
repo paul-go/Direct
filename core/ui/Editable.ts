@@ -91,7 +91,7 @@ namespace App
 		 */
 		export function single(options?: Partial<ISingleOptions>): Htx.Param
 		{
-			return e => [
+			return [
 				{
 					contentEditable: "plaintext-only",
 					minHeight: "1em",
@@ -99,7 +99,7 @@ namespace App
 				
 				// Make sure the element isn't inline, otherwise, the caret
 				// won't display when the element has no content in it.
-				When.connected(() =>
+				When.connected(e =>
 				{
 					if (getComputedStyle(e).display === "inline")
 						e.style.display = "inline-block";
@@ -137,6 +137,15 @@ namespace App
 					}
 				}),
 			];
+		}
+		
+		/** */
+		export function toggle(target: HTMLElement, editable: boolean)
+		{
+			if (editable)
+				target.contentEditable = "plaintext-only";
+			else
+				target.removeAttribute("contenteditable");
 		}
 		
 		/** */

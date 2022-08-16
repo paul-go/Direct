@@ -26,32 +26,94 @@ namespace App
 	export class Database
 	{
 		/** */
-		static rename(currentName: string, newName: string)
+		private static get databases()
 		{
-			if (currentName)
-				localStorage.removeItem(dbNamePrefix + currentName);
+			return this._databases || (this._databases = new IterableWeakMap<string, Database>());
+		 }
+		private static _databases: IterableWeakMap<string, Database> | undefined = undefined;
+		
+		/** */
+		static tryRename(currentName: string, newName: string)
+		{
+			if (!currentName || !newName)
+				return false;
 			
-			const id = this.getDatabaseId(currentName);
-			localStorage.setItem(dbNamePrefix + newName, id);
+			const id = this.getId(currentName);
+			if (!id)
+				return false;
+			
+			localStorage.setItem(dbIdPrefix + id, newName);
+			return true;
 		}
 		
 		/** */
-		static getAllNames()
+		static getNames()
 		{
-			const names: string[] = [];
+			return this.getAll().map(a => a[1]).sort();
+		}
+		
+		/** */
+		static getIds()
+		{
+			return this.getAll().map(a => a[0]);
+		}
+		
+		/** */
+		private static getAll()
+		{
+			const entries: [string, string][] = [];
 			
 			for (let i = -1; ++ i < localStorage.length;)
 			{
 				const key = localStorage.key(i);
-				if (key)
+				if (key?.startsWith(dbIdPrefix))
 				{
 					const name = localStorage.getItem(key);
 					if (name)
-						names.push(name);
+						entries.push([key.slice(dbIdPrefix.length), name]);
 				}
 			}
 			
-			return names;
+			return entries;
+		}
+		
+		/**
+		 * Returns a reference to the Database with the specified name,
+		 * if that is currently open. If the database with the specified
+		 * name exists but is not open, null is returned.
+		 */
+		static get(name: string)
+		{
+			const id = this.getId(name);
+			return id ? this.databases.get(id) || null : null;
+		}
+		
+		/** */
+		static getName(id: string)
+		{
+			return localStorage.getItem(dbIdPrefix + id) || "";
+		}
+		
+		/** */
+		static getId(name: string)
+		{
+			for (let i = -1; ++i < localStorage.length;)
+			{
+				const key = localStorage.key(i);
+				if (key?.startsWith(dbIdPrefix))
+					if (localStorage.getItem(key) === name)
+						return key.slice(dbIdPrefix.length);
+			}
+			
+			return null;
+		}
+		
+		/**
+		 * Generates a globally unique ID for the database.
+		 */
+		static generateId()
+		{
+			return Date.now().toString() + "-" + Util.randomChars(16);
 		}
 		
 		/**
@@ -61,18 +123,22 @@ namespace App
 		 */
 		static async new(about: IDatabaseAbout, ...configurations: IConfig[])
 		{
-			const name = about.name || "untitled-" + Math.random().toString().slice(4);
-			const id = about.id || this.getDatabaseId(name) || (() =>
-			{
-				const id = generateDatabaseId();
-				localStorage.setItem(dbNamePrefix + name, id);
-				return id;
-			})();
+			let name = about.name || "";
+			let id = about.id || "";
+			
+			if (about.name && !about.id)
+				id = this.getId(about.name) || "";
+			
+			if (!about.name && about.id)
+				name = this.getName(about.id) || "";
+			
+			name ||= "untitled-" + Math.random().toString().slice(4);
+			id ||= this.generateId();
+			localStorage.setItem(dbIdPrefix + id, name);
 			
 			return new Promise<Database>(r =>
 			{
 				const openRequest = indexedDB.open(id, 1);
-				
 				openRequest.onupgradeneeded = () =>
 				{
 					const db = openRequest.result;
@@ -128,13 +194,27 @@ namespace App
 		/** */
 		static delete(databaseName: string)
 		{
-			const databaseId = this.getDatabaseId(databaseName);
+			const id = this.getId(databaseName);
+			if (!id)
+				return;
 			
-			return new Promise<void>(resolve =>
+			const openDatabase = Database.get(databaseName);
+			if (openDatabase)
+				openDatabase.close();
+			
+			return new Promise<boolean>(async resolve =>
 			{
-				const request = indexedDB.deleteDatabase(databaseId);
-				request.onsuccess = () => resolve();
-				request.onerror = () => resolve();
+				const request = indexedDB.deleteDatabase(id);
+				const then = () =>
+				{
+					localStorage.removeItem(dbIdPrefix + id);
+					console.log("Deleted database '" + databaseName + "' with ID '" + id + "'");
+					resolve(true);
+				}
+				
+				request.onsuccess = then;
+				request.onblocked = then;
+				request.onerror = () => resolve(false);
 			});
 		}
 		
@@ -142,22 +222,10 @@ namespace App
 		 * Deletes all databases in the system.
 		 * Only used during debug.
 		 */
-		static clear()
+		static async clear()
 		{
-			return new Promise<void>(async resolve =>
-			{
-				const dbs = await indexedDB.databases();
-				for (const db of dbs)
-				{
-					if (db.name)
-					{
-						indexedDB.deleteDatabase(db.name);
-						console.log("Deleted database: " + db.name);
-					}
-				}
-				
-				resolve();
-			});
+			for (const name of this.getNames())
+				await this.delete(name);
 		}
 		
 		/** */
@@ -173,40 +241,18 @@ namespace App
 		}
 		
 		/** */
-		private static getDatabaseId(name: string)
-		{
-			return localStorage.getItem(dbNamePrefix + name) || "";
-		}
-		
-		/** */
-		private static getDatabaseName(id: string)
-		{
-			for (let i = -1; ++i < localStorage.length;)
-			{
-				const key = localStorage.key(i);
-				if (key?.startsWith(dbNamePrefix))
-					if (localStorage.getItem(key) === id)
-						return key.slice(dbNamePrefix.length);
-			}
-			
-			return null;
-		}
-		
-		/** */
 		private constructor(
 			private readonly id: string,
 			readonly idb: IDBDatabase,
 			private readonly configurations: IConfig[])
-		{ }
+		{
+			Database.databases.set(id, this);
+		}
 		
 		/** */
 		get name()
 		{
-			return Database.getDatabaseName(this.id) || "";
-		}
-		set name(name: string)
-		{
-			Database.rename(this.name, name);
+			return Database.getName(this.id) || "";
 		}
 		
 		/** */
@@ -424,6 +470,14 @@ namespace App
 			throw "Record type not defined.";
 		}
 		
+		/**
+		 * Closes the connection to the database.
+		 */
+		close()
+		{
+			this.idb.close();
+		}
+		
 		/** */
 		save(...records: Record[])
 		{
@@ -526,7 +580,7 @@ namespace App
 		 */
 		async export()
 		{
-			const name = Database.getDatabaseName(this.id) || "untitled";
+			const name = Database.getName(this.id) || "untitled";
 			const about: Required<IDatabaseAbout> = {
 				name,
 				id: this.id,
@@ -1044,7 +1098,7 @@ namespace App
 	}
 	
 	const exportedBlobKey = "$$blob$$";
-	const dbNamePrefix = "database-";
+	const dbIdPrefix = "database-";
 	const objectTableName = "objects";
 	const stableIndexName = "stable-index";
 	const stableProperty = "_";
@@ -1100,14 +1154,6 @@ namespace App
 		return Date.now() * 1000 + (nextId++);
 	}
 	let nextId = 0;
-	
-	/**
-	 * Generates a globally unique ID for the database.
-	 */
-	function generateDatabaseId()
-	{
-		return Date.now().toString() + "-" + Util.randomChars(16);
-	}
 	
 	/** */
 	type Ctor = new(id?: string) => Record;

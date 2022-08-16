@@ -14,7 +14,7 @@ namespace App
 		static async new(root: HTMLElement, databaseName: string)
 		{
 			const database = await App.createDatabase({ name: databaseName });
-			const meta = await getDatabaseMeta(database);
+			const meta = await App.getDatabaseMeta(database);
 			return new AppContainer(root, database, meta);
 		}
 		
@@ -29,7 +29,7 @@ namespace App
 			
 			Htx.from(root)(
 				
-				CssClass.appRoot,
+				CssClass.appContainer,
 				{
 					minHeight: "100%",
 				},
@@ -68,6 +68,15 @@ namespace App
 					
 					titleBar.setAttribute("data-tauri-drag-region", "");
 					e.prepend(titleBar)
+				}),
+				
+				Htx.on("keydown", ev =>
+				{
+					if (ev.key === "p" && ev.metaKey && !ev.ctrlKey && !ev.shiftKey && !ev.altKey)
+					{
+						ev.preventDefault();
+						this.showBlogPalette();
+					}
 				})
 			);
 			
@@ -95,17 +104,23 @@ namespace App
 		}
 		
 		/** */
-		async importBlogFile(blogFile: FileLike)
+		async changeDatabase(name: string)
 		{
-			const bytes = new Uint8Array(blogFile.data);
-			const databaseAbout = await BlogFile.parse(bytes);
+			const db = await App.getDatabase(name);
+			if (!db)
+				return;
 			
-			if (!databaseAbout)
-				return void await Util.alert(`This .zip archive wasn't exported from ${ConstS.appName}.`);
-			
-			this._database = await App.createDatabase(databaseAbout);
-			this._meta = await getDatabaseMeta(this.database);
-			this.root.replaceChildren(new App.BlogView().root);
+			this.root.replaceChildren();
+			this._database = db;
+			this._meta = await App.getDatabaseMeta(db);
+			this.root.append(new BlogView().root);
+		}
+		
+		/** */
+		showBlogPalette()
+		{
+			const pal = new BlogPalette();
+			this.root.append(pal.root);
 		}
 		
 		/** */
@@ -115,19 +130,5 @@ namespace App
 			localStorage.clear();
 			window.location.reload();
 		}
-	}
-	
-	/** */
-	async function getDatabaseMeta(database: Database)
-	{
-		let meta = await database.first(MetaRecord);
-		if (!meta)
-			meta = new MetaRecord();
-		
-		if (!meta.homePost)
-			meta.homePost = new PostRecord();
-		
-		await database.save(meta);
-		return meta;
 	}
 }

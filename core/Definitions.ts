@@ -33,7 +33,7 @@ const enum CssClass
 	// Editor classes
 	dragOverScreen = "drag-over-screen",
 	hide = "hide",
-	appRoot = "app-root",
+	appContainer = "app-container",
 	blogView = "blog-view",
 	postViewTransition = "post-view-transition",
 	
