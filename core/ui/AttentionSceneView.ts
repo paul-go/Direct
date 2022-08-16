@@ -273,14 +273,14 @@ namespace App
 			
 			if (this.backgroundsButton.selected)
 			{
-				this.textContainer.style.filter = "blur(3px)";
-				this.textContainer.style.pointerEvents = "none";
+				this.foregroundContainer.style.filter = "blur(3px)";
+				this.foregroundContainer.style.pointerEvents = "none";
 				this.setSceneConfigurator(this.backgroundManager.configuratorElement);
 			}
 			else
 			{
-				this.textContainer.style.removeProperty("filter");
-				this.textContainer.style.removeProperty("pointer-events");
+				this.foregroundContainer.style.removeProperty("filter");
+				this.foregroundContainer.style.removeProperty("pointer-events");
 				this.backgroundManager.configuratorElement.remove();
 			}
 			

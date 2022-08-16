@@ -7,8 +7,9 @@ namespace App
 		/** */
 		constructor(
 			private readonly record: AttentionSceneRecord,
-			readonly root: HTMLElement)
+			backgroundsContainer: HTMLElement)
 		{
+			this.root = backgroundsContainer;
 			let imagesConfigurators: HTMLElement;
 			
 			this.configuratorElement = Htx.div(
@@ -38,6 +39,7 @@ namespace App
 			Cage.set(this);
 		}
 		
+		readonly root;
 		readonly configuratorElement;
 		private readonly configurators;
 		private readonly previews;
