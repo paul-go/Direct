@@ -160,6 +160,7 @@ namespace Cover
 			`<meta name="theme-color" content="#000000">`,
 			`<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">`,
 			`<meta name="apple-mobile-web-app-capable" content="yes">`,
+			`<body></body>`,
 			`<script src="${appJsFileName}"></script>`,
 			`</html>`
 		].join("\n");
