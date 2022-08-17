@@ -1,24 +1,20 @@
 
-# Note: This project is super early. 
+# Direct
 
-It's not in a usable state at this point. Though I'm working on this full-time, and it's moving ahead at a fast pace. Having said that, you can see an online demo of Direct at https://app.directblog.org.
+Direct is an experimental website builder and blogging engine.
 
-# Preface
+Unlike other blogging engines (such as WordPress and Ghost) that focus on long-form text articles, Direct is designed to create short-form, easy-to-create content, such as the kind of content you would find on most social media sites. Want to post a video or a series of images from a trip? Or maybe a quick blurb about your thoughts on a particular topic? This is more difficult than it ought to be in WordPress. In Direct, it's a few clicks.
 
-Social media platforms have done great work in facilitating new connections between people. However, they are increasingly transforming into parasitic entities. Their primary goal is to enrich the platforms themselves, as well as their direct corporate and buerocratic stakeholders, oftentimes at the expense of the users they are purported to serve.
+Unlike other website builders, Direct is scene-based. Each page you post is constructed from one or more scenes which consume the whole screen, which your viewer can swipe though vertically, similar to the TikTok video feed experience. Direct has 3 different kinds of scenes:
 
-The damaging effects of social media are well documented and do not need to be reiterated in detail. However, the 3 areas we see as being most aggregious are:
+- *Canvas scenes* – Arrange custom background images and overlay titles, descriptions, call-to-action buttons ontop of them.
 
-- Banning/boosting content depending on whether it's amicable to the platform stakeholders
-- Purposely architecting their products to maximize their addictive nature
-- Needless warehousing of vast quantities of user data for questionable purposes
+- *Gallery scenes* – Arrange one or more images or videos in a horizontally swipable gallery, similar to how Instagram posts.
 
-Numerous solutions have been tabled to purportedly "fix social media". However, they range from complete technological digressions (blockchain-centric solutions), attempts to move the problem around rather than actually solve it (alternative social networks), and unscalable designs with unsolvable user experience issues (federated models).
+- *Prose scenes* – Write out your thoughts in an editor with some basic formatting (headings, paragraphs, bold, links, etc)
 
-These solutions are misguided. In order to put an end to the nefarious activities being carried out by the dominant players in the space, the platforms need to be superceeded by another system that operates from a fundamentally different premise. 
+Direct is also completely client-side. There's no need for a server at all (unless you want to publish somewhere). In fact, if you clone this repository and build, you can simply drag the `/build/index.html` file directly into a browser, and the web version of the app will operate with full fidelity.
 
-This project is an exploration of the idea that the problems with social media could be fixed (at least to the degree to which "fixing" is possible) by introducing the concept of a "network of social media micro-platforms".
+## Current State: Alpha
 
-A "Social Media Micro-Platform" is a social media platform that only has a single user, and this user is the sole owner, operator, and manager of the platform.
-
-There are important differences between this model and a blog. Today's blogging engines (WordPress, Ghost) are purpose built for high-effort, long-form articles. While this is certainly an important niche, this isn't the kind of content that dominates social media: captioned images, short video clips, and concise text posts. Social media micro-platforms would be geared towards posting this kind of content.
+Direct is current in an alpha state. It's being used to build the website at (https://www.directblog.org)[https://www.directblog.org]. If you want to try the web version, it is available (here)[https://app.directblog.org]. For the optimal experience on macOS, there is a desktop macOS app. This app is built using Tauri rather than Electron, so the memory footprint is minimal.
