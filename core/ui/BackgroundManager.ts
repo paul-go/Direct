@@ -137,7 +137,7 @@ namespace App
 				const bip = this.preview;
 				this.sizeSlider.setProgressChangeFn(() =>
 				{
-					bip.setSize(this.sizeSlider.progress);
+					bip.updateSize(this.sizeSlider.progress);
 				});
 				
 				this.setUsingCover(record.size < 0);
@@ -202,7 +202,7 @@ namespace App
 				this.sizeSlider.progress = this.sizeSlider.max;
 			
 			this.record.size = usingCover ? -1 : this.sizeSlider.progress;
-			this.preview.setSize(this.record.size);
+			this.preview.updateSize();
 		}
 		
 		/** */
@@ -279,6 +279,9 @@ namespace App
 				}),
 				this.imgBoundary = Htx.div(
 					"image-boundary",
+					{
+						//border: "1px solid red",
+					},
 					this.imgContainer = Htx.div(
 						"image-container",
 						
@@ -305,14 +308,25 @@ namespace App
 							Htx.on("load", async () =>
 							{
 								[this.imgWidth, this.imgHeight] = await RenderUtil.getDimensions(this.img.src);
-								this.setSize(this.size);
+								this.updateSize();
 							})
 						),
 					)
-				)
+				),
+				Htx.on(window, "resize", () =>
+				{
+					let lastTime = 0;
+					window.requestAnimationFrame(time =>
+					{
+						if (time === lastTime)
+							return;
+						
+						lastTime = time;
+						this.updateSize();
+					});
+				})
 			);
 			
-			this.size = record.size;
 			Cage.set(this);
 		}
 		
@@ -337,9 +351,12 @@ namespace App
 		}
 		
 		/** */
-		async setSize(size: number)
+		async updateSize(size?: number)
 		{
-			this.size = size;
+			if (size === undefined)
+				size = this.record.size;
+			else
+				this.record.size = size;
 			
 			if (size < 0)
 			{
@@ -367,15 +384,19 @@ namespace App
 				});
 				
 				const s = this.img.style;
+				const sceneContainer = Cage.over(this, BackgroundManager).root;
+				
 				if (this.imgWidth > this.imgHeight)
 				{
-					s.width = size + "vmin";
+					const sceneWidth = sceneContainer.offsetWidth;
+					s.width = (sceneWidth * (size / 100)) + "px";
 					s.height = "auto";
 				}
 				else
 				{
+					const sceneHeight = sceneContainer.offsetHeight;
 					s.width = "auto";
-					s.height = size + "vmin";
+					s.height = (sceneHeight * (size / 100)) + "px";
 				}
 				
 				await UI.wait();
@@ -393,7 +414,6 @@ namespace App
 			
 			this.updateImagePosition();
 		}
-		private size = -1;
 		
 		/** */
 		private handleImageMove(deltaX: number, deltaY: number)
@@ -418,7 +438,7 @@ namespace App
 		{
 			const [x, y] = this.record.position;
 			
-			if (this.size < 0)
+			if (this.record.size < 0)
 			{
 				this.imgContainer.style.left = "0";
 				this.imgContainer.style.top = "0";
