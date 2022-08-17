@@ -107,14 +107,18 @@ namespace App
 					{
 						position: "fixed",
 						top: "0",
-						borderBottomRightRadius: UI.borderRadius.large,
 						height: SceneView.headerHeight,
 						transitionDuration: "0.33s",
 						transitionProperty: "background-color",
 						padding: "25px",
 						// Elevate the chevron so that it goes above the "no scenes" message
 						zIndex: "1",
+						borderBottomRightRadius: UI.borderRadius.large,
 					},
+					!TAURI && Htx.css("." + CssClass.appContainerMaxed + " &", {
+						borderBottomLeftRadius: UI.borderRadius.large
+					}),
+					
 					UI.clickable,
 					Htx.on("click", () => this.handleBack()),
 					Icon.chevron(

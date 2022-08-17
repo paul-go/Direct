@@ -57,6 +57,10 @@ namespace App
 						height: UI.vsize(100), 
 						backgroundColor: "black",
 					},
+					
+					Htx.css("." + CssClass.appContainerMaxed + " &", {
+						borderRadius: UI.borderRadius.large,
+					})
 				),
 				
 				//

@@ -33,21 +33,6 @@ namespace App
 				{
 					minHeight: "100%",
 				},
-				!TAURI && Htx.div(
-					"fake-app-width",
-					{
-						zIndex: "-1",
-						pointerEvents: "none",
-						position: "fixed",
-						left: "0",
-						right: "0",
-						bottom: "0",
-						height: "100vh",
-						margin: "auto",
-						maxWidth: ConstN.appMaxWidth + "px",
-						boxShadow: "0 0 200px black",
-					}
-				),
 				TAURI && (e =>
 				{
 					const titleBar = Htx.div(
@@ -70,6 +55,11 @@ namespace App
 					e.prepend(titleBar)
 				}),
 				
+				!TAURI && Htx.on(window, "resize", () => window.requestAnimationFrame(() =>
+				{
+					this.toggleMaxClass();
+				})),
+				
 				Htx.on("keydown", ev =>
 				{
 					if (ev.key === "p" && ev.metaKey && !ev.ctrlKey && !ev.shiftKey && !ev.altKey)
@@ -80,7 +70,15 @@ namespace App
 				})
 			);
 			
+			this.toggleMaxClass();
 			Cage.set(this);
+		}
+		
+		/** */
+		private toggleMaxClass()
+		{
+			const maxed = window.innerWidth >= ConstN.appMaxWidth;
+			this.root.classList.toggle(CssClass.appContainerMaxed, maxed);
 		}
 		
 		/** */

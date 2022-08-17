@@ -37,6 +37,7 @@ const enum CssClass
 	dragOverScreen = "drag-over-screen",
 	hide = "hide",
 	appContainer = "app-container",
+	appContainerMaxed = "app-container-maxed",
 	blogView = "blog-view",
 	postViewTransition = "post-view-transition",
 	

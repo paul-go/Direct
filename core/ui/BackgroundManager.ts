@@ -324,18 +324,10 @@ namespace App
 						),
 					)
 				),
-				Htx.on(window, "resize", () =>
+				Htx.on(window, "resize", () => window.requestAnimationFrame(() =>
 				{
-					let lastTime = 0;
-					window.requestAnimationFrame(time =>
-					{
-						if (time === lastTime)
-							return;
-						
-						lastTime = time;
-						this.updateSize();
-					});
-				})
+					this.updateSize();
+				}))
 			);
 			
 			Cage.set(this);
