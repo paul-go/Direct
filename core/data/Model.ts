@@ -46,6 +46,7 @@ namespace App
 			{ ctor: App.FrameRecord, stable: 7 },
 			{ ctor: App.MediaRecord, stable: 8 },
 			{ ctor: App.BackgroundRecord, stable: 9 },
+			{ ctor: App.ActionRecord, stable: 10 },
 		);
 		
 		return database;
@@ -141,6 +142,8 @@ namespace App
 		titles: ITitle[] = [];
 		description = "";
 		descriptionSize = 3;
+		actions = Database.array(ActionRecord);
+		actionShape = CanvasActionShape.round;
 		backgrounds = Database.array(BackgroundRecord);
 	}
 	
@@ -150,6 +153,14 @@ namespace App
 		text: string;
 		size: number;
 		weight: number;
+	}
+	
+	/** */
+	export class ActionRecord extends Record
+	{
+		text = "";
+		target: string | Blob = "";
+		filled = false;
 	}
 	
 	/** */

@@ -12,8 +12,7 @@ namespace App
 			
 			this.titleView = new CanvasTitleView();
 			this.descriptionView = new CanvasDescriptionView();
-			this.buttonsContainer = Htx.div("buttons");
-			this.buttons = new Cage.Array(this.buttonsContainer, CanvasButton);
+			this.actionManager = new CanvasActionManager(record);
 			
 			Htx.from(this.sceneContainer)(
 				Drop.here({
@@ -43,7 +42,7 @@ namespace App
 						),
 						this.titleView.root,
 						this.descriptionView.root,
-						this.buttonsContainer,
+						this.actionManager.root,
 					)
 				),
 				
@@ -90,8 +89,7 @@ namespace App
 		private contentImage: HTMLImageElement | null = null;
 		private readonly titleView;
 		private readonly descriptionView;
-		private readonly buttonsContainer;
-		private readonly buttons;
+		private readonly actionManager;
 		private readonly backgroundsContainer;
 		private readonly backgroundManager: BackgroundManager;
 		
@@ -131,6 +129,7 @@ namespace App
 			
 			const titleTool = this.createToolButton("+ Title", () => this.titleView.focus());
 			const descTool = this.createToolButton("+ Description", () => this.descriptionView.focus());
+			const actionTool = this.createToolButton("+ Button", () => this.actionManager.addAction());
 			
 			this.titleView.setHideChangedHandler(hidden => UI.toggle(titleTool, hidden));
 			this.descriptionView.setHideChangedHandler(hidden => UI.toggle(descTool, hidden));
@@ -139,18 +138,8 @@ namespace App
 				imageTool,
 				titleTool,
 				descTool,
+				actionTool,
 			];
-		}
-		
-		/** */
-		private addButton()
-		{
-			const cb = new CanvasButton();
-			this.buttons.insert(cb);
-			
-			// It's lame that this is in a setTimeout, but I don't care.
-			// It's not working otherwise.
-			setTimeout(() => cb.focus());
 		}
 		
 		/** */
@@ -445,6 +434,7 @@ namespace App
 		private setDescriptionSize(size: number)
 		{
 			this.descriptionView.fontSize = size;
+			this.actionManager.setFontSize(size);
 			this.record.descriptionSize = size;
 		}
 		

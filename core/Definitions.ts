@@ -47,6 +47,9 @@ const enum CssClass
 	canvasSceneBackground = "bg",
 	canvasSceneForeground = "fg",
 	canvasSceneContentImage = "fg-content-image",
+	canvasAction = "ca",
+	canvasActionFilled = "ca-filled",
+	canvasActionOutlined = "ca-outlined",
 	proseScene = "scene-prose",
 	proseSceneForeground = "scene-prose-fg",
 	galleryScene = "scene-gallery",
@@ -74,15 +77,20 @@ enum Origin
 }
 
 /** */
-const enum CanvasButtonClass
+const enum CanvasActionShape
+{
+	box = "ca-box",
+	round = "ca-round",
+}
+
+/** */
+const enum CanvasButtonStyle
 {
 	all = "cb",
 	pillOutline = "cb-po",
 	pillFilled = "cb-pf",
 	roundedOutline = "cb-ro",
 	roundedFilled = "cb-rf",
-	squareOutline = "cb-so",
-	squareFilled = "cb-sf",
 }
 
 /** */

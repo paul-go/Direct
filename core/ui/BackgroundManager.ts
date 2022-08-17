@@ -28,7 +28,7 @@ namespace App
 			
 			for (const bg of record.backgrounds)
 				if (bg.media)
-					this.renderBackground(bg);
+					this.bindBackground(bg);
 			
 			this.configurators.observe(() =>
 			{
@@ -52,14 +52,14 @@ namespace App
 		{
 			const backgroundRecord = new BackgroundRecord();
 			backgroundRecord.media = media;
-			this.renderBackground(backgroundRecord);
+			this.bindBackground(backgroundRecord);
 			this.record.backgrounds.push(backgroundRecord);
 		}
 		
 		/**
 		 * Renders a pre-existing background record to the preview surface.
 		 */
-		private renderBackground(backgroundRecord: BackgroundRecord)
+		private bindBackground(backgroundRecord: BackgroundRecord)
 		{
 			const preview = BackgroundPreview.new(backgroundRecord);
 			const cfg = new BackgroundConfigurator(backgroundRecord, preview);

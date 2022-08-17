@@ -100,6 +100,26 @@ namespace App
 				"display": "block",
 				"margin": "0 auto 30px",
 			}),
+			rule("." + CssClass.canvasAction, {
+				"width": "30em",
+				"display": "inline-block",
+				"padding": "0.75em",
+				"text-align": "center",
+				"color": "white",
+				"user-select": "none",
+			}),
+			rule("." + CssClass.canvasActionFilled, {
+				"background-color": "white",
+			}),
+			rule("." + CssClass.canvasActionOutlined, {
+				"border": "3px solid white",
+			}),
+			rule("." + CanvasActionShape.round, {
+				"border-radius": "1000px",
+			}),
+			rule("." + CanvasActionShape.box, {
+				"border-radius": UI.borderRadius.default,
+			}),
 			rule("." + CssClass.galleryScene, {
 				"height": "100%",
 				"scroll-snap-type": "x mandatory",
@@ -335,46 +355,13 @@ namespace App
 			rule("." + CssClass.hide, {
 				display: "none !important",
 			}),
-			rule("." + CanvasButtonClass.all, {
-				"width": "30em",
-				"display": "inline-block",
-				"padding": "0.75em",
-				"text-align": "center",
-				"color": "black",
-				"user-select": "none",
-			}),
-			rule("." + CanvasButtonClass.pillOutline, {
-				"border-radius": "100px",
-				"border": "2px solid black",
-			}),
-			rule("." + CanvasButtonClass.pillFilled, {
-				"border-radius": "100px",
-				"background-color": "black",
-			}),
-			rule("." + CanvasButtonClass.roundedOutline, {
-				"border-radius": "8px",
-				"border": "2px solid black",
-			}),
-			rule("." + CanvasButtonClass.roundedFilled, {
-				"border-radius": "8px",
-				"background-color": "black",
-			}),
-			rule("." + CanvasButtonClass.squareOutline, {
-				"border": "2px solid black",
-			}),
-			rule("." + CanvasButtonClass.squareFilled, {
-				"background-color": "black",
-			}),
+			
 			rule("." + CssClass.postViewTransition, {
 				"transform-origin": "0 0 ",
 				"transform": "scale(0.33333)",
 				"width": "300%",
 				"z-index": "-1",
 			}),
-			
-			rule("TRIX-TOOLBAR ", {
-				
-			})
 		];
 	}
 	
