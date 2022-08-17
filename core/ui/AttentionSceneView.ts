@@ -201,8 +201,8 @@ namespace App
 								type: Not.nullable(MimeType.from(nativeFile.type))
 							};
 							
-							const mediaRecord = this.createMediaRecords([fileLike]);
-							await this.addContentImage(mediaRecord[0]);
+							const mediaRecords = this.createMediaRecords([fileLike]);
+							await this.addContentImage(mediaRecords[0]);
 						}
 						
 						resolve();
@@ -246,6 +246,7 @@ namespace App
 				this.contentImageContainer.prepend(this.contentImage);
 			
 			this.setContentImageSize(15);
+			this.record.contentImage = mediaRecord;
 		}
 		
 		/** */

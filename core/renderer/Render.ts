@@ -246,10 +246,11 @@ namespace App
 		
 		return [
 			Htx.section(
-				"scene",
+				CssClass.scene,
 				{
 					color: UI.color(foregroundColor),
 					backgroundColor: UI.color(backgroundColor),
+					height: "100vh",
 					data: {
 						[DataAttributes.transition]: bun.useAnimation(bun.scene.transition)
 					}
@@ -276,14 +277,24 @@ namespace App
 			if (bg.media)
 			{
 				const cls = MimeType.getClass(bg.media.type);
-				
 				if (cls === MimeClass.image)
 				{
 					return Htx.div(
 						CssClass.attentionSceneBackground,
 						{
-							backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")"
-						}
+							backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")",
+							backgroundPosition: `${bg.position[0]}% ${bg.position[1]}%`,
+						},
+						bg.size === -1 ?
+							{
+								backgroundSize: "cover"
+							} :
+							{
+								maxWidth: ConstN.playerMaxWidth + "px",
+								margin: "auto",
+								backgroundSize: 
+									`min(${ConstN.playerMaxWidth}px, ${bg.size}vmin) `
+							}
 					);
 				}
 				else if (cls === MimeClass.video)
@@ -337,7 +348,7 @@ namespace App
 				
 				const render = (title: ITitle) => [
 					UI.specificWeight(title.weight),
-					{ fontSize: UI.vsize(title.size) },
+					{ fontSize: UI.vsizePlayer(title.size) },
 					new Text(title.text)
 				];
 				
@@ -352,7 +363,7 @@ namespace App
 			
 			if (scene.description.length > 0)
 			{
-				textContainer.style.fontSize = UI.vsize(scene.descriptionSize);
+				textContainer.style.fontSize = UI.vsizePlayer(scene.descriptionSize);
 				const paragraphs = convertDescriptionToParagraphs(scene);
 				textContainer.append(...paragraphs);
 			}
@@ -365,6 +376,40 @@ namespace App
 	
 	/** */
 	function convertDescriptionToParagraphs(scene: AttentionSceneRecord)
+	{
+		const groups = scene.description
+			.split("\n")
+			.map(line => line.trimEnd())
+			.join("\n")
+			.split(/\n\s*\n/g)
+			.map(s => s.split("\n"));
+		
+		const paragraphs: HTMLParagraphElement[] = [];
+		for (const group of groups)
+		{
+			const p = Htx.p();
+			
+			for (let i = -1; ++i < group.length;)
+			{
+				const line = group[i];
+				p.append(new Text(line));
+				
+				if (i < group.length - 1)
+					p.append(Htx.br());
+			}
+			
+			paragraphs.push(p);
+		}
+		
+		return paragraphs;
+	}
+	
+	/**
+	 * Unused code. This was another attempt to convert descriptions
+	 * that were created from content-editable HTML divs into the
+	 * HTML format necessary for preview.
+	 */
+	function convertHtmlDescriptionToParagraphs(scene: AttentionSceneRecord)
 	{
 		interface IRegion { text: string, bold: boolean; href: string }
 		const regions: IRegion[] = [];
@@ -462,7 +507,7 @@ namespace App
 		htmlParts.push("</p>");
 		
 		const container = Htx.div({
-			fontSize: UI.vsize(scene.descriptionSize)
+			fontSize: UI.vsizePlayer(scene.descriptionSize)
 		});
 		
 		container.innerHTML = htmlParts.join("");

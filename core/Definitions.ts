@@ -23,8 +23,11 @@ const enum ConstS
 const enum ConstN
 {
 	foregroundEdgeVmin = 4,
+	descriptionFontWeight = 500,
+	descriptionLineHeight = 1.5,
 	fillerContentBlur = 40,
 	appMaxWidth = 1000,
+	playerMaxWidth = 1900,
 }
 
 /** */

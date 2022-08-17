@@ -15,13 +15,14 @@ namespace App
 				Editable.multi(),
 				{
 					width: "100%",
-					lineHeight: "1.5",
+					lineHeight: ConstN.descriptionLineHeight.toString(),
+					whiteSpace: "pre-wrap"
 				}
-			)
+			);
 			
 			this.root.append(this.textArea);
 			this.fontSize = 4;
-			this.fontWeight = 400;
+			this.fontWeight = ConstN.descriptionFontWeight;
 		}
 		
 		private readonly textArea;
@@ -59,7 +60,7 @@ namespace App
 		}
 		set fontWeight(weight: number)
 		{
-			this.textArea.style.fontVariationSettings = "'wght' " + weight;
+			Htx.from(this.textArea)(UI.specificWeight(weight));
 		}
 		
 		/** */
@@ -96,6 +97,8 @@ namespace App
 		set text(text: string)
 		{
 			this.hide(!text);
+			//const nodes = text.split("\n").map(line => new Text(line));
+			//this.textArea.replaceChildren(...nodes);
 			this.textArea.textContent = text;
 		}
 	}

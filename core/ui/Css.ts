@@ -74,6 +74,10 @@ namespace App
 			rule("." + CssClass.attentionScene + ", ." + CssClass.proseScene, {
 				"padding": "20px",
 			}),
+			rule("." + CssClass.attentionScene + " P", {
+				"font-weight": ConstN.descriptionFontWeight,
+				"line-height": ConstN.descriptionLineHeight,
+			}),
 			rule("." + CssClass.attentionSceneBackground, {
 				"position": "absolute",
 				"top": 0,
@@ -88,7 +92,7 @@ namespace App
 				"display": "flex",
 				"width": "100%",
 				"min-height": "100%",
-				"max-width": "1000px",
+				"max-width": ConstN.playerMaxWidth + "px",
 				"padding": ConstN.foregroundEdgeVmin + "vmin",
 				"margin": "auto",
 			}),

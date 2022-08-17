@@ -28,7 +28,7 @@ namespace App
 			
 			for (const bg of record.backgrounds)
 				if (bg.media)
-					this.addBackground(bg.media);
+					this.renderBackground(bg);
 			
 			this.configurators.observe(() =>
 			{
@@ -44,11 +44,23 @@ namespace App
 		private readonly configurators;
 		private readonly previews;
 		
-		/** */
+		/**
+		 * Creates a new BackgroundRecord around the specified
+		 * MediaRecord, saves it, and adds it to the preview surface.
+		 */
 		addBackground(media: MediaRecord)
 		{
 			const backgroundRecord = new BackgroundRecord();
 			backgroundRecord.media = media;
+			this.renderBackground(backgroundRecord);
+			this.record.backgrounds.push(backgroundRecord);
+		}
+		
+		/**
+		 * Renders a pre-existing background record to the preview surface.
+		 */
+		private renderBackground(backgroundRecord: BackgroundRecord)
+		{
 			const preview = BackgroundPreview.new(backgroundRecord);
 			const cfg = new BackgroundConfigurator(backgroundRecord, preview);
 			this.configurators.insert(cfg);
@@ -140,7 +152,10 @@ namespace App
 					bip.updateSize(this.sizeSlider.progress);
 				});
 				
-				this.setUsingCover(record.size < 0);
+				When.connected(this.preview.root, () =>
+				{
+					this.setUsingCover(record.size < 0);
+				});
 			}
 			
 			Cage.set(this);
@@ -279,12 +294,8 @@ namespace App
 				}),
 				this.imgBoundary = Htx.div(
 					"image-boundary",
-					{
-						//border: "1px solid red",
-					},
 					this.imgContainer = Htx.div(
 						"image-container",
-						
 						this.selectionBox = Htx.div(
 							"selection-box",
 							{
@@ -418,6 +429,12 @@ namespace App
 		/** */
 		private handleImageMove(deltaX: number, deltaY: number)
 		{
+			if (this.record.size < 0)
+			{
+				deltaX *= -1;
+				deltaY *= -1;
+			}
+			
 			const boundaryWidth = this.imgBoundary.offsetWidth;
 			const boundaryHeight = this.imgBoundary.offsetHeight;
 			
@@ -428,8 +445,9 @@ namespace App
 			
 			x = Math.max(0, Math.min(100, x + xPct));
 			y = Math.max(0, Math.min(100, y + yPct));
-			this.record.position = [x, y];
 			
+			this.record.position = [x, y];
+			this.record.save();
 			this.updateImagePosition();
 		}
 		
@@ -442,7 +460,7 @@ namespace App
 			{
 				this.imgContainer.style.left = "0";
 				this.imgContainer.style.top = "0";
-				this.img.style.objectPosition = `${100 - x}% ${100 - y}%`;
+				this.img.style.objectPosition = `${x}% ${y}%`;
 			}
 			else
 			{

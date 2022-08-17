@@ -369,6 +369,12 @@ namespace App
 		}
 		
 		/** */
+		export function vsizePlayer(size: number)
+		{
+			return `min(${size}vmin, ${size * ConstN.playerMaxWidth / 100}px)`;
+		}
+		
+		/** */
 		export function vw(size: number)
 		{
 			return `min(${size}vw, ${size * 10}px)`;
