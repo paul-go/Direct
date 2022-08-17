@@ -195,9 +195,12 @@ namespace Htx { { } }
 		}
 		
 		const selector = typeof selectorOrStyles === "string" ? selectorOrStyles : "";
+		const selectorHalves = selector.split("&", 2);
+		const selectorLeft = selectorHalves[selectorHalves.length - 2] || "";
+		const selectorRight = selectorHalves[selectorHalves.length - 1];
 		const styles = maybeStyles || selectorOrStyles as Htx.Style;
 		const cssClass = "c" + (index++);
-		const ruleText = "." + cssClass + selector + "{}";
+		const ruleText = selectorLeft + "." + cssClass + selectorRight + "{}";
 		const idx = inlineRuleSheet.insertRule(ruleText);
 		const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
 		
