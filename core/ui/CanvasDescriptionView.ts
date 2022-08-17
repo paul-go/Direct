@@ -1,15 +1,15 @@
-/// <reference path="AttentionTextView.ts" />
+/// <reference path="CanvasTextView.ts" />
 
 namespace App
 {
 	/** */
-	export class AttentionDescriptionView extends AttentionTextView
+	export class CanvasDescriptionView extends CanvasTextView
 	{
 		/** */
 		constructor()
 		{
 			super();
-			this.root.classList.add("attention-description-view");
+			this.root.classList.add("canvas-description-view");
 			
 			this.textArea = Htx.div(
 				Editable.multi(),

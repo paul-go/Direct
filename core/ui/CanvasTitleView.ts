@@ -1,15 +1,15 @@
-/// <reference path="AttentionTextView.ts" />
+/// <reference path="CanvasTextView.ts" />
 
 namespace App
 {
 	/** */
-	export class AttentionTitleView extends AttentionTextView
+	export class CanvasTitleView extends CanvasTextView
 	{
 		/** */
 		constructor()
 		{
 			super();
-			this.root.classList.add("attention-title-view");
+			this.root.classList.add("canvas-title-view");
 		}
 		
 		/** */

@@ -51,7 +51,7 @@ namespace App
 					if (!Query.ancestors(ev.target).includes(this.root))
 						this.cancelCallback?.();
 				}),
-				renderButton("Canvas", AttentionSceneView),
+				renderButton("Canvas", CanvasSceneView),
 				renderButton("Gallery", GallerySceneView),
 				renderButton("Prose", ProseSceneView),
 			);

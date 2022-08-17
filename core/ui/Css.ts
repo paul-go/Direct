@@ -68,17 +68,17 @@ namespace App
 			rule("." + CssClass.snapFooter, {
 				"scroll-snap-align": "end",
 			}),
-			rule("." + CssClass.attentionScene, {
+			rule("." + CssClass.canvasScene, {
 				"display": "flex",
 			}),
-			rule("." + CssClass.attentionScene + ", ." + CssClass.proseScene, {
+			rule("." + CssClass.canvasScene + ", ." + CssClass.proseScene, {
 				"padding": "20px",
 			}),
-			rule("." + CssClass.attentionScene + " P", {
+			rule("." + CssClass.canvasScene + " P", {
 				"font-weight": ConstN.descriptionFontWeight,
 				"line-height": ConstN.descriptionLineHeight,
 			}),
-			rule("." + CssClass.attentionSceneBackground, {
+			rule("." + CssClass.canvasSceneBackground, {
 				"position": "absolute",
 				"top": 0,
 				"right": 0,
@@ -88,7 +88,7 @@ namespace App
 				"background-position": "50% 50%",
 				"background-size": "cover",
 			}),
-			rule("." + CssClass.attentionSceneForeground, {
+			rule("." + CssClass.canvasSceneForeground, {
 				"display": "flex",
 				"width": "100%",
 				"min-height": "100%",
@@ -96,7 +96,7 @@ namespace App
 				"padding": ConstN.foregroundEdgeVmin + "vmin",
 				"margin": "auto",
 			}),
-			rule("." + CssClass.attentionSceneContentImage, {
+			rule("." + CssClass.canvasSceneContentImage, {
 				"display": "block",
 				"margin": "0 auto 30px",
 			}),
@@ -335,7 +335,7 @@ namespace App
 			rule("." + CssClass.hide, {
 				display: "none !important",
 			}),
-			rule("." + AttentionButtonClass.all, {
+			rule("." + CanvasButtonClass.all, {
 				"width": "30em",
 				"display": "inline-block",
 				"padding": "0.75em",
@@ -343,26 +343,26 @@ namespace App
 				"color": "black",
 				"user-select": "none",
 			}),
-			rule("." + AttentionButtonClass.pillOutline, {
+			rule("." + CanvasButtonClass.pillOutline, {
 				"border-radius": "100px",
 				"border": "2px solid black",
 			}),
-			rule("." + AttentionButtonClass.pillFilled, {
+			rule("." + CanvasButtonClass.pillFilled, {
 				"border-radius": "100px",
 				"background-color": "black",
 			}),
-			rule("." + AttentionButtonClass.roundedOutline, {
+			rule("." + CanvasButtonClass.roundedOutline, {
 				"border-radius": "8px",
 				"border": "2px solid black",
 			}),
-			rule("." + AttentionButtonClass.roundedFilled, {
+			rule("." + CanvasButtonClass.roundedFilled, {
 				"border-radius": "8px",
 				"background-color": "black",
 			}),
-			rule("." + AttentionButtonClass.squareOutline, {
+			rule("." + CanvasButtonClass.squareOutline, {
 				"border": "2px solid black",
 			}),
-			rule("." + AttentionButtonClass.squareFilled, {
+			rule("." + CanvasButtonClass.squareFilled, {
 				"background-color": "black",
 			}),
 			rule("." + CssClass.postViewTransition, {

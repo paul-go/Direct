@@ -2,17 +2,17 @@
 namespace App
 {
 	/** */
-	export class AttentionButton
+	export class CanvasButton
 	{
 		/** */
 		constructor(
 			text = "",
 			href = "",
-			cls = AttentionButtonClass.pillOutline,
+			cls = CanvasButtonClass.pillOutline,
 		)
 		{
 			this.root = Htx.div(
-				"attention-button",
+				"canvas-button",
 				{
 					marginTop: "20px",
 				}
@@ -50,7 +50,7 @@ namespace App
 			);
 			
 			// Lame
-			this.button.root.classList.add(AttentionButtonClass.all);
+			this.button.root.classList.add(CanvasButtonClass.all);
 			this.class = this.class;
 			
 			Cage.set(this);
@@ -81,13 +81,13 @@ namespace App
 		{
 			return this._class;
 		}
-		set class(cls: AttentionButtonClass)
+		set class(cls: CanvasButtonClass)
 		{
 			this.button.root.classList.remove(this._class);
 			this._class = cls;
 			this.button.root.classList.add(cls);
 		}
-		private _class = AttentionButtonClass.pillOutline;
+		private _class = CanvasButtonClass.pillOutline;
 		
 		/** */
 		focus()

@@ -229,8 +229,8 @@ namespace App
 		
 		const sceneParams = (() =>
 		{
-			if (bun.scene instanceof AttentionSceneRecord)
-				return renderAttentionScene(bun as Bundle<AttentionSceneRecord>);
+			if (bun.scene instanceof CanvasSceneRecord)
+				return renderCanvasScene(bun as Bundle<CanvasSceneRecord>);
 			
 			if (bun.scene instanceof ProseSceneRecord)
 			{
@@ -264,11 +264,11 @@ namespace App
 	/**
 	 * 
 	 */
-	function renderAttentionScene(bun: Bundle<AttentionSceneRecord>)
+	function renderCanvasScene(bun: Bundle<CanvasSceneRecord>)
 	{
 		const scene = bun.scene;
 		const out: Htx.Param[] = [
-			CssClass.attentionScene
+			CssClass.canvasScene
 		];
 		
 		// Background
@@ -280,7 +280,7 @@ namespace App
 				if (cls === MimeClass.image)
 				{
 					return Htx.div(
-						CssClass.attentionSceneBackground,
+						CssClass.canvasSceneBackground,
 						{
 							backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")",
 							backgroundPosition: `${bg.position[0]}% ${bg.position[1]}%`,
@@ -300,7 +300,7 @@ namespace App
 				else if (cls === MimeClass.video)
 				{
 					return Htx.video(
-						CssClass.attentionSceneBackground,
+						CssClass.canvasSceneBackground,
 						{
 							src: bun.getMediaUrl(bg.media),
 							autoplay: true,
@@ -317,7 +317,7 @@ namespace App
 		if (scene.titles.length > 0 || scene.description.length > 0)
 		{
 			const fg = Htx.div(
-				CssClass.attentionSceneForeground,
+				CssClass.canvasSceneForeground,
 				scene.origin,
 				{
 					data: {
@@ -337,7 +337,7 @@ namespace App
 			if (scene.contentImage)
 			{
 				Htx.img(
-					CssClass.attentionSceneContentImage,
+					CssClass.canvasSceneContentImage,
 					{ src: bun.getMediaUrl(scene.contentImage) }
 				);
 			}
@@ -375,7 +375,7 @@ namespace App
 	}
 	
 	/** */
-	function convertDescriptionToParagraphs(scene: AttentionSceneRecord)
+	function convertDescriptionToParagraphs(scene: CanvasSceneRecord)
 	{
 		const groups = scene.description
 			.split("\n")
@@ -409,7 +409,7 @@ namespace App
 	 * that were created from content-editable HTML divs into the
 	 * HTML format necessary for preview.
 	 */
-	function convertHtmlDescriptionToParagraphs(scene: AttentionSceneRecord)
+	function convertHtmlDescriptionToParagraphs(scene: CanvasSceneRecord)
 	{
 		interface IRegion { text: string, bold: boolean; href: string }
 		const regions: IRegion[] = [];

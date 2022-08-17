@@ -2,9 +2,9 @@
 namespace App
 {
 	/**
-	 * Base class for text objects that can render on the AttentionScene
+	 * Base class for text objects that can render on the CanvasScene
 	 */
-	export abstract class AttentionTextView
+	export abstract class CanvasTextView
 	{
 		/** */
 		constructor()

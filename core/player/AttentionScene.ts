@@ -3,7 +3,7 @@
 namespace Player
 {
 	/** */
-	export class AttentionScene extends Scene
+	export class CanvasScene extends Scene
 	{
 		/** */
 		constructor(readonly root: HTMLElement)

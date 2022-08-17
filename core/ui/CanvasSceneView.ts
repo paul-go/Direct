@@ -3,17 +3,17 @@
 namespace App
 {
 	/** */
-	export class AttentionSceneView extends SceneView
+	export class CanvasSceneView extends SceneView
 	{
 		/** */
-		constructor(readonly record = new AttentionSceneRecord())
+		constructor(readonly record = new CanvasSceneRecord())
 		{
 			super(record);
 			
-			this.titleView = new AttentionTitleView();
-			this.descriptionView = new AttentionDescriptionView();
+			this.titleView = new CanvasTitleView();
+			this.descriptionView = new CanvasDescriptionView();
 			this.buttonsContainer = Htx.div("buttons");
-			this.buttons = new Cage.Array(this.buttonsContainer, AttentionButton);
+			this.buttons = new Cage.Array(this.buttonsContainer, CanvasButton);
 			
 			Htx.from(this.sceneContainer)(
 				Drop.here({
@@ -29,7 +29,7 @@ namespace App
 				),
 				this.foregroundContainer = Htx.div(
 					e => void new ForegroundMixin(e, this.record),
-					CssClass.attentionSceneForeground,
+					CssClass.canvasSceneForeground,
 					this.record.origin,
 					this.textContainer = Htx.div(
 						"text-container",
@@ -145,7 +145,7 @@ namespace App
 		/** */
 		private addButton()
 		{
-			const cb = new AttentionButton();
+			const cb = new CanvasButton();
 			this.buttons.insert(cb);
 			
 			// It's lame that this is in a setTimeout, but I don't care.
@@ -237,7 +237,7 @@ namespace App
 			const [width, height] = await RenderUtil.getDimensions(src);
 			const existingContentImage = this.contentImage;
 			
-			this.contentImage = Htx.img(CssClass.attentionSceneContentImage, { src });
+			this.contentImage = Htx.img(CssClass.canvasSceneContentImage, { src });
 			this.contentImage.style.aspectRatio = width + " / " + height;
 			
 			if (existingContentImage)
@@ -316,7 +316,7 @@ namespace App
 			type TPickable = 
 				HTMLImageElement |
 				ITitle |
-				AttentionDescriptionView;
+				CanvasDescriptionView;
 			
 			const picker = this.sizePicker = new ElementPicker(this.sceneContainer);
 			const pickMap = new Map<HTMLElement, TPickable>();
@@ -366,7 +366,7 @@ namespace App
 				{
 					slider.progress = this.record.contentImageWidth;
 				}
-				else if (pickable instanceof AttentionDescriptionView)
+				else if (pickable instanceof CanvasDescriptionView)
 				{
 					slider.progress = this.record.descriptionSize;
 					slider.max = 10;
@@ -399,7 +399,7 @@ namespace App
 				{
 					this.setContentImageSize(slider.progress);
 				}
-				else if (pickable instanceof AttentionDescriptionView)
+				else if (pickable instanceof CanvasDescriptionView)
 				{
 					this.setDescriptionSize(slider.progress);
 				}

@@ -40,7 +40,7 @@ namespace App
 		const database = await App.Database.new(about,
 			{ ctor: App.MetaRecord, stable: 1, root: true },
 			{ ctor: App.PostRecord, stable: 2, root: true },
-			{ ctor: App.AttentionSceneRecord, stable: 3 },
+			{ ctor: App.CanvasSceneRecord, stable: 3 },
 			{ ctor: App.ProseSceneRecord, stable: 4 },
 			{ ctor: App.GallerySceneRecord, stable: 6 },
 			{ ctor: App.FrameRecord, stable: 7 },
@@ -131,7 +131,7 @@ namespace App
 	}
 	
 	/** */
-	export class AttentionSceneRecord extends SceneRecord
+	export class CanvasSceneRecord extends SceneRecord
 	{
 		textContrast = 50;
 		effect = Effects.none.name;

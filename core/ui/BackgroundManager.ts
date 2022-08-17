@@ -6,7 +6,7 @@ namespace App
 	{
 		/** */
 		constructor(
-			private readonly record: AttentionSceneRecord,
+			private readonly record: CanvasSceneRecord,
 			backgroundsContainer: HTMLElement)
 		{
 			this.root = backgroundsContainer;
