@@ -314,11 +314,10 @@ namespace App
 		}).filter(b => !!b));
 		
 		// Foreground
-		if (scene.titles.length > 0 || scene.description.length > 0)
+		if (scene.titles.length > 0 || scene.description.length > 0 || scene.actions.length > 0)
 		{
 			const fg = Htx.div(
 				CssClass.canvasSceneForeground,
-				scene.origin,
 				{
 					data: {
 						[DataAttributes.transition]: bun.useAnimation(scene.effect)
@@ -326,20 +325,19 @@ namespace App
 				},
 			);
 			
-			let textContainer: HTMLElement = fg;
+			const island = Htx.div(CssClass.canvasSceneIsland, scene.origin);
 			
 			if (scene.textContrast)
-			{
-				textContainer = RenderUtil.setContrast(Htx.div(), scene.textContrast);
-				fg.append(textContainer);
-			}
+				RenderUtil.setContrast(island, scene.textContrast);
+			
+			const islandElements: HTMLElement[] = [];
 			
 			if (scene.contentImage)
 			{
-				Htx.img(
+				islandElements.push(Htx.img(
 					CssClass.canvasSceneContentImage,
 					{ src: bun.getMediaUrl(scene.contentImage) }
-				);
+				));
 			}
 			
 			if (scene.titles.length > 0)
@@ -358,14 +356,48 @@ namespace App
 				else for (const title of scene.titles)
 					h2.append(Htx.div(...render(title)));
 				
-				textContainer.append(h2);
+				islandElements.push(h2);
 			}
 			
 			if (scene.description.length > 0)
 			{
-				textContainer.style.fontSize = UI.vsizePlayer(scene.descriptionSize);
-				const paragraphs = convertDescriptionToParagraphs(scene);
-				textContainer.append(...paragraphs);
+				island.style.fontSize = UI.vsizePlayer(scene.descriptionSize);
+				islandElements.push(...convertDescriptionToParagraphs(scene));
+			}
+			
+			if (scene.actions.length > 0)
+			{
+				const actionsElement = Htx.div(
+					CssClass.canvasActions,
+					scene.actions.map(action => Htx.a(
+						CssClass.canvasAction,
+						scene.actionShape,
+						action.filled ? 
+							CssClass.canvasActionFilled :
+							CssClass.canvasActionOutlined,
+						{
+							href: typeof action.target === "string" ? action.target || "#" : "#"
+						},
+						new Text(action.text)
+					))
+				);
+				
+				if (islandElements.length > 0)
+				{
+					const lastElement = islandElements.pop()!;
+					islandElements.push(Htx.div(
+						CssClass.inheritMargin,
+						lastElement,
+						actionsElement
+					));
+				}
+				else islandElements.push(actionsElement);
+			}
+			
+			if (islandElements.length > 0)
+			{
+				island.append(...islandElements);
+				fg.append(island);
 			}
 			
 			out.push(fg);

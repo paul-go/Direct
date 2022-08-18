@@ -265,7 +265,7 @@ namespace App
 			UI.toggle(this.boldButton.root, hasContent && !hasHeading && (hasRangeSelection || hasBold));
 			UI.toggle(this.italicButton.root, hasContent && !hasHeading && (hasRangeSelection || hasItalic));
 			UI.toggle(this.linkButton.root, hasContent && !hasHeading && (hasRangeSelection || hasLink));
-			UI.toggle(this.linkEditor.root, hasLink);
+			this.linkEditor.toggle(hasLink);
 			
 			if (hasLink)
 				this.linkEditor.link = this.getCurrentHref();
@@ -279,8 +279,6 @@ namespace App
 		/** */
 		private commitLink(link: string)
 		{
-			UI.toggle(this.linkEditor.root, false);
-			
 			if (this.getCurrentHref() === link)
 				return;
 			

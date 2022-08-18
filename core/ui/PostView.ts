@@ -196,9 +196,7 @@ namespace App
 		/** */
 		private save()
 		{
-			this.record.scenes = this.scenes
-				.toArray()
-				.map(view => view.record);
+			this.record.scenes = this.scenes.map(view => view.record);
 		}
 		
 		/** */

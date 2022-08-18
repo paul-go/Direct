@@ -159,7 +159,7 @@ namespace App
 	export class ActionRecord extends Record
 	{
 		text = "";
-		target: string | Blob = "";
+		target: string = "";
 		filled = false;
 	}
 	

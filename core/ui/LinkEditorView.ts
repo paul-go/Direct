@@ -51,6 +51,9 @@ namespace App
 				(this.linkTextBox = this.createLinkTextBox()).root
 			);
 			
+			// Sets the default protocol
+			this.link = "";
+			
 			Cage.set(this);
 		}
 		
@@ -121,9 +124,16 @@ namespace App
 		}
 		
 		/** */
+		toggle(show: boolean)
+		{
+			UI.toggle(this.root, show);
+		}
+		
+		/** */
 		private finalize(ev: Event)
 		{
 			this.commitFn?.(this.link);
+			this.toggle(false);
 			ev.preventDefault();
 			ev.stopImmediatePropagation();
 		}
@@ -144,7 +154,7 @@ namespace App
 			}
 		}
 		
-		return [protocol, link]
+		return [protocol, link];
 	}
 	
 	const protocols = ["https://", "http://", "mailto:", "tel:"] as const;

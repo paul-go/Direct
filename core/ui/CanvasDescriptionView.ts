@@ -6,9 +6,9 @@ namespace App
 	export class CanvasDescriptionView extends CanvasTextView
 	{
 		/** */
-		constructor()
+		constructor(record: CanvasSceneRecord)
 		{
-			super();
+			super(record);
 			this.root.classList.add("canvas-description-view");
 			
 			this.textArea = Htx.div(
@@ -26,6 +26,12 @@ namespace App
 		}
 		
 		private readonly textArea;
+		
+		/** */
+		protected handleTextChanged()
+		{
+			this.record.description = this.text;
+		}
 		
 		/** */
 		protected get isEmpty()
@@ -97,8 +103,6 @@ namespace App
 		set text(text: string)
 		{
 			this.hide(!text);
-			//const nodes = text.split("\n").map(line => new Text(line));
-			//this.textArea.replaceChildren(...nodes);
 			this.textArea.textContent = text;
 		}
 	}

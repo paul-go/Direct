@@ -32,7 +32,7 @@ namespace App
 			
 			this.configurators.observe(() =>
 			{
-				const records = this.configurators!.toArray().map(r => r.record);
+				const records = this.configurators!.map(r => r.record);
 				this.record.backgrounds = records;
 			});
 			

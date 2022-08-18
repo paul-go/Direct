@@ -196,12 +196,17 @@ namespace App
 				"margin": "0 auto 30px",
 			}),
 			rule("." + CssClass.canvasAction, {
-				"width": "30em",
+				"min-width": "10em",
+				"margin-top": "20px",
+				"padding": "10px 30px",
 				"display": "inline-block",
-				"padding": "0.75em",
-				"text-align": "center",
-				"color": "white",
+				"backdrop-filter": "blur(15px)",
+				"-webkit-backdrop-blur": "blur(15px)",
 				"user-select": "none",
+				"text-align": "center",
+				"font-weight": 700,
+				"line-height": ConstN.descriptionLineHeight,
+				"text-decoration": "none",
 			}),
 			rule("." + CssClass.canvasActionFilled, {
 				"background-color": "white",
@@ -311,6 +316,10 @@ namespace App
 			rule("." + CssClass.textContrastLight + ":before", {
 				"background-image": Util.createCssUrl("res.blur-white.png"),
 			}),
+			rule("." + CssClass.inheritMargin, {
+				"margin-left": "inherit",
+				"margin-right": "inherit",
+			}),
 		];
 	}
 	
@@ -416,7 +425,7 @@ namespace App
 	}
 	
 	/** */
-	function rule(selector: string, properties: { [property: string]: string | number; })
+	function rule(selector: string, properties: { [property: string]: string | string[] | number; })
 	{
 		return new VirtualCssRule(selector, properties);
 	}
@@ -426,7 +435,7 @@ namespace App
 	{
 		constructor(
 			readonly selector: string,
-			readonly cssProperties: { [property: string]: string | number; })
+			readonly cssProperties: { [property: string]: string | string[] | number; })
 		{
 			this.selector = selector.replace(/[\r\n]/g, " ").replace(/\s\s*\s/g, " ");
 		}
@@ -438,7 +447,13 @@ namespace App
 			emitter.indent();
 			
 			for (const [n, v] of Object.entries(this.cssProperties))
-				emitter.line(n + ":" + emitter.space + v + ";");
+			{
+				if (!Array.isArray(v))
+					emitter.line(n + ":" + emitter.space + v + ";");
+				
+				else for (const value of v)
+					emitter.line(n + ":" + emitter.space + value + ";");
+			}
 			
 			emitter.outdent();
 			emitter.line("}");

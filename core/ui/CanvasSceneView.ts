@@ -10,8 +10,8 @@ namespace App
 		{
 			super(record);
 			
-			this.titleView = new CanvasTitleView();
-			this.descriptionView = new CanvasDescriptionView();
+			this.titleView = new CanvasTitleView(record);
+			this.descriptionView = new CanvasDescriptionView(record);
 			this.actionManager = new CanvasActionManager(record);
 			
 			Htx.from(this.sceneContainer)(
@@ -68,16 +68,6 @@ namespace App
 			this.setContentImageSize(this.record.contentImageWidth);
 			
 			this.titleView.setTitles(this.record.titles);
-			this.titleView.setTextChangedHandler(() =>
-			{
-				this.record.titles = this.titleView.getTitleData();
-			});
-			
-			this.descriptionView.setTextChangedHandler(() =>
-			{
-				this.record.description = this.descriptionView.text;
-			});
-			
 			this.setDescriptionText(this.record.description);
 			this.setDescriptionSize(this.record.descriptionSize);
 			this.setContrast(this.record.textContrast);
@@ -276,20 +266,6 @@ namespace App
 			
 			if (!this.sceneButtons.some(bb => bb.selected))
 				this.setSceneConfigurator(null);
-		}
-		
-		/** */
-		private setTitleText(idx: number, text: string)
-		{
-			const titleDatas = this.titleView.getTitleData();
-			const titleData = titleDatas[idx];
-			titleData.text = text;
-			
-			const tb = this.titleView.getTextBox(idx);
-			if (tb)
-				tb.html = text;
-			
-			this.record.titles = titleDatas;
 		}
 		
 		/** */

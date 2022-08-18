@@ -6,10 +6,16 @@ namespace App
 	export class CanvasTitleView extends CanvasTextView
 	{
 		/** */
-		constructor()
+		constructor(record: CanvasSceneRecord)
 		{
-			super();
+			super(record);
 			this.root.classList.add("canvas-title-view");
+		}
+		
+		/** */
+		protected handleTextChanged()
+		{
+			this.record.titles = this.getTitleData();
 		}
 		
 		/** */

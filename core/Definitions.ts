@@ -48,6 +48,7 @@ const enum CssClass
 	canvasSceneBackground = "bg",
 	canvasSceneForeground = "fg",
 	canvasSceneIsland = "island",
+	canvasSceneIslandInner = "island-inner",
 	canvasSceneContentImage = "fg-content-image",
 	canvasActions = "c-actions",
 	canvasAction = "ca",
@@ -63,6 +64,7 @@ const enum CssClass
 	textContrast = "text-contrast",
 	textContrastDark = "text-contrast-dark",
 	textContrastLight = "text-contrast-light",
+	inheritMargin = "inherit-margin",
 }
 
 /** */

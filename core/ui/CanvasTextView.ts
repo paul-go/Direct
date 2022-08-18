@@ -7,22 +7,21 @@ namespace App
 	export abstract class CanvasTextView
 	{
 		/** */
-		constructor()
+		constructor(protected record: CanvasSceneRecord)
 		{
 			this.root = Htx.div(
 				{
 					width: "fit-content",
-					marginLeft: "inherit",
-					marginRight: "inherit",
 				},
+				CssClass.inheritMargin,
 				Htx.on("focusout", () =>
 				{
 					if (this.isEmpty)
 						this.hide();
 					
-					this.textChangedHandler();
+					this.handleTextChanged();
 				}),
-				Htx.on("input", () => this.maybeTriggerTextChanged())
+				Htx.on("input", () => this.queueTextChanged())
 			);
 			
 			this.hide();
@@ -49,17 +48,13 @@ namespace App
 		private hideChangedHandler = (hidden: boolean) => {};
 		
 		/** */
-		setTextChangedHandler(fn: () => void)
-		{
-			this.textChangedHandler = fn;
-		}
-		private textChangedHandler = () => {};
+		protected handleTextChanged() { }
 		
 		/** */
-		private maybeTriggerTextChanged()
+		private queueTextChanged()
 		{
 			clearTimeout(this.textChangedTimeout);
-			setTimeout(() => this.textChangedHandler(), 200);
+			setTimeout(() => this.handleTextChanged(), 200);
 		}
 		private textChangedTimeout: any = 0;
 	}
