@@ -249,16 +249,19 @@ namespace Cage
 		}
 		
 		/** */
-		toArray()
+		map(): TCage[];
+		map<T>(mapFn: (value: TCage, index: number, array: TCage[]) => T): T[];
+		map(mapFn?: (value: TCage, index: number, array: TCage[]) => any)
 		{
-			const cages = childrenOf(this.parentElement, this.cageType);
-			return Cage.map(cages, this.cageType);
+			const elements = childrenOf(this.parentElement, this.cageType);
+			const cages = Cage.map(elements, this.cageType);
+			return mapFn ? cages.map(mapFn) : cages;
 		}
 		
 		/** */
 		at(index: number)
 		{
-			return this.toArray().at(index) || null;
+			return this.map().at(index) || null;
 		}
 		
 		/** */
@@ -267,7 +270,7 @@ namespace Cage
 		insert(a: number | TCage, ...newCages: TCage[])
 		{
 			const index = typeof a === "number" ? (a || 0) : -1;
-			const existingCages = this.toArray();
+			const existingCages = this.map();
 			
 			if (typeof a === "object")
 				newCages.unshift(a);
@@ -343,7 +346,7 @@ namespace Cage
 		/** */
 		private toJSON()
 		{
-			return this.toArray();
+			return this.map();
 		}
 	}
 }
