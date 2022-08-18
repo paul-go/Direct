@@ -192,7 +192,7 @@ namespace App
 			}
 			else
 			{
-				params.push(
+				params.push(e => [
 					Htx.on("dragenter", ev =>
 					{
 						const types = Array.from(ev.dataTransfer?.items || []).map(item => item.type);
@@ -204,18 +204,14 @@ namespace App
 					}),
 					Htx.on("drop", async ev =>
 					{
+						const { x, y } = getLayerCoords(e, ev.clientX, ev.clientY);
 						const files = (await FileLike.fromFiles(ev.dataTransfer?.files))
 							.filter(f => acceptedMimes.includes(f.type));
-						
-						const { x, y } = getLayerCoords(
-							ev.target as Element,
-							ev.clientX,
-							ev.clientY);
 						
 						hide();
 						options.dropFn(files, x, y);
 					})
-				);
+				]);
 			};
 			
 			return params;
