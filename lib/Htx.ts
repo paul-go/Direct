@@ -195,13 +195,15 @@ namespace Htx { { } }
 		}
 		
 		const selector = typeof selectorOrStyles === "string" ? selectorOrStyles : "";
-		const selectorHalves = selector.split("&", 2);
-		const selectorLeft = selectorHalves[selectorHalves.length - 2] || "";
-		const selectorRight = selectorHalves[selectorHalves.length - 1];
 		const styles = maybeStyles || selectorOrStyles as Htx.Style;
 		const cssClass = "c" + (index++);
-		const ruleText = selectorLeft + "." + cssClass + selectorRight + "{}";
-		const idx = inlineRuleSheet.insertRule(ruleText);
+		
+		const selectorParts = selector.split("&");
+		const selectorFinal = selectorParts.length === 1 ?
+			"." + cssClass + selector :
+			selectorParts.join("." + cssClass);
+		
+		const idx = inlineRuleSheet.insertRule(selectorFinal + "{}");
 		const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
 		
 		for (let [propertyName, propertyValue] of Object.entries(styles))
