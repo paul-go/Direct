@@ -29,9 +29,9 @@ namespace App
 				this.foregroundContainer = Htx.div(
 					e => void new ForegroundMixin(e, this.record),
 					CssClass.canvasSceneForeground,
-					this.record.origin,
-					this.textContainer = Htx.div(
-						"text-container",
+					this.islandElement = Htx.div(
+						CssClass.canvasSceneIsland,
+						this.record.origin,
 						this.contentImageContainer = Htx.div(
 							"content-image-container",
 							Htx.on("click", () =>
@@ -84,7 +84,7 @@ namespace App
 		}
 		
 		private readonly foregroundContainer;
-		private readonly textContainer;
+		private readonly islandElement;
 		private readonly contentImageContainer;
 		private contentImage: HTMLImageElement | null = null;
 		private readonly titleView;
@@ -525,7 +525,7 @@ namespace App
 		/** */
 		private setContrast(amount: number)
 		{
-			RenderUtil.setContrast(this.textContainer, amount);
+			RenderUtil.setContrast(this.islandElement, amount);
 			this.record.textContrast = amount;
 		}
 		
@@ -547,7 +547,7 @@ namespace App
 			if (origin !== null)
 			{
 				this.record.origin = origin;
-				UI.toggleEnumClass(this.foregroundContainer, Origin, origin);
+				UI.toggleEnumClass(this.islandElement, Origin, origin);
 			}
 			
 			this.originButton.selected = false;

@@ -8,11 +8,13 @@ namespace App
 		constructor(readonly record: CanvasSceneRecord)
 		{
 			this.root = Htx.div(
-				"actions",
+				CssClass.canvasActions,
 				{
-					width: "-webkit-fill-available",
-					display: "inline-block",
-				}
+					width: "fit-content",
+					minWidth: "10em",
+				},
+				Htx.css(":not(:empty)", { display: "inline-block" }),
+				When.connected(() => this.setupSizeObserver())
 			);
 			
 			for (const action of record.actions)
@@ -25,6 +27,39 @@ namespace App
 		
 		readonly root;
 		private readonly actions;
+		
+		/**
+		 * Listens for changes to the size of the titles and the description,
+		 * and resizes the root element accordingly.
+		 */
+		private setupSizeObserver()
+		{
+			const csv = Cage.over(this, CanvasSceneView);
+			const ctv = Not.nullable(Cage.under(csv, CanvasTitleView));
+			const cdv = Not.nullable(Cage.under(csv, CanvasDescriptionView));
+			
+			const ro = new ResizeObserver(() =>
+			{
+				const widthTarget =
+					cdv.text ? cdv.root :
+					ctv.getTextBox(-1)?.root || null;
+				
+				this.root.style.minWidth = widthTarget ?
+					widthTarget.offsetWidth + "px" :
+					"10em";
+			});
+			
+			ro.observe(cdv.root);
+			
+			const updateTitleWatchers = () =>
+			{
+				for (const box of ctv.getTextBoxes())
+					ro.observe(box.root);
+			};
+			
+			UI.onChildrenChanged(ctv.root, updateTitleWatchers);
+			updateTitleWatchers();
+		}
 		
 		/** */
 		addAction()
@@ -58,7 +93,7 @@ namespace App
 		{
 			this.root = Htx.div(
 				"canvas-action",
-				UI.backdropBlur(5),
+				UI.backdropBlur(15),
 				{
 					marginTop: "20px",
 					textAlign: "center",
@@ -76,12 +111,18 @@ namespace App
 					}),
 				),
 				this.menuContainer = Htx.div(
+					"menu-container",
 					{
 						position: "absolute",
 						top: "0.5em",
 						right: "-3em",
 						textShadow: "0 0 10px black, 0 0 10px black",
 					},
+					Htx.css(`.${Origin.topRight} &, .${Origin.right} &, .${Origin.bottomRight} &`, {
+						right: "auto",
+						left: "-3em",
+					}),
+					
 					UI.click(() =>
 					{
 						const canMoveUp = !!Cage.previous(this.root, CanvasAction);

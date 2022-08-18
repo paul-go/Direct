@@ -10,6 +10,11 @@ namespace App
 		constructor()
 		{
 			this.root = Htx.div(
+				{
+					width: "fit-content",
+					marginLeft: "inherit",
+					marginRight: "inherit",
+				},
 				Htx.on("focusout", () =>
 				{
 					if (this.isEmpty)

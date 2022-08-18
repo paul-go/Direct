@@ -68,9 +68,6 @@ namespace App
 			rule("." + CssClass.snapFooter, {
 				"scroll-snap-align": "end",
 			}),
-			rule("." + CssClass.canvasScene, {
-				"display": "flex",
-			}),
 			rule("." + CssClass.canvasScene + ", ." + CssClass.proseScene, {
 				"padding": "20px",
 			}),
@@ -89,13 +86,111 @@ namespace App
 				"background-size": "cover",
 			}),
 			rule("." + CssClass.canvasSceneForeground, {
-				"display": "flex",
-				"width": "100%",
-				"min-height": "100%",
+				"position": "absolute",
+				"top": ConstN.foregroundEdgeVmin + "vmin",
+				"right": ConstN.foregroundEdgeVmin + "vmin",
+				"bottom": ConstN.foregroundEdgeVmin + "vmin",
+				"left": ConstN.foregroundEdgeVmin + "vmin",
 				"max-width": ConstN.playerMaxWidth + "px",
-				"padding": ConstN.foregroundEdgeVmin + "vmin",
 				"margin": "auto",
 			}),
+			
+			rule("." + CssClass.canvasSceneIsland, {
+				"position": "absolute",
+				"width": "fit-content",
+				"height": "fit-content",
+			}),
+			
+			rule("." + Origin.topLeft, {
+				"text-align": "left",
+				"top": 0,
+				"left": 0,
+			}),
+			rule("." + Origin.top, {
+				"text-align": "center",
+				"top": 0,
+				"right": 0,
+				"left": 0,
+				"margin": "auto",
+			}),
+			rule("." + Origin.topRight, {
+				"text-align": "right",
+				"top": 0,
+				"right": 0,
+			}),
+			rule("." + Origin.left, {
+				"text-align": "left",
+				"top": 0,
+				"bottom": 0,
+				"left": 0,
+				"margin": "auto",
+			}),
+			rule("." + Origin.center, {
+				"text-align": "center",
+				"top": 0,
+				"right": 0,
+				"bottom": 0,
+				"left": 0,
+				"margin": "auto",
+			}),
+			rule("." + Origin.right, {
+				"text-align": "right",
+				"top": 0,
+				"right": 0,
+				"bottom": 0,
+				"margin": "auto",
+			}),
+			rule("." + Origin.bottomLeft, {
+				"text-align": "left",
+				"bottom": 0,
+				"left": 0,
+			}),
+			rule("." + Origin.bottom, {
+				"text-align": "center",
+				"right": 0,
+				"bottom": 0,
+				"left": 0,
+				"margin": "auto",
+			}),
+			rule("." + Origin.bottomRight, {
+				"text-align": "right",
+				"right": 0,
+				"bottom": 0,
+			}),
+			rule(`
+				.${CssClass.canvasSceneIsland}.${Origin.topLeft},
+				.${CssClass.canvasSceneIsland}.${Origin.left},
+				.${CssClass.canvasSceneIsland}.${Origin.bottomLeft}`, {
+				"margin-left": "0",
+				"margin-right": "0",
+			}),
+			rule(`
+				.${CssClass.canvasSceneIsland}.${Origin.topRight},
+				.${CssClass.canvasSceneIsland}.${Origin.right},
+				.${CssClass.canvasSceneIsland}.${Origin.bottomRight}`, {
+				"margin-left": "auto",
+				"margin-right": "0",
+			}),
+			rule(`
+				.${Origin.topLeft} .${CssClass.canvasActions},
+				.${Origin.left} .${CssClass.canvasActions},
+				.${Origin.bottomLeft} .${CssClass.canvasActions}`, {
+				"left": "-0.5em",
+			}),
+			rule(`
+				.${Origin.top} .${CssClass.canvasActions},
+				.${Origin.center} .${CssClass.canvasActions},
+				.${Origin.bottom} .${CssClass.canvasActions}`, {
+				"margin-left": "auto",
+				"margin-right": "auto",
+			}),
+			rule(`
+				.${Origin.topRight} .${CssClass.canvasActions},
+				.${Origin.right} .${CssClass.canvasActions},
+				.${Origin.bottomRight} .${CssClass.canvasActions}`, {
+				"right": "-0.5em",
+			}),
+			
 			rule("." + CssClass.canvasSceneContentImage, {
 				"display": "block",
 				"margin": "0 auto 30px",
@@ -216,51 +311,6 @@ namespace App
 			rule("." + CssClass.textContrastLight + ":before", {
 				"background-image": Util.createCssUrl("res.blur-white.png"),
 			}),
-			rule("." + Origin.topLeft, {
-				"text-align": "left",
-				"align-items": "flex-start",
-				"justify-content": "flex-start",
-			}),
-			rule("." + Origin.top, {
-				"text-align": "center",
-				"align-items": "flex-start",
-				"justify-content": "center",
-			}),
-			rule("." + Origin.topRight, {
-				"text-align": "right",
-				"align-items": "flex-start",
-				"justify-content": "flex-end",
-			}),
-			rule("." + Origin.left, {
-				"text-align": "left",
-				"align-items": "center",
-				"justify-content": "flex-start",
-			}),
-			rule("." + Origin.center, {
-				"text-align": "center",
-				"align-items": "center",
-				"justify-content": "center",
-			}),
-			rule("." + Origin.right, {
-				"text-align": "right",
-				"align-items": "center",
-				"justify-content": "flex-end",
-			}),
-			rule("." + Origin.bottomLeft, {
-				"text-align": "left",
-				"align-items": "flex-end",
-				"justify-content": "flex-start",
-			}),
-			rule("." + Origin.bottom, {
-				"text-align": "center",
-				"align-items": "flex-end",
-				"justify-content": "center",
-			}),
-			rule("." + Origin.bottomRight, {
-				"text-align": "right",
-				"align-items": "flex-end",
-				"justify-content": "flex-end",
-			}),
 		];
 	}
 	
@@ -377,7 +427,9 @@ namespace App
 		constructor(
 			readonly selector: string,
 			readonly cssProperties: { [property: string]: string | number; })
-		{ }
+		{
+			this.selector = selector.replace(/[\r\n]/g, " ").replace(/\s\s*\s/g, " ");
+		}
 		
 		/** */
 		emit(emitter = new Emitter())

@@ -172,7 +172,8 @@ namespace App
 			return Htx.div(
 				"insert-footer",
 				{
-					direction: "rtl",
+					width: "fit-content",
+					marginLeft: "auto",
 					padding: headerPadding,
 					paddingLeft: "0",
 				},

@@ -40,11 +40,15 @@ namespace App
 			textbox.isMultiLine = false;
 			textbox.html = titleText;
 			
-			{
-				const s = textbox.root.style;
-				s.fontSize = UI.vsize(6);
-				s.fontWeight = "700";
-			}
+			Htx.from(textbox.root)(
+				{
+					width: "fit-content",
+					fontSize: UI.vsize(6),
+					fontWeight: "700",
+					marginLeft: "inherit",
+					marginRight: "inherit",
+				},
+			);
 			
 			textbox.root.addEventListener("keydown", ev =>
 			{
@@ -163,7 +167,7 @@ namespace App
 		/** */
 		getTextBox(index: number)
 		{
-			const e = Query.children(this.root)[index];
+			const e = Query.children(this.root).at(index);
 			return e ? Cage.get(e, TextBox) : null;
 		}
 		
