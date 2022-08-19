@@ -134,7 +134,7 @@ namespace App
 	/** */
 	export class CanvasSceneRecord extends SceneRecord
 	{
-		textContrast = 50;
+		textContrast = 0;
 		effect = Effects.none.name;
 		origin = Origin.center;
 		contentImage = Database.reference(MediaRecord);

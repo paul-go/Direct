@@ -498,6 +498,8 @@ namespace App
 		private renderContrastConfigurator()
 		{
 			const slider = new Slider();
+			slider.decimals = 0;
+			slider.min = -100;
 			slider.max = 100;
 			slider.place = this.record.textContrast;
 			this.setSceneConfigurator(slider.root);

@@ -62,8 +62,6 @@ namespace App.RenderUtil
 	 */
 	export function setContrast(e: HTMLElement, amount: number)
 	{
-		amount = ((amount * 2) - 100) / 100;
-		
 		e.classList.remove(
 			CssClass.textContrast,
 			CssClass.textContrastDark,
@@ -71,8 +69,10 @@ namespace App.RenderUtil
 		
 		e.style.removeProperty(ConstS.textContrastProperty);
 		
-		if (amount !== 50)
+		if (amount !== 0)
 		{
+			amount /= 100;
+			
 			e.classList.add(
 				CssClass.textContrast,
 				amount > 0 ?
