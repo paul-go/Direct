@@ -21,9 +21,8 @@ namespace App
 					"indicator",
 					{
 						position: "absolute",
-						border: "3px solid white",
+						outline: "3px dashed rgb(128, 128, 128)",
 						boxShadow: "inset 0 0 0 3px black",
-						borderRadius: UI.borderRadius.default,
 						transitionDuration: "0.15s",
 						transitionProperty: "none",
 					}
@@ -39,7 +38,7 @@ namespace App
 		
 		readonly root;
 		private readonly indicator;
-		private readonly registeredElements: HTMLElement[] = [];
+		private readonly registeredElements = new Map<HTMLElement, number>();
 		private readonly resizeObserver;
 		
 		/** */
@@ -52,10 +51,10 @@ namespace App
 		}
 		
 		/** */
-		registerElement(e: HTMLElement)
+		registerElement(e: HTMLElement, outlineOffset = 0)
 		{
-			const empty = this.registeredElements.length === 0;
-			this.registeredElements.push(e);
+			const empty = this.registeredElements.size === 0;
+			this.registeredElements.set(e, outlineOffset);
 			this.resizeObserver.observe(e);
 			
 			if (empty)
@@ -65,10 +64,10 @@ namespace App
 		/** */
 		unregisterElements()
 		{
-			for (const e of this.registeredElements)
+			for (const e of this.registeredElements.keys())
 				this.resizeObserver.unobserve(e);
 			
-			this.registeredElements.length = 0;
+			this.registeredElements.clear();
 		}
 		
 		/** */
@@ -79,7 +78,7 @@ namespace App
 			{
 				for (const e of possibleElements)
 					if (e instanceof HTMLElement)
-						if (this.registeredElements.includes(e))
+						if (this.registeredElements.has(e))
 							return e;
 				
 				return null;
@@ -125,6 +124,7 @@ namespace App
 				s.left = (targetRect.left - overlayRect.left - expand) + "px";
 				s.width = (targetRect.width + expand * 2) + "px";
 				s.height = (targetRect.height + expand * 2) + "px";
+				s.outlineOffset = (this.registeredElements.get(e) || 0) + "px";
 				
 				if (transition)
 				{

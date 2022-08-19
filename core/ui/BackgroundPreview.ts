@@ -2,14 +2,16 @@
 namespace App
 {
 	/** */
-	export class BackgroundManager
+	export class BackgroundPreview
 	{
 		/** */
-		constructor(
-			private readonly record: CanvasSceneRecord,
-			backgroundsContainer: HTMLElement)
+		constructor(private readonly record: CanvasSceneRecord)
 		{
-			this.root = backgroundsContainer;
+			this.root = Htx.div(
+				"backgrounds-container",
+				UI.anchor()
+			);
+			
 			let imagesConfigurators: HTMLElement;
 			
 			this.configuratorElement = Htx.div(
@@ -23,7 +25,7 @@ namespace App
 				new ColorConfigurator(this.record).root
 			);
 			
-			this.previews = new Cage.Array(this.root, BackgroundPreview);
+			this.previews = new Cage.Array(this.root, BackgroundObjectPreview);
 			this.configurators = new Cage.Array(imagesConfigurators, BackgroundConfigurator);
 			
 			for (const bg of record.backgrounds)
@@ -61,7 +63,7 @@ namespace App
 		 */
 		private bindBackground(backgroundRecord: BackgroundRecord)
 		{
-			const preview = BackgroundPreview.new(backgroundRecord);
+			const preview = BackgroundObjectPreview.new(backgroundRecord);
 			const cfg = new BackgroundConfigurator(backgroundRecord, preview);
 			this.configurators.insert(cfg);
 			this.previews.insert(cfg.preview);
@@ -99,7 +101,7 @@ namespace App
 		/** */
 		constructor(
 			readonly record: BackgroundRecord,
-			readonly preview: BackgroundPreview)
+			readonly preview: BackgroundObjectPreview)
 		{
 			this.root = Htx.div(
 				"background-configurator",
@@ -229,7 +231,7 @@ namespace App
 	}
 	
 	/** */
-	export abstract class BackgroundPreview
+	export abstract class BackgroundObjectPreview
 	{
 		/** */
 		static new(record: BackgroundRecord)
@@ -246,7 +248,7 @@ namespace App
 	}
 	
 	/** */
-	class BackgroundVideoPreview extends BackgroundPreview
+	class BackgroundVideoPreview extends BackgroundObjectPreview
 	{
 		/** */
 		constructor(record: BackgroundRecord)
@@ -269,7 +271,7 @@ namespace App
 	}
 	
 	/** */
-	class BackgroundImagePreview extends BackgroundPreview
+	class BackgroundImagePreview extends BackgroundObjectPreview
 	{
 		/** */
 		constructor(record: BackgroundRecord)
@@ -387,7 +389,7 @@ namespace App
 				});
 				
 				const s = this.img.style;
-				const sceneContainer = Cage.over(this, BackgroundManager).root;
+				const sceneContainer = Cage.over(this, BackgroundPreview).root;
 				
 				if (this.imgWidth > this.imgHeight)
 				{

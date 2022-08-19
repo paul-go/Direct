@@ -22,11 +22,9 @@ namespace App
 					bottom: new Text("Add Background"),
 				}),
 				
-				this.backgroundsContainer = Htx.div(
-					"backgrounds-container",
-					UI.anchor()
-				),
-				this.foregroundContainer = Htx.div(
+				(this.backgroundPreview = new BackgroundPreview(this.record)).root,
+				
+				this.foregroundPreview = Htx.div(
 					e => void new ForegroundMixin(e, this.record),
 					CssClass.canvasSceneForeground,
 					this.islandElement = Htx.div(
@@ -63,10 +61,6 @@ namespace App
 				this.backgroundsButton,
 			);
 			
-			this.backgroundManager = new BackgroundManager(
-				this.record,
-				this.backgroundsContainer);
-			
 			this.setContentImageSize(this.record.contentImageWidth);
 			
 			this.titleView.setTitles(this.record.titles);
@@ -78,15 +72,14 @@ namespace App
 			this.picker = new ElementPicker(this.sceneContainer);
 		}
 		
-		private readonly foregroundContainer;
+		private readonly foregroundPreview;
 		private readonly islandElement;
 		private readonly contentImageContainer;
 		private contentImage: HTMLImageElement | null = null;
 		private readonly titleView;
 		private readonly descriptionView;
 		private readonly actionManager;
-		private readonly backgroundsContainer;
-		private readonly backgroundManager: BackgroundManager;
+		private readonly backgroundPreview: BackgroundPreview;
 		
 		//private sizePicker: ElementPicker | null = null;
 		//private weightPicker: ElementPicker | null = null;
@@ -209,7 +202,7 @@ namespace App
 			const isBackground = layerY > this.sceneContainer.offsetHeight / 2;
 			
 			if (isBackground)
-				this.backgroundManager.addBackground(mediaRecord);
+				this.backgroundPreview.addBackground(mediaRecord);
 			else
 				this.addContentImage(mediaRecord);
 		}
@@ -255,15 +248,15 @@ namespace App
 			
 			if (this.backgroundsButton.selected)
 			{
-				this.foregroundContainer.style.filter = "blur(3px)";
-				this.foregroundContainer.style.pointerEvents = "none";
-				this.setSceneConfigurator(this.backgroundManager.configuratorElement);
+				this.foregroundPreview.style.filter = "blur(3px)";
+				this.foregroundPreview.style.pointerEvents = "none";
+				this.setSceneConfigurator(this.backgroundPreview.configuratorElement);
 			}
 			else
 			{
-				this.foregroundContainer.style.removeProperty("filter");
-				this.foregroundContainer.style.removeProperty("pointer-events");
-				this.backgroundManager.configuratorElement.remove();
+				this.foregroundPreview.style.removeProperty("filter");
+				this.foregroundPreview.style.removeProperty("pointer-events");
+				this.backgroundPreview.configuratorElement.remove();
 			}
 			
 			if (!this.sceneButtons.some(bb => bb.selected))
@@ -437,7 +430,8 @@ namespace App
 				Pickable.titles,
 				Pickable.descriptions,
 				Pickable.actions,
-				Pickable.backgrounds);
+				Pickable.backgroundObjects,
+				Pickable.backgroundSurface);
 			
 			const slider = new Slider();
 			slider.setLeftLabel("Dark on light");
@@ -464,7 +458,7 @@ namespace App
 				{
 					
 				}
-				else if (picked instanceof BackgroundPreview)
+				else if (picked instanceof BackgroundObjectPreview)
 				{
 					
 				}
@@ -606,13 +600,20 @@ namespace App
 				}
 			}
 			
-			if (pickableTypes.includes(Pickable.backgrounds))
+			if (pickableTypes.includes(Pickable.backgroundObjects))
 			{
-				for (const bg of Cage.under(this, BackgroundPreview))
+				for (const bg of Cage.under(this, BackgroundObjectPreview))
 				{
 					this.picker.registerElement(bg.root);
 					this.pickerDataMap.set(bg.root, bg);
 				}
+			}
+			
+			if (pickableTypes.includes(Pickable.backgroundSurface))
+			{
+				const bp = this.backgroundPreview;
+				this.picker.registerElement(bp.root, -20);
+				this.pickerDataMap.set(bp.root, bp);
 			}
 		}
 	}
@@ -624,7 +625,8 @@ namespace App
 		titles,
 		descriptions,
 		actions,
-		backgrounds,
+		backgroundObjects,
+		backgroundSurface,
 	}
 	
 	/** */
@@ -633,5 +635,6 @@ namespace App
 		TextBox | // For Titles ... this is temporary because these should be their own view
 		CanvasDescriptionView |
 		CanvasAction |
+		BackgroundObjectPreview |
 		BackgroundPreview;
 }
