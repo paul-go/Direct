@@ -122,7 +122,7 @@ namespace App
 					"menu-container",
 					{
 						position: "absolute",
-						top: "calc(10px + 0.85em)",
+						top: "calc(10px + 0.25em)",
 						right: "-3em",
 						textShadow: "0 0 10px black, 0 0 10px black",
 					},
