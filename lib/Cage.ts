@@ -91,13 +91,11 @@ namespace Cage
 	 * specified type, that exist underneath the specified Node or cage,
 	 * The specified function is executed against each cage, if it is provided.
 	 * 
-	 * @returns The first matching cage, or null if no matching cage
-	 * was found.
+	 * @returns An array of Cages whose type matches the type specified.
 	 */
 	export function under<T extends ICage>(
 		via: Node | ICage,
-		type: Constructor<T>,
-		execFn?: (cage: T) => void)
+		type: Constructor<T>)
 	{
 		const e = 
 			via instanceof Element ? via : 
@@ -115,7 +113,7 @@ namespace Cage
 		// cage simply not having been registered at the time of this
 		// function being called.
 		if (!className)
-			return;
+			return [];
 		
 		const descendents = e.getElementsByClassName(className);
 		const cages: T[] = [];
@@ -128,11 +126,7 @@ namespace Cage
 				cages.push(cage);
 		}
 		
-		if (execFn)
-			for (const c of cages)
-				execFn(c);
-		
-		return cages.length > 0 ? cages[0] : null;
+		return cages;
 	}
 	
 	/**
