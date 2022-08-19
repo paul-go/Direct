@@ -81,6 +81,7 @@ namespace App
 			{
 				this.root.setPointerCapture(ev.pointerId);
 				this.sliderRect = this.slideArea.getBoundingClientRect();
+				this.draggingChangedFn(true);
 			}
 		}
 		
@@ -89,7 +90,15 @@ namespace App
 		{
 			this.root.releasePointerCapture(ev.pointerId);
 			this.sliderRect = null;
+			this.draggingChangedFn(false);
 		}
+		
+		/** */
+		setDraggingChangedFn(fn: (dragging: boolean) => void)
+		{
+			this.draggingChangedFn = fn;
+		}
+		private draggingChangedFn = (dragging: boolean) => {};
 		
 		/** */
 		setLeftLabel(label: string)

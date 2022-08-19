@@ -54,7 +54,7 @@ namespace App
 			this.setSceneButtons(
 				() => this.handleSelectionChange(),
 				//this.animationButton,
-				this.originButton,
+				this.positionButton,
 				this.sizeButton,
 				this.weightButton,
 				this.contrastButton,
@@ -71,6 +71,7 @@ namespace App
 			this.setDescriptionText(this.record.description);
 			this.setDescriptionSize(this.record.descriptionSize);
 			this.setContrast(this.record.textContrast);
+			this.setTwist(this.record.twist);
 		}
 		
 		private readonly foregroundContainer;
@@ -88,7 +89,7 @@ namespace App
 		private originPicker: OriginPicker | null = null;
 		
 		private readonly animationButton = new SceneButtonView("Animation");
-		private readonly originButton = new SceneButtonView("Position");
+		private readonly positionButton = new SceneButtonView("Position");
 		private readonly sizeButton = new SceneButtonView("Size");
 		private readonly weightButton = new SceneButtonView("Bold");
 		private readonly contrastButton = new SceneButtonView("Contrast");
@@ -244,10 +245,9 @@ namespace App
 			if (this.contrastButton.selected)
 				this.renderContrastConfigurator();
 			
-			if (this.originButton.selected)
+			if (this.positionButton.selected)
 			{
-				this.renderOriginConfigurator();
-				this.setSceneConfigurator(null);
+				this.renderPositionConfigurator();
 			}
 			else this.originPicker?.remove();
 			
@@ -329,11 +329,11 @@ namespace App
 				
 				if (pickable instanceof HTMLImageElement)
 				{
-					slider.progress = this.record.contentImageWidth;
+					slider.place = this.record.contentImageWidth;
 				}
 				else if (pickable instanceof CanvasDescriptionView)
 				{
-					slider.progress = this.record.descriptionSize;
+					slider.place = this.record.descriptionSize;
 					slider.max = 10;
 				}
 				else
@@ -344,7 +344,7 @@ namespace App
 					
 					const titleData = titleDatas[idx];
 					slider.max = 50;
-					slider.progress = titleData.size;
+					slider.place = titleData.size;
 				}
 			};
 			
@@ -362,17 +362,17 @@ namespace App
 				
 				if (pickable instanceof HTMLImageElement)
 				{
-					this.setContentImageSize(slider.progress);
+					this.setContentImageSize(slider.place);
 				}
 				else if (pickable instanceof CanvasDescriptionView)
 				{
-					this.setDescriptionSize(slider.progress);
+					this.setDescriptionSize(slider.place);
 				}
 				else
 				{
 					const idx = titleDatas.indexOf(pickable);
 					if (idx >= 0)
-						this.setTitleSize(idx, slider.progress);
+						this.setTitleSize(idx, slider.place);
 				}
 			});
 		}
@@ -454,7 +454,7 @@ namespace App
 				
 				const titleData = titleDatas[idx];
 				slider.max = 900;
-				slider.progress = titleData.weight;
+				slider.place = titleData.weight;
 			};
 			
 			picker.setPickChangedFn(updatePick);
@@ -473,7 +473,7 @@ namespace App
 				if (idx < 0)
 					return;
 				
-				this.setTitleWeight(idx, slider.progress);
+				this.setTitleWeight(idx, slider.place);
 			});
 		}
 		
@@ -493,9 +493,9 @@ namespace App
 		{
 			const slider = new Slider();
 			slider.max = 100;
-			slider.progress = this.record.textContrast;
+			slider.place = this.record.textContrast;
 			this.setSceneConfigurator(slider.root);
-			slider.setProgressChangeFn(() => this.setContrast(slider.progress));
+			slider.setProgressChangeFn(() => this.setContrast(slider.place));
 		}
 		
 		/** */
@@ -506,15 +506,35 @@ namespace App
 		}
 		
 		/** */
-		private renderOriginConfigurator()
+		private renderPositionConfigurator()
 		{
-			this.originPicker = new OriginPicker({
+			const picker = this.originPicker = new OriginPicker({
 				...UI.backdropBlur(5),
 				backgroundColor: UI.black(0.333),
 			});
 			
 			this.originPicker.setSelectedFn(origin => this.setOrigin(origin));
 			this.sceneContainer.append(this.originPicker.root);
+			
+			const slider = new Slider();
+			slider.setLeftLabel("Twist Left");
+			slider.setRightLabel("Twist Right");
+			slider.min = -45;
+			slider.max = 45;
+			slider.place = this.record.twist;
+			this.setSceneConfigurator(slider.root);
+			slider.setProgressChangeFn(() => this.setTwist(slider.place));
+			slider.setDraggingChangedFn(dragging =>
+			{
+				UI.toggle(picker.root, !dragging);
+			});
+		}
+		
+		/** */
+		private setTwist(amount: number)
+		{
+			this.record.twist = amount;
+			this.islandElement.style.transform = "rotate(" + amount + "deg)";
 		}
 		
 		/** */
@@ -526,7 +546,7 @@ namespace App
 				UI.toggleEnumClass(this.islandElement, Origin, origin);
 			}
 			
-			this.originButton.selected = false;
+			this.positionButton.selected = false;
 			this.handleSelectionChange();
 		}
 	}

@@ -149,7 +149,7 @@ namespace App
 				const bip = this.preview;
 				this.sizeSlider.setProgressChangeFn(() =>
 				{
-					bip.updateSize(this.sizeSlider.progress);
+					bip.updateSize(this.sizeSlider.place);
 				});
 				
 				When.connected(this.preview.root, () =>
@@ -214,9 +214,9 @@ namespace App
 			this.sizeSlider.root.style.opacity = usingCover ? "0.5" : "1";
 			
 			if (usingCover)
-				this.sizeSlider.progress = this.sizeSlider.max;
+				this.sizeSlider.place = this.sizeSlider.max;
 			
-			this.record.size = usingCover ? -1 : this.sizeSlider.progress;
+			this.record.size = usingCover ? -1 : this.sizeSlider.place;
 			this.preview.updateSize();
 		}
 		

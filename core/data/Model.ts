@@ -145,6 +145,7 @@ namespace App
 		actions = Database.array(ActionRecord);
 		actionShape = CanvasActionShape.round;
 		backgrounds = Database.array(BackgroundRecord);
+		twist = 0;
 	}
 	
 	/** */
