@@ -316,6 +316,8 @@ namespace App
 			}
 			
 			const slider = new Slider();
+			slider.setLeftLabel("Smaller");
+			slider.setRightLabel("Larger");
 			this.setSceneConfigurator(slider.root);
 			
 			const updatePick = () =>
@@ -437,6 +439,8 @@ namespace App
 			}
 			
 			const slider = new Slider();
+			slider.setLeftLabel("Thinner");
+			slider.setRightLabel("Thicker");
 			this.setSceneConfigurator(slider.root);
 			
 			const updatePick = () =>
@@ -453,6 +457,8 @@ namespace App
 					return;
 				
 				const titleData = titleDatas[idx];
+				slider.decimals = 0;
+				slider.min = 100;
 				slider.max = 900;
 				slider.place = titleData.weight;
 			};
