@@ -67,6 +67,5 @@ namespace App
 		
 		readonly root;
 		private readonly previewRoot;
-		
 	}
 }

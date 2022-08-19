@@ -330,6 +330,9 @@ namespace App
 			if (scene.textContrast)
 				RenderUtil.setContrast(island, scene.textContrast);
 			
+			if (scene.twist !== 0)
+				island.style.transform = `rotate(${scene.twist}deg)`;
+			
 			const islandElements: HTMLElement[] = [];
 			
 			if (scene.contentImage)
