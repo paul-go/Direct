@@ -47,6 +47,7 @@ namespace App
 						"thumb",
 						UI.clickable,
 						UI.flexCenter,
+						UI.backdropBlur(3),
 						{
 							position: "absolute",
 							top: thumbPadding + "px",
@@ -188,7 +189,7 @@ namespace App
 		}
 		
 		/** */
-		setProgressChangeFn(fn: () => void)
+		setPlaceChangeFn(fn: () => void)
 		{
 			this.progressChangeFn = fn;
 		}

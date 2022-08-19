@@ -39,8 +39,8 @@ namespace App
 		private setupSizeObserver()
 		{
 			const csv = Cage.over(this, CanvasSceneView);
-			const ctv = Not.nullable(Cage.under(csv, CanvasTitleView));
-			const cdv = Not.nullable(Cage.under(csv, CanvasDescriptionView));
+			const ctv = Not.nullable(Cage.under(csv, CanvasTitleView)?.at(0));
+			const cdv = Not.nullable(Cage.under(csv, CanvasDescriptionView)?.at(0));
 			
 			const ro = new ResizeObserver(() =>
 			{
@@ -90,7 +90,7 @@ namespace App
 	}
 	
 	/** */
-	class CanvasAction
+	export class CanvasAction
 	{
 		/** */
 		constructor(

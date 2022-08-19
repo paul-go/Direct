@@ -147,7 +147,7 @@ namespace App
 			if (this.preview instanceof BackgroundImagePreview)
 			{
 				const bip = this.preview;
-				this.sizeSlider.setProgressChangeFn(() =>
+				this.sizeSlider.setPlaceChangeFn(() =>
 				{
 					bip.updateSize(this.sizeSlider.place);
 				});
@@ -229,7 +229,7 @@ namespace App
 	}
 	
 	/** */
-	abstract class BackgroundPreview
+	export abstract class BackgroundPreview
 	{
 		/** */
 		static new(record: BackgroundRecord)

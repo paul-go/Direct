@@ -7,7 +7,8 @@ namespace App
 		/** */
 		constructor(container: HTMLElement)
 		{
-			this.overlay = Htx.div(
+			this.root = Htx.div(
+				"element-picker",
 				UI.anchor(),
 				{
 					zIndex: "1"
@@ -29,20 +30,26 @@ namespace App
 				)
 			);
 			
-			container.append(this.overlay);
-			
-			this.resizeObserver = new ResizeObserver(() =>
-			{
-				this.updateIndicator();
-			});
-			
-			this.resizeObserver.observe(this.overlay);
+			this.toggle(false);
+			container.append(this.root);
+			this.resizeObserver = new ResizeObserver(() => this.updateIndicator());
+			this.resizeObserver.observe(this.root);
+			Cage.set(this);
 		}
 		
-		private readonly overlay;
+		readonly root;
 		private readonly indicator;
 		private readonly registeredElements: HTMLElement[] = [];
 		private readonly resizeObserver;
+		
+		/** */
+		toggle(visible: boolean)
+		{
+			Htx.from(this.root)({
+				pointerEvents: visible ? "all" : "none",
+				visibility: visible ? "visible" : "hidden",
+			});
+		}
 		
 		/** */
 		registerElement(e: HTMLElement)
@@ -53,6 +60,15 @@ namespace App
 			
 			if (empty)
 				this.pickElement(e);
+		}
+		
+		/** */
+		unregisterElements()
+		{
+			for (const e of this.registeredElements)
+				this.resizeObserver.unobserve(e);
+			
+			this.registeredElements.length = 0;
 		}
 		
 		/** */
@@ -70,9 +86,14 @@ namespace App
 			})();
 			
 			if (pickedElement)
+			{
 				this.pickElement(pickedElement);
+			}
 			else
-				this.innerRemove();
+			{
+				this.toggle(false);
+				this._cancelFn();	
+			}
 		}
 		
 		/** */
@@ -97,7 +118,7 @@ namespace App
 					await UI.wait();
 				}
 				
-				const overlayRect = this.overlay.getBoundingClientRect();
+				const overlayRect = this.root.getBoundingClientRect();
 				const targetRect = e.getBoundingClientRect();
 				
 				s.top = (targetRect.top - overlayRect.top - expand) + "px";
@@ -128,24 +149,11 @@ namespace App
 		private _pickChangedFn = () => {};
 		
 		/** */
-		setRemovedFn(fn: () => void)
+		setCancelFn(fn: () => void)
 		{
-			this._removedFn = fn;
+			this._cancelFn = fn;
 		}
-		private _removedFn = () => {};
-		
-		/** */
-		remove()
-		{
-			return UI.removeWithFade(this.overlay);
-		}
-		
-		/** */
-		private async innerRemove()
-		{
-			await this.remove();
-			this._removedFn();
-		}
+		private _cancelFn = () => {};
 	}
 	
 	const expand = 6;

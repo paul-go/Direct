@@ -48,7 +48,9 @@ namespace App
 				
 				this.createToolsHeader(
 					...this.createToolButtons()
-				)
+				),
+				
+				When.connected(() => this.setupElementPicker()),
 			);
 			
 			this.setSceneButtons(
@@ -57,7 +59,7 @@ namespace App
 				this.positionButton,
 				this.sizeButton,
 				this.weightButton,
-				this.contrastButton,
+				this.colorButton,
 				this.backgroundsButton,
 			);
 			
@@ -72,6 +74,8 @@ namespace App
 			this.setDescriptionSize(this.record.descriptionSize);
 			this.setContrast(this.record.textContrast);
 			this.setTwist(this.record.twist);
+			
+			this.picker = new ElementPicker(this.sceneContainer);
 		}
 		
 		private readonly foregroundContainer;
@@ -84,15 +88,15 @@ namespace App
 		private readonly backgroundsContainer;
 		private readonly backgroundManager: BackgroundManager;
 		
-		private sizePicker: ElementPicker | null = null;
-		private weightPicker: ElementPicker | null = null;
+		//private sizePicker: ElementPicker | null = null;
+		//private weightPicker: ElementPicker | null = null;
 		private originPicker: OriginPicker | null = null;
 		
 		private readonly animationButton = new SceneButtonView("Animation");
 		private readonly positionButton = new SceneButtonView("Position");
 		private readonly sizeButton = new SceneButtonView("Size");
 		private readonly weightButton = new SceneButtonView("Bold");
-		private readonly contrastButton = new SceneButtonView("Contrast");
+		private readonly colorButton = new SceneButtonView("Color");
 		private readonly backgroundsButton = new SceneButtonView("Backgrounds");
 		
 		/** */
@@ -232,24 +236,22 @@ namespace App
 		/** */
 		private handleSelectionChange()
 		{
+			if (this.positionButton.selected)
+				this.renderPositionConfigurator();
+			else
+				this.originPicker?.remove();
+			
 			if (this.sizeButton.selected)
 				this.renderSizeConfigurator();
-			else
-				this.sizePicker?.remove();
 			
-			if (this.weightButton.selected)
+			else if (this.weightButton.selected)
 				this.renderWeightConfigurator();
-			else
-				this.weightPicker?.remove();
 			
-			if (this.contrastButton.selected)
-				this.renderContrastConfigurator();
+			else if (this.colorButton.selected)
+				this.renderColorConfigurator();
 			
-			if (this.positionButton.selected)
-			{
-				this.renderPositionConfigurator();
-			}
-			else this.originPicker?.remove();
+			else if (!this.backgroundsButton.selected)
+				this.setPickableElements();
 			
 			if (this.backgroundsButton.selected)
 			{
@@ -278,42 +280,10 @@ namespace App
 		/** */
 		private renderSizeConfigurator()
 		{
-			type TPickable = 
-				HTMLImageElement |
-				ITitle |
-				CanvasDescriptionView;
-			
-			const picker = this.sizePicker = new ElementPicker(this.sceneContainer);
-			const pickMap = new Map<HTMLElement, TPickable>();
-			
-			picker.setRemovedFn(() =>
-			{
-				this.sizeButton.selected = false;
-				this.handleSelectionChange();
-			});
-			
-			if (this.contentImage)
-			{
-				picker.registerElement(this.contentImage);
-				pickMap.set(this.contentImage, this.contentImage);
-			}
-			
-			const titleTextBoxes = this.titleView.getTextBoxes();
-			const titleDatas = this.titleView.getTitleData();
-			
-			for (let i = -1; ++i < titleDatas.length;)
-			{
-				const e = titleTextBoxes[i].editableElement;
-				picker.registerElement(e);
-				pickMap.set(e, titleDatas[i]);
-			}
-			
-			if (this.descriptionView.text)
-			{
-				const e = this.descriptionView.root;
-				picker.registerElement(e);
-				pickMap.set(e, this.descriptionView);
-			}
+			this.setPickableElements(
+				Pickable.images,
+				Pickable.titles,
+				Pickable.descriptions);
 			
 			const slider = new Slider();
 			slider.setLeftLabel("Smaller");
@@ -322,57 +292,45 @@ namespace App
 			
 			const updatePick = () =>
 			{
-				if (!picker.pickedElement)
-					return;
+				const picked = this.getPicked();
 				
-				const pickable = pickMap.get(picker.pickedElement);
-				if (!pickable)
-					return;
-				
-				if (pickable instanceof HTMLImageElement)
+				if (picked instanceof HTMLImageElement)
 				{
 					slider.place = this.record.contentImageWidth;
 				}
-				else if (pickable instanceof CanvasDescriptionView)
+				else if (picked instanceof TextBox)
+				{
+					const idx = this.titleView.getTextBoxes().indexOf(picked);
+					slider.max = 50;
+					slider.place = this.titleView.getFontSize(idx);
+				}
+				else if (picked instanceof CanvasDescriptionView)
 				{
 					slider.place = this.record.descriptionSize;
 					slider.max = 10;
 				}
-				else
-				{
-					const idx = titleDatas.indexOf(pickable);
-					if (idx < 0)
-						return;
-					
-					const titleData = titleDatas[idx];
-					slider.max = 50;
-					slider.place = titleData.size;
-				}
 			};
 			
-			picker.setPickChangedFn(updatePick);
+			this.picker.setPickChangedFn(updatePick);
 			updatePick();
 			
-			slider.setProgressChangeFn(() =>
+			slider.setPlaceChangeFn(() =>
 			{
-				if (!picker.pickedElement)
+				const picked = this.getPicked();
+				if (!picked)
 					return;
 				
-				const pickable = pickMap.get(picker.pickedElement);
-				if (!pickable)
-					return;
-				
-				if (pickable instanceof HTMLImageElement)
+				if (picked instanceof HTMLImageElement)
 				{
 					this.setContentImageSize(slider.place);
 				}
-				else if (pickable instanceof CanvasDescriptionView)
+				else if (picked instanceof CanvasDescriptionView)
 				{
 					this.setDescriptionSize(slider.place);
 				}
-				else
+				else if (picked instanceof TextBox)
 				{
-					const idx = titleDatas.indexOf(pickable);
+					const idx = this.titleView.getTextBoxes().indexOf(picked);
 					if (idx >= 0)
 						this.setTitleSize(idx, slider.place);
 				}
@@ -419,68 +377,46 @@ namespace App
 		/** */
 		private renderWeightConfigurator()
 		{
-			const picker = this.weightPicker = new ElementPicker(this.sceneContainer);
-			const pickMap = new Map<HTMLElement, ITitle>();
-			
-			picker.setRemovedFn(() =>
-			{
-				this.weightButton.selected = false;
-				this.handleSelectionChange();
-			});
-			
-			const titleTextBoxes = this.titleView.getTextBoxes();
-			const titleDatas = this.titleView.getTitleData();
-			
-			for (let i = -1; ++i < titleDatas.length;)
-			{
-				const e = titleTextBoxes[i].editableElement;
-				picker.registerElement(e);
-				pickMap.set(e, titleDatas[i]);
-			}
+			this.setPickableElements(Pickable.titles);
 			
 			const slider = new Slider();
 			slider.setLeftLabel("Thinner");
 			slider.setRightLabel("Thicker");
-			this.setSceneConfigurator(slider.root);
 			
 			const updatePick = () =>
 			{
-				if (!picker.pickedElement)
+				const picked = this.getPicked();
+				if (!(picked instanceof TextBox))
 					return;
 				
-				const pickable = pickMap.get(picker.pickedElement);
-				if (!pickable)
-					return;
-				
-				const idx = titleDatas.indexOf(pickable);
+				const idx = this.titleView.getTextBoxes().indexOf(picked);
 				if (idx < 0)
 					return;
 				
-				const titleData = titleDatas[idx];
+				const titleData = this.titleView.getTitleData()[idx];
 				slider.decimals = 0;
 				slider.min = 100;
 				slider.max = 900;
 				slider.place = titleData.weight;
 			};
 			
-			picker.setPickChangedFn(updatePick);
+			this.picker.setPickChangedFn(updatePick);
 			updatePick();
 			
-			slider.setProgressChangeFn(() =>
+			slider.setPlaceChangeFn(() =>
 			{
-				if (!picker.pickedElement)
+				const picked = this.getPicked();
+				if (!(picked instanceof TextBox))
 					return;
 				
-				const pickedTitle = pickMap.get(picker.pickedElement);
-				if (!pickedTitle)
-					return;
-				
-				const idx = titleDatas.indexOf(pickedTitle);
+				const idx = this.titleView.getTextBoxes().indexOf(picked);
 				if (idx < 0)
 					return;
 				
 				this.setTitleWeight(idx, slider.place);
 			});
+			
+			this.setSceneConfigurator(slider.root);
 		}
 		
 		/** */
@@ -495,15 +431,47 @@ namespace App
 		}
 		
 		/** */
-		private renderContrastConfigurator()
+		private renderColorConfigurator()
 		{
+			this.setPickableElements(
+				Pickable.titles,
+				Pickable.descriptions,
+				Pickable.actions,
+				Pickable.backgrounds);
+			
 			const slider = new Slider();
+			slider.setLeftLabel("Dark on light");
+			slider.setRightLabel("Light on dark");
 			slider.decimals = 0;
 			slider.min = -100;
 			slider.max = 100;
 			slider.place = this.record.textContrast;
+			slider.setPlaceChangeFn(() => this.setContrast(slider.place));
+			
+			const updatePick = () =>
+			{
+				const picked = this.getPicked();
+				
+				if (picked instanceof TextBox)
+				{
+					
+				}
+				else if (picked instanceof CanvasDescriptionView)
+				{
+					
+				}
+				else if (picked instanceof CanvasAction)
+				{
+					
+				}
+				else if (picked instanceof BackgroundPreview)
+				{
+					
+				}
+			}
+			updatePick();
+			
 			this.setSceneConfigurator(slider.root);
-			slider.setProgressChangeFn(() => this.setContrast(slider.place));
 		}
 		
 		/** */
@@ -530,12 +498,12 @@ namespace App
 			slider.min = -45;
 			slider.max = 45;
 			slider.place = this.record.twist;
-			this.setSceneConfigurator(slider.root);
-			slider.setProgressChangeFn(() => this.setTwist(slider.place));
+			slider.setPlaceChangeFn(() => this.setTwist(slider.place));
 			slider.setDraggingChangedFn(dragging =>
 			{
 				UI.toggle(picker.root, !dragging);
 			});
+			this.setSceneConfigurator(slider.root);
 		}
 		
 		/** */
@@ -557,5 +525,113 @@ namespace App
 			this.positionButton.selected = false;
 			this.handleSelectionChange();
 		}
+		
+		//# Element Picker
+		
+		private readonly picker: ElementPicker;
+		private readonly pickerDataMap = new Map<HTMLElement, TPickable>();
+		
+		/** */
+		private setupElementPicker()
+		{
+			this.picker.setCancelFn(() =>
+			{
+				this.sizeButton.selected = false;
+				this.weightButton.selected = false;
+				this.colorButton.selected = false;
+				this.backgroundsButton.selected = false;
+				this.handleSelectionChange();
+			});
+		}
+		
+		/** */
+		private getPicked()
+		{
+			if (!this.picker.pickedElement)
+				return null;
+			
+			const pickable = this.pickerDataMap.get(this.picker.pickedElement);
+			if (!pickable)
+				return null;
+			
+			return pickable;
+		}
+		
+		/** */
+		private setPickableElements(...pickableTypes: Pickable[])
+		{
+			this.picker.unregisterElements();
+			this.pickerDataMap.clear();
+			this.picker.toggle(pickableTypes.length > 0);
+			
+			if (pickableTypes.includes(Pickable.images))
+			{
+				if (this.contentImage)
+				{
+					this.picker.registerElement(this.contentImage);
+					this.pickerDataMap.set(this.contentImage, this.contentImage);
+				}
+			}
+			
+			if (pickableTypes.includes(Pickable.titles))
+			{
+				const titleTextBoxes = this.titleView.getTextBoxes();
+				const titleDatas = this.titleView.getTitleData();
+				
+				for (let i = -1; ++i < titleDatas.length;)
+				{
+					const tb = titleTextBoxes[i];
+					const e = tb.editableElement;
+					this.picker.registerElement(e);
+					this.pickerDataMap.set(e, tb);
+				}
+			}
+			
+			if (pickableTypes.includes(Pickable.descriptions))
+			{
+				if (this.descriptionView.text)
+				{
+					const e = this.descriptionView.root;
+					this.picker.registerElement(e);
+					this.pickerDataMap.set(e, this.descriptionView);
+				}
+			}
+			
+			if (pickableTypes.includes(Pickable.actions))
+			{
+				for (const action of Cage.under(this, CanvasAction))
+				{
+					this.picker.registerElement(action.root);
+					this.pickerDataMap.set(action.root, action);
+				}
+			}
+			
+			if (pickableTypes.includes(Pickable.backgrounds))
+			{
+				for (const bg of Cage.under(this, BackgroundPreview))
+				{
+					this.picker.registerElement(bg.root);
+					this.pickerDataMap.set(bg.root, bg);
+				}
+			}
+		}
 	}
+	
+	/** */
+	const enum Pickable
+	{
+		images,
+		titles,
+		descriptions,
+		actions,
+		backgrounds,
+	}
+	
+	/** */
+	type TPickable = 
+		HTMLImageElement |
+		TextBox | // For Titles ... this is temporary because these should be their own view
+		CanvasDescriptionView |
+		CanvasAction |
+		BackgroundPreview;
 }

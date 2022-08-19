@@ -204,7 +204,7 @@ namespace App
 		/** */
 		updateBackgroundColor()
 		{
-			Cage.under(this, ForegroundMixin)?.updateTextColor();
+			Cage.under(this, ForegroundMixin).at(0)?.updateTextColor();
 			const meta = AppContainer.of(this).meta;
 			const colorIndex = this.record.backgroundColorIndex;
 			const color = RenderUtil.resolveBackgroundColor(colorIndex, meta);
