@@ -16,10 +16,11 @@ namespace App
 				When.connected(() => this.setupSizeObserver())
 			);
 			
+			this.actions = new Cage.Array(this.root, CanvasAction);
+			
 			for (const action of record.actions)
 				this.bindAction(action);
 			
-			this.actions = new Cage.Array(this.root, CanvasAction);
 			this.actions.observe(() =>
 			{
 				record.actions = this.actions.map(ca => ca.actionRecord);
