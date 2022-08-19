@@ -10,15 +10,28 @@ namespace Cover
 		
 		const slider2 = new App.Slider();
 		slider2.max = 30;
-		slider2.progress = 10;
+		slider2.place = 10;
 		
 		const slider3 = new App.Slider();
 		slider3.max = 1000;
-		slider3.progress = 100;
+		slider3.place = 100;
 		
 		const slider4 = new App.Slider();
 		slider4.max = 10;
-		slider4.progress = 5;
+		slider4.place = 5;
+		
+		const slider5 = new App.Slider();
+		slider5.min = -10;
+		slider5.max = 10;
+		slider5.place = 0;
+		
+		const slider6 = new App.Slider();
+		slider6.setLeftLabel("Less");
+		slider6.setRightLabel("More");
+		slider6.min = -100;
+		slider6.max = 100;
+		slider6.place = 0;
+		slider6.decimals = 0;
 		
 		document.body.style.padding = "30px";
 		document.body.append(
@@ -29,6 +42,10 @@ namespace Cover
 			slider3.root,
 			Htx.br(),
 			slider4.root,
+			Htx.br(),
+			slider5.root,
+			Htx.br(),
+			slider6.root,
 			Htx.br(),
 			Htx.a(
 				Htx.on("click", () =>

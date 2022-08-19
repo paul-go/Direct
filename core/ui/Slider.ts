@@ -28,6 +28,21 @@ namespace App
 						left: (thumbSize / 2 + thumbPadding) + "px",
 						right: (thumbSize / 2 + thumbPadding) + "px",
 					},
+					Htx.css("&:before, &:after", {
+						margin: "auto",
+						fontWeight: "600",
+						fontSize: "1.25em",
+						opacity: "0.33",
+						height: "fit-content",
+					}),
+					Htx.css(":before", {
+						content: `attr(data-left-label)`,
+						...UI.anchorLeft(),
+					}),
+					Htx.css(":after", {
+						content: `attr(data-right-label)`,
+						...UI.anchorRight(),
+					}),
 					this.thumb = Htx.div(
 						"thumb",
 						UI.clickable,
@@ -77,6 +92,30 @@ namespace App
 		}
 		
 		/** */
+		setLeftLabel(label: string)
+		{
+			this.slideArea.setAttribute("data-left-label", label);
+		}
+		
+		/** */
+		setRightLabel(label: string)
+		{
+			this.slideArea.setAttribute("data-right-label", label);
+		}
+		
+		/** */
+		get min()
+		{
+			return this._min;
+		}
+		set min(value: number)
+		{
+			this._min = value;
+			this.updateThumb();
+		}
+		private _min = 0;	
+		
+		/** */
 		get max()
 		{
 			return this._max;
@@ -89,16 +128,28 @@ namespace App
 		private _max = 100;
 		
 		/** */
-		get progress()
+		get place()
 		{
-			return this._progress;
+			return this._place;
 		}
-		set progress(value: number)
+		set place(value: number)
 		{
-			this._progress = Math.max(0, Math.min(this.max, value));
+			this._place = Math.max(this.min, Math.min(this.max, value));
 			this.updateThumb();
 		}
-		private _progress = 50;
+		private _place = 50;
+		
+		/** */
+		get decimals()
+		{
+			return this._decimals;
+		}
+		set decimals(decimals: number)
+		{
+			this._decimals = Math.max(0, decimals);
+			this.updateThumb();
+		}
+		private _decimals = 1;
 		
 		/** */
 		private handlePointerMove(ev: PointerEvent)
@@ -110,7 +161,8 @@ namespace App
 			
 			const xPixel = Math.max(0, Math.min(this.sliderRect.width, ev.clientX - this.sliderRect.x));
 			const xPercent = xPixel / this.sliderRect.width;
-			this._progress = xPercent * this.max;
+			const range = this.max - this.min;
+			this._place = (xPercent * range) + this.min;
 			
 			this.updateThumb();
 			this.progressChangeFn();
@@ -119,9 +171,11 @@ namespace App
 		/** */
 		private updateThumb()
 		{
-			const amount = (this._progress / this._max) * 100;
-			this.thumb.style.left = amount + "%";
-			this.thumb.textContent = (Math.round(this._progress * 10) / 10).toString();
+			const range = this.max - this.min;
+			const cssLeftAmount = (this.place - this.min) / range * 100;
+			this.thumb.style.left = cssLeftAmount + "%";
+			const power = this.decimals ? 10 ** this.decimals : 1;
+			this.thumb.textContent = (Math.round(this.place * power) / power).toString();
 		}
 		
 		/** */
