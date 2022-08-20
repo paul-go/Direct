@@ -61,7 +61,8 @@ namespace Htx { { } }
 		const target: Node | null = typeof args[0] === "string" ? null : args[0];
 		const eventName: string = typeof args[0] === "string" ? args[0] : args[1];
 		const handler = typeof args[1] === "function" ? args[1] : args[2];
-		const options: AddEventListenerOptions = typeof args.at(-1) === "function" ? {} : args.at(-1);
+		const last = args.pop();
+		const options: AddEventListenerOptions = typeof last === "function" ? {} : last;
 		return new HtxEvent(target, eventName, handler, options);
 	}
 	
@@ -208,22 +209,22 @@ namespace Htx { { } }
 		
 		for (let [propertyName, propertyValue] of Object.entries(styles))
 		{
-			if (typeof propertyValue !== "string")
-				continue;
-			
-			propertyName = propertyName.replace(
-				/[A-Z]/g,
-				(char: string) => "-" + char.toLowerCase());
-			
-			// The properties of inline rules are always important, because there
-			// are no conceivable cases where they shouldn't override the inline styles.
-			cssRule.style.setProperty(propertyName, propertyValue, "important");
+			if (typeof propertyValue === "string")
+			{
+				propertyName = propertyName.replace(
+					/[A-Z]/g,
+					(char: string) => "-" + char.toLowerCase());
+				
+				// The properties of inline rules are always important, because there
+				// are no conceivable cases where they shouldn't override the inline styles.
+				cssRule.style.setProperty(propertyName, propertyValue, "important");
+			}
 		}
 		
 		return cssClass;
 	}
 	
-	let inlineRuleSheet: CSSStyleSheet | null = null;
+	let inlineRuleSheet: CSSStyleSheet | undefined;
 	let index = 0;
 	
 	/** */
@@ -645,7 +646,9 @@ namespace Htx
 	
 	/** */
 	export declare function from<E extends Element>(e: E, ...others: HTMLElement[]): (...params: Param[]) => E;
+	
+	declare var module: any;
+	if (typeof module === "object")
+		Object.assign(module.exports, { Htx });
 }
 
-if (typeof module === "object")
-	Object.assign(module.exports, { Htx });
