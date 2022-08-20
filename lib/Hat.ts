@@ -384,5 +384,5 @@ namespace Hat
 	
 	declare var module: any;
 	if (typeof module === "object")
-		Object.assign(module.exports, { Hot });
+		Object.assign(module.exports, { Hat });
 }
