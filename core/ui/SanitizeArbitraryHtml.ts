@@ -6,7 +6,7 @@ namespace App
 	 */
 	export function sanitizeArbitraryHtml(sourceHtml: string)
 	{
-		const container = Htx.div();
+		const container = Hot.div();
 		container.innerHTML = sourceHtml;
 		container.normalize();
 		
@@ -79,7 +79,7 @@ namespace App
 			selectedRange: [0, 0]
 		};
 		
-		return Htx.div(...renderProseDocument(serializedObject)).innerHTML;
+		return Hot.div(...renderProseDocument(serializedObject)).innerHTML;
 	}
 	
 	/** */

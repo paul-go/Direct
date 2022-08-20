@@ -66,7 +66,7 @@ namespace App
 		 * contentEditable div, and cutting off the input events that result in HTML
 		 * formatting.
 		 */
-		export function multi(): Htx.Param
+		export function multi(): Hot.Param
 		{
 			return e =>
 			{
@@ -89,7 +89,7 @@ namespace App
 		/**
 		 * Converts the surrounding element to a single-line plain-text editable area.
 		 */
-		export function single(options?: Partial<ISingleOptions>): Htx.Param
+		export function single(options?: Partial<ISingleOptions>): Hot.Param
 		{
 			return [
 				{
@@ -105,7 +105,7 @@ namespace App
 						e.style.display = "inline-block";
 				}),
 				
-				Htx.css(":empty:before", {
+				Hot.css(":empty:before", {
 					content: `"${options?.placeholderText || ""}"`,
 					pointerEvents: "none",
 					height: "0",
@@ -114,12 +114,12 @@ namespace App
 					zIndex: "-1",
 					...options?.placeholderCss
 				}),
-				Htx.on("keydown", ev =>
+				Hot.on("keydown", ev =>
 				{
 					if (ev.key === "Enter")
 						ev.preventDefault();
 				}),
-				Htx.on("paste", ev =>
+				Hot.on("paste", ev =>
 				{
 					ev.preventDefault();
 					
@@ -127,7 +127,7 @@ namespace App
 					if (text)
 						document.execCommand("insertText", false, text.replace(/[\r\n]/g, ""));
 				}),
-				Htx.on("beforeinput", ev =>
+				Hot.on("beforeinput", ev =>
 				{
 					const cmd = ev.inputType as any as Command;
 					if (!acceptedSingleCommands.has(cmd))
@@ -181,7 +181,7 @@ namespace App
 		export interface ISingleOptions
 		{
 			placeholderText: string;
-			placeholderCss: Htx.Style;
+			placeholderCss: Hot.Style;
 		}
 		
 		/** */

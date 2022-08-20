@@ -8,13 +8,13 @@ namespace App
 		}
 		& 
 		{
-			install(): Htx.Param;
+			install(): Hot.Param;
 			readonly value: () => string;
 			readonly element: HTMLElement;
 		};
 	
 	/** */
-	export function createFlipper<T extends Literal<string, Htx.Style>>(states: T): FlipFunctions<T>
+	export function createFlipper<T extends Literal<string, Hot.Style>>(states: T): FlipFunctions<T>
 	{
 		const flipper: Literal<string, () => void> = {};
 		let element: HTMLElement;
@@ -30,7 +30,7 @@ namespace App
 		
 		for (const [name, style] of Object.entries(states))
 		{
-			const cssClassName = Htx.css(style);
+			const cssClassName = Hot.css(style);
 			cssClasses.push(cssClassName);
 			
 			const fn = () =>

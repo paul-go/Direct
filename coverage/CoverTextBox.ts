@@ -6,7 +6,7 @@ namespace Cover
 	{
 		const textBox = new App.TextBox();
 		
-		Htx.get(textBox.root)({
+		Hot.get(textBox.root)({
 			border: "1px solid red",
 		});
 		

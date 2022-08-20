@@ -9,19 +9,19 @@ namespace App
 		/** */
 		constructor(protected record: CanvasSceneRecord)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				{
 					width: "fit-content",
 				},
 				CssClass.inheritMargin,
-				Htx.on("focusout", () =>
+				Hot.on("focusout", () =>
 				{
 					if (this.isEmpty)
 						this.hide();
 					
 					this.handleTextChanged();
 				}),
-				Htx.on("input", () => this.queueTextChanged())
+				Hot.on("input", () => this.queueTextChanged())
 			);
 			
 			this.hide();

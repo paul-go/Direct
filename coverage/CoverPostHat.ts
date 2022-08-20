@@ -63,7 +63,7 @@ namespace Cover
 	export async function coverDrag()
 	{
 		document.body.append(
-			Htx.div(
+			Hot.div(
 				"parent",
 				{
 					...App.UI.anchorTopRight(20, 20),
@@ -72,19 +72,19 @@ namespace Cover
 					backgroundColor: "rgba(0, 0, 0, 0.3)",
 				},
 				
-				Htx.on("dragenter", ev =>
+				Hot.on("dragenter", ev =>
 				{
 					ev.preventDefault();
 				},
 				{ capture: true }),
 				
-				Htx.on("dragleave", ev =>
+				Hot.on("dragleave", ev =>
 				{
 					ev.preventDefault();
 				},
 				{ capture: true }),
 				
-				Htx.div(
+				Hot.div(
 					"child",
 					{
 						width: "100px",

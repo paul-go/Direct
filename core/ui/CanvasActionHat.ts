@@ -7,12 +7,12 @@ namespace App
 		/** */
 		constructor(readonly record: CanvasSceneRecord)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				CssClass.canvasActions,
 				{
 					width: "fit-content",
 				},
-				Htx.css(":not(:empty)", { display: "inline-block" }),
+				Hot.css(":not(:empty)", { display: "inline-block" }),
 				When.connected(() => this.setupSizeObserver())
 			);
 			
@@ -101,16 +101,16 @@ namespace App
 			this.linkEditor = new LinkEditorHat();
 			this.linkEditor.setCommitFn(target => this.target = target);
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"canvas-action-container",
-				this.editableContainer = Htx.div(
+				this.editableContainer = Hot.div(
 					CssClass.canvasAction,
 					{
 						width: "100%",
 					},
-					Htx.on("focusout", () => this.actionRecord.text = this.text),
-					Htx.on("input", () => this.actionRecord.text = this.text),
-					Htx.css(":empty", { textAlign: "left" }),
+					Hot.on("focusout", () => this.actionRecord.text = this.text),
+					Hot.on("input", () => this.actionRecord.text = this.text),
+					Hot.css(":empty", { textAlign: "left" }),
 					
 					Editable.single({
 						placeholderText: "Enter Button Text...",
@@ -120,7 +120,7 @@ namespace App
 						},
 					}),
 				),
-				this.menuContainer = Htx.div(
+				this.menuContainer = Hot.div(
 					"menu-container",
 					{
 						position: "absolute",
@@ -128,7 +128,7 @@ namespace App
 						right: "-3em",
 						textShadow: "0 0 10px black, 0 0 10px black",
 					},
-					Htx.css(`.${Origin.topRight} &, .${Origin.right} &, .${Origin.bottomRight} &`, {
+					Hot.css(`.${Origin.topRight} &, .${Origin.right} &, .${Origin.bottomRight} &`, {
 						right: "auto",
 						left: "-3em",
 					}),

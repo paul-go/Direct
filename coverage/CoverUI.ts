@@ -36,19 +36,19 @@ namespace Cover
 		document.body.style.padding = "30px";
 		document.body.append(
 			slider1.root,
-			Htx.br(),
+			Hot.br(),
 			slider2.root,
-			Htx.br(),
+			Hot.br(),
 			slider3.root,
-			Htx.br(),
+			Hot.br(),
 			slider4.root,
-			Htx.br(),
+			Hot.br(),
 			slider5.root,
-			Htx.br(),
+			Hot.br(),
 			slider6.root,
-			Htx.br(),
-			Htx.a(
-				Htx.on("click", () =>
+			Hot.br(),
+			Hot.a(
+				Hot.on("click", () =>
 				{
 					slider4.max = 60;
 				}),
@@ -66,11 +66,11 @@ namespace Cover
 		let element2: HTMLElement;
 		let element3: HTMLElement;
 		
-		const root = Htx.div(
+		const root = Hot.div(
 			{
 				backgroundColor: "gray",
 			},
-			element1 = Htx.div(
+			element1 = Hot.div(
 				"e1",
 				{
 					backgroundColor: "red",
@@ -78,9 +78,9 @@ namespace Cover
 					height: "3vw",
 					margin: "20px",
 				},
-				Htx.div("inner", App.UI.anchor()),
+				Hot.div("inner", App.UI.anchor()),
 			),
-			element2 = Htx.div(
+			element2 = Hot.div(
 				"e2",
 				{
 					backgroundColor: "green",
@@ -88,9 +88,9 @@ namespace Cover
 					height: "50px",
 					margin: "20px auto",
 				},
-				Htx.div("inner", App.UI.anchor()),
+				Hot.div("inner", App.UI.anchor()),
 			),
-			element3 = Htx.div(
+			element3 = Hot.div(
 				"e3",
 				{
 					backgroundColor: "blue",
@@ -99,7 +99,7 @@ namespace Cover
 					margin: "20px",
 					marginLeft: "100px",
 				},
-				Htx.div("inner", App.UI.anchor()),
+				Hot.div("inner", App.UI.anchor()),
 			),
 		);
 		
@@ -164,10 +164,10 @@ namespace Cover
 			},
 		});
 		
-		const div = Htx.div(
+		const div = Hot.div(
 			flipper.install(),
 			{ padding: "100px" },
-			Htx.on("click", () =>
+			Hot.on("click", () =>
 			{
 				if (flipper.value === flipper.red)
 					flipper.blue();
@@ -188,7 +188,7 @@ namespace Cover
 	{
 		let nested: HTMLElement;
 		
-		const root = Htx.div(Htx.div(nested = Htx.div(
+		const root = Hot.div(Hot.div(nested = Hot.div(
 			{
 				id: "the-element",
 			},
@@ -200,7 +200,7 @@ namespace Cover
 			{
 				console.log("Disconnected (inline): " + div.id);
 			}),
-			Htx.on("click", ev =>
+			Hot.on("click", ev =>
 			{
 				(ev.target as Element).remove();
 			}),
@@ -240,11 +240,11 @@ namespace Cover
 	/** */
 	export async function coverEditable()
 	{
-		Htx.get(document.body)(
+		Hot.get(document.body)(
 			{
 				padding: "20px",
 			},
-			Htx.span(
+			Hot.span(
 				{
 					border: "1px solid red",
 					padding: "10px",

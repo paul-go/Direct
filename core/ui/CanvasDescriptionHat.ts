@@ -11,7 +11,7 @@ namespace App
 			super(record);
 			this.root.classList.add("canvas-description-hat");
 			
-			this.textArea = Htx.div(
+			this.textArea = Hot.div(
 				Editable.multi(),
 				{
 					width: "100%",
@@ -67,7 +67,7 @@ namespace App
 		}
 		set fontWeight(weight: number)
 		{
-			Htx.get(this.textArea)(UI.specificWeight(weight));
+			Hot.get(this.textArea)(UI.specificWeight(weight));
 		}
 		
 		/** */

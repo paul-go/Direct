@@ -6,7 +6,7 @@ namespace App
 		Object.assign(module.exports, { App, Query });
 		global["App"] = App;
 		global["Query"] = Query;
-		global["Htx"] = Htx;
+		global["Hot"] = Hot;
 		global["When"] = When;
 		(global as any)["Origin"] = Origin;
 	}

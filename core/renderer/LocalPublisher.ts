@@ -12,12 +12,12 @@ namespace App
 		{
 			super(post, meta);
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"local-publisher",
 				
 				this.renderTitle("Publish folder:"),
 				
-				this.saveLocationElement = Htx.div(
+				this.saveLocationElement = Hot.div(
 					{
 						padding: "10px 0",
 						margin: "20px 0",

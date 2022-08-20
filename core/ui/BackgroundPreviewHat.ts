@@ -7,16 +7,16 @@ namespace App
 		/** */
 		constructor(private readonly record: CanvasSceneRecord)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"backgrounds-container",
 				UI.anchor()
 			);
 			
 			let imagesConfigurators: HTMLElement;
 			
-			this.configuratorElement = Htx.div(
+			this.configuratorElement = Hot.div(
 				"background-manager",
-				imagesConfigurators = Htx.div(
+				imagesConfigurators = Hot.div(
 					"background-manager-images",
 					{
 						marginBottom: "20px",
@@ -86,10 +86,10 @@ namespace App
 				preview.toggleSelectionBox(visible);
 			};
 			
-			Htx.get(configurator.root, preview.root)(
+			Hot.get(configurator.root, preview.root)(
 				{ tabIndex: 0 },
-				Htx.on("focusout", () => update()),
-				Htx.on("focusin", () => update()),
+				Hot.on("focusout", () => update()),
+				Hot.on("focusin", () => update()),
 			);
 		}
 		
@@ -113,13 +113,13 @@ namespace App
 			readonly record: BackgroundRecord,
 			readonly preview: BackgroundObjectPreviewHat)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"background-configurator",
-				Htx.css(" + .background-configurator", { marginTop: "10px" }),
+				Hot.css(" + .background-configurator", { marginTop: "10px" }),
 				{
 					display: "flex",
 				},
-				Htx.div(
+				Hot.div(
 					"mini-preview",
 					{
 						width: "75px",
@@ -128,7 +128,7 @@ namespace App
 					},
 					this.renderMiniPreview(record)
 				),
-				Htx.div(
+				Hot.div(
 					{
 						flex: "1 0",
 						padding: "0 25px",
@@ -146,7 +146,7 @@ namespace App
 					{
 						padding: "20px",
 					},
-					Htx.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
+					Hot.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
 						"Move Up": () => {},
 						"Move Down": () => {},
 						"Delete": () => this.delete(),
@@ -178,7 +178,7 @@ namespace App
 		private readonly sizeSlider;
 		
 		/** */
-		private renderMiniPreview(record: BackgroundRecord): Htx.Param
+		private renderMiniPreview(record: BackgroundRecord): Hot.Param
 		{
 			const cls = Util.getMimeClass(record);
 			
@@ -209,7 +209,7 @@ namespace App
 					transitionProperty: "opacity",
 					transitionDuration: "0.2s",
 				},
-				Htx.on("pointerdown", () =>
+				Hot.on("pointerdown", () =>
 				{
 					this.setUsingCover(useCover);
 				})
@@ -268,7 +268,7 @@ namespace App
 			const blobUrl = record.media?.getBlobUrl() || "";
 			const mimeType = record.media?.type || "";
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"background-video-preview",
 				UI.anchor(),
 				RenderUtil.createVideoBackground(blobUrl, mimeType)
@@ -288,27 +288,27 @@ namespace App
 		{
 			super(record);
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"background-image-preview",
 				UI.anchor(),
-				Htx.on("pointerdown", () =>
+				Hot.on("pointerdown", () =>
 				{
 					this.imgContainer.setPointerCapture(1);
 				}),
-				Htx.on("pointerup", () =>
+				Hot.on("pointerup", () =>
 				{
 					this.imgContainer.releasePointerCapture(1);
 				}),
-				Htx.on("pointermove", ev =>
+				Hot.on("pointermove", ev =>
 				{
 					if (ev.buttons === 1)
 						this.handleImageMove(ev.movementX, ev.movementY);
 				}),
-				this.imgBoundary = Htx.div(
+				this.imgBoundary = Hot.div(
 					"image-boundary",
-					this.imgContainer = Htx.div(
+					this.imgContainer = Hot.div(
 						"image-container",
-						this.selectionBox = Htx.div(
+						this.selectionBox = Hot.div(
 							"selection-box",
 							{
 								...UI.anchor(-4),
@@ -321,14 +321,14 @@ namespace App
 							userSelect: "none",
 							cursor: "move",
 						},
-						this.img = Htx.img(
+						this.img = Hot.img(
 							{
 								src: record.media?.getBlobUrl(),
 								display: "block",
 								userSelect: "none",
 								pointerEvents: "none",
 							},
-							Htx.on("load", async () =>
+							Hot.on("load", async () =>
 							{
 								[this.imgWidth, this.imgHeight] = await RenderUtil.getDimensions(this.img.src);
 								this.updateSize();
@@ -336,7 +336,7 @@ namespace App
 						),
 					)
 				),
-				Htx.on(window, "resize", () => window.requestAnimationFrame(() =>
+				Hot.on(window, "resize", () => window.requestAnimationFrame(() =>
 				{
 					this.updateSize();
 				}))
@@ -375,24 +375,24 @@ namespace App
 			
 			if (size < 0)
 			{
-				Htx.get(this.imgBoundary)(
+				Hot.get(this.imgBoundary)(
 					UI.anchor()
 				);
 				
-				Htx.get(this.imgContainer, this.img)({
+				Hot.get(this.imgContainer, this.img)({
 					width: "100%",
 					height: "100%",
 					transform: "none",
 				});
 				
-				Htx.get(this.img)({
+				Hot.get(this.img)({
 					objectFit: "cover",
 					objectPosition: "50% 50%",
 				});
 			}
 			else
 			{
-				Htx.get(this.imgContainer)({
+				Hot.get(this.imgContainer)({
 					width: "min-content",
 					height: "min-content",
 					transform: "translateX(-50%) translateY(-50%)"
@@ -416,7 +416,7 @@ namespace App
 				
 				await UI.wait();
 				
-				Htx.get(this.imgBoundary)(
+				Hot.get(this.imgBoundary)(
 					UI.anchor(this.img.offsetHeight / 2, this.img.offsetWidth / 2),
 					{
 						width: "auto",

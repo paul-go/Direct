@@ -84,7 +84,7 @@ namespace App
 		/** */
 		renderTitle(text: string)
 		{
-			return Htx.div(
+			return Hot.div(
 				{
 					marginBottom: "1em",
 				},
@@ -110,7 +110,7 @@ namespace App
 		/** */
 		renderPublishButton()
 		{
-			return Htx.div(
+			return Hot.div(
 				{
 					marginTop: "40px",
 				},

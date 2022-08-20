@@ -15,7 +15,7 @@ namespace App
 		/** */
 		private constructor(target: string)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				UI.flexCenter,
 				UI.anchorBottomRight(20),
 				UI.spinner(),
@@ -31,15 +31,15 @@ namespace App
 				},
 				UI.backdropBlur(5),
 				this.hide,
-				When.rendered(() => Htx.get(this.root)(this.show)),
-				Htx.span(
+				When.rendered(() => Hot.get(this.root)(this.show)),
+				Hot.span(
 					{
 						opacity: "0.8",
 						margin: "0 6px 0 20px",
 					},
 					...UI.text("Publishing to: ", 22)
 				),
-				Htx.span(
+				Hot.span(
 					...UI.text(target, 22, 700)
 				),
 			);
@@ -49,13 +49,13 @@ namespace App
 		private readonly showTime = Date.now();
 		
 		/** */
-		private readonly show = Htx.css({
+		private readonly show = Hot.css({
 			opacity: "1",
 			transform: "translateY(0) scale(1)",
 		});
 		
 		/** */
-		private readonly hide = Htx.css({
+		private readonly hide = Hot.css({
 			opacity: "0",
 			transform: "translateY(10px) scale(0.8)",
 		});

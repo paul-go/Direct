@@ -9,9 +9,9 @@ namespace App
 		/** */
 		constructor()
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"text-box",
-				this.placeholderElement = Htx.div(
+				this.placeholderElement = Hot.div(
 					"text-box-placeholder",
 					UI.anchor(),
 					{
@@ -25,7 +25,7 @@ namespace App
 						padding: "inherit"
 					}
 				),
-				this.editableElement = Htx.div(
+				this.editableElement = Hot.div(
 					"text-box-editable",
 					{
 						contentEditable: "true",
@@ -280,7 +280,7 @@ namespace App
 			if (nodes.length > 0 && nodes[0] instanceof HTMLBRElement)
 				nodes.shift();
 			
-			const temp = Htx.div(...nodes);
+			const temp = Hot.div(...nodes);
 			const html = `<${tagName}>${temp.innerHTML}</${tagName}>`;
 			document.execCommand("insertHTML", false, html);
 		}

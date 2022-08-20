@@ -7,11 +7,11 @@ namespace App
 		/** */
 		constructor()
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				CssClass.blogHat,
 				UI.appMaxWidth(),
 				this.headerElement = this.renderHeader(),
-				this.postList = Htx.div(
+				this.postList = Hot.div(
 					"post-list",
 					...UI.spaceFor(() => this.renderHomePostButton()),
 					this.addPostButton = this.renderAddPostButton(),
@@ -28,7 +28,7 @@ namespace App
 		/** */
 		private renderHeader()
 		{
-			return Htx.div(
+			return Hot.div(
 				UI.clickable,
 				UI.anchorTopRight(20),
 				{
@@ -47,7 +47,7 @@ namespace App
 						height: "30px",
 					}
 				),
-				Htx.on(UI.clickEvt, () =>
+				Hot.on(UI.clickEvt, () =>
 				{
 					AppContainer.of(this).showBlogPalette();
 				})
@@ -63,7 +63,7 @@ namespace App
 				{
 					backgroundImage: "linear-gradient(45deg, #222, black)",
 				},
-				homePost.datePublished > 0 ? null : Htx.div(
+				homePost.datePublished > 0 ? null : Hot.div(
 					UI.anchorTop(15),
 					{
 						width: "max-content",
@@ -88,7 +88,7 @@ namespace App
 				{
 					backgroundColor: UI.themeColor,
 				},
-				Htx.div(
+				Hot.div(
 					UI.presentational,
 					UI.anchorCenter("max-content"),
 					Icon.plus(
@@ -98,7 +98,7 @@ namespace App
 							height: UI.vw(3.3),
 						},
 					),
-					Htx.div(
+					Hot.div(
 						...UI.text("Add Post", UI.vw(2.5), 600),
 					),
 				),
@@ -126,11 +126,11 @@ namespace App
 		{
 			const date = new Date(post.dateCreated);
 			
-			const params: Htx.Param[] = [
+			const params: Hot.Param[] = [
 				{
 					backgroundImage: "linear-gradient(45deg, #222, black)",
 				},
-				post.datePublished > 0 ? null : Htx.div(
+				post.datePublished > 0 ? null : Hot.div(
 					UI.anchorTop(15),
 					{
 						width: "max-content",
@@ -145,7 +145,7 @@ namespace App
 					new Text("Draft"),
 				),
 				new Text(date.toDateString()),
-				Htx.br(),
+				Hot.br(),
 				new Text(date.toLocaleTimeString()),
 			];
 			
@@ -154,13 +154,13 @@ namespace App
 		
 		/** */
 		private renderTile(
-			previewDisplayParams: Htx.Param[],
+			previewDisplayParams: Hot.Param[],
 			post?: PostRecord)
 		{
 			let previewTransformable: HTMLElement;
 			let previewDisplay: HTMLElement;
 			
-			return Htx.div(
+			return Hot.div(
 				"post-preview",
 				UI.clickable,
 				{
@@ -169,7 +169,7 @@ namespace App
 					width: UI.vw(33.333),
 					height: UI.vw(33.333),
 				},
-				previewTransformable = Htx.div(
+				previewTransformable = Hot.div(
 					"preview-transformable",
 					UI.anchor(),
 					{
@@ -178,7 +178,7 @@ namespace App
 						transitionProperty: "transform, height",
 						overflow: "hidden",
 					},
-					previewDisplay = Htx.div(
+					previewDisplay = Hot.div(
 						"preview-display",
 						UI.anchorTop(),
 						{
@@ -196,7 +196,7 @@ namespace App
 						},
 						...previewDisplayParams
 					),
-					Htx.on(UI.clickEvt, () =>
+					Hot.on(UI.clickEvt, () =>
 					{
 						this.animateTile(previewTransformable, previewDisplay, post);
 					})

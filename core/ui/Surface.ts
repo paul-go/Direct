@@ -9,7 +9,7 @@ namespace App
 		closeOnEscape?: boolean;
 		closeFn?: boolean | (() => void);
 		acceptFn: () => void;
-		params?: Htx.Param[];
+		params?: Hot.Param[];
 	}
 	
 	/** */
@@ -41,7 +41,7 @@ namespace App
 	{
 		constructor(private readonly options: ISurfaceOptions)
 		{
-			this.root = Htx.div(options.class || "",
+			this.root = Hot.div(options.class || "",
 				UI.fixed(-10),
 				{
 					padding: "40px",
@@ -81,7 +81,7 @@ namespace App
 			
 			if (options.closeFn)
 			{
-				const closer = Htx.div(
+				const closer = Hot.div(
 					"closer",
 					{
 						position: "fixed",
@@ -105,7 +105,7 @@ namespace App
 				When.disconnected(this.root, () => closer.remove());
 			}
 			
-			const accepter = Htx.div(
+			const accepter = Hot.div(
 				"accepter",
 				{
 					position: "fixed",

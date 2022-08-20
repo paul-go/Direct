@@ -5,9 +5,9 @@ namespace App
 	export class SegmentedButton
 	{
 		/** */
-		constructor(...params: Htx.Param[])
+		constructor(...params: Hot.Param[])
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"segmented-button",
 				{
 					display: "flex",
@@ -30,7 +30,7 @@ namespace App
 			{
 				this.titles.push(title);
 				
-				this.root.append(Htx.div(
+				this.root.append(Hot.div(
 					{
 						flex: "1 0",
 						padding: "15px 5px",
@@ -40,7 +40,7 @@ namespace App
 						textAlign: "center",
 					},
 					...UI.text(title, 22, 600),
-					Htx.on("click", () =>
+					Hot.on("click", () =>
 					{
 						this.selectedIndex = idx;
 					})

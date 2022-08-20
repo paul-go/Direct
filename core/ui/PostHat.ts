@@ -21,9 +21,9 @@ namespace App
 			
 			this.isNewRecord = !record;
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"post-hat",
-				Htx.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
+				Hot.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
 				
 				UI.anchorTop(),
 				UI.appMaxWidth(),
@@ -35,12 +35,12 @@ namespace App
 					opacity: "1",
 				},
 				minHeight,
-				this.scenesElement = Htx.div(
+				this.scenesElement = Hot.div(
 					"scenes-element",
 					minHeight,
 				),
 				
-				Htx.div(
+				Hot.div(
 					"no-scenes-message",
 					UI.anchor(),
 					UI.flexCenter,
@@ -52,14 +52,14 @@ namespace App
 					(this.noScenesBox = new HeightBox(this.renderNoScenes())).root,
 				),
 				
-				this.footerElement = Htx.div(
+				this.footerElement = Hot.div(
 					"footer",
 					{
 						padding: "0 20px",
 					},
 					UI.visibleWhenNotEmpty(this.scenesElement),
 					
-					Htx.div(
+					Hot.div(
 						{
 							width: "fit-content",
 							minWidth: "400px",
@@ -78,7 +78,7 @@ namespace App
 								padding: "20px",
 								width: "min-content",
 							},
-							Htx.on(UI.clickEvt, () =>
+							Hot.on(UI.clickEvt, () =>
 							{
 								this.tryPublish();
 							}),
@@ -91,7 +91,7 @@ namespace App
 									width: "30px",
 									height: "30px",
 								},
-								Htx.on(UI.clickEvt, ev =>
+								Hot.on(UI.clickEvt, ev =>
 								{
 									this.setupPublish();
 									ev.stopPropagation();
@@ -99,10 +99,10 @@ namespace App
 							)
 						)
 					),
-					this.publishInfoElement = Htx.div("publish-info")
+					this.publishInfoElement = Hot.div("publish-info")
 				),
 				
-				this.headerScreen = Htx.div(
+				this.headerScreen = Hot.div(
 					"header-screen",
 					{
 						position: "fixed",
@@ -115,12 +115,12 @@ namespace App
 						zIndex: "1",
 						borderBottomRightRadius: UI.borderRadius.large,
 					},
-					!TAURI && Htx.css("." + CssClass.appContainerMaxed + " &", {
+					!TAURI && Hot.css("." + CssClass.appContainerMaxed + " &", {
 						borderBottomLeftRadius: UI.borderRadius.large
 					}),
 					
 					UI.clickable,
-					Htx.on("click", () => this.handleBack()),
+					Hot.on("click", () => this.handleBack()),
 					Icon.chevron(
 						Origin.left,
 						TAURI && {
@@ -163,9 +163,9 @@ namespace App
 		/** */
 		private renderNoScenes()
 		{
-			return Htx.div(
+			return Hot.div(
 				"add-first-scene",
-				Htx.div(
+				Hot.div(
 					UI.presentational,
 					{
 						fontSize: "30px",
@@ -178,7 +178,7 @@ namespace App
 					{
 						marginTop: "10px",
 					},
-					Htx.on(UI.clickEvt, () =>
+					Hot.on(UI.clickEvt, () =>
 					{
 						const ibv = new InsertSceneHat("v");
 						ibv.setCancelCallback(() => this.noScenesBox.back());
@@ -216,7 +216,7 @@ namespace App
 		/** */
 		private toggleHeader(visible: boolean)
 		{
-			Htx.get(this.headerScreen)(
+			Hot.get(this.headerScreen)(
 				{ backgroundColor: visible ? UI.gray(128, 0.25) : "transparent" },
 				UI.backdropBlur(visible ? 8 : 0)
 			);
@@ -300,7 +300,7 @@ namespace App
 				const publisher = Publisher.getCurrentPublisher(this.record, meta);
 				const dstRoot = publisher?.getPublishDestinationRoot();
 				
-				this.publishInfoElement.replaceWith(this.publishInfoElement = Htx.div(
+				this.publishInfoElement.replaceWith(this.publishInfoElement = Hot.div(
 					"publish-info",
 					{
 						margin: "40px auto",
@@ -311,7 +311,7 @@ namespace App
 						verticalAlign: "top",
 					},
 					
-					dstRoot && Htx.span(
+					dstRoot && Hot.span(
 						{
 							paddingRight: "10px",
 							opacity: "0.66",
@@ -321,7 +321,7 @@ namespace App
 						...UI.text("Publishes to:", 24, 600)
 					),
 					
-					dstRoot && Htx.span(
+					dstRoot && Hot.span(
 						{
 							display: "inline-block",
 							maxWidth: (ConstN.appMaxWidth - 250) + "px",
@@ -351,7 +351,7 @@ namespace App
 		/** */
 		private renderSlugEditor()
 		{
-			return this.slugInput = Htx.span(e => [
+			return this.slugInput = Hot.span(e => [
 				Editable.single({
 					placeholderText: "...Enter a slug...",
 					placeholderCss: {
@@ -362,7 +362,7 @@ namespace App
 					color: "white",
 					textAlign: "left",
 				},
-				Htx.on("input", () =>
+				Hot.on("input", () =>
 				{
 					const slug = e.textContent = (e.textContent || "").toLocaleLowerCase();
 					const valid = Util.isSlugValid(slug);
@@ -377,5 +377,5 @@ namespace App
 		private slugInput: HTMLElement | null = null;
 	}
 	
-	const minHeight: Htx.Param = { minHeight: "85vh" };
+	const minHeight: Hot.Param = { minHeight: "85vh" };
 }

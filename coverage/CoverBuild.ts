@@ -289,7 +289,7 @@ namespace Cover
 		
 		if (typeof document !== "undefined")
 		{
-			const logDiv = Htx.div(
+			const logDiv = Hot.div(
 				{
 					padding: "10px",
 					margin: "10px",

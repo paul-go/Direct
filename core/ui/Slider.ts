@@ -5,45 +5,45 @@ namespace App
 	export class Slider
 	{
 		/** */
-		constructor(...params: Htx.Param[])
+		constructor(...params: Hot.Param[])
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				{
 					height: (thumbSize + thumbPadding * 2) + "px",
 					padding: thumbPadding + "px",
 					boxShadow: "inset 0 0 0 5px " + UI.white(0.15),
 					borderRadius: "1000px",
 				},
-				Htx.on("pointerdown", ev => this.startDrag(ev)),
-				Htx.on("pointerup", ev => this.endDrag(ev)),
-				Htx.on("pointercancel", ev => this.endDrag(ev)),
-				Htx.on("pointermove", ev =>
+				Hot.on("pointerdown", ev => this.startDrag(ev)),
+				Hot.on("pointerup", ev => this.endDrag(ev)),
+				Hot.on("pointercancel", ev => this.endDrag(ev)),
+				Hot.on("pointermove", ev =>
 				{
 					this.handlePointerMove(ev);
 				}),
-				this.slideArea = Htx.div(
+				this.slideArea = Hot.div(
 					"slide-area",
 					UI.anchor(),
 					{
 						left: (thumbSize / 2 + thumbPadding) + "px",
 						right: (thumbSize / 2 + thumbPadding) + "px",
 					},
-					Htx.css("&:before, &:after", {
+					Hot.css("&:before, &:after", {
 						margin: "auto",
 						fontWeight: "600",
 						fontSize: "1.25em",
 						opacity: "0.33",
 						height: "fit-content",
 					}),
-					Htx.css(":before", {
+					Hot.css(":before", {
 						content: `attr(data-left-label)`,
 						...UI.anchorLeft(),
 					}),
-					Htx.css(":after", {
+					Hot.css(":after", {
 						content: `attr(data-right-label)`,
 						...UI.anchorRight(),
 					}),
-					this.thumb = Htx.div(
+					this.thumb = Hot.div(
 						"thumb",
 						UI.clickable,
 						UI.flexCenter,

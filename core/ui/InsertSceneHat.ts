@@ -30,7 +30,7 @@ namespace App
 					})
 				);
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"insert-scene-hat",
 				{
 					display: orientation === "v" ? "block" : "flex",
@@ -38,7 +38,7 @@ namespace App
 					maxWidth: "650px",
 					width: orientation === "v" ? "500px" : "auto"
 				},
-				Htx.on(document.body, "keydown", ev =>
+				Hot.on(document.body, "keydown", ev =>
 				{
 					if (ev.key === "Escape")
 					{
@@ -46,7 +46,7 @@ namespace App
 						this.cancelCallback?.();
 					}
 				}),
-				Htx.on(document.body, "click", ev =>
+				Hot.on(document.body, "click", ev =>
 				{
 					if (!Query.ancestors(ev.target).includes(this.root))
 						this.cancelCallback?.();

@@ -26,20 +26,20 @@ namespace App
 		/** */
 		constructor(readonly record: SceneRecord)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"scene-hat",
 				{
 					backgroundColor: UI.darkGrayBackground
 				},
 				
 				// Hide the transition configurator for the first scene hat
-				Htx.css(":first-of-type .transition-configurator", { visibility: "hidden" }),
+				Hot.css(":first-of-type .transition-configurator", { visibility: "hidden" }),
 				
 				// 
-				Htx.css(":not(:last-of-type) .footer-box", { display: "none" }),
+				Hot.css(":not(:last-of-type) .footer-box", { display: "none" }),
 				
 				// Controls header
-				Htx.div(
+				Hot.div(
 					"scene-header",
 					(this.headerBox = new HeightBox(this.renderDefaultHeader())).root,
 					Drop.here({
@@ -50,7 +50,7 @@ namespace App
 				),
 				
 				//
-				this.sceneContainer = Htx.div(
+				this.sceneContainer = Hot.div(
 					"scene-container",
 					{
 						overflow: "hidden",
@@ -58,20 +58,20 @@ namespace App
 						backgroundColor: "black",
 					},
 					
-					Htx.css("." + CssClass.appContainerMaxed + " &", {
+					Hot.css("." + CssClass.appContainerMaxed + " &", {
 						borderRadius: UI.borderRadius.large,
 					})
 				),
 				
 				//
-				Htx.div(
+				Hot.div(
 					"config-buttons-footer",
 					{
 						backgroundColor: UI.darkGrayBackground,
 						position: "sticky",
 						bottom: "0",
 					},
-					this.configuratorButtonsContainer = Htx.div(
+					this.configuratorButtonsContainer = Hot.div(
 						"config-buttons-width",
 						{
 							width: "max-content",
@@ -93,7 +93,7 @@ namespace App
 					{
 						padding: "0 30px 30px"
 					},
-					Htx.on(document.body, "keydown", ev =>
+					Hot.on(document.body, "keydown", ev =>
 					{
 						ev.key === "Escape" && this.deselectSceneButtons();
 					})
@@ -108,8 +108,8 @@ namespace App
 			// Populate this with data in the future.
 			this.transition = Transitions.slide;
 			
-			Htx.get(this.moreButton.root)(
-				Htx.on(UI.clickEvt, ev =>
+			Hot.get(this.moreButton.root)(
+				Hot.on(UI.clickEvt, ev =>
 				{
 					return UI.springMenu(ev.target, {
 						...(this.root.previousElementSibling ? { "Move Up": () => this.moveSceneUp() } : {}),
@@ -133,7 +133,7 @@ namespace App
 		/** */
 		private renderDefaultHeader(): HTMLElement
 		{
-			return Htx.div(
+			return Hot.div(
 				"default-header",
 				{
 					display: "flex",
@@ -141,26 +141,26 @@ namespace App
 					paddingLeft: headerPadding,
 					paddingRight: headerPadding,
 				},
-				Htx.div(
+				Hot.div(
 					"transition-configurator",
 					{
 						display: "flex",
 						alignItems: "stretch",
 						flex: "1 0",
 					},
-					this.transitionAnchor = Htx.a(
+					this.transitionAnchor = Hot.a(
 						UI.clickable,
 						{
 							fontSize: "25px",
 						},
 						UI.flexVCenter,
-						Htx.on(UI.clickEvt, () => this.handleTransition())
+						Hot.on(UI.clickEvt, () => this.handleTransition())
 					),
 				),
-				Htx.div(
+				Hot.div(
 					UI.flexVCenter,
 					Icon.plus(
-						Htx.on(UI.clickEvt, () => this.renderInsertScene(this.headerBox, "beforebegin")),
+						Hot.on(UI.clickEvt, () => this.renderInsertScene(this.headerBox, "beforebegin")),
 					),
 				)
 			);
@@ -169,7 +169,7 @@ namespace App
 		/** */
 		private renderDefaultFooter(): HTMLElement
 		{
-			return Htx.div(
+			return Hot.div(
 				"insert-footer",
 				{
 					width: "fit-content",
@@ -178,10 +178,10 @@ namespace App
 					paddingLeft: "0",
 				},
 				Icon.plus(
-					Htx.on(UI.clickEvt, () => 
+					Hot.on(UI.clickEvt, () => 
 					{
 						const hat = this.renderInsertScene(this.footerBox, "afterend");
-						Htx.get(hat.root)({ marginBottom: "100px" });
+						Hot.get(hat.root)({ marginBottom: "100px" });
 					}),
 				)
 			);
@@ -211,9 +211,9 @@ namespace App
 		}
 		
 		/** */
-		protected createToolsHeader(...params: Htx.Param[])
+		protected createToolsHeader(...params: Hot.Param[])
 		{
-			return Htx.div(
+			return Hot.div(
 				"tool-buttons",
 				UI.anchorTop(),
 				UI.flexCenter,

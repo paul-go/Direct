@@ -9,7 +9,7 @@ namespace App
 			...createEditorCss(),
 		].join("");
 		
-		document.head.append(Htx.style(new Text(css)));
+		document.head.append(Hot.style(new Text(css)));
 	}
 	
 	/** */

@@ -11,11 +11,11 @@ namespace App
 			
 			this.trixEditorElement = this.createTrixEditor();
 			
-			Htx.get(this.sceneContainer)(
+			Hot.get(this.sceneContainer)(
 				{
 					height: "auto",
 				},
-				Htx.div(
+				Hot.div(
 					CssClass.proseScene,
 					{
 						display: "flex",
@@ -23,7 +23,7 @@ namespace App
 						minHeight: UI.vsize(100),
 					},
 					e => void new ForegroundMixin(e),
-					Htx.div(
+					Hot.div(
 						CssClass.proseSceneForeground,
 						{
 							display: "flex",
@@ -35,7 +35,7 @@ namespace App
 						},
 						UI.keyable,
 						
-						Htx.get(this.trixEditorElement)({
+						Hot.get(this.trixEditorElement)({
 							flex: "1 0",
 							outline: "0",
 						}),
@@ -96,8 +96,8 @@ namespace App
 			
 			// Setup the placeholder
 			this.trixEditorElement.setAttribute("placeholder", "Write something inspiring here...");
-			Htx.get(this.trixEditorElement)(
-				Htx.css(":before", {
+			Hot.get(this.trixEditorElement)(
+				Hot.css(":before", {
 					fontSize: "30px"
 				})
 			);
@@ -119,9 +119,9 @@ namespace App
 			
 			this.colorConfigurator = new ColorSelectorHat(this.record);
 			
-			Htx.get(this.colorConfigurator.root)(
+			Hot.get(this.colorConfigurator.root)(
 				{ tabIndex: 0 },
-				Htx.on("focusout", () => setTimeout(() =>
+				Hot.on("focusout", () => setTimeout(() =>
 				{
 					this.maybeHideColorConfigurator();
 				}))
@@ -190,7 +190,7 @@ namespace App
 		{
 			const trixEditor = document.createElement("trix-editor") as HTMLTrixElement;
 			
-			const tempElement = Htx.div(
+			const tempElement = Hot.div(
 				"temp-element",
 				UI.anchor(),
 				{ left: "-99999px", pointerEvents: "none", opacity: "0" },

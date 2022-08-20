@@ -14,7 +14,7 @@ namespace App
 			this.descriptionHat = new CanvasDescriptionHat(record);
 			this.actionManager = new CanvasActionSetHat(record);
 			
-			Htx.get(this.sceneContainer)(
+			Hot.get(this.sceneContainer)(
 				Drop.here({
 					accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
 					dropFn: (files, x, y) => this.handleMediaDrop(files, x, y),
@@ -24,15 +24,15 @@ namespace App
 				
 				(this.backgroundPreview = new BackgroundPreviewHat(this.record)).root,
 				
-				this.foregroundPreview = Htx.div(
+				this.foregroundPreview = Hot.div(
 					e => void new ForegroundMixin(e),
 					CssClass.canvasSceneForeground,
-					this.islandElement = Htx.div(
+					this.islandElement = Hot.div(
 						CssClass.canvasSceneIsland,
 						this.record.origin,
-						this.contentImageContainer = Htx.div(
+						this.contentImageContainer = Hot.div(
 							"content-image-container",
-							Htx.on("click", () =>
+							Hot.on("click", () =>
 							{
 								this.sizeButton.selected = true;
 								this.handleSelectionChange();
@@ -155,7 +155,7 @@ namespace App
 			}
 			else return new Promise<void>(resolve =>
 			{
-				const input = Htx.input(
+				const input = Hot.input(
 					{
 						type: "file",
 						visibility: "hidden",
@@ -163,7 +163,7 @@ namespace App
 						multiple: false,
 						accept: [MimeType.gif, MimeType.jpg, MimeType.png, MimeType.svg].join()
 					},
-					Htx.on("change", async () =>
+					Hot.on("change", async () =>
 					{
 						input.remove();
 						
@@ -212,7 +212,7 @@ namespace App
 			const [width, height] = await RenderUtil.getDimensions(src);
 			const existingContentImage = this.contentImage;
 			
-			this.contentImage = Htx.img(CssClass.canvasSceneContentImage, { src });
+			this.contentImage = Hot.img(CssClass.canvasSceneContentImage, { src });
 			this.contentImage.style.aspectRatio = width + " / " + height;
 			
 			if (existingContentImage)

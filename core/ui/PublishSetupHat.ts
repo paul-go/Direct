@@ -32,7 +32,7 @@ namespace App
 				{
 					overflow: "hidden",
 				},
-				this.windowElement = Htx.div(
+				this.windowElement = Hot.div(
 					"window-element",
 					UI.anchorBottom(40),
 					{
@@ -61,7 +61,7 @@ namespace App
 						});
 					}),
 					
-					this.contents = Htx.div(
+					this.contents = Hot.div(
 						"contents",
 						{
 							minWidth: "400px",
@@ -70,13 +70,13 @@ namespace App
 						{
 							const publishers = Publisher.getPublishers(record, app.meta);
 							
-							return Htx.div(
+							return Hot.div(
 								{ textAlign: "center" },
-								Htx.div(
+								Hot.div(
 									{ marginBottom: "20px" },
 									...UI.text("Where?", 50, 800),
 								),
-								Htx.div(
+								Hot.div(
 									...publishers.map(pub => this.renderOption(pub))
 								)
 							);
@@ -100,7 +100,7 @@ namespace App
 		/** */
 		private renderOption(publisher: Publisher)
 		{
-			return Htx.a(
+			return Hot.a(
 				{
 					display: "inline-block",
 					padding: "20px",

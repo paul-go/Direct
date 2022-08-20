@@ -6,7 +6,7 @@ namespace App
 	{
 		constructor()
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"link-editor-hat",
 				UI.anchorCenter("fit-content"),
 				UI.toolButtonTheme,
@@ -15,24 +15,24 @@ namespace App
 					display: "flex",
 					tabIndex: 0
 				},
-				Htx.css(" > *", {
+				Hot.css(" > *", {
 					padding: "10px 20px",
 				}),
 				
-				Htx.on("focusout", ev =>
+				Hot.on("focusout", ev =>
 				{
 					this.finalize(ev);
 				},
 				{ capture: true }),
 				
-				Htx.on("keydown", ev =>
+				Hot.on("keydown", ev =>
 				{
 					if (ev.key === "Enter")
 						this.finalize(ev);
 					
 				}, { capture: true }),
 				
-				this.protocolElement = Htx.div(
+				this.protocolElement = Hot.div(
 					"protocol-picker",
 					{
 						borderTopLeftRadius: "inherit",

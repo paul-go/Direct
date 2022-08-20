@@ -13,7 +13,7 @@ namespace App
 		/** */
 		constructor(readonly record: SceneRecord)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"color-configurator",
 				{
 					display: "flex",
@@ -50,7 +50,7 @@ namespace App
 			const darkColorString = UI.color(colorPair[0]);
 			const lightColorString = UI.color(colorPair[1]);
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				{
 					width: "75px",
 					height: "75px",
@@ -64,7 +64,7 @@ namespace App
 						${lightColorString} 100%)`
 				},
 				UI.clickable,
-				Htx.on(UI.clickEvt, () => this.select()),
+				Hot.on(UI.clickEvt, () => this.select()),
 				When.connected(() =>
 				{
 					if (record.colorPair.join() === this.colorPair.join())

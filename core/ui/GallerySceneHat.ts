@@ -9,9 +9,9 @@ namespace App
 		{
 			super(record);
 			
-			Htx.get(this.sceneContainer)(
+			Hot.get(this.sceneContainer)(
 				
-				this.galleryContainer = Htx.div(
+				this.galleryContainer = Hot.div(
 					"gallery-container",
 					{
 						height: "100%",
@@ -21,7 +21,7 @@ namespace App
 						whiteSpace: "nowrap",
 						borderRadius: "inherit",
 					},
-					Htx.on("scroll", () => this.updateButtons()),
+					Hot.on("scroll", () => this.updateButtons()),
 					
 					...this.record.frames.map(f => new FrameHat(f).root)
 				),
@@ -37,13 +37,13 @@ namespace App
 					],
 				}),
 				
-				this.hiddenInput = Htx.input(
+				this.hiddenInput = Hot.input(
 					{
 						type: "file",
 						position: "absolute",
 						visibility: "hidden",
 					},
-					Htx.on("change", async () =>
+					Hot.on("change", async () =>
 					{
 						const files = await FileLike.fromFiles(this.hiddenInput.files);
 						if (files.length)
@@ -51,7 +51,7 @@ namespace App
 					}),
 				),
 				
-				Htx.div(
+				Hot.div(
 					"cue",
 					UI.anchor(),
 					UI.flexCenter,
@@ -61,7 +61,7 @@ namespace App
 					{ pointerEvents: "none" },
 				),
 				
-				Htx.on("click", () => this.hiddenInput.click()),
+				Hot.on("click", () => this.hiddenInput.click()),
 			);
 			
 			this.setSceneButtons(
@@ -168,7 +168,7 @@ namespace App
 			
 			if (isImage)
 			{
-				this.mediaElement = Htx.img({
+				this.mediaElement = Hot.img({
 					src: media.getBlobUrl()
 				});
 				
@@ -177,7 +177,7 @@ namespace App
 			}
 			else
 			{
-				this.mediaElement = Htx.video({
+				this.mediaElement = Hot.video({
 					src: media.getBlobUrl()
 				});
 				
@@ -191,7 +191,7 @@ namespace App
 			s.height = "100%";
 			s.objectFit = "contain";
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				{
 					scrollSnapAlign: "start",
 					display: "inline-block",

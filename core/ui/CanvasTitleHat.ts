@@ -71,7 +71,7 @@ namespace App
 		/** */
 		constructor(defaultText: string = "")
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				{
 					width: "fit-content",
 					minWidth: "0.1em",
@@ -80,7 +80,7 @@ namespace App
 					marginLeft: "inherit",
 					marginRight: "inherit",
 				},
-				Htx.on("keydown", ev =>
+				Hot.on("keydown", ev =>
 				{
 					const charPos = window.getSelection()?.focusOffset || 0;
 					const charCount = this.text.length;
@@ -224,7 +224,7 @@ namespace App
 		}
 		set weight(weight: number)
 		{
-			Htx.get(this.root)(UI.specificWeight(weight));
+			Hot.get(this.root)(UI.specificWeight(weight));
 			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		

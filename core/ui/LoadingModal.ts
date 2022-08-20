@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(container: HTMLElement)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"loading-modal",
 				UI.anchor(),
 				UI.flexCenter,
@@ -37,7 +37,7 @@ namespace App
 		/** */
 		private hide()
 		{
-			Htx.get(this.root)(
+			Hot.get(this.root)(
 				{
 					opacity: "0",
 					// It's necessary to have a background color, 
@@ -51,7 +51,7 @@ namespace App
 		/** */
 		private show()
 		{
-			Htx.get(this.root)(
+			Hot.get(this.root)(
 				UI.backdropBlur(7),
 				{ opacity: "1" }
 			);

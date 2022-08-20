@@ -25,7 +25,7 @@ namespace App
 					s.flexDirection = "column";
 				}
 				
-				const heading = Htx.h2("", messageText);
+				const heading = Hot.h2("", messageText);
 				{
 					const s = heading.style;
 					s.fontSize = "5vmin";
@@ -76,7 +76,7 @@ namespace App
 		{
 			hideLoadingOverlay();
 			
-			const overlayDiv = Htx.div({
+			const overlayDiv = Hot.div({
 				position: "fixed",
 				top: "0",
 				left: "0",
@@ -106,7 +106,7 @@ namespace App
 				{ once: true });
 			}
 			
-			overlayDiv.append(Htx.div(
+			overlayDiv.append(Hot.div(
 				{
 					position: "absolute",
 					top: "1vmin",
@@ -121,12 +121,12 @@ namespace App
 						linear-gradient(white, white) no-repeat 0 50% / 100% 1px
 					`
 				},
-				Htx.on(UI.clickEvt, () => closeFn())
+				Hot.on(UI.clickEvt, () => closeFn())
 			));
 			
 			if (typeof message === "string")
 			{
-				const messageDiv = Htx.div(
+				const messageDiv = Hot.div(
 					{
 						fontSize: "4wmin"
 					}
@@ -148,7 +148,7 @@ namespace App
 		{
 			if (loadingOverlay === null)
 			{
-				const lo = loadingOverlay = Htx.div("ui-loading");
+				const lo = loadingOverlay = Hot.div("ui-loading");
 				document.body.append(lo);
 				setTimeout(() => lo.style.opacity = "1");
 			}

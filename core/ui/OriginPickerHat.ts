@@ -5,9 +5,9 @@ namespace App
 	export class OriginPickerHat
 	{
 		/** */
-		constructor(...params: Htx.Param[])
+		constructor(...params: Hot.Param[])
 		{
-			const renderSlice = (origin: Origin) => Htx.div(
+			const renderSlice = (origin: Origin) => Hot.div(
 				"origin-picker",
 				UI.clickable,
 				{
@@ -16,19 +16,19 @@ namespace App
 					display: "inline-block",
 					borderRadius: UI.borderRadius.default,
 				},
-				Htx.css(":hover", { backgroundColor: UI.white(0.1) }),
-				Htx.on(UI.clickEvt, () =>
+				Hot.css(":hover", { backgroundColor: UI.white(0.1) }),
+				Hot.on(UI.clickEvt, () =>
 				{
 					this.selectedFn(origin);
 					UI.removeWithFade(this.root);
 				}),
-				Htx.div(
+				Hot.div(
 					UI.anchorCenter("30px"),
 					Icon.chevron(origin),
 				)
 			);
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				UI.anchor(),
 				renderSlice(Origin.topLeft),
 				renderSlice(Origin.top),

@@ -69,7 +69,7 @@ namespace App
 		};
 		
 		/** */
-		export const toolButtonTheme: Htx.Style = {
+		export const toolButtonTheme: Hot.Style = {
 			backgroundColor: UI.gray(40, 0.5),
 			backdropFilter: "blur(5px)",
 			borderRadius: UI.borderRadius.large,
@@ -77,7 +77,7 @@ namespace App
 		};
 		
 		/** */
-		export const clickable: Htx.Style = {
+		export const clickable: Hot.Style = {
 			userSelect: "none",
 			webkitUserSelect: "none",
 			cursor: "pointer"
@@ -90,14 +90,14 @@ namespace App
 		{
 			return [
 				UI.clickable,
-				Htx.on("click", handlerFn)
+				Hot.on("click", handlerFn)
 			];
 		}
 		
 		/** */
-		export function clickLabel(...params: Htx.Param[])
+		export function clickLabel(...params: Hot.Param[])
 		{
-			return Htx.div(
+			return Hot.div(
 				{
 					display: "flex",
 					alignItems: "center",
@@ -125,7 +125,7 @@ namespace App
 		}
 		
 		/** */
-		export function toolButton(...params: Htx.Param[])
+		export function toolButton(...params: Hot.Param[])
 		{
 			return UI.clickLabel(
 				UI.toolButtonTheme,
@@ -141,7 +141,7 @@ namespace App
 		 */
 		export function createPublishButton(label: string, clickFn: () => void)
 		{
-			toolButtonCls ||= Htx.css(":not(:first-child)", { marginTop: "10px" });
+			toolButtonCls ||= Hot.css(":not(:first-child)", { marginTop: "10px" });
 			
 			return UI.toolButton(
 				toolButtonCls,
@@ -149,19 +149,19 @@ namespace App
 				{
 					backgroundColor: UI.themeColor,
 				},
-				Htx.on(UI.clickEvt, clickFn));
+				Hot.on(UI.clickEvt, clickFn));
 		}
 		let toolButtonCls = "";
 		
 		/** */
-		export const presentational: Htx.Style = {
+		export const presentational: Hot.Style = {
 			pointerEvents: "none",
 			cursor: "default",
 			userSelect: "none",
 		};
 		
 		/** */
-		export const keyable: Htx.Param = {
+		export const keyable: Hot.Param = {
 			tabIndex: 0,
 			outline: "0",
 		};
@@ -186,7 +186,7 @@ namespace App
 		/** */
 		export function fixed(amount = 0)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "fixed",
 				top: amount + "px",
 				right: amount + "px",
@@ -196,11 +196,11 @@ namespace App
 		}
 		
 		/** */
-		export function anchor(): Htx.Style;
-		export function anchor(all: number): Htx.Style;
-		export function anchor(v: number, h: number): Htx.Style;
-		export function anchor(top: number, h: number, bottom: number): Htx.Style;
-		export function anchor(top: number, right: number, bottom: number, left: number): Htx.Style;
+		export function anchor(): Hot.Style;
+		export function anchor(all: number): Hot.Style;
+		export function anchor(v: number, h: number): Hot.Style;
+		export function anchor(top: number, h: number, bottom: number): Hot.Style;
+		export function anchor(top: number, right: number, bottom: number, left: number): Hot.Style;
 		export function anchor(...args: number[])
 		{
 			let top = 0;
@@ -231,7 +231,7 @@ namespace App
 				left = args[3];
 			}
 			
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				top: top + "px",
 				right: right + "px",
@@ -243,7 +243,7 @@ namespace App
 		/** */
 		export function anchorTop(amount = 0)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				top: amount + "px",
 				left: amount + "px",
@@ -254,7 +254,7 @@ namespace App
 		/** */
 		export function anchorBottom(amount = 0)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				bottom: amount + "px",
 				left: amount + "px",
@@ -265,7 +265,7 @@ namespace App
 		/** */
 		export function anchorLeft(amount = 0)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				top: amount + "px",
 				left: amount + "px",
@@ -276,7 +276,7 @@ namespace App
 		/** */
 		export function anchorRight(amount = 0)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				top: amount + "px",
 				right: amount + "px",
@@ -287,7 +287,7 @@ namespace App
 		/** */
 		export function anchorTopLeft(x = 0, y = x)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				top: y + "px",
 				left: x + "px",
@@ -297,7 +297,7 @@ namespace App
 		/** */
 		export function anchorTopRight(x = 0, y = x)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				top: y + "px",
 				right: x + "px",
@@ -307,7 +307,7 @@ namespace App
 		/** */
 		export function anchorBottomLeft(x = 0, y = x)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				bottom: y + "px",
 				left: x + "px",
@@ -317,7 +317,7 @@ namespace App
 		/** */
 		export function anchorBottomRight(x = 0, y = x)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				position: "absolute",
 				bottom: y + "px",
 				right: x + "px",
@@ -329,7 +329,7 @@ namespace App
 			width: string | number = "fit-content",
 			height: string | number = width)
 		{
-			return <Htx.Style>{
+			return <Hot.Style>{
 				...anchor(),
 				margin: "auto",
 				width: typeof width === "number" ? width + "px" : width,
@@ -338,13 +338,13 @@ namespace App
 		}
 		
 		/** */
-		export const flexColumn: Htx.Style = {
+		export const flexColumn: Hot.Style = {
 			display: "flex",
 			flexDirection: "column",
 		};
 		
 		/** */
-		export const flexCenter: Htx.Style = {
+		export const flexCenter: Hot.Style = {
 			display: "flex",
 			textAlign: "center",
 			alignContent: "center",
@@ -353,7 +353,7 @@ namespace App
 		} as const;
 		
 		/** */
-		export const flexVCenter: Htx.Style = {
+		export const flexVCenter: Hot.Style = {
 			display: "flex",
 			alignItems: "center",
 		} as const;
@@ -391,7 +391,7 @@ namespace App
 		}
 		
 		/** */
-		export function appMaxWidth(): Htx.Style
+		export function appMaxWidth(): Hot.Style
 		{
 			return TAURI ? {} : {
 				maxWidth: ConstN.appMaxWidth + "px",
@@ -400,7 +400,7 @@ namespace App
 		}
 		
 		/** */
-		export function specificWeight(weight: number): Htx.Style
+		export function specificWeight(weight: number): Hot.Style
 		{
 			return {
 				fontWeight: weight.toString(),
@@ -409,7 +409,7 @@ namespace App
 		}
 		
 		/** */
-		export function backdropBlur(pixels = 5): Htx.Style
+		export function backdropBlur(pixels = 5): Hot.Style
 		{
 			const value = pixels > 0 ? `blur(${pixels}px)` : "none";
 			return {
@@ -419,7 +419,7 @@ namespace App
 		}
 		
 		/** */
-		export function text(label: string = "", size: number | string = 20, weight?: number): Htx.Param[]
+		export function text(label: string = "", size: number | string = 20, weight?: number): Hot.Param[]
 		{
 			return [
 				{
@@ -444,7 +444,7 @@ namespace App
 		 * of the specified function, when the attached element is connected
 		 * to the DOM.
 		 */
-		export function spaceFor(fn: () => HTMLElement | void): Htx.Param[]
+		export function spaceFor(fn: () => HTMLElement | void): Hot.Param[]
 		{
 			const comment = document.createComment("pending");
 			return [
@@ -489,17 +489,17 @@ namespace App
 		/** */
 		export function visibleWhenAlone()
 		{
-			return Htx.css(":not(:only-child)", { display: "none" });
+			return Hot.css(":not(:only-child)", { display: "none" });
 		}
 		
 		/** */
 		export function visibleWhenNotAlone()
 		{
-			return Htx.css(":only-child", { display: "none" });
+			return Hot.css(":only-child", { display: "none" });
 		}
 		
 		/** */
-		export function visibleWhenEmpty(watchTarget: HTMLElement): Htx.Param
+		export function visibleWhenEmpty(watchTarget: HTMLElement): Hot.Param
 		{
 			return () => [
 				watchTarget.children.length === 0 ? "" : CssClass.hide,
@@ -508,7 +508,7 @@ namespace App
 		}
 		
 		/** */
-		export function visibleWhenNotEmpty(watchTarget: HTMLElement): Htx.Param
+		export function visibleWhenNotEmpty(watchTarget: HTMLElement): Hot.Param
 		{
 			return () => [
 				watchTarget.children.length === 0 ? CssClass.hide : "",
@@ -560,14 +560,14 @@ namespace App
 		}
 		
 		/** */
-		export function enter(pressedFn?: (e: HTMLElement) => void): Htx.Param[]
+		export function enter(pressedFn?: (e: HTMLElement) => void): Hot.Param[]
 		{
 			return [
 				{
 					tabIndex: 0,
 					outline: "0",
 				},
-				e => Htx.on("keydown", async ev =>
+				e => Hot.on("keydown", async ev =>
 				{
 					if (ev.key === "Enter")
 					{
@@ -582,14 +582,14 @@ namespace App
 		
 		
 		/** */
-		export function escape(pressedFn?: (e: HTMLElement) => void): Htx.Param[]
+		export function escape(pressedFn?: (e: HTMLElement) => void): Hot.Param[]
 		{
 			return [
 				{
 					tabIndex: 0,
 					outline: "0",
 				},
-				e => Htx.on("keydown", async ev =>
+				e => Hot.on("keydown", async ev =>
 				{
 					if (ev.key === "Escape")
 					{
@@ -604,7 +604,7 @@ namespace App
 		
 		
 		/** */
-		export function removeOnEscape(removedFn?: () => void): Htx.Param[]
+		export function removeOnEscape(removedFn?: () => void): Hot.Param[]
 		{
 			return UI.escape(async e =>
 			{
@@ -616,7 +616,7 @@ namespace App
 		/** */
 		export function removeOnClick(removedFn?: () => void)
 		{
-			return Htx.on(UI.clickEvt, async ev =>
+			return Hot.on(UI.clickEvt, async ev =>
 			{
 				if (ev.target === ev.currentTarget)
 				{
@@ -684,9 +684,9 @@ namespace App
 		}
 		
 		/** */
-		export function actionButton(style: "filled" | "outline", ...params: Htx.Param[])
+		export function actionButton(style: "filled" | "outline", ...params: Hot.Param[])
 		{
-			return Htx.div(
+			return Hot.div(
 				UI.clickable,
 				{
 					margin: "auto",
@@ -710,7 +710,7 @@ namespace App
 		}
 		
 		/** */
-		export function actionButtonFooter(text: string, ...params: Htx.Param[])
+		export function actionButtonFooter(text: string, ...params: Hot.Param[])
 		{
 			return UI.actionButton(
 				"filled", 
@@ -735,19 +735,19 @@ namespace App
 					previouslyFocused.focus();
 			}
 			
-			const overlay = Htx.div(
+			const overlay = Hot.div(
 				UI.fixed(),
 				{
 					zIndex: "0",
 				},
-				Htx.on(document.body, "pointerdown", ev =>
+				Hot.on(document.body, "pointerdown", ev =>
 				{
 					ev.preventDefault();
 					
 					if (ev.target === overlay)
 						cancel();
 				}),
-				Htx.div(
+				Hot.div(
 					{
 						tabIndex: 0,
 						position: "absolute",
@@ -758,7 +758,7 @@ namespace App
 						overflow: "hidden",
 						visibility: "hidden",
 					},
-					Htx.on("keydown", ev =>
+					Hot.on("keydown", ev =>
 					{
 						if (ev.key === "Escape")
 						{
@@ -770,7 +770,7 @@ namespace App
 					
 					...Object.entries(menu).map(([label, callbackFn]) =>
 					{
-						return Htx.div(
+						return Hot.div(
 							{
 								borderBottom: "1px solid black",
 								padding: "20px",
@@ -778,9 +778,9 @@ namespace App
 								fontSize: "22px",
 								fontWeight: "600",
 							},
-							Htx.css(":hover", { backgroundColor: "#007cd3" }),
+							Hot.css(":hover", { backgroundColor: "#007cd3" }),
 							UI.clickable,
-							Htx.on("click", ev =>
+							Hot.on("click", ev =>
 							{
 								ev.preventDefault();
 								cancel();
@@ -829,10 +829,10 @@ namespace App
 		}
 		
 		/** */
-		export function spinner(color = "white", ...params: Htx.Param[])
+		export function spinner(color = "white", ...params: Hot.Param[])
 		{
-			return Htx.div(
-				Htx.animation("spin", {
+			return Hot.div(
+				Hot.animation("spin", {
 					0: {
 						transform: "rotate(0)",
 					},
@@ -853,7 +853,7 @@ namespace App
 						transparent 0, transparent 50%, black 51%, black 100%
 					)`,
 				},
-				Htx.css(":before", {
+				Hot.css(":before", {
 					content: `""`,
 					...UI.anchorTop(),
 					margin: "auto",
@@ -867,7 +867,7 @@ namespace App
 		}
 		
 		/** */
-		export function overlay(...children: Htx.Param[])
+		export function overlay(...children: Hot.Param[])
 		{
 			const flipper = createFlipper({
 				invisible: {
@@ -887,10 +887,10 @@ namespace App
 				e.remove();
 			}
 			
-			const element = Htx.div(
+			const element = Hot.div(
 				UI.fixed(),
 				...UI.escape(e => hide(e)),
-				Htx.on("click", async ev =>
+				Hot.on("click", async ev =>
 				{
 					if (ev.target === ev.currentTarget)
 						hide(ev.target as HTMLElement);
@@ -913,17 +913,17 @@ namespace App
 			message: string,
 			type: "error" | "info")
 		{
-			const clsVisible = Htx.css({
+			const clsVisible = Hot.css({
 				opacity: "1",
 				transform: "translateY(0)",
 			});
 			
-			const clsInvisible = Htx.css({
+			const clsInvisible = Hot.css({
 				opacity: "0",
 				transform: "translateY(20px)",
 			});
 			
-			const notificationDiv = Htx.div(
+			const notificationDiv = Hot.div(
 				UI.anchorTop(10),
 				{
 					padding: "20px",
@@ -957,11 +957,11 @@ namespace App
 				200);
 			};
 			
-			Htx.get(notificationDiv)(
+			Hot.get(notificationDiv)(
 				clsVisible,
-				Htx.on("pointermove", cancel),
-				Htx.on(document.body, "pointerdown", cancel),
-				Htx.on(document.body, "keydown", cancel)
+				Hot.on("pointermove", cancel),
+				Hot.on(document.body, "pointerdown", cancel),
+				Hot.on(document.body, "keydown", cancel)
 			);
 		}
 	}

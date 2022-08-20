@@ -2,21 +2,21 @@
 namespace App.Icon
 {
 	/** */
-	export function plus(...params: Htx.Param[])
+	export function plus(...params: Hot.Param[])
 	{
-		const bar: Htx.Param = {
+		const bar: Hot.Param = {
 			position: "absolute",
 			backgroundColor: "white",
 		};
 		
-		return Htx.div(
+		return Hot.div(
 			plus.name,
 			UI.clickable,
 			{
 				width: "25px",
 				height: "25px",
 			},
-			Htx.div(
+			Hot.div(
 				bar,
 				{
 					width: UI.lineIconThickness + "px",
@@ -25,7 +25,7 @@ namespace App.Icon
 					left: `calc(50% - ${UI.lineIconThickness / 2}px)`,
 				}
 			),
-			Htx.div(
+			Hot.div(
 				bar,
 				{
 					height: UI.lineIconThickness + "px",
@@ -39,35 +39,35 @@ namespace App.Icon
 	}
 	
 	/** */
-	export function settings(...params: Htx.Param[])
+	export function settings(...params: Hot.Param[])
 	{
 		const circleSize = 14;
 		const fromEdge = Math.floor(circleSize / 2) - 1;
 		
 		const border = UI.lineIconThickness + "px solid white";
-		const circle = <Htx.Style>{
+		const circle = <Hot.Style>{
 			border,
 			borderRadius: "100%",
 			width: circleSize + "px",
 			height: circleSize + "px",
 		};
 		
-		const line = <Htx.Style>{
+		const line = <Hot.Style>{
 			border,
 			borderWidth: UI.lineIconThickness + "px 0 0 0",
 		};
 		
-		return Htx.div(
+		return Hot.div(
 			"settings-icon",
-			Htx.div(
+			Hot.div(
 				UI.anchorTopLeft(),
 				circle,
 			),
-			Htx.div(
+			Hot.div(
 				UI.anchorBottomRight(),
 				circle,
 			),
-			Htx.div(
+			Hot.div(
 				UI.anchorTop(),
 				{
 					top: fromEdge + "px",
@@ -75,7 +75,7 @@ namespace App.Icon
 				},
 				line,
 			),
-			Htx.div(
+			Hot.div(
 				UI.anchorBottom(),
 				{
 					bottom: fromEdge + "px",
@@ -91,12 +91,12 @@ namespace App.Icon
 	 * Creates an "open in external" icon.
 	 * The color of the icon can be configured by modifying the border color.
 	 */
-	export function openExternal(...params: Htx.Param<Htx.AnchorElementAttribute>[])
+	export function openExternal(...params: Hot.Param<Hot.AnchorElementAttribute>[])
 	{
 		const thickness = 3;
 		const rounding = thickness + 2;
 		
-		return Htx.a(
+		return Hot.a(
 			{
 				width: "30px",
 				height: "30px",
@@ -104,7 +104,7 @@ namespace App.Icon
 				display: "inline-block",
 				textDecoration: "none",
 			},
-			Htx.span(
+			Hot.span(
 				UI.anchorLeft(),
 				{
 					width: "50%",
@@ -115,7 +115,7 @@ namespace App.Icon
 					borderRadius: `${rounding}px 0 0 ${rounding}px`,
 				},
 			),
-			Htx.span(
+			Hot.span(
 				UI.anchorBottom(),
 				{
 					height: "50%",
@@ -126,7 +126,7 @@ namespace App.Icon
 					borderRadius: `0 0 ${rounding}px ${rounding}px`,
 				},
 			),
-			Htx.span(
+			Hot.span(
 				UI.anchorTopRight(-thickness, -thickness),
 				{
 					width: "40%",
@@ -137,7 +137,7 @@ namespace App.Icon
 					borderStyle: "solid",
 					borderColor: "inherit",
 				},
-				Htx.span(
+				Hot.span(
 					UI.anchorTopRight(-thickness, -thickness + 1),
 					{
 						border: "inherit",
@@ -152,14 +152,14 @@ namespace App.Icon
 	}
 	
 	/** */
-	export function checkmark(...params: Htx.Param[])
+	export function checkmark(...params: Hot.Param[])
 	{
-		return Htx.div(
+		return Hot.div(
 			{
 				width: "80px",
 				height: "80px",
 			},
-			Htx.div(
+			Hot.div(
 				{
 					borderBottom: "8px solid white",
 					borderRight: "8px solid white",
@@ -175,12 +175,12 @@ namespace App.Icon
 	}
 	
 	/** */
-	export function chevron(origin: Origin, ...params: Htx.Param[])
+	export function chevron(origin: Origin, ...params: Hot.Param[])
 	{
 		const b = { borderLeftWidth: "0", borderTopWidth: "0" };
-		const r = (deg: number) => <Htx.Style>{ transform: `rotate(${deg}deg)` };
+		const r = (deg: number) => <Hot.Style>{ transform: `rotate(${deg}deg)` };
 		
-		const css: Htx.Style = 
+		const css: Hot.Style = 
 			origin === Origin.topLeft ? { borderRightWidth: "0", borderBottomWidth: "0" } :
 			origin === Origin.topRight ? { borderLeftWidth: "0", borderBottomWidth: "0" } :
 			origin === Origin.bottomLeft ? { borderRightWidth: "0", borderTopWidth: "0" } :
@@ -190,7 +190,7 @@ namespace App.Icon
 			origin === Origin.bottom ? { ...b, ...r(45) } :
 			origin === Origin.left ? { ...b, ...r(135) } : {};
 		
-		return Htx.div(
+		return Hot.div(
 			"chevron",
 			{
 				width: "25px",

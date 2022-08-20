@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(post: PostRecord, meta: MetaRecord)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"preview-hat",
 				UI.fixed(),
 				UI.keyable,
@@ -23,7 +23,7 @@ namespace App
 				
 				...UI.removeOnEscape(),
 				
-				this.previewRoot = Htx.div(
+				this.previewRoot = Hot.div(
 					"preview-root",
 					UI.anchor(),
 					{
@@ -39,7 +39,7 @@ namespace App
 					})
 				),
 				
-				Htx.div(
+				Hot.div(
 					UI.anchorTopRight(30, 30),
 					UI.clickable,
 					{
@@ -50,7 +50,7 @@ namespace App
 					},
 					UI.backdropBlur(10),
 					Icon.plus(),
-					Htx.on(UI.clickEvt, () => UI.removeWithFade(this.root))
+					Hot.on(UI.clickEvt, () => UI.removeWithFade(this.root))
 				),
 				
 				When.rendered(e =>

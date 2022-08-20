@@ -10,7 +10,7 @@ namespace When
 	 * invoked immediately.
 	 * 
 	 * (This overload is intended for use as an argument to an element creation
-	 * function in the Htx library).
+	 * function in the Hot library).
 	 */
 	export function connected(callback: Callback): Callback;
 	/**
@@ -49,7 +49,7 @@ namespace When
 	 * after being inserted.
 	 * 
 	 * (This overload is intended for use as an argument to an element creation
-	 * function in the Htx library).
+	 * function in the Hot library).
 	 */
 	export function rendered(element: HTMLElement, callback: Callback): void;
 	export function rendered(a: any, b?: any): Callback | void
@@ -69,7 +69,7 @@ namespace When
 	 * and then disconnected.
 	 * 
 	 * (This overload is intended for use as an argument to an element creation
-	 * function in the Htx library).
+	 * function in the Hot library).
 	 */
 	export function disconnected(callback: Callback): Callback;
 	/**

@@ -143,7 +143,7 @@ namespace App
 		/** */
 		private createIndicator()
 		{
-			return Htx.div(
+			return Hot.div(
 				Class.indicator,
 				{
 					position: "absolute",

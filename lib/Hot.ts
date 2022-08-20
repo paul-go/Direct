@@ -13,11 +13,11 @@ interface CSSStyleDeclaration
 /**
  * 
  */
-namespace Htx { { } }
+namespace Hot { { } }
 
 {
-	const proxy = new Proxy(Htx, {
-		get(target: typeof Htx, name: keyof typeof Htx)
+	const proxy = new Proxy(Hot, {
+		get(target: typeof Hot, name: keyof typeof Hot)
 		{
 			switch (name)
 			{
@@ -27,15 +27,15 @@ namespace Htx { { } }
 				case "get": return get;
 			}
 			
-			return (...params: Htx.Param[]) => create(name, params);
+			return (...params: Hot.Param[]) => create(name, params);
 		}
 	});
 	
 	//@ts-ignore
-	Htx = proxy;
+	Hot = proxy;
 	
 	/** */
-	class HtxEvent
+	class HotEvent
 	{
 		constructor(
 			readonly target: Node | null,
@@ -54,7 +54,7 @@ namespace Htx { { } }
 			target?: Node,
 			eventName: string,
 			handler: () => void,
-			options?: Htx.EventListenerOptions)
+			options?: Hot.EventListenerOptions)
 		
 		*/
 		
@@ -63,13 +63,13 @@ namespace Htx { { } }
 		const handler = typeof args[1] === "function" ? args[1] : args[2];
 		const last = args.pop();
 		const options: AddEventListenerOptions = typeof last === "function" ? {} : last;
-		return new HtxEvent(target, eventName, handler, options);
+		return new HotEvent(target, eventName, handler, options);
 	}
 	
 	/** */
 	function get(...elements: Element[])
 	{
-		return (...params: Htx.Param[]) =>
+		return (...params: Hot.Param[]) =>
 		{
 			for (const e of elements)
 				if (e instanceof Element)
@@ -80,13 +80,13 @@ namespace Htx { { } }
 	}
 	
 	/** */
-	function create(tagName: string, params: Htx.Param[])
+	function create(tagName: string, params: Hot.Param[])
 	{
 		return apply(document.createElement(tagName), params);
 	}
 	
 	/** */
-	function apply(e: Element, params: Htx.Param[])
+	function apply(e: Element, params: Hot.Param[])
 	{
 		if (cssPropertySet === null)
 		{
@@ -118,9 +118,9 @@ namespace Htx { { } }
 			}
 			else switch (param.constructor)
 			{
-				case HtxEvent:
+				case HotEvent:
 				{
-					const evt = param as HtxEvent;
+					const evt = param as HotEvent;
 					const node = evt.target;
 					if (node)
 					{
@@ -170,7 +170,7 @@ namespace Htx { { } }
 				{
 					if (e instanceof HTMLElement)
 					{
-						const fn = param as Htx.Closure;
+						const fn = param as Hot.Closure;
 						const subParams = fn(e);
 						
 						if (subParams)
@@ -186,17 +186,17 @@ namespace Htx { { } }
 	let cssPropertySet: Set<string> | null = null;
 	
 	/** */
-	function css(selectorOrStyles: string | Htx.Style, maybeStyles?: Htx.Style)
+	function css(selectorOrStyles: string | Hot.Style, maybeStyles?: Hot.Style)
 	{
 		if (!inlineRuleSheet)
 		{
-			const style = Htx.style("inline-rule-sheet");
+			const style = Hot.style("inline-rule-sheet");
 			document.head.append(style);
 			inlineRuleSheet = style.sheet!;
 		}
 		
 		const selector = typeof selectorOrStyles === "string" ? selectorOrStyles : "";
-		const styles = maybeStyles || selectorOrStyles as Htx.Style;
+		const styles = maybeStyles || selectorOrStyles as Hot.Style;
 		const cssClass = "c" + (index++);
 		
 		const selectorParts = selector.split("&");
@@ -228,7 +228,7 @@ namespace Htx { { } }
 	let index = 0;
 	
 	/** */
-	function animation(animationName: string, style: Record<number, Htx.Style>)
+	function animation(animationName: string, style: Record<number, Hot.Style>)
 	{
 		if (animationsWritten.has(animationName))
 			return;
@@ -249,7 +249,7 @@ namespace Htx { { } }
 		const fullCss  = ["@", "@-webkit-", "@-moz-"].map(s =>
 			s + `keyframes ${animationName} { ${animationBody} }`).join("");
 		
-		const styleTag = Htx.style("animation-sheet", new Text(fullCss));
+		const styleTag = Hot.style("animation-sheet", new Text(fullCss));
 		styleTag.classList.add(animationName);
 		document.head.append(styleTag);
 		
@@ -258,7 +258,7 @@ namespace Htx { { } }
 	const animationsWritten = new Set<string>();
 }
 
-namespace Htx
+namespace Hot
 {
 	/**
 	 * Fake node class, which is compatible with the actual Node interface,
@@ -636,20 +636,20 @@ namespace Htx
 	}
 	
 	/** */
-	export declare function css(selectorSuffix: string, properties: Htx.Style): string;
-	export declare function css(properties: Htx.Style): string;
+	export declare function css(selectorSuffix: string, properties: Hot.Style): string;
+	export declare function css(properties: Hot.Style): string;
 	
 	/**
 	 * 
 	 */
-	export declare function animation(name: string, style: Record<number, Htx.Style>): Htx.Style
+	export declare function animation(name: string, style: Record<number, Hot.Style>): Hot.Style
 	
 	/**
-	 * Creates a new Htx context from the specified Element or series of Elements.
+	 * Creates a new Hot context from the specified Element or series of Elements.
 	 */
 	export declare function get<E extends Element>(e: E, ...others: Element[]): (...params: Param[]) => E;
 	
 	declare var module: any;
 	if (typeof module === "object")
-		Object.assign(module.exports, { Htx });
+		Object.assign(module.exports, { Hot });
 }

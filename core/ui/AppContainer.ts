@@ -27,7 +27,7 @@ namespace App
 			this._database = database;
 			this._meta = meta;
 			
-			Htx.get(root)(
+			Hot.get(root)(
 				
 				CssClass.appContainer,
 				{
@@ -35,7 +35,7 @@ namespace App
 				},
 				TAURI && (e =>
 				{
-					const titleBar = Htx.div(
+					const titleBar = Hot.div(
 						"title-bar",
 						UI.anchorTop(),
 						{
@@ -48,19 +48,19 @@ namespace App
 							transitionProperty: "opacity",
 						},
 						UI.backdropBlur(8),
-						Htx.css(":hover", { opacity: "1" })
+						Hot.css(":hover", { opacity: "1" })
 					);
 					
 					titleBar.setAttribute("data-tauri-drag-region", "");
 					e.prepend(titleBar)
 				}),
 				
-				!TAURI && Htx.on(window, "resize", () => window.requestAnimationFrame(() =>
+				!TAURI && Hot.on(window, "resize", () => window.requestAnimationFrame(() =>
 				{
 					this.toggleMaxClass();
 				})),
 				
-				Htx.on("keydown", ev =>
+				Hot.on("keydown", ev =>
 				{
 					if (ev.key === "p" && ev.metaKey && !ev.ctrlKey && !ev.shiftKey && !ev.altKey)
 					{

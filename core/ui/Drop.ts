@@ -46,15 +46,15 @@ namespace App
 			dropFn: (files: FileLike[], x: number, y: number) => void;
 			drippers?: HTMLElement[];
 			
-			cover?: Htx.Param | Htx.Param[];
-			top?: Htx.Param | Htx.Param[];
-			right?: Htx.Param | Htx.Param[];
-			bottom?: Htx.Param | Htx.Param[];
-			left?: Htx.Param | Htx.Param[];
+			cover?: Hot.Param | Hot.Param[];
+			top?: Hot.Param | Hot.Param[];
+			right?: Hot.Param | Hot.Param[];
+			bottom?: Hot.Param | Hot.Param[];
+			left?: Hot.Param | Hot.Param[];
 		}
 		
 		/** */
-		export function here(options: IDropOptions): Htx.Param
+		export function here(options: IDropOptions): Hot.Param
 		{
 			const acceptedMimes = options.accept || [];
 			const unlistenFns: (() => void)[] = [];
@@ -63,9 +63,9 @@ namespace App
 			
 			const createDripper = (
 				position: "cover" | "top" | "right" | "bottom" | "left",
-				...params: Htx.Param[]) =>
+				...params: Hot.Param[]) =>
 			{
-				const dripper = Htx.div(
+				const dripper = Hot.div(
 					"dripper",
 					CssClass.hide,
 					UI.flexCenter,
@@ -103,10 +103,10 @@ namespace App
 			const show = () => drippers.map(d => d.classList.remove(CssClass.hide));
 			const hide = () => drippers.map(d => d.classList.add(CssClass.hide));
 			
-			const params: Htx.Param[] = [
-				Htx.on("dragover", ev => ev.preventDefault()),
-				Htx.on("drop", ev => ev.preventDefault()),
-				Htx.on("dragleave", ev =>
+			const params: Hot.Param[] = [
+				Hot.on("dragover", ev => ev.preventDefault()),
+				Hot.on("drop", ev => ev.preventDefault()),
+				Hot.on("dragleave", ev =>
 				{
 					if (!Query.ancestors(ev.relatedTarget).includes(ev.currentTarget as HTMLElement))
 						hide();
@@ -171,7 +171,7 @@ namespace App
 						unlistenFns.map(fn => fn());
 						unlistenFns.length = 0;
 					}),
-					Htx.on("dragenter", ev =>
+					Hot.on("dragenter", ev =>
 					{
 						if (draggingTypes.some(type => acceptedMimes.includes(type)))
 						{
@@ -179,7 +179,7 @@ namespace App
 							show();
 						}
 					}),
-					Htx.on("dragover", ev =>
+					Hot.on("dragover", ev =>
 					{
 						if (draggingTypes.some(type => acceptedMimes.includes(type)))
 						{
@@ -193,7 +193,7 @@ namespace App
 			else
 			{
 				params.push(e => [
-					Htx.on("dragenter", ev =>
+					Hot.on("dragenter", ev =>
 					{
 						const types = Array.from(ev.dataTransfer?.items || []).map(item => item.type);
 						if (types.some(t => acceptedMimes.includes(t)))
@@ -202,7 +202,7 @@ namespace App
 							show();
 						}
 					}),
-					Htx.on("drop", async ev =>
+					Hot.on("drop", async ev =>
 					{
 						const { x, y } = getLayerCoords(e, ev.clientX, ev.clientY);
 						const files = (await FileLike.fromFiles(ev.dataTransfer?.files))

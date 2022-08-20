@@ -9,7 +9,7 @@ namespace App
 		{
 			super(post, meta);
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"s3-publisher",
 				{
 					padding: "60px 0",

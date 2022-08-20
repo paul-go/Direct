@@ -13,13 +13,13 @@ namespace App.RenderUtil
 	{
 		return new Promise<[number, number]>(r =>
 		{
-			document.body.append(Htx.img(
+			document.body.append(Hot.img(
 				{
 					src,
 					position: "absolute",
 					left: "-1000000px",
 				},
-				Htx.on("load", ev =>
+				Hot.on("load", ev =>
 				{
 					const img = ev.target as HTMLImageElement;
 					const [w, h] = [img.clientWidth, img.clientHeight];
@@ -95,7 +95,7 @@ namespace App.RenderUtil
 	 */
 	export function createImageFiller(src: string)
 	{
-		return Htx.div(
+		return Hot.div(
 			UI.anchor(-ConstN.fillerContentBlur),
 			{
 				backgroundImage: src,
@@ -113,7 +113,7 @@ namespace App.RenderUtil
 		mimeType: MimeType,
 		size: SizeMethod = "contain")
 	{
-		return Htx.video({
+		return Hot.video({
 			src,
 			type: mimeType,
 			playsInline: true,
@@ -132,14 +132,14 @@ namespace App.RenderUtil
 		const type = srcVideo.getAttribute("type") || "";
 		let fillerVideo: HTMLVideoElement;
 		
-		const container = Htx.div(
+		const container = Hot.div(
 			"video-filler",
 			UI.anchor(),
 			{
 				overflow: "hidden",
 				zIndex: "-1",
 			},
-			fillerVideo = Htx.video({
+			fillerVideo = Hot.video({
 				src,
 				type,
 				controls: false,
@@ -163,7 +163,7 @@ namespace App.RenderUtil
 	 */
 	export function createVideoBackground(src: string, mimeType: string)
 	{
-		return Htx.video({
+		return Hot.video({
 			src,
 			type: mimeType,
 			playsInline: true,

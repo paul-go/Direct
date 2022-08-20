@@ -205,7 +205,7 @@ namespace App
 		meta: MetaRecord,
 		isPreview: boolean)
 	{
-		return Htx.div(
+		return Hot.div(
 			"story",
 			...post.scenes.flatMap(scene => renderScene(new Bundle(scene, meta, isPreview)))
 		);
@@ -220,7 +220,7 @@ namespace App
 		
 		
 		let snapFooter: HTMLElement | null = null;
-		const includeSnapFooter = () => snapFooter = Htx.div(CssClass.snapFooter);
+		const includeSnapFooter = () => snapFooter = Hot.div(CssClass.snapFooter);
 		
 		const sceneParams = (() =>
 		{
@@ -240,7 +240,7 @@ namespace App
 		})();
 		
 		return [
-			Htx.section(
+			Hot.section(
 				CssClass.scene,
 				{
 					color: colors.default,
@@ -262,7 +262,7 @@ namespace App
 	function renderCanvasScene(bun: Bundle<CanvasSceneRecord>)
 	{
 		const scene = bun.scene;
-		const out: Htx.Param[] = [
+		const out: Hot.Param[] = [
 			CssClass.canvasScene
 		];
 		
@@ -274,7 +274,7 @@ namespace App
 				const cls = MimeType.getClass(bg.media.type);
 				if (cls === MimeClass.image)
 				{
-					return Htx.div(
+					return Hot.div(
 						CssClass.canvasSceneBackground,
 						{
 							backgroundImage: "url(" + bun.getMediaUrl(bg.media) + ")",
@@ -294,7 +294,7 @@ namespace App
 				}
 				else if (cls === MimeClass.video)
 				{
-					return Htx.video(
+					return Hot.video(
 						CssClass.canvasSceneBackground,
 						{
 							src: bun.getMediaUrl(bg.media),
@@ -311,7 +311,7 @@ namespace App
 		// Foreground
 		if (scene.titles.length > 0 || scene.description.length > 0 || scene.actions.length > 0)
 		{
-			const fg = Htx.div(
+			const fg = Hot.div(
 				CssClass.canvasSceneForeground,
 				{
 					data: {
@@ -320,7 +320,7 @@ namespace App
 				},
 			);
 			
-			const island = Htx.div(CssClass.canvasSceneIsland, scene.origin);
+			const island = Hot.div(CssClass.canvasSceneIsland, scene.origin);
 			
 			if (scene.contrast)
 				RenderUtil.setContrast(island, scene.contrast);
@@ -332,7 +332,7 @@ namespace App
 			
 			if (scene.contentImage)
 			{
-				islandElements.push(Htx.img(
+				islandElements.push(Hot.img(
 					CssClass.canvasSceneContentImage,
 					{ src: bun.getMediaUrl(scene.contentImage) }
 				));
@@ -340,7 +340,7 @@ namespace App
 			
 			if (scene.titles.length > 0)
 			{
-				const h2 = Htx.h2();
+				const h2 = Hot.h2();
 				
 				const render = (title: ITitle) => [
 					UI.specificWeight(title.weight),
@@ -349,10 +349,10 @@ namespace App
 				];
 				
 				if (scene.titles.length === 1)
-					Htx.get(h2)(...render(scene.titles[0]));
+					Hot.get(h2)(...render(scene.titles[0]));
 				
 				else for (const title of scene.titles)
-					h2.append(Htx.div(...render(title)));
+					h2.append(Hot.div(...render(title)));
 				
 				islandElements.push(h2);
 			}
@@ -365,9 +365,9 @@ namespace App
 			
 			if (scene.actions.length > 0)
 			{
-				const actionsElement = Htx.div(
+				const actionsElement = Hot.div(
 					CssClass.canvasActions,
-					scene.actions.map(action => Htx.a(
+					scene.actions.map(action => Hot.a(
 						CssClass.canvasAction,
 						scene.actionShape,
 						action.filled ? 
@@ -383,7 +383,7 @@ namespace App
 				if (islandElements.length > 0)
 				{
 					const lastElement = islandElements.pop()!;
-					islandElements.push(Htx.div(
+					islandElements.push(Hot.div(
 						CssClass.inheritMargin,
 						lastElement,
 						actionsElement
@@ -417,7 +417,7 @@ namespace App
 		const paragraphs: HTMLParagraphElement[] = [];
 		for (const group of groups)
 		{
-			const p = Htx.p();
+			const p = Hot.p();
 			
 			for (let i = -1; ++i < group.length;)
 			{
@@ -425,7 +425,7 @@ namespace App
 				p.append(new Text(line));
 				
 				if (i < group.length - 1)
-					p.append(Htx.br());
+					p.append(Hot.br());
 			}
 			
 			paragraphs.push(p);
@@ -444,7 +444,7 @@ namespace App
 		interface IRegion { text: string, bold: boolean; href: string }
 		const regions: IRegion[] = [];
 		const empty: IRegion = { text: "", bold: false, href: "" };
-		const shim = Htx.div();
+		const shim = Hot.div();
 		shim.innerHTML = scene.description;
 		
 		const recurse = (e: Element, bold: boolean, href: string) =>
@@ -536,7 +536,7 @@ namespace App
 		
 		htmlParts.push("</p>");
 		
-		const container = Htx.div({
+		const container = Hot.div({
 			fontSize: UI.vsizePlayer(scene.descriptionSize)
 		});
 		
@@ -557,16 +557,16 @@ namespace App
 				if (!frame.media)
 					return null;
 				
-				const frameDiv = Htx.div(CssClass.galleryFrame);
+				const frameDiv = Hot.div(CssClass.galleryFrame);
 				const htmlSrc = bun.getMediaUrl(frame.media);
 				const isImage = MimeType.getClass(frame.media.type) === MimeClass.image;
 				
 				if (isImage)
 				{
 					const cssSrc = bun.getMediaUrl(frame.media, "css");
-					Htx.get(frameDiv)(
+					Hot.get(frameDiv)(
 						frame.size === "contain" && RenderUtil.createImageFiller(cssSrc),
-						Htx.img(
+						Hot.img(
 							{ src: htmlSrc },
 							frame.size === "cover" ? { objectFit: "cover" } : {}
 						)
@@ -579,7 +579,7 @@ namespace App
 						RenderUtil.createVideoFiller(htmlSrc, mainVideo) :
 						null;
 					
-					Htx.get(frameDiv)(
+					Hot.get(frameDiv)(
 						fillerVideo,
 						mainVideo,
 					);
@@ -587,10 +587,10 @@ namespace App
 				
 				if (frame.captionLine1 || frame.captionLine2)
 				{
-					const legend = Htx.div(
+					const legend = Hot.div(
 						CssClass.galleryFrameLegend,
-						frame.captionLine1 && Htx.p(new Text(frame.captionLine1)),
-						frame.captionLine2 && Htx.p(new Text(frame.captionLine2)),
+						frame.captionLine1 && Hot.p(new Text(frame.captionLine1)),
+						frame.captionLine2 && Hot.p(new Text(frame.captionLine2)),
 					);
 					
 					if (frame.size === "contain")
@@ -617,7 +617,7 @@ namespace App
 	{
 		return [
 			CssClass.proseScene,
-			Htx.div(
+			Hot.div(
 				CssClass.proseSceneForeground,
 				...renderProseDocument(bun.scene.content)
 			)
@@ -637,7 +637,7 @@ namespace App
 		{
 			if (block.attributes.includes("heading1"))
 			{
-				elements.push(Htx.h2(
+				elements.push(Hot.h2(
 					...block.text
 						.filter(obj => !obj.attributes.blockBreak)
 						.map(obj => obj.string)
@@ -645,13 +645,13 @@ namespace App
 						.split("\n")
 						.map(s => s.trim())
 						.filter(s => !!s)
-						.flatMap(s => [Htx.br(), new Text(s)])
+						.flatMap(s => [Hot.br(), new Text(s)])
 						.slice(1)
 				));
 			}
 			else
 			{
-				const paragraphs: HTMLElement[] = [Htx.p()];
+				const paragraphs: HTMLElement[] = [Hot.p()];
 				
 				for (const trixNode of block.text)
 				{
@@ -670,17 +670,17 @@ namespace App
 							.split(/\n/g)
 							.map(s => s.trim())
 							.filter(s => !!s)
-							.flatMap(s => [Htx.br(), new Text(s)])
+							.flatMap(s => [Hot.br(), new Text(s)])
 							.slice(1);
 						
 						if (trixNode.attributes.bold)
-							domNodes = [Htx.strong(...domNodes)];
+							domNodes = [Hot.strong(...domNodes)];
 						
 						if (trixNode.attributes.italic)
-							domNodes = [Htx.em(...domNodes)];
+							domNodes = [Hot.em(...domNodes)];
 						
 						if (trixNode.attributes.href)
-							domNodes = [Htx.a({ href: trixNode.attributes.href }, ...domNodes)];
+							domNodes = [Hot.a({ href: trixNode.attributes.href }, ...domNodes)];
 						
 						return domNodes;
 					}
@@ -699,7 +699,7 @@ namespace App
 					for (let i = 0; ++i < paragraphTexts.length;)
 					{
 						const text = paragraphTexts[i];
-						paragraphs.push(Htx.p(...wrapNode(text)));
+						paragraphs.push(Hot.p(...wrapNode(text)));
 					}
 				}
 				

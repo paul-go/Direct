@@ -7,9 +7,9 @@ namespace App
 	 */
 	export class HeightBox
 	{
-		constructor(...params: Htx.Param[])
+		constructor(...params: Hot.Param[])
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"height-box",
 				{
 					transitionDuration: "0.3s",
@@ -43,7 +43,7 @@ namespace App
 			const storedHeight = e.offsetHeight;
 			const storedTransitionDuration = s.transitionDuration;
 			
-			const measureDiv = Htx.div(
+			const measureDiv = Hot.div(
 				{
 					position: "absolute",
 					left: "-99999px",

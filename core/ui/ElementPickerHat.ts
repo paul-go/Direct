@@ -7,17 +7,17 @@ namespace App
 		/** */
 		constructor(container: HTMLElement)
 		{
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"element-picker",
 				UI.anchor(),
 				{
 					zIndex: "1"
 				},
-				Htx.on("pointerdown", ev =>
+				Hot.on("pointerdown", ev =>
 				{
 					this.pickFromPoint(ev.clientX, ev.clientY);
 				}),
-				this.indicator = Htx.div(
+				this.indicator = Hot.div(
 					"indicator",
 					{
 						position: "absolute",
@@ -44,7 +44,7 @@ namespace App
 		/** */
 		toggle(visible: boolean)
 		{
-			Htx.get(this.root)({
+			Hot.get(this.root)({
 				pointerEvents: visible ? "all" : "none",
 				visibility: visible ? "visible" : "hidden",
 			});

@@ -9,7 +9,7 @@ namespace App
 		{
 			let firstItem: BlogPaletteItem | null = null;
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				UI.fixed(),
 				UI.removeOnClick(),
 				UI.removeOnEscape(),
@@ -18,7 +18,7 @@ namespace App
 					dropFn: files => files.length > 0 && this.importDatabase(files[0].data),
 					cover: new Text("Import")
 				}),
-				Htx.div(
+				Hot.div(
 					"blog-palette-window",
 					{
 						margin: "auto",
@@ -29,7 +29,7 @@ namespace App
 						backgroundColor: UI.darkGrayBackground,
 						boxShadow: "0 0 100px " + UI.white(0.15),
 					},
-					Htx.div(
+					Hot.div(
 						"blog-palette-header",
 						{
 							padding: "20px"
@@ -52,7 +52,7 @@ namespace App
 							new Text("Import"),
 						),
 					),
-					this.itemsElement = Htx.div(
+					this.itemsElement = Hot.div(
 						"blog-palette-items",
 						Database.getNames().map(name =>
 						{
@@ -94,13 +94,13 @@ namespace App
 		/** */
 		private async handleImport()
 		{
-			const input = Htx.input(
+			const input = Hot.input(
 				{
 					type: "file",
 					position: "absolute",
 					visibility: "hidden"
 				},
-				Htx.on("change", async () =>
+				Hot.on("change", async () =>
 				{
 					input.remove();
 					const file = input.files?.[0];
@@ -170,7 +170,7 @@ namespace App
 		{
 			this.isCreatingNew = !name;
 			
-			this.root = Htx.div(
+			this.root = Hot.div(
 				"blog-palette-item",
 				{
 					tabIndex: 0,
@@ -178,7 +178,7 @@ namespace App
 					margin: "10px",
 					borderRadius: UI.borderRadius.default,
 				},
-				Htx.on("keydown", ev =>
+				Hot.on("keydown", ev =>
 				{
 					if (this.isEditing)
 						return;
@@ -203,7 +203,7 @@ namespace App
 					
 					ev.preventDefault();
 				}),
-				Htx.on("focusout", () =>
+				Hot.on("focusout", () =>
 				{
 					this.isEditing && setTimeout(() =>
 					{
@@ -221,7 +221,7 @@ namespace App
 					else
 						this.selected = true;
 				}),
-				this.nameElement = Htx.div(
+				this.nameElement = Hot.div(
 					"blog-palette-label",
 					{
 						flex: "1 0",
@@ -229,7 +229,7 @@ namespace App
 					},
 					UI.text(name)
 				),
-				this.menuElement = Htx.div(
+				this.menuElement = Hot.div(
 					this.isCreatingNew && CssClass.hide,
 					"blog-palette-menu",
 					{
@@ -349,7 +349,7 @@ namespace App
 			this.storedName = this.name;
 			this.nameElement.replaceChildren();
 			
-			Htx.get(this.nameElement)(
+			Hot.get(this.nameElement)(
 				new Text(this.storedName),
 				Editable.single({
 					placeholderText: "Enter the name of the blog",
