@@ -416,7 +416,7 @@ namespace App
 				display: "none !important",
 			}),
 			
-			rule("." + CssClass.postViewTransition, {
+			rule("." + CssClass.postHatTransition, {
 				"transform-origin": "0 0 ",
 				"transform": "scale(0.33333)",
 				"width": "300%",

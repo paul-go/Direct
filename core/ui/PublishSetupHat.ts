@@ -2,14 +2,14 @@
 namespace App
 {
 	/** */
-	export class PublishSetupView
+	export class PublishSetupHat
 	{
 		/** */
 		static show(via: Hat.IHat, record: PostRecord)
 		{
 			const app = AppContainer.of(via);
-			const view = new PublishSetupView(record, app);
-			app.root.append(view.root);
+			const hat = new PublishSetupHat(record, app);
+			app.root.append(hat.root);
 		}
 		
 		/** */

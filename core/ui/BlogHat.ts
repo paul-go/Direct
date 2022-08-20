@@ -2,13 +2,13 @@
 namespace App
 {
 	/** */
-	export class BlogView
+	export class BlogHat
 	{
 		/** */
 		constructor()
 		{
 			this.root = Htx.div(
-				CssClass.blogView,
+				CssClass.blogHat,
 				UI.appMaxWidth(),
 				this.headerElement = this.renderHeader(),
 				this.postList = Htx.div(
@@ -210,7 +210,7 @@ namespace App
 			previewDisplay: HTMLElement,
 			post?: PostRecord)
 		{
-			const postView = new PostView(post);
+			const postHat = new PostHat(post);
 			const parent = transformable.parentElement!;
 			parent.style.zIndex = "2";
 			
@@ -231,9 +231,9 @@ namespace App
 			{
 				this.headerElement.style.transform = "translateY(-150%)";
 				
-				postView.root.classList.add(CssClass.postViewTransition);
+				postHat.root.classList.add(CssClass.postHatTransition);
 				transformable.style.height = (window.innerWidth / 3) + "px";
-				transformable.append(postView.root);
+				transformable.append(postHat.root);
 				
 				await new Promise<void>(r => setTimeout(r));
 				
@@ -245,14 +245,14 @@ namespace App
 				
 				await new Promise<void>(r => transformable.addEventListener("transitionend", () => r()));
 				
-				AppContainer.of(this).root.append(postView.root);
-				postView.root.classList.remove(CssClass.postViewTransition);
+				AppContainer.of(this).root.append(postHat.root);
+				postHat.root.classList.remove(CssClass.postHatTransition);
 				this.postList.style.display = "none";
 			});
 			
 			let doingKeep = false;
 			
-			postView.setKeepCallback(post =>
+			postHat.setKeepCallback(post =>
 			{
 				doingKeep = true;
 				this.addPostButton.replaceWith(
@@ -260,7 +260,7 @@ namespace App
 					this.renderPostTile(post));
 			});
 			
-			postView.setBackCallback(() =>
+			postHat.setBackCallback(() =>
 			{
 				UI.lockBody(async () =>
 				{
@@ -269,7 +269,7 @@ namespace App
 					
 					if (doingKeep)
 					{
-						const s = postView.root.style;
+						const s = postHat.root.style;
 						s.transitionDuration = "0";
 						await UI.wait();
 						s.opacity = "1";
@@ -279,8 +279,8 @@ namespace App
 						await UI.wait();
 						s.transform = "scale(0.3333)";
 						s.opacity = "0";
-						await UI.waitTransitionEnd(postView.root);
-						postView.root.remove();
+						await UI.waitTransitionEnd(postHat.root);
+						postHat.root.remove();
 					}
 					else
 					{
@@ -289,8 +289,8 @@ namespace App
 						
 						window.scroll(0, scrollY);
 						
-						transformable.append(postView.root);
-						postView.root.classList.add(CssClass.postViewTransition);
+						transformable.append(postHat.root);
+						postHat.root.classList.add(CssClass.postHatTransition);
 						transformable.style.transitionDuration = transitionDuration;
 						
 						await UI.wait();
@@ -303,7 +303,7 @@ namespace App
 						
 						transformable.style.removeProperty("z-index");
 						parent.style.removeProperty("z-index");
-						postView.root.remove();
+						postHat.root.remove();
 					}
 				});
 			});

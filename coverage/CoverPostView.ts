@@ -2,59 +2,59 @@
 namespace Cover
 {
 	/** */
-	export async function coverPostViewEmpty()
+	export async function coverPostHatEmpty()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostView(app.homePost);
+		const pv = new App.PostHat(app.homePost);
 		Cover.display(pv);
 	}
 	
 	/** */
-	export async function coverPostViewExisting()
+	export async function coverPostHatExisting()
 	{
 		const app = await App.createApp({ shell: true });
-		const pv = new App.PostView(app.homePost);
+		const pv = new App.PostHat(app.homePost);
 		Cover.display(pv);
 	}
 	
 	/** */
-	export async function coverPostViewWithProse()
+	export async function coverPostHatWithProse()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostView(app.homePost);
-		const sv = new App.ProseSceneView();
+		const pv = new App.PostHat(app.homePost);
+		const sv = new App.ProseSceneHat();
 		pv.scenes.insert(sv);
 		Cover.display(pv);
 	}
 	
 	/** */
-	export async function coverPostViewWithCanvas()
+	export async function coverPostHatWithCanvas()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostView(app.homePost);
-		const sv = new App.CanvasSceneView();
+		const pv = new App.PostHat(app.homePost);
+		const sv = new App.CanvasSceneHat();
 		pv.scenes.insert(sv);
 		Cover.display(pv);
 	}
 	
 	/** */
-	export async function coverPostViewWithMultipleCanvas()
+	export async function coverPostHatWithMultipleCanvas()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostView(app.homePost);
-		const sv1 = new App.CanvasSceneView();
-		const sv2 = new App.CanvasSceneView();
+		const pv = new App.PostHat(app.homePost);
+		const sv1 = new App.CanvasSceneHat();
+		const sv2 = new App.CanvasSceneHat();
 		pv.scenes.insert(sv1);
 		pv.scenes.insert(sv2);
 		Cover.display(pv);
 	}
 	
 	/** */
-	export async function coverPostViewWithGallery()
+	export async function coverPostHatWithGallery()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostView(app.homePost);
-		const sv = new App.GallerySceneView();
+		const pv = new App.PostHat(app.homePost);
+		const sv = new App.GallerySceneHat();
 		pv.scenes.insert(sv);
 		Cover.display(pv);
 	}

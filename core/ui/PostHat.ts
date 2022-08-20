@@ -2,12 +2,12 @@
 namespace App
 {
 	/** */
-	export class PostView
+	export class PostHat
 	{
 		/**
-		 * Creates a new PostView instance, which is populated with data
+		 * Creates a new PostHat instance, which is populated with data
 		 * from the specified PostRecord. If the PostRecord argument is
-		 * omitted, this indicates that this PostView should create it a new, 
+		 * omitted, this indicates that this PostHat should create it a new, 
 		 * unsaved record.
 		 */
 		constructor(record?: PostRecord)
@@ -22,7 +22,7 @@ namespace App
 			this.isNewRecord = !record;
 			
 			this.root = Htx.div(
-				"post-view",
+				"post-hat",
 				Htx.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
 				
 				UI.anchorTop(),
@@ -107,7 +107,7 @@ namespace App
 					{
 						position: "fixed",
 						top: "0",
-						height: SceneView.headerHeight,
+						height: SceneHat.headerHeight,
 						transitionDuration: "0.33s",
 						transitionProperty: "background-color",
 						padding: "25px",
@@ -137,8 +137,8 @@ namespace App
 				),
 			);
 			
-			this.scenes = new Hat.Array(this.scenesElement, SceneView);
-			this.scenes.insert(...this.record.scenes.map(b => SceneView.new(b)));
+			this.scenes = new Hat.Array(this.scenesElement, SceneHat);
+			this.scenes.insert(...this.record.scenes.map(b => SceneHat.new(b)));
 			this.scenes.observe(() =>
 			{
 				this.footerElement.style.display = this.scenes.length > 0 ? "block" : "none";
@@ -180,7 +180,7 @@ namespace App
 					},
 					Htx.on(UI.clickEvt, () =>
 					{
-						const ibv = new InsertSceneView("v");
+						const ibv = new InsertSceneHat("v");
 						ibv.setCancelCallback(() => this.noScenesBox.back());
 						ibv.setInsertCallback(scene =>
 						{
@@ -196,7 +196,7 @@ namespace App
 		/** */
 		private save()
 		{
-			this.record.scenes = this.scenes.map(view => view.record);
+			this.record.scenes = this.scenes.map(hat => hat.record);
 		}
 		
 		/** */
@@ -227,14 +227,14 @@ namespace App
 		{
 			this.save();
 			
-			// If there is no BlogView sitting behind this PostView, its because
-			// the application launched directly into a PostView for editing the
-			// home page, and so we need to insert a new BlogView.
-			if (!Query.find(CssClass.blogView, AppContainer.of(this).root))
+			// If there is no BlogHat sitting behind this PostHat, its because
+			// the application launched directly into a PostHat for editing the
+			// home page, and so we need to insert a new BlogHat.
+			if (!Query.find(CssClass.blogHat, AppContainer.of(this).root))
 			{
-				const blogView = new BlogView();
+				const blogHat = new BlogHat();
 				const app = AppContainer.of(this);
-				app.root.prepend(blogView.root);
+				app.root.prepend(blogHat.root);
 				await UI.wait();
 				const s = this.root.style;
 				s.opacity = "0";
@@ -255,7 +255,7 @@ namespace App
 		private handlePreview()
 		{
 			const meta = AppContainer.of(this).meta;
-			new PreviewView(this.record, meta);
+			new PreviewHat(this.record, meta);
 		}
 		
 		/** */
@@ -287,8 +287,8 @@ namespace App
 		private setupPublish()
 		{
 			const app = AppContainer.of(this);
-			const publishSetupView = new PublishSetupView(this.record, app);
-			this.root.append(publishSetupView.root);
+			const publishSetupHat = new PublishSetupHat(this.record, app);
+			this.root.append(publishSetupHat.root);
 		}
 		
 		/** */

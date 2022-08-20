@@ -1,15 +1,15 @@
-/// <reference path="CanvasTextView.ts" />
+/// <reference path="CanvasTextHat.ts" />
 
 namespace App
 {
 	/** */
-	export class CanvasDescriptionView extends CanvasTextView
+	export class CanvasDescriptionHat extends CanvasTextHat
 	{
 		/** */
 		constructor(record: CanvasSceneRecord)
 		{
 			super(record);
-			this.root.classList.add("canvas-description-view");
+			this.root.classList.add("canvas-description-hat");
 			
 			this.textArea = Htx.div(
 				Editable.multi(),

@@ -1,20 +1,20 @@
-/// <reference path="CanvasTextView.ts" />
+/// <reference path="CanvasTextHat.ts" />
 
 namespace App
 {
 	/** */
-	export class CanvasTitleSetView extends CanvasTextView
+	export class CanvasTitleSetHat extends CanvasTextHat
 	{
 		/** */
 		constructor(record: CanvasSceneRecord)
 		{
 			super(record);
-			this.root.classList.add("canvas-title-view");
+			this.root.classList.add("canvas-title-hat");
 			
 			const titleDatas = record.titles;
 			for (const [, titleData] of titleDatas.entries())
 			{
-				const title = new CanvasTitleView(titleData.text);
+				const title = new CanvasTitleHat(titleData.text);
 				title.size = title.size;
 				title.weight = title.weight;
 				title.hasColor = titleData.hasColor;
@@ -45,7 +45,7 @@ namespace App
 			const boxes = this.getCanvasTitles();
 			if (boxes.length === 0)
 			{
-				const canvasTitle = new CanvasTitleView();
+				const canvasTitle = new CanvasTitleHat();
 				this.root.append(canvasTitle.root)
 				canvasTitle.root.focus();
 			}
@@ -55,7 +55,7 @@ namespace App
 		/** */
 		getCanvasTitles()
 		{
-			return Hat.map(this, CanvasTitleView);
+			return Hat.map(this, CanvasTitleHat);
 		}
 		
 		/** */
@@ -66,7 +66,7 @@ namespace App
 	}
 	
 	/** */
-	export class CanvasTitleView
+	export class CanvasTitleHat
 	{
 		/** */
 		constructor(defaultText: string = "")
@@ -93,11 +93,11 @@ namespace App
 						{
 							if (atStart)
 							{
-								this.root.before(new CanvasTitleView().root);
+								this.root.before(new CanvasTitleHat().root);
 							}
 							else if (atEnd)
 							{
-								const title = new CanvasTitleView();
+								const title = new CanvasTitleHat();
 								this.root.after(title.root);
 								title.root.focus();
 							}
@@ -105,7 +105,7 @@ namespace App
 							{
 								const textSecondHalf = this.text.slice(charPos);
 								this.text = this.text.slice(0, charPos);
-								const title = new CanvasTitleView(textSecondHalf);
+								const title = new CanvasTitleHat(textSecondHalf);
 								title.root.after(title.root);
 								title.root.focus();
 							}
@@ -116,7 +116,7 @@ namespace App
 						{
 							if (atStart)
 							{
-								const prev = Hat.previous(this, CanvasTitleView);
+								const prev = Hat.previous(this, CanvasTitleHat);
 								if (prev)
 								{
 									const position = prev.text.length;
@@ -131,7 +131,7 @@ namespace App
 						{
 							if (atEnd)
 							{
-								const next = Hat.next(this, CanvasTitleView);
+								const next = Hat.next(this, CanvasTitleHat);
 								if (next)
 								{
 									const position = this.text.length;
@@ -144,13 +144,13 @@ namespace App
 						}
 						break; case "ArrowUp":
 						{
-							const previous = Hat.previous(this, CanvasTitleView);
+							const previous = Hat.previous(this, CanvasTitleHat);
 							if (previous)
 								Editable.focus(previous.root, { position: previous.text.length });
 						}
 						break; case "ArrowDown":
 						{
-							const next = Hat.next(this, CanvasTitleView);
+							const next = Hat.next(this, CanvasTitleHat);
 							if (next)
 								Editable.focus(next.root, { position: next.text.length });
 						}
@@ -158,7 +158,7 @@ namespace App
 						{
 							if (atStart)
 							{
-								const previous = Hat.previous(this, CanvasTitleView);
+								const previous = Hat.previous(this, CanvasTitleHat);
 								if (previous)
 									Editable.focus(previous.root, { position: previous.text.length });
 							}
@@ -167,7 +167,7 @@ namespace App
 						{
 							if (atEnd)
 							{
-								const next = Hat.next(this, CanvasTitleView);
+								const next = Hat.next(this, CanvasTitleHat);
 								if (next)
 									Editable.focus(next.root, { position: next.text.length });
 							}
@@ -203,7 +203,7 @@ namespace App
 		set text(text: string)
 		{
 			this.root.textContent = text;
-			Hat.up(this, CanvasTitleSetView)?.save();
+			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		
 		/** */
@@ -214,7 +214,7 @@ namespace App
 		set size(size: number)
 		{
 			this.root.style.fontSize = UI.vsize(size);
-			Hat.up(this, CanvasTitleSetView)?.save();
+			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		
 		/** */
@@ -225,7 +225,7 @@ namespace App
 		set weight(weight: number)
 		{
 			Htx.from(this.root)(UI.specificWeight(weight));
-			Hat.up(this, CanvasTitleSetView)?.save();
+			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		
 		/** */
@@ -236,7 +236,7 @@ namespace App
 		set hasColor(hasColor: boolean)
 		{
 			this._hasColor = hasColor;
-			Hat.up(this, CanvasTitleSetView)?.save();
+			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		private _hasColor = false;
 	}

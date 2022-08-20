@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class ProseSceneView extends SceneView
+	export class ProseSceneHat extends SceneHat
 	{
 		/** */
 		constructor(readonly record = new ProseSceneRecord())
@@ -40,7 +40,7 @@ namespace App
 							outline: "0",
 						}),
 						
-						(this.linkEditor = new LinkEditorView()).root
+						(this.linkEditor = new LinkEditorHat()).root
 					)
 				),
 				When.connected(() =>
@@ -117,7 +117,7 @@ namespace App
 				}
 			});
 			
-			this.colorConfigurator = new ColorSelector(this.record);
+			this.colorConfigurator = new ColorSelectorHat(this.record);
 			
 			Htx.from(this.colorConfigurator.root)(
 				{ tabIndex: 0 },
@@ -147,37 +147,37 @@ namespace App
 		private readonly trixEditorElement: HTMLTrixElement;
 		private readonly linkEditor;
 		
-		private readonly headingButton = new SceneButtonView("Heading", {
+		private readonly headingButton = new SceneButtonHat("Heading", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly paragraphButton = new SceneButtonView("Paragraph", {
+		private readonly paragraphButton = new SceneButtonHat("Paragraph", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly boldButton = new SceneButtonView("Bold", {
+		private readonly boldButton = new SceneButtonHat("Bold", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly italicButton = new SceneButtonView("Italic", {
+		private readonly italicButton = new SceneButtonHat("Italic", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly linkButton = new SceneButtonView("Link", {
+		private readonly linkButton = new SceneButtonHat("Link", {
 			independent: true,
 			selectable: false,
 			unselectable: false
 		});
 		
-		private readonly backgroundButton = new SceneButtonView("Background", {
+		private readonly backgroundButton = new SceneButtonHat("Background", {
 			selectable: true,
 			unselectable: true,
 		});
@@ -204,7 +204,7 @@ namespace App
 		}
 		
 		/** */
-		private setupButton(button: SceneButtonView, attribute: TrixAttribute)
+		private setupButton(button: SceneButtonHat, attribute: TrixAttribute)
 		{
 			button.root.addEventListener("click", ev =>
 			{

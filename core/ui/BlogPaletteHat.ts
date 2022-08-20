@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class BlogPalette
+	export class BlogPaletteHat
 	{
 		/** */
 		constructor()
@@ -479,7 +479,7 @@ namespace App
 			AppContainer.of(this).changeDatabase(this.name);
 			
 			if (closeDialog)
-				Hat.over(this, BlogPalette).root.remove();
+				Hat.over(this, BlogPaletteHat).root.remove();
 		}
 	}
 }

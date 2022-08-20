@@ -2,12 +2,12 @@
 namespace App
 {
 	/** */
-	export class InsertSceneView
+	export class InsertSceneHat
 	{
 		/** */
 		constructor(orientation: "v" | "h")
 		{
-			const renderButton = (label: string, sceneCtor: new() => SceneView) =>
+			const renderButton = (label: string, sceneCtor: new() => SceneHat) =>
 				UI.actionButton("filled",
 					{
 						margin: "10px " + UI.vw(0.5),
@@ -31,7 +31,7 @@ namespace App
 				);
 			
 			this.root = Htx.div(
-				"insert-scene-view",
+				"insert-scene-hat",
 				{
 					display: orientation === "v" ? "block" : "flex",
 					margin: "auto",
@@ -51,20 +51,22 @@ namespace App
 					if (!Query.ancestors(ev.target).includes(this.root))
 						this.cancelCallback?.();
 				}),
-				renderButton("Canvas", CanvasSceneView),
-				renderButton("Gallery", GallerySceneView),
-				renderButton("Prose", ProseSceneView),
+				renderButton("Canvas", CanvasSceneHat),
+				renderButton("Gallery", GallerySceneHat),
+				renderButton("Prose", ProseSceneHat),
 			);
+			
+			Hat.wear(this);
 		}
 		
 		readonly root;
 		
 		/** */
-		setInsertCallback(fn: (scene: SceneView) => void)
+		setInsertCallback(fn: (scene: SceneHat) => void)
 		{
 			this.insertCallback = fn;
 		}
-		private insertCallback?: (scene: SceneView) => void;
+		private insertCallback?: (scene: SceneHat) => void;
 		
 		/** */
 		setCancelCallback(fn: () => void)

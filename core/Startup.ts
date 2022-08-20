@@ -53,8 +53,8 @@ namespace App
 		
 		if (options?.shell !== true)
 		{
-			const view = new App.PostView(app.homePost);
-			app.root.append(view.root);
+			const hat = new App.PostHat(app.homePost);
+			app.root.append(hat.root);
 		}
 		
 		return app;

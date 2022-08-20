@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class GallerySceneView extends SceneView
+	export class GallerySceneHat extends SceneHat
 	{
 		/** */
 		constructor(readonly record = new GallerySceneRecord())
@@ -23,7 +23,7 @@ namespace App
 					},
 					Htx.on("scroll", () => this.updateButtons()),
 					
-					...this.record.frames.map(f => new FrameView(f).root)
+					...this.record.frames.map(f => new FrameHat(f).root)
 				),
 				
 				Drop.here({
@@ -78,13 +78,13 @@ namespace App
 		private readonly hiddenInput: HTMLInputElement;
 		
 		/** */
-		private readonly coverButton = new SceneButtonView("Cover", {
+		private readonly coverButton = new SceneButtonHat("Cover", {
 			selectable: true,
 			unselectable: false,
 		});
 		
 		/** */
-		private readonly containButton = new SceneButtonView("Contain", {
+		private readonly containButton = new SceneButtonHat("Contain", {
 			selectable: true,
 			unselectable: false,
 		});
@@ -97,14 +97,14 @@ namespace App
 				return;
 			
 			const visibleFrame = this.getVisibleFrame();
-			const newFrames: FrameView[] = [];
+			const newFrames: FrameHat[] = [];
 			
 			for (const mediaRecord of mediaRecords)
 			{
 				const frameRecord = new FrameRecord();
 				frameRecord.media = mediaRecord;
-				const frameView = new FrameView(frameRecord);
-				newFrames.push(frameView);
+				const frameHat = new FrameHat(frameRecord);
+				newFrames.push(frameHat);
 			}
 			
 			const isLeft = dropOffsetX < window.innerWidth / 2;
@@ -121,7 +121,7 @@ namespace App
 			await UI.wait();
 			
 			this.record.frames = Hat
-				.map(this.galleryContainer, FrameView)
+				.map(this.galleryContainer, FrameHat)
 				.map(v => v.record);
 		}
 		
@@ -130,8 +130,8 @@ namespace App
 		{
 			const gc = this.galleryContainer;
 			const index = Math.round(gc.scrollLeft / gc.offsetWidth) || 0;
-			const frameViews = Hat.map(Query.children(gc), FrameView);
-			return frameViews.length > 0 ? frameViews[index] : null;
+			const frameHats = Hat.map(Query.children(gc), FrameHat);
+			return frameHats.length > 0 ? frameHats[index] : null;
 		}
 		
 		/** */
@@ -157,7 +157,7 @@ namespace App
 	}
 	
 	/** */
-	class FrameView
+	class FrameHat
 	{
 		/** */
 		constructor(readonly record: FrameRecord)

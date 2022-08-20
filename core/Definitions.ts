@@ -39,8 +39,8 @@ const enum CssClass
 	hide = "hide",
 	appContainer = "app-container",
 	appContainerMaxed = "app-container-maxed",
-	blogView = "blog-view",
-	postViewTransition = "post-view-transition",
+	blogHat = "blog-hat",
+	postHatTransition = "post-hat-transition",
 	
 	// Player classes
 	story = "story",

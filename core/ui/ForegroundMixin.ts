@@ -9,7 +9,7 @@ namespace App
 		/** */
 		constructor(readonly root: HTMLElement)
 		{
-			Htx.from(this.root)("foreground-view");
+			Htx.from(this.root)("foreground-hat");
 			Hat.wear(this);
 		}
 	}

@@ -8,7 +8,7 @@ namespace App
 	}
 	
 	/** */
-	export class ColorSelector
+	export class ColorSelectorHat
 	{
 		/** */
 		constructor(readonly record: SceneRecord)
@@ -33,14 +33,14 @@ namespace App
 		{
 			for (const pair of App.colorPairs)
 			{
-				const cfg = new ColorOption(this.record, pair);
+				const cfg = new ColorOptionHat(this.record, pair);
 				this.root.append(cfg.root);
 			}
 		}
 	}
 	
 	/** */
-	class ColorOption
+	class ColorOptionHat
 	{
 		/** */
 		constructor(
@@ -71,6 +71,8 @@ namespace App
 						this.select();
 				})
 			);
+			
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -87,7 +89,7 @@ namespace App
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			
-			Hat.over(this, SceneView).updateColor();
+			Hat.over(this, SceneHat).updateColor();
 		}
 	}
 }

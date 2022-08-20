@@ -111,13 +111,13 @@ namespace App
 			this.root.replaceChildren();
 			this._database = db;
 			this._meta = await App.getDatabaseMeta(db);
-			this.root.append(new BlogView().root);
+			this.root.append(new BlogHat().root);
 		}
 		
 		/** */
 		showBlogPalette()
 		{
-			const pal = new BlogPalette();
+			const pal = new BlogPaletteHat();
 			this.root.append(pal.root);
 		}
 		

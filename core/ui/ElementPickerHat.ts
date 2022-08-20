@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class ElementPicker
+	export class ElementPickerHat
 	{
 		/** */
 		constructor(container: HTMLElement)

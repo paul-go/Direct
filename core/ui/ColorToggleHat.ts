@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class ColorToggleView
+	export class ColorToggleHat
 	{
 		/** */
 		constructor()

@@ -108,7 +108,7 @@ namespace Cover
 		
 		await App.UI.wait();
 		
-		const picker = new App.ElementPicker(root);
+		const picker = new App.ElementPickerHat(root);
 		picker.registerElement(element1);
 		picker.registerElement(element2);
 		picker.registerElement(element3);
@@ -118,7 +118,7 @@ namespace Cover
 	export async function coverOriginPicker()
 	{
 		App.appendCss();
-		const np = new App.OriginPicker();
+		const np = new App.OriginPickerHat();
 		document.body.append(np.root);
 	}
 	
@@ -145,10 +145,10 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPublishStatusView()
+	export async function coverPublishStatusHat()
 	{
 		App.appendCss();
-		const remover = App.PublishStatusView.show("Local");
+		const remover = App.PublishStatusHat.show("Local");
 		setTimeout(remover, 2500);
 	}
 	

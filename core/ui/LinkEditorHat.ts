@@ -2,12 +2,12 @@
 namespace App
 {
 	/** */
-	export class LinkEditorView
+	export class LinkEditorHat
 	{
 		constructor()
 		{
 			this.root = Htx.div(
-				"link-editor-view",
+				"link-editor-hat",
 				UI.anchorCenter("fit-content"),
 				UI.toolButtonTheme,
 				{
@@ -71,7 +71,7 @@ namespace App
 		}
 		
 		/**
-		 * Gets or sets the complete link text displayed in this LinkEditorView,
+		 * Gets or sets the complete link text displayed in this LinkEditorHat,
 		 * including both the protocol and the non-protocol areas.
 		 */
 		get link()

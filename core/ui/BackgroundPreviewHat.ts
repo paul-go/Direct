@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class BackgroundPreview implements IColorable
+	export class BackgroundPreviewHat implements IColorable
 	{
 		/** */
 		constructor(private readonly record: CanvasSceneRecord)
@@ -24,8 +24,8 @@ namespace App
 				),
 			);
 			
-			this.previews = new Hat.Array(this.root, BackgroundObjectPreview);
-			this.configurators = new Hat.Array(imagesConfigurators, BackgroundConfigurator);
+			this.previews = new Hat.Array(this.root, BackgroundObjectPreviewHat);
+			this.configurators = new Hat.Array(imagesConfigurators, BackgroundConfiguratorHat);
 			
 			for (const bg of record.backgrounds)
 				if (bg.media)
@@ -62,19 +62,19 @@ namespace App
 		 */
 		private bindBackground(backgroundRecord: BackgroundRecord)
 		{
-			const preview = BackgroundObjectPreview.new(backgroundRecord);
-			const cfg = new BackgroundConfigurator(backgroundRecord, preview);
+			const preview = BackgroundObjectPreviewHat.new(backgroundRecord);
+			const cfg = new BackgroundConfiguratorHat(backgroundRecord, preview);
 			this.configurators.insert(cfg);
 			this.previews.insert(cfg.preview);
 			
-			if (preview instanceof BackgroundImagePreview)
+			if (preview instanceof BackgroundImagePreviewHat)
 				this.manageSelectionBox(cfg, preview);
 		}
 		
 		/** */
 		private manageSelectionBox(
-			configurator: BackgroundConfigurator,
-			preview: BackgroundImagePreview)
+			configurator: BackgroundConfiguratorHat,
+			preview: BackgroundImagePreviewHat)
 		{
 			const update = () =>
 			{
@@ -106,12 +106,12 @@ namespace App
 	}
 	
 	/** */
-	class BackgroundConfigurator
+	class BackgroundConfiguratorHat
 	{
 		/** */
 		constructor(
 			readonly record: BackgroundRecord,
-			readonly preview: BackgroundObjectPreview)
+			readonly preview: BackgroundObjectPreviewHat)
 		{
 			this.root = Htx.div(
 				"background-configurator",
@@ -156,7 +156,7 @@ namespace App
 				)
 			);
 			
-			if (this.preview instanceof BackgroundImagePreview)
+			if (this.preview instanceof BackgroundImagePreviewHat)
 			{
 				const bip = this.preview;
 				this.sizeSlider.setPlaceChangeFn(() =>
@@ -219,7 +219,7 @@ namespace App
 		/** */
 		private setUsingCover(usingCover: boolean)
 		{
-			if (!(this.preview instanceof BackgroundImagePreview))
+			if (!(this.preview instanceof BackgroundImagePreviewHat))
 				return;
 			
 			this.coverButton.style.opacity = usingCover ? "1" : "0.5";
@@ -241,14 +241,14 @@ namespace App
 	}
 	
 	/** */
-	export abstract class BackgroundObjectPreview
+	export abstract class BackgroundObjectPreviewHat
 	{
 		/** */
 		static new(record: BackgroundRecord)
 		{
 			return Util.getMimeClass(record) === MimeClass.video ?
-				new BackgroundVideoPreview(record) :
-				new BackgroundImagePreview(record);
+				new BackgroundVideoPreviewHat(record) :
+				new BackgroundImagePreviewHat(record);
 		}
 		
 		/** */
@@ -258,7 +258,7 @@ namespace App
 	}
 	
 	/** */
-	class BackgroundVideoPreview extends BackgroundObjectPreview
+	class BackgroundVideoPreviewHat extends BackgroundObjectPreviewHat
 	{
 		/** */
 		constructor(record: BackgroundRecord)
@@ -281,7 +281,7 @@ namespace App
 	}
 	
 	/** */
-	class BackgroundImagePreview extends BackgroundObjectPreview
+	class BackgroundImagePreviewHat extends BackgroundObjectPreviewHat
 	{
 		/** */
 		constructor(record: BackgroundRecord)
@@ -399,7 +399,7 @@ namespace App
 				});
 				
 				const s = this.img.style;
-				const sceneContainer = Hat.over(this, BackgroundPreview).root;
+				const sceneContainer = Hat.over(this, BackgroundPreviewHat).root;
 				
 				if (this.imgWidth > this.imgHeight)
 				{

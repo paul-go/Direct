@@ -3,16 +3,16 @@
 namespace App
 {
 	/** */
-	export class CanvasSceneView extends SceneView
+	export class CanvasSceneHat extends SceneHat
 	{
 		/** */
 		constructor(readonly record = new CanvasSceneRecord())
 		{
 			super(record);
 			
-			this.titleView = new CanvasTitleSetView(record);
-			this.descriptionView = new CanvasDescriptionView(record);
-			this.actionManager = new CanvasActionSet(record);
+			this.titleHat = new CanvasTitleSetHat(record);
+			this.descriptionHat = new CanvasDescriptionHat(record);
+			this.actionManager = new CanvasActionSetHat(record);
 			
 			Htx.from(this.sceneContainer)(
 				Drop.here({
@@ -22,7 +22,7 @@ namespace App
 					bottom: new Text("Add Background"),
 				}),
 				
-				(this.backgroundPreview = new BackgroundPreview(this.record)).root,
+				(this.backgroundPreview = new BackgroundPreviewHat(this.record)).root,
 				
 				this.foregroundPreview = Htx.div(
 					e => void new ForegroundMixin(e),
@@ -38,8 +38,8 @@ namespace App
 								this.handleSelectionChange();
 							}),
 						),
-						this.titleView.root,
-						this.descriptionView.root,
+						this.titleHat.root,
+						this.descriptionHat.root,
 						this.actionManager.root,
 					)
 				),
@@ -67,28 +67,28 @@ namespace App
 			this.setContrast(this.record.contrast);
 			this.setTwist(this.record.twist);
 			
-			this.picker = new ElementPicker(this.sceneContainer);
+			this.picker = new ElementPickerHat(this.sceneContainer);
 		}
 		
 		private readonly foregroundPreview;
 		private readonly islandElement;
 		private readonly contentImageContainer;
 		private contentImage: HTMLImageElement | null = null;
-		private readonly titleView;
-		private readonly descriptionView;
+		private readonly titleHat;
+		private readonly descriptionHat;
 		private readonly actionManager;
-		private readonly backgroundPreview: BackgroundPreview;
+		private readonly backgroundPreview: BackgroundPreviewHat;
 		
 		//private sizePicker: ElementPicker | null = null;
 		//private weightPicker: ElementPicker | null = null;
-		private originPicker: OriginPicker | null = null;
+		private originPicker: OriginPickerHat | null = null;
 		
-		private readonly animationButton = new SceneButtonView("Animation");
-		private readonly positionButton = new SceneButtonView("Position");
-		private readonly sizeButton = new SceneButtonView("Size");
-		private readonly weightButton = new SceneButtonView("Bold");
-		private readonly colorButton = new SceneButtonView("Color");
-		private readonly backgroundsButton = new SceneButtonView("Backgrounds");
+		private readonly animationButton = new SceneButtonHat("Animation");
+		private readonly positionButton = new SceneButtonHat("Position");
+		private readonly sizeButton = new SceneButtonHat("Size");
+		private readonly weightButton = new SceneButtonHat("Bold");
+		private readonly colorButton = new SceneButtonHat("Color");
+		private readonly backgroundsButton = new SceneButtonHat("Backgrounds");
 		
 		/** */
 		private createToolButtons()
@@ -113,12 +113,12 @@ namespace App
 				}
 			});
 			
-			const titleTool = this.createToolButton("+ Title", () => this.titleView.focus());
-			const descTool = this.createToolButton("+ Description", () => this.descriptionView.focus());
+			const titleTool = this.createToolButton("+ Title", () => this.titleHat.focus());
+			const descTool = this.createToolButton("+ Description", () => this.descriptionHat.focus());
 			const actionTool = this.createToolButton("+ Button", () => this.actionManager.addAction());
 			
-			this.titleView.setHideChangedHandler(hidden => UI.toggle(titleTool, hidden));
-			this.descriptionView.setHideChangedHandler(hidden => UI.toggle(descTool, hidden));
+			this.titleHat.setHideChangedHandler(hidden => UI.toggle(titleTool, hidden));
+			this.descriptionHat.setHideChangedHandler(hidden => UI.toggle(descTool, hidden));
 			
 			return [
 				imageTool,
@@ -265,7 +265,7 @@ namespace App
 		private setDescriptionText(text: string)
 		{
 			this.record.description = text;
-			this.descriptionView.text = text;
+			this.descriptionHat.text = text;
 		}
 		
 		/** */
@@ -289,12 +289,12 @@ namespace App
 				{
 					slider.place = this.record.contentImageWidth;
 				}
-				else if (picked instanceof CanvasTitleView)
+				else if (picked instanceof CanvasTitleHat)
 				{
 					slider.max = 50;
 					slider.place = picked.size;
 				}
-				else if (picked instanceof CanvasDescriptionView)
+				else if (picked instanceof CanvasDescriptionHat)
 				{
 					slider.place = this.record.descriptionSize;
 					slider.max = 10;
@@ -314,11 +314,11 @@ namespace App
 				{
 					this.setContentImageSize(slider.place);
 				}
-				else if (picked instanceof CanvasTitleView)
+				else if (picked instanceof CanvasTitleHat)
 				{
 					picked.size = slider.place;
 				}
-				else if (picked instanceof CanvasDescriptionView)
+				else if (picked instanceof CanvasDescriptionHat)
 				{
 					this.setDescriptionSize(slider.place);
 				}
@@ -347,7 +347,7 @@ namespace App
 		/** */
 		private setDescriptionSize(size: number)
 		{
-			this.descriptionView.fontSize = size;
+			this.descriptionHat.fontSize = size;
 			this.actionManager.setFontSize(size);
 			this.record.descriptionSize = size;
 		}
@@ -364,7 +364,7 @@ namespace App
 			const updatePick = () =>
 			{
 				const picked = this.getPicked();
-				if (!(picked instanceof CanvasTitleView))
+				if (!(picked instanceof CanvasTitleHat))
 					return;
 				
 				slider.decimals = 0;
@@ -379,7 +379,7 @@ namespace App
 			slider.setPlaceChangeFn(() =>
 			{
 				const picked = this.getPicked();
-				if (picked instanceof CanvasTitleView)
+				if (picked instanceof CanvasTitleHat)
 					picked.weight = slider.place;
 			});
 			
@@ -403,7 +403,7 @@ namespace App
 			slider.place = this.record.contrast;
 			slider.setPlaceChangeFn(() => this.setContrast(slider.place));
 			
-			const colorToggle = new ColorToggleView();
+			const colorToggle = new ColorToggleHat();
 			
 			colorToggle.setChangedFn(() =>
 			{
@@ -415,15 +415,15 @@ namespace App
 			{
 				const picked = this.getPicked();
 				
-				if (picked instanceof CanvasTitleView)
+				if (picked instanceof CanvasTitleHat)
 				{
 					colorToggle.hasColor = picked.hasColor
 				}
-				else if (picked instanceof CanvasAction)
+				else if (picked instanceof CanvasActionHat)
 				{
 					colorToggle.hasColor = picked.actionRecord.hasColor;
 				}
-				else if (picked instanceof BackgroundPreview)
+				else if (picked instanceof BackgroundPreviewHat)
 				{
 					colorToggle.hasColor = this.record.hasColor;
 				}
@@ -445,7 +445,7 @@ namespace App
 		/** */
 		private renderPositionConfigurator()
 		{
-			const picker = this.originPicker = new OriginPicker({
+			const picker = this.originPicker = new OriginPickerHat({
 				...UI.backdropBlur(5),
 				backgroundColor: UI.black(0.333),
 			});
@@ -489,7 +489,7 @@ namespace App
 		
 		//# Element Picker
 		
-		private readonly picker: ElementPicker;
+		private readonly picker: ElementPickerHat;
 		private readonly pickerDataMap = new Map<HTMLElement, TPickable>();
 		
 		/** */
@@ -536,7 +536,7 @@ namespace App
 			
 			if (pickableTypes.includes(Pickable.titles))
 			{
-				for (const canvasTitle of this.titleView.getCanvasTitles())
+				for (const canvasTitle of this.titleHat.getCanvasTitles())
 				{
 					this.picker.registerElement(canvasTitle.root);
 					this.pickerDataMap.set(canvasTitle.root, canvasTitle);
@@ -545,17 +545,17 @@ namespace App
 			
 			if (pickableTypes.includes(Pickable.descriptions))
 			{
-				if (this.descriptionView.text)
+				if (this.descriptionHat.text)
 				{
-					const e = this.descriptionView.root;
+					const e = this.descriptionHat.root;
 					this.picker.registerElement(e);
-					this.pickerDataMap.set(e, this.descriptionView);
+					this.pickerDataMap.set(e, this.descriptionHat);
 				}
 			}
 			
 			if (pickableTypes.includes(Pickable.actions))
 			{
-				for (const action of Hat.under(this, CanvasAction))
+				for (const action of Hat.under(this, CanvasActionHat))
 				{
 					this.picker.registerElement(action.root);
 					this.pickerDataMap.set(action.root, action);
@@ -564,7 +564,7 @@ namespace App
 			
 			if (pickableTypes.includes(Pickable.backgroundObjects))
 			{
-				for (const bg of Hat.under(this, BackgroundObjectPreview))
+				for (const bg of Hat.under(this, BackgroundObjectPreviewHat))
 				{
 					this.picker.registerElement(bg.root);
 					this.pickerDataMap.set(bg.root, bg);
@@ -594,9 +594,9 @@ namespace App
 	/** */
 	type TPickable = 
 		HTMLImageElement |
-		CanvasTitleView |
-		CanvasDescriptionView |
-		CanvasAction |
-		BackgroundObjectPreview |
-		BackgroundPreview;
+		CanvasTitleHat |
+		CanvasDescriptionHat |
+		CanvasActionHat |
+		BackgroundObjectPreviewHat |
+		BackgroundPreviewHat;
 }

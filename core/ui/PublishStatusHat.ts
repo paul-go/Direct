@@ -2,14 +2,14 @@
 namespace App
 {
 	/** */
-	export class PublishStatusView
+	export class PublishStatusHat
 	{
 		/** */
 		static show(target: string)
 		{
-			const view = new PublishStatusView(target);
-			document.body.append(view.root);
-			return () => view.remove();
+			const hat = new PublishStatusHat(target);
+			document.body.append(hat.root);
+			return () => hat.remove();
 		}
 		
 		/** */

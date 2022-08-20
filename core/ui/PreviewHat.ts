@@ -2,13 +2,13 @@
 namespace App
 {
 	/** */
-	export class PreviewView
+	export class PreviewHat
 	{
 		/** */
 		constructor(post: PostRecord, meta: MetaRecord)
 		{
 			this.root = Htx.div(
-				"preview-view",
+				"preview-hat",
 				UI.fixed(),
 				UI.keyable,
 				{

@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export interface ISceneButtonViewOptions
+	export interface ISceneButtonHatOptions
 	{
 		selectable?: boolean;
 		unselectable?: boolean;
@@ -10,10 +10,10 @@ namespace App
 	}
 	
 	/** */
-	export class SceneButtonView
+	export class SceneButtonHat
 	{
 		/** */
-		constructor(text: string, options?: ISceneButtonViewOptions)
+		constructor(text: string, options?: ISceneButtonHatOptions)
 		{
 			this.isSelectable = options?.selectable ?? true;
 			this.isUnselectable = options?.unselectable ?? true;
@@ -90,7 +90,7 @@ namespace App
 			
 			const siblings = Query.siblings(this.root);
 			
-			for (const b of Hat.map(siblings, SceneButtonView))
+			for (const b of Hat.map(siblings, SceneButtonHat))
 				if (b !== this)
 					b._selected = false;
 			

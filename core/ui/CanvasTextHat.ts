@@ -4,7 +4,7 @@ namespace App
 	/**
 	 * Base class for text objects that can render on the CanvasScene
 	 */
-	export abstract class CanvasTextView
+	export abstract class CanvasTextHat
 	{
 		/** */
 		constructor(protected record: CanvasSceneRecord)

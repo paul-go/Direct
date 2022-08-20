@@ -286,6 +286,6 @@ namespace Cover
 		const scene = new App.CanvasSceneRecord();
 		scene.titles.push({ text: "Done", size: 4, weight: 700, hasColor: false });
 		post.scenes.push(scene);
-		new App.PreviewView(post, meta);
+		new App.PreviewHat(post, meta);
 	}
 }

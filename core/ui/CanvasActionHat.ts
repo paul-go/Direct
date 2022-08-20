@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class CanvasActionSet
+	export class CanvasActionSetHat
 	{
 		/** */
 		constructor(readonly record: CanvasSceneRecord)
@@ -16,7 +16,7 @@ namespace App
 				When.connected(() => this.setupSizeObserver())
 			);
 			
-			this.actions = new Hat.Array(this.root, CanvasAction);
+			this.actions = new Hat.Array(this.root, CanvasActionHat);
 			
 			for (const action of record.actions)
 				this.bindAction(action);
@@ -39,9 +39,9 @@ namespace App
 		 */
 		private setupSizeObserver()
 		{
-			const csv = Hat.over(this, CanvasSceneView);
-			const ctv = Not.nullable(Hat.under(csv, CanvasTitleSetView)?.at(0));
-			const cdv = Not.nullable(Hat.under(csv, CanvasDescriptionView)?.at(0));
+			const csv = Hat.over(this, CanvasSceneHat);
+			const ctv = Not.nullable(Hat.under(csv, CanvasTitleSetHat)?.at(0));
+			const cdv = Not.nullable(Hat.under(csv, CanvasDescriptionHat)?.at(0));
 			
 			const ro = new ResizeObserver(() =>
 			{
@@ -84,21 +84,21 @@ namespace App
 		/** */
 		private bindAction(actionRecord: ActionRecord)
 		{
-			const ca = new CanvasAction(this.record, actionRecord)
+			const ca = new CanvasActionHat(this.record, actionRecord)
 			this.actions.insert(ca);
 			return ca;
 		}
 	}
 	
 	/** */
-	export class CanvasAction implements IColorable
+	export class CanvasActionHat implements IColorable
 	{
 		/** */
 		constructor(
 			readonly sceneRecord: CanvasSceneRecord,
 			readonly actionRecord: ActionRecord)
 		{
-			this.linkEditor = new LinkEditorView();
+			this.linkEditor = new LinkEditorHat();
 			this.linkEditor.setCommitFn(target => this.target = target);
 			
 			this.root = Htx.div(
@@ -135,8 +135,8 @@ namespace App
 					
 					UI.click(() =>
 					{
-						const canMoveUp = !!Hat.previous(this.root, CanvasAction);
-						const canMoveDown = !!Hat.next(this.root, CanvasAction);
+						const canMoveUp = !!Hat.previous(this.root, CanvasActionHat);
+						const canMoveDown = !!Hat.next(this.root, CanvasActionHat);
 						
 						UI.springMenu(this.menuContainer, {
 							
@@ -188,14 +188,14 @@ namespace App
 		/** */
 		moveUp()
 		{
-			const prev = Hat.previous(this.root, CanvasAction);
+			const prev = Hat.previous(this.root, CanvasActionHat);
 			prev?.root.before(this.root);
 		}
 		
 		/** */
 		moveDown()
 		{
-			const next = Hat.next(this.root, CanvasAction);
+			const next = Hat.next(this.root, CanvasActionHat);
 			next?.root.after(this.root);
 		}
 		
@@ -226,7 +226,7 @@ namespace App
 			this.sceneRecord.actionShape = shape;
 			
 			const siblings = this.root.parentElement ? 
-				Hat.map(this.root.parentElement, CanvasAction) :
+				Hat.map(this.root.parentElement, CanvasActionHat) :
 				[this];
 				
 			for (const sibling of siblings)

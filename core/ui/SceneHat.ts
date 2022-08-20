@@ -4,7 +4,7 @@ namespace App
 	const headerPadding = "25px";
 	
 	/** */
-	export abstract class SceneView
+	export abstract class SceneHat
 	{
 		static readonly headerHeight = "100px";
 		
@@ -12,13 +12,13 @@ namespace App
 		static new(record: SceneRecord)
 		{
 			if (record instanceof CanvasSceneRecord)
-				return new CanvasSceneView(record);
+				return new CanvasSceneHat(record);
 			
 			if (record instanceof GallerySceneRecord)
-				return new GallerySceneView(record);
+				return new GallerySceneHat(record);
 			
 			if (record instanceof ProseSceneRecord)
-				return new ProseSceneView(record);
+				return new ProseSceneHat(record);
 			
 			throw "Unknown record type.";
 		}
@@ -27,12 +27,12 @@ namespace App
 		constructor(readonly record: SceneRecord)
 		{
 			this.root = Htx.div(
-				"scene-view",
+				"scene-hat",
 				{
 					backgroundColor: UI.darkGrayBackground
 				},
 				
-				// Hide the transition configurator for the first scene view
+				// Hide the transition configurator for the first scene hat
 				Htx.css(":first-of-type .transition-configurator", { visibility: "hidden" }),
 				
 				// 
@@ -137,7 +137,7 @@ namespace App
 				"default-header",
 				{
 					display: "flex",
-					height: SceneView.headerHeight,
+					height: SceneHat.headerHeight,
 					paddingLeft: headerPadding,
 					paddingRight: headerPadding,
 				},
@@ -180,8 +180,8 @@ namespace App
 				Icon.plus(
 					Htx.on(UI.clickEvt, () => 
 					{
-						const view = this.renderInsertScene(this.footerBox, "afterend");
-						Htx.from(view.root)({ marginBottom: "100px" });
+						const hat = this.renderInsertScene(this.footerBox, "afterend");
+						Htx.from(hat.root)({ marginBottom: "100px" });
 					}),
 				)
 			);
@@ -190,7 +190,7 @@ namespace App
 		/** */
 		private renderInsertScene(box: HeightBox, where: InsertPosition)
 		{
-			const ibv = new InsertSceneView("h");
+			const ibv = new InsertSceneHat("h");
 			ibv.setInsertCallback(scene =>
 			{
 				this.root.insertAdjacentElement(where, scene.root);
@@ -263,7 +263,7 @@ namespace App
 		/** */
 		protected setSceneButtons(
 			changedFn: () => void,
-			...sceneButtons: SceneButtonView[])
+			...sceneButtons: SceneButtonHat[])
 		{
 			this._sceneButtons = sceneButtons;
 			this.sceneButtonsSelectedChangedFn = changedFn;
@@ -317,13 +317,13 @@ namespace App
 		}
 		
 		/** */
-		get sceneButtons(): readonly SceneButtonView[]
+		get sceneButtons(): readonly SceneButtonHat[]
 		{
 			return this._sceneButtons;
 		}
-		private _sceneButtons: SceneButtonView[] = [];
+		private _sceneButtons: SceneButtonHat[] = [];
 		
-		private readonly moreButton = new SceneButtonView("•••", {
+		private readonly moreButton = new SceneButtonHat("•••", {
 			selectable: false,
 		});
 		
@@ -396,7 +396,7 @@ namespace App
 		/** */
 		private insertGalleryScene(files: FileLike[])
 		{
-			const galleryScene = new GallerySceneView();
+			const galleryScene = new GallerySceneHat();
 			galleryScene.importMedia(files);
 			this.root.before(galleryScene.root);
 		}

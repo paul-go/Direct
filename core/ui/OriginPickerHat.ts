@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class OriginPicker
+	export class OriginPickerHat
 	{
 		/** */
 		constructor(...params: Htx.Param[])
@@ -43,6 +43,8 @@ namespace App
 				
 				...UI.removeOnEscape(() => this.selectedFn(null))
 			);
+			
+			Hat.wear(this);
 		}
 		
 		readonly root;

@@ -148,13 +148,13 @@ namespace App
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
 			this.meta.setPublishParam(this.key, paramKey, value);
-			When.connected(this.root, () => Hat.over(this, PostView).updatePublishInfo());
+			When.connected(this.root, () => Hat.over(this, PostHat).updatePublishInfo());
 		}
 		
 		/** */
 		protected close()
 		{
-			Hat.over(this, PublishSetupView)?.close();
+			Hat.over(this, PublishSetupHat)?.close();
 			
 			// Scroll the window to the bottom, in order to make sure
 			// that the publishing information is visible.
@@ -169,7 +169,7 @@ namespace App
 				...(await Render.getSupportFiles()),
 			];
 			
-			const removeFn = PublishStatusView.show(this.label);
+			const removeFn = PublishStatusHat.show(this.label);
 			const maybeError = await this.executePublish(files);
 			
 			if (maybeError)
