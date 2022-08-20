@@ -381,4 +381,8 @@ namespace Hat
 			return this.map();
 		}
 	}
+	
+	declare var module: any;
+	if (typeof module === "object")
+		Object.assign(module.exports, { Hot });
 }
