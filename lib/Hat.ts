@@ -238,14 +238,16 @@ namespace Hat
 		let className = hatClassNames.get(ctor);
 		if (!className)
 		{
-			className = "__hat_" + (++nameIdx) + "__";
+			className = ctor.name.length < 3 ? 
+				"_hat_" + ctor.name:
+				ctor.name;
+			
 			hatClassNames.set(ctor, className);
 		}
 		
 		return className;
 	}
 	
-	let nameIdx = 0;
 	const hatClassNames = new WeakMap<Function, string>();
 	const hats = new WeakMap<Element, object[]>();
 	
