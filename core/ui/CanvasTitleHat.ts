@@ -224,7 +224,7 @@ namespace App
 		}
 		set weight(weight: number)
 		{
-			Htx.from(this.root)(UI.specificWeight(weight));
+			Htx.get(this.root)(UI.specificWeight(weight));
 			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		

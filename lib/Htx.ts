@@ -24,7 +24,7 @@ namespace Htx { { } }
 				case "on": return on;
 				case "css": return css;
 				case "animation": return animation;
-				case "from": return from;
+				case "get": return get;
 			}
 			
 			return (...params: Htx.Param[]) => create(name, params);
@@ -67,7 +67,7 @@ namespace Htx { { } }
 	}
 	
 	/** */
-	function from(...elements: Element[])
+	function get(...elements: Element[])
 	{
 		return (...params: Htx.Param[]) =>
 		{
@@ -644,11 +644,12 @@ namespace Htx
 	 */
 	export declare function animation(name: string, style: Record<number, Htx.Style>): Htx.Style
 	
-	/** */
-	export declare function from<E extends Element>(e: E, ...others: HTMLElement[]): (...params: Param[]) => E;
+	/**
+	 * Creates a new Htx context from the specified Element or series of Elements.
+	 */
+	export declare function get<E extends Element>(e: E, ...others: Element[]): (...params: Param[]) => E;
 	
 	declare var module: any;
 	if (typeof module === "object")
 		Object.assign(module.exports, { Htx });
 }
-

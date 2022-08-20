@@ -86,7 +86,7 @@ namespace App
 				preview.toggleSelectionBox(visible);
 			};
 			
-			Htx.from(configurator.root, preview.root)(
+			Htx.get(configurator.root, preview.root)(
 				{ tabIndex: 0 },
 				Htx.on("focusout", () => update()),
 				Htx.on("focusin", () => update()),
@@ -375,24 +375,24 @@ namespace App
 			
 			if (size < 0)
 			{
-				Htx.from(this.imgBoundary)(
+				Htx.get(this.imgBoundary)(
 					UI.anchor()
 				);
 				
-				Htx.from(this.imgContainer, this.img)({
+				Htx.get(this.imgContainer, this.img)({
 					width: "100%",
 					height: "100%",
 					transform: "none",
 				});
 				
-				Htx.from(this.img)({
+				Htx.get(this.img)({
 					objectFit: "cover",
 					objectPosition: "50% 50%",
 				});
 			}
 			else
 			{
-				Htx.from(this.imgContainer)({
+				Htx.get(this.imgContainer)({
 					width: "min-content",
 					height: "min-content",
 					transform: "translateX(-50%) translateY(-50%)"
@@ -416,7 +416,7 @@ namespace App
 				
 				await UI.wait();
 				
-				Htx.from(this.imgBoundary)(
+				Htx.get(this.imgBoundary)(
 					UI.anchor(this.img.offsetHeight / 2, this.img.offsetWidth / 2),
 					{
 						width: "auto",

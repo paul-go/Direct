@@ -31,7 +31,7 @@ namespace App
 				},
 				UI.backdropBlur(5),
 				this.hide,
-				When.rendered(() => Htx.from(this.root)(this.show)),
+				When.rendered(() => Htx.get(this.root)(this.show)),
 				Htx.span(
 					{
 						opacity: "0.8",

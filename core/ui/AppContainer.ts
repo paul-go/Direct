@@ -27,7 +27,7 @@ namespace App
 			this._database = database;
 			this._meta = meta;
 			
-			Htx.from(root)(
+			Htx.get(root)(
 				
 				CssClass.appContainer,
 				{

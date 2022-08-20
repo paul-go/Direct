@@ -44,7 +44,7 @@ namespace App
 		/** */
 		toggle(visible: boolean)
 		{
-			Htx.from(this.root)({
+			Htx.get(this.root)({
 				pointerEvents: visible ? "all" : "none",
 				visibility: visible ? "visible" : "hidden",
 			});

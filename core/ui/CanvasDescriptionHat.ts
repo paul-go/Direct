@@ -67,7 +67,7 @@ namespace App
 		}
 		set fontWeight(weight: number)
 		{
-			Htx.from(this.textArea)(UI.specificWeight(weight));
+			Htx.get(this.textArea)(UI.specificWeight(weight));
 		}
 		
 		/** */

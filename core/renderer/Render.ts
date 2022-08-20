@@ -349,7 +349,7 @@ namespace App
 				];
 				
 				if (scene.titles.length === 1)
-					Htx.from(h2)(...render(scene.titles[0]));
+					Htx.get(h2)(...render(scene.titles[0]));
 				
 				else for (const title of scene.titles)
 					h2.append(Htx.div(...render(title)));
@@ -564,7 +564,7 @@ namespace App
 				if (isImage)
 				{
 					const cssSrc = bun.getMediaUrl(frame.media, "css");
-					Htx.from(frameDiv)(
+					Htx.get(frameDiv)(
 						frame.size === "contain" && RenderUtil.createImageFiller(cssSrc),
 						Htx.img(
 							{ src: htmlSrc },
@@ -579,7 +579,7 @@ namespace App
 						RenderUtil.createVideoFiller(htmlSrc, mainVideo) :
 						null;
 					
-					Htx.from(frameDiv)(
+					Htx.get(frameDiv)(
 						fillerVideo,
 						mainVideo,
 					);

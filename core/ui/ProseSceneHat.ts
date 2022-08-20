@@ -11,7 +11,7 @@ namespace App
 			
 			this.trixEditorElement = this.createTrixEditor();
 			
-			Htx.from(this.sceneContainer)(
+			Htx.get(this.sceneContainer)(
 				{
 					height: "auto",
 				},
@@ -35,7 +35,7 @@ namespace App
 						},
 						UI.keyable,
 						
-						Htx.from(this.trixEditorElement)({
+						Htx.get(this.trixEditorElement)({
 							flex: "1 0",
 							outline: "0",
 						}),
@@ -96,7 +96,7 @@ namespace App
 			
 			// Setup the placeholder
 			this.trixEditorElement.setAttribute("placeholder", "Write something inspiring here...");
-			Htx.from(this.trixEditorElement)(
+			Htx.get(this.trixEditorElement)(
 				Htx.css(":before", {
 					fontSize: "30px"
 				})
@@ -119,7 +119,7 @@ namespace App
 			
 			this.colorConfigurator = new ColorSelectorHat(this.record);
 			
-			Htx.from(this.colorConfigurator.root)(
+			Htx.get(this.colorConfigurator.root)(
 				{ tabIndex: 0 },
 				Htx.on("focusout", () => setTimeout(() =>
 				{

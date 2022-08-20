@@ -14,7 +14,7 @@ namespace App
 			this.descriptionHat = new CanvasDescriptionHat(record);
 			this.actionManager = new CanvasActionSetHat(record);
 			
-			Htx.from(this.sceneContainer)(
+			Htx.get(this.sceneContainer)(
 				Drop.here({
 					accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
 					dropFn: (files, x, y) => this.handleMediaDrop(files, x, y),

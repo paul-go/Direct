@@ -37,7 +37,7 @@ namespace App
 		/** */
 		private hide()
 		{
-			Htx.from(this.root)(
+			Htx.get(this.root)(
 				{
 					opacity: "0",
 					// It's necessary to have a background color, 
@@ -51,7 +51,7 @@ namespace App
 		/** */
 		private show()
 		{
-			Htx.from(this.root)(
+			Htx.get(this.root)(
 				UI.backdropBlur(7),
 				{ opacity: "1" }
 			);

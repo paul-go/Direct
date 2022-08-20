@@ -957,7 +957,7 @@ namespace App
 				200);
 			};
 			
-			Htx.from(notificationDiv)(
+			Htx.get(notificationDiv)(
 				clsVisible,
 				Htx.on("pointermove", cancel),
 				Htx.on(document.body, "pointerdown", cancel),

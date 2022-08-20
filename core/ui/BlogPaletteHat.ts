@@ -349,7 +349,7 @@ namespace App
 			this.storedName = this.name;
 			this.nameElement.replaceChildren();
 			
-			Htx.from(this.nameElement)(
+			Htx.get(this.nameElement)(
 				new Text(this.storedName),
 				Editable.single({
 					placeholderText: "Enter the name of the blog",

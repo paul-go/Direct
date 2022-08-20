@@ -216,7 +216,7 @@ namespace App
 		/** */
 		private toggleHeader(visible: boolean)
 		{
-			Htx.from(this.headerScreen)(
+			Htx.get(this.headerScreen)(
 				{ backgroundColor: visible ? UI.gray(128, 0.25) : "transparent" },
 				UI.backdropBlur(visible ? 8 : 0)
 			);

@@ -240,7 +240,7 @@ namespace Cover
 	/** */
 	export async function coverEditable()
 	{
-		Htx.from(document.body)(
+		Htx.get(document.body)(
 			{
 				padding: "20px",
 			},

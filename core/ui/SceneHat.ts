@@ -108,7 +108,7 @@ namespace App
 			// Populate this with data in the future.
 			this.transition = Transitions.slide;
 			
-			Htx.from(this.moreButton.root)(
+			Htx.get(this.moreButton.root)(
 				Htx.on(UI.clickEvt, ev =>
 				{
 					return UI.springMenu(ev.target, {
@@ -181,7 +181,7 @@ namespace App
 					Htx.on(UI.clickEvt, () => 
 					{
 						const hat = this.renderInsertScene(this.footerBox, "afterend");
-						Htx.from(hat.root)({ marginBottom: "100px" });
+						Htx.get(hat.root)({ marginBottom: "100px" });
 					}),
 				)
 			);

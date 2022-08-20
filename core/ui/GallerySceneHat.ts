@@ -9,7 +9,7 @@ namespace App
 		{
 			super(record);
 			
-			Htx.from(this.sceneContainer)(
+			Htx.get(this.sceneContainer)(
 				
 				this.galleryContainer = Htx.div(
 					"gallery-container",
