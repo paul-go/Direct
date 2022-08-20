@@ -25,7 +25,7 @@ namespace App
 			);
 			
 			this.hide();
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;

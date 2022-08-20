@@ -555,7 +555,7 @@ namespace App
 			
 			if (pickableTypes.includes(Pickable.actions))
 			{
-				for (const action of Cage.under(this, CanvasAction))
+				for (const action of Hat.under(this, CanvasAction))
 				{
 					this.picker.registerElement(action.root);
 					this.pickerDataMap.set(action.root, action);
@@ -564,7 +564,7 @@ namespace App
 			
 			if (pickableTypes.includes(Pickable.backgroundObjects))
 			{
-				for (const bg of Cage.under(this, BackgroundObjectPreview))
+				for (const bg of Hat.under(this, BackgroundObjectPreview))
 				{
 					this.picker.registerElement(bg.root);
 					this.pickerDataMap.set(bg.root, bg);

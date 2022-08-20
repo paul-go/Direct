@@ -66,7 +66,7 @@ namespace App
 			);
 			
 			setTimeout(() => this.updateThumb());
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;

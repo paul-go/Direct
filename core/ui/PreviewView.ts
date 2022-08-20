@@ -62,7 +62,7 @@ namespace App
 			);
 			
 			document.body.append(this.root);
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;

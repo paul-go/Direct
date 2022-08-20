@@ -23,7 +23,7 @@ namespace App
 				When.connected(() => this.render())
 			);
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -87,7 +87,7 @@ namespace App
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			
-			Cage.over(this, SceneView).updateColor();
+			Hat.over(this, SceneView).updateColor();
 		}
 	}
 }

@@ -54,7 +54,7 @@ namespace App
 			// Sets the default protocol
 			this.link = "";
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;

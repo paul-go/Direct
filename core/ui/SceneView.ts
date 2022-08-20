@@ -119,7 +119,7 @@ namespace App
 				})
 			);
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root: HTMLDivElement;

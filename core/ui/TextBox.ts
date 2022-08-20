@@ -70,7 +70,7 @@ namespace App
 			
 			this.updatePlaceholder();
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		/** */

@@ -137,7 +137,7 @@ namespace App
 				),
 			);
 			
-			this.scenes = new Cage.Array(this.scenesElement, SceneView);
+			this.scenes = new Hat.Array(this.scenesElement, SceneView);
 			this.scenes.insert(...this.record.scenes.map(b => SceneView.new(b)));
 			this.scenes.observe(() =>
 			{
@@ -146,7 +146,7 @@ namespace App
 			});
 			
 			this.updatePublishInfo();
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;

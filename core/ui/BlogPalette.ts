@@ -71,7 +71,7 @@ namespace App
 				})
 			);
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -80,7 +80,7 @@ namespace App
 		/** */
 		private handleNew()
 		{
-			const items = Cage.map(this.itemsElement, BlogPaletteItem);
+			const items = Hat.map(this.itemsElement, BlogPaletteItem);
 			const selectedItem = items.find(i => i.selected) || items.at(0);
 			if (!selectedItem)
 				return;
@@ -152,7 +152,7 @@ namespace App
 			}
 			
 			const db = await App.createDatabase(databaseAbout);
-			const items = Cage.map(this.itemsElement, BlogPaletteItem).reverse();
+			const items = Hat.map(this.itemsElement, BlogPaletteItem).reverse();
 			const refItem = items.find(i => db.name < i.name) || items.at(0);
 			if (!refItem)
 				return;
@@ -189,13 +189,13 @@ namespace App
 					}
 					else if (ev.key === "ArrowUp")
 					{
-						const prev = Cage.previous(this.root, BlogPaletteItem);
+						const prev = Hat.previous(this.root, BlogPaletteItem);
 						if (prev)
 							prev.selected = true;
 					}
 					else if (ev.key === "ArrowDown")
 					{
-						const prev = Cage.next(this.root, BlogPaletteItem);
+						const prev = Hat.next(this.root, BlogPaletteItem);
 						if (prev)
 							prev.selected = true;
 					}
@@ -251,7 +251,7 @@ namespace App
 				)
 			);
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -281,7 +281,7 @@ namespace App
 			this._selected = selected;
 			this.root.focus();
 			
-			for (const sibling of Cage.map(Query.siblings(this.root), BlogPaletteItem))
+			for (const sibling of Hat.map(Query.siblings(this.root), BlogPaletteItem))
 			{
 				if (sibling !== this)
 					sibling._selected = false;
@@ -469,8 +469,8 @@ namespace App
 		private getFallbackItem()
 		{
 			return (
-				Cage.next(this.root, BlogPaletteItem) || 
-				Cage.previous(this.root, BlogPaletteItem));
+				Hat.next(this.root, BlogPaletteItem) || 
+				Hat.previous(this.root, BlogPaletteItem));
 		}
 		
 		/** */
@@ -479,7 +479,7 @@ namespace App
 			AppContainer.of(this).changeDatabase(this.name);
 			
 			if (closeDialog)
-				Cage.over(this, BlogPalette).root.remove();
+				Hat.over(this, BlogPalette).root.remove();
 		}
 	}
 }

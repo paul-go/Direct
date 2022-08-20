@@ -16,7 +16,7 @@ namespace App
 				When.connected(() => this.setupSizeObserver())
 			);
 			
-			this.actions = new Cage.Array(this.root, CanvasAction);
+			this.actions = new Hat.Array(this.root, CanvasAction);
 			
 			for (const action of record.actions)
 				this.bindAction(action);
@@ -27,7 +27,7 @@ namespace App
 				record.save();
 			});
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -39,9 +39,9 @@ namespace App
 		 */
 		private setupSizeObserver()
 		{
-			const csv = Cage.over(this, CanvasSceneView);
-			const ctv = Not.nullable(Cage.under(csv, CanvasTitleSetView)?.at(0));
-			const cdv = Not.nullable(Cage.under(csv, CanvasDescriptionView)?.at(0));
+			const csv = Hat.over(this, CanvasSceneView);
+			const ctv = Not.nullable(Hat.under(csv, CanvasTitleSetView)?.at(0));
+			const cdv = Not.nullable(Hat.under(csv, CanvasDescriptionView)?.at(0));
 			
 			const ro = new ResizeObserver(() =>
 			{
@@ -135,8 +135,8 @@ namespace App
 					
 					UI.click(() =>
 					{
-						const canMoveUp = !!Cage.previous(this.root, CanvasAction);
-						const canMoveDown = !!Cage.next(this.root, CanvasAction);
+						const canMoveUp = !!Hat.previous(this.root, CanvasAction);
+						const canMoveDown = !!Hat.next(this.root, CanvasAction);
 						
 						UI.springMenu(this.menuContainer, {
 							
@@ -158,7 +158,7 @@ namespace App
 				),
 				When.connected(() =>
 				{
-					Cage.over(this, ForegroundMixin).root.append(this.linkEditor.root);
+					Hat.over(this, ForegroundMixin).root.append(this.linkEditor.root);
 				}),
 				When.disconnected(() =>
 				{
@@ -171,7 +171,7 @@ namespace App
 			this.text = actionRecord.text;
 			this.target = actionRecord.target;
 			this.toggleLinkEditor(false);
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -188,14 +188,14 @@ namespace App
 		/** */
 		moveUp()
 		{
-			const prev = Cage.previous(this.root, CanvasAction);
+			const prev = Hat.previous(this.root, CanvasAction);
 			prev?.root.before(this.root);
 		}
 		
 		/** */
 		moveDown()
 		{
-			const next = Cage.next(this.root, CanvasAction);
+			const next = Hat.next(this.root, CanvasAction);
 			next?.root.after(this.root);
 		}
 		
@@ -226,7 +226,7 @@ namespace App
 			this.sceneRecord.actionShape = shape;
 			
 			const siblings = this.root.parentElement ? 
-				Cage.map(this.root.parentElement, CanvasAction) :
+				Hat.map(this.root.parentElement, CanvasAction) :
 				[this];
 				
 			for (const sibling of siblings)

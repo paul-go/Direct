@@ -21,7 +21,7 @@ namespace App
 			}
 			
 			this.hide(titleDatas.length === 0);
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		/** */
@@ -55,7 +55,7 @@ namespace App
 		/** */
 		getCanvasTitles()
 		{
-			return Cage.map(this, CanvasTitleView);
+			return Hat.map(this, CanvasTitleView);
 		}
 		
 		/** */
@@ -116,7 +116,7 @@ namespace App
 						{
 							if (atStart)
 							{
-								const prev = Cage.previous(this, CanvasTitleView);
+								const prev = Hat.previous(this, CanvasTitleView);
 								if (prev)
 								{
 									const position = prev.text.length;
@@ -131,7 +131,7 @@ namespace App
 						{
 							if (atEnd)
 							{
-								const next = Cage.next(this, CanvasTitleView);
+								const next = Hat.next(this, CanvasTitleView);
 								if (next)
 								{
 									const position = this.text.length;
@@ -144,13 +144,13 @@ namespace App
 						}
 						break; case "ArrowUp":
 						{
-							const previous = Cage.previous(this, CanvasTitleView);
+							const previous = Hat.previous(this, CanvasTitleView);
 							if (previous)
 								Editable.focus(previous.root, { position: previous.text.length });
 						}
 						break; case "ArrowDown":
 						{
-							const next = Cage.next(this, CanvasTitleView);
+							const next = Hat.next(this, CanvasTitleView);
 							if (next)
 								Editable.focus(next.root, { position: next.text.length });
 						}
@@ -158,7 +158,7 @@ namespace App
 						{
 							if (atStart)
 							{
-								const previous = Cage.previous(this, CanvasTitleView);
+								const previous = Hat.previous(this, CanvasTitleView);
 								if (previous)
 									Editable.focus(previous.root, { position: previous.text.length });
 							}
@@ -167,7 +167,7 @@ namespace App
 						{
 							if (atEnd)
 							{
-								const next = Cage.next(this, CanvasTitleView);
+								const next = Hat.next(this, CanvasTitleView);
 								if (next)
 									Editable.focus(next.root, { position: next.text.length });
 							}
@@ -179,7 +179,7 @@ namespace App
 			);
 			
 			this.text = defaultText;
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -203,7 +203,7 @@ namespace App
 		set text(text: string)
 		{
 			this.root.textContent = text;
-			Cage.up(this, CanvasTitleSetView)?.save();
+			Hat.up(this, CanvasTitleSetView)?.save();
 		}
 		
 		/** */
@@ -214,7 +214,7 @@ namespace App
 		set size(size: number)
 		{
 			this.root.style.fontSize = UI.vsize(size);
-			Cage.up(this, CanvasTitleSetView)?.save();
+			Hat.up(this, CanvasTitleSetView)?.save();
 		}
 		
 		/** */
@@ -225,7 +225,7 @@ namespace App
 		set weight(weight: number)
 		{
 			Htx.from(this.root)(UI.specificWeight(weight));
-			Cage.up(this, CanvasTitleSetView)?.save();
+			Hat.up(this, CanvasTitleSetView)?.save();
 		}
 		
 		/** */
@@ -236,7 +236,7 @@ namespace App
 		set hasColor(hasColor: boolean)
 		{
 			this._hasColor = hasColor;
-			Cage.up(this, CanvasTitleSetView)?.save();
+			Hat.up(this, CanvasTitleSetView)?.save();
 		}
 		private _hasColor = false;
 	}

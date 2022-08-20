@@ -33,7 +33,7 @@ namespace App
 			container.append(this.root);
 			this.resizeObserver = new ResizeObserver(() => this.updateIndicator());
 			this.resizeObserver.observe(this.root);
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;

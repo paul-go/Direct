@@ -24,8 +24,8 @@ namespace App
 				),
 			);
 			
-			this.previews = new Cage.Array(this.root, BackgroundObjectPreview);
-			this.configurators = new Cage.Array(imagesConfigurators, BackgroundConfigurator);
+			this.previews = new Hat.Array(this.root, BackgroundObjectPreview);
+			this.configurators = new Hat.Array(imagesConfigurators, BackgroundConfigurator);
 			
 			for (const bg of record.backgrounds)
 				if (bg.media)
@@ -37,7 +37,7 @@ namespace App
 				this.record.backgrounds = records;
 			});
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -170,7 +170,7 @@ namespace App
 				});
 			}
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -274,7 +274,7 @@ namespace App
 				RenderUtil.createVideoBackground(blobUrl, mimeType)
 			);
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -342,7 +342,7 @@ namespace App
 				}))
 			);
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -399,7 +399,7 @@ namespace App
 				});
 				
 				const s = this.img.style;
-				const sceneContainer = Cage.over(this, BackgroundPreview).root;
+				const sceneContainer = Hat.over(this, BackgroundPreview).root;
 				
 				if (this.imgWidth > this.imgHeight)
 				{

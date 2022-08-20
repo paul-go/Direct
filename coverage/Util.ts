@@ -19,9 +19,9 @@ namespace Cover
 	}
 	
 	/** */
-	export function display(cage: Cage.ICage)
+	export function display(hat: Hat.IHat)
 	{
-		Query.find(CssClass.appContainer)?.append(cage.root);
+		Query.find(CssClass.appContainer)?.append(hat.root);
 	}
 	
 	if (typeof module !== "undefined")

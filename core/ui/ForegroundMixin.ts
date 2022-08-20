@@ -10,7 +10,7 @@ namespace App
 		constructor(readonly root: HTMLElement)
 		{
 			Htx.from(this.root)("foreground-view");
-			Cage.set(this);
+			Hat.wear(this);
 		}
 	}
 }

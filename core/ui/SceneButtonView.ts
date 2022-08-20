@@ -45,7 +45,7 @@ namespace App
 				});
 			}
 			
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		readonly root;
@@ -90,7 +90,7 @@ namespace App
 			
 			const siblings = Query.siblings(this.root);
 			
-			for (const b of Cage.map(siblings, SceneButtonView))
+			for (const b of Hat.map(siblings, SceneButtonView))
 				if (b !== this)
 					b._selected = false;
 			

@@ -5,9 +5,9 @@ namespace App
 	export class AppContainer
 	{
 		/** */
-		static of(target: Element | Cage.ICage)
+		static of(target: Element | Hat.IHat)
 		{
-			return Cage.over(target, AppContainer as any as new() => AppContainer);
+			return Hat.over(target, AppContainer as any as new() => AppContainer);
 		}
 		
 		/** */
@@ -71,7 +71,7 @@ namespace App
 			);
 			
 			this.toggleMaxClass();
-			Cage.set(this);
+			Hat.wear(this);
 		}
 		
 		/** */
