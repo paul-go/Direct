@@ -309,7 +309,7 @@ namespace App
 				"transform-origin": "50% 50%",
 				"transform": "scaleX(3) scaleY(3.5)",
 				"background-size": "100% 100%",
-				"opacity": `var(${ConstS.textContrastProperty})`,
+				"opacity": `var(${ConstS.contrastProperty})`,
 			}),
 			rule("." + CssClass.textContrastDark + ":before", {
 				"background-image": Util.createCssUrl("res.blur-black.png"),

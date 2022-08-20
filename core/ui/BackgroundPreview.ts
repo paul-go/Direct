@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class BackgroundPreview
+	export class BackgroundPreview implements IColorable
 	{
 		/** */
 		constructor(private readonly record: CanvasSceneRecord)
@@ -22,7 +22,6 @@ namespace App
 						marginBottom: "20px",
 					}
 				),
-				new ColorConfigurator(this.record).root
 			);
 			
 			this.previews = new Cage.Array(this.root, BackgroundObjectPreview);
@@ -93,6 +92,17 @@ namespace App
 				Htx.on("focusin", () => update()),
 			);
 		}
+		
+		/** */
+		get hasColor()
+		{
+			return this._hasColor;
+		}
+		set hasColor(hasColor: boolean)
+		{
+			this._hasColor = hasColor;
+		}
+		private _hasColor = false;
 	}
 	
 	/** */

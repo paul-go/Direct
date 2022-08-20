@@ -1,29 +1,16 @@
 
 namespace App
 {
-	/** */
+	/**
+	 * (This class is probably on it's way out)
+	 */
 	export class ForegroundMixin
 	{
 		/** */
-		constructor(
-			readonly root: HTMLElement,
-			private readonly record: SceneRecord)
+		constructor(readonly root: HTMLElement)
 		{
-			Htx.from(this.root)(
-				"foreground-view",
-				When.connected(() => this.updateTextColor()),
-			);
-			
+			Htx.from(this.root)("foreground-view");
 			Cage.set(this);
-		}
-		
-		/** */
-		updateTextColor()
-		{
-			const meta = AppContainer.of(this).meta;
-			const colorIndex = this.record.backgroundColorIndex;
-			const fgColor = RenderUtil.resolveForegroundColor(colorIndex, meta);
-			this.root.style.color = UI.color(fgColor);
 		}
 	}
 }

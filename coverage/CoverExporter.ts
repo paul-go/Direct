@@ -9,7 +9,7 @@ namespace Cover
 		const post = new App.PostRecord();
 		post.slug = "slug";
 		const scene = new App.CanvasSceneRecord();
-		scene.titles.push({ text: "Title", weight: 700, size: 10 });
+		scene.titles.push({ text: "Title", weight: 700, size: 10, hasColor: false });
 		
 		const background = new App.BackgroundRecord();
 		background.media = readMedia("image-1.jpg");

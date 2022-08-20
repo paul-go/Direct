@@ -216,13 +216,8 @@ namespace App
 	 */
 	function renderScene(bun: Bundle)
 	{
-		const foregroundColor = RenderUtil.resolveForegroundColor(
-			bun.scene.backgroundColorIndex, 
-			bun.meta);
+		const colors = RenderUtil.resolveColors(bun.scene);
 		
-		const backgroundColor = RenderUtil.resolveBackgroundColor(
-			bun.scene.backgroundColorIndex, 
-			bun.meta);
 		
 		let snapFooter: HTMLElement | null = null;
 		const includeSnapFooter = () => snapFooter = Htx.div(CssClass.snapFooter);
@@ -248,8 +243,8 @@ namespace App
 			Htx.section(
 				CssClass.scene,
 				{
-					color: UI.color(foregroundColor),
-					backgroundColor: UI.color(backgroundColor),
+					color: colors.default,
+					backgroundColor: colors.back,
 					height: "100vh",
 					data: {
 						[DataAttributes.transition]: bun.useAnimation(bun.scene.transition)
@@ -327,8 +322,8 @@ namespace App
 			
 			const island = Htx.div(CssClass.canvasSceneIsland, scene.origin);
 			
-			if (scene.textContrast)
-				RenderUtil.setContrast(island, scene.textContrast);
+			if (scene.contrast)
+				RenderUtil.setContrast(island, scene.contrast);
 			
 			if (scene.twist !== 0)
 				island.style.transform = `rotate(${scene.twist}deg)`;

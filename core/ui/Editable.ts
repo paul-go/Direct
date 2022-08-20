@@ -148,6 +148,35 @@ namespace App
 				target.removeAttribute("contenteditable");
 		}
 		
+		/**
+		 * Gives the specified HTMLElement input focus. The element
+		 * is expected to be content editable. The options argument allows
+		 * for the caret to be placed at a specific character position.
+		 */
+		export function focus(
+			target: HTMLElement,
+			options?: FocusOptions & { position?: number })
+		{
+			if (typeof options?.position === "number")
+			{
+				let textNode = target.firstChild;
+				if (!textNode)
+					target.append(textNode = new Text());
+				
+				const sel = window.getSelection();
+				if (sel)
+				{
+					const range = document.createRange();
+					range.setStart(textNode, options.position);
+					range.collapse(true);
+					sel.removeAllRanges();
+					sel.addRange(range);
+				}
+			}
+			
+			target.focus(options);
+		}
+		
 		/** */
 		export interface ISingleOptions
 		{

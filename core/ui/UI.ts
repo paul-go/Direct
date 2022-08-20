@@ -19,12 +19,12 @@ namespace App
 		}
 		
 		/** */
-		export function color(values: Partial<IColor>)
+		export function color(values: Partial<IColor> | TColor)
 		{
-			const h = values.h ?? 335;
-			const s = values.s ?? 50;
-			const l = values.l ?? 50;
-			const a = values.a ?? 1;
+			const h = (Array.isArray(values) ? values.at(0) : values.h) ?? 335;
+			const s = (Array.isArray(values) ? values.at(1) : values.s) ?? 50;
+			const l = (Array.isArray(values) ? values.at(2) : values.l) ?? 50;
+			const a = Array.isArray(values) ? 1 : values.a ?? 1;
 			return a === 1 ?
 				`hsl(${h}, ${s}%, ${l}%)` :
 				`hsla(${h}, ${s}%, ${l}%, ${a})`;
@@ -325,7 +325,9 @@ namespace App
 		}
 		
 		/** */
-		export function anchorCenter(width: string | number, height: string | number = width)
+		export function anchorCenter(
+			width: string | number = "fit-content",
+			height: string | number = width)
 		{
 			return <Htx.Style>{
 				...anchor(),

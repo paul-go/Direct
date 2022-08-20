@@ -1,3 +1,4 @@
+/// <reference path="../ui/UI.ts" />
 
 /**
  * Stores a namespace of functions that handle the functionality
@@ -32,28 +33,32 @@ namespace App.RenderUtil
 	/**
 	 * 
 	 */
-	export function resolveForegroundColor(colorIndex: number, meta: MetaRecord): UI.IColor
+	export function resolveColors(record: SceneRecord)
 	{
-		if (colorIndex < 0 || colorIndex >= meta.colorScheme.length)
-			throw "Unknown color: " + colorIndex;
+		const contrast = record.contrast;
+		const hasColor = record.hasColor;
+		const [darkHsl, lightHsl] = record.colorPair;
 		
-		const lightness = meta.colorScheme[colorIndex].l;
-		return lightness < 80 ? white : black;
+		const darkColor = hasColor ?
+			UI.color({ h: darkHsl[0], s: darkHsl[1], l: darkHsl[2] }) :
+			black;
+		
+		const lightColor = hasColor ?
+			UI.color({ h: lightHsl[0], s: lightHsl[1], l: lightHsl[2] }) :
+			white;
+		
+		return {
+			/** Used for the background. */
+			back: contrast < 0 ? lightColor : darkColor,
+			/** Used for colored objects. */
+			fore: contrast < 0 ? darkColor : lightColor,
+			/** Used for uncolored text. */
+			default: contrast < 0 ? black : white,
+		};
 	}
 	
-	const black = { h: 0, s: 0, l: 0 };
-	const white = { h: 0, s: 0, l: 100 };
-	
-	/**
-	 * 
-	 */
-	export function resolveBackgroundColor(colorIndex: number, meta: MetaRecord): UI.IColor
-	{
-		if (colorIndex < 0 || colorIndex >= meta.colorScheme.length)
-			throw "Unknown color: " + colorIndex;
-		
-		return meta.colorScheme[colorIndex];
-	}
+	const black = UI.color({ h: 0, s: 0, l: 0 });
+	const white = UI.color({ h: 0, s: 0, l: 100 });
 	
 	/**
 	 * A number between 0 (fully black) and 100 (fully white) that
@@ -67,7 +72,7 @@ namespace App.RenderUtil
 			CssClass.textContrastDark,
 			CssClass.textContrastLight);
 		
-		e.style.removeProperty(ConstS.textContrastProperty);
+		e.style.removeProperty(ConstS.contrastProperty);
 		
 		if (amount !== 0)
 		{
@@ -79,7 +84,7 @@ namespace App.RenderUtil
 					CssClass.textContrastDark : 
 					CssClass.textContrastLight);
 			
-			e.style.setProperty(ConstS.textContrastProperty, Math.abs(amount).toString());
+			e.style.setProperty(ConstS.contrastProperty, Math.abs(amount).toString());
 		}
 		
 		return e;

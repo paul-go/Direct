@@ -11,34 +11,36 @@ namespace Cover
 		scene1.titles.push({
 			text: "Title1",
 			size: 3,
-			weight: 500
+			weight: 500,
+			hasColor: false,
 		});
 		
 		scene1.titles.push({
 			text: "Title2",
 			size: 5,
-			weight: 700
+			weight: 700,
+			hasColor: false,
 		});
 		
 		scene1.description = "Scene 1 paragraph content.";
-		scene1.backgroundColorIndex = App.ColorScheme.blackIndex;
 		
 		const scene2 = new App.CanvasSceneRecord();
 		
 		scene2.titles.push({ 
 			text: "Title3",
 			size: 3,
-			weight: 500
+			weight: 500,
+			hasColor: false,
 		});
 		
 		scene2.titles.push({ 
 			text: "Title4",
 			size: 5,
-			weight: 700
+			weight: 700,
+			hasColor: false,
 		});
 		
 		scene2.description = "Scene 2 paragraph content.";
-		scene2.backgroundColorIndex = App.ColorScheme.whiteIndex;
 		
 		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("image-5.jpg");
@@ -72,6 +74,7 @@ namespace Cover
 				text: "Title: " + size + ", " + weight,
 				size,
 				weight,
+				hasColor: false,
 			});
 		}
 		
@@ -104,42 +107,14 @@ namespace Cover
 			scene.titles.push({
 				text: "Title1",
 				size: 3,
-				weight: 400
+				weight: 400,
+				hasColor: false,
 			});
 			
 			scene.origin = origin;
 			post.scenes.push(scene);
 		}
 		
-		render(post, meta);
-	}
-	
-	/** */
-	export async function coverPreviewCanvasColoring()
-	{
-		const { post, meta } = setup();
-		
-		const scene1 = new App.CanvasSceneRecord();
-		
-		scene1.titles.push({
-			text: "White On Black",
-			size: 10,
-			weight: 900
-		});
-		
-		scene1.backgroundColorIndex = App.ColorScheme.blackIndex;
-		
-		const scene2 = new App.CanvasSceneRecord();
-		
-		scene2.titles.push({
-			text: "Black On White",
-			size: 10,
-			weight: 900
-		});
-		
-		scene2.backgroundColorIndex = App.ColorScheme.whiteIndex;
-		
-		post.scenes.push(scene1, scene2);
 		render(post, meta);
 	}
 	
@@ -152,13 +127,15 @@ namespace Cover
 		scene.titles.push({
 			text: "Title1",
 			size: 3,
-			weight: 400
+			weight: 400,
+			hasColor: false,
 		});
 		
 		scene.titles.push({
 			text: "Title2",
 			size: 5,
-			weight: 700
+			weight: 700,
+			hasColor: false,
 		});
 		
 		scene.description = `
@@ -189,7 +166,7 @@ namespace Cover
 	{
 		const { post, meta } = setup();
 		const scene = new App.CanvasSceneRecord();
-		scene.titles.push({ text: "Video", size: 20, weight: 900 });
+		scene.titles.push({ text: "Video", size: 20, weight: 900, hasColor: false });
 		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("video-1.mp4");
 		scene.backgrounds.push(background);
@@ -282,11 +259,9 @@ namespace Cover
 		
 		const scene1 = new App.ProseSceneRecord();
 		scene1.content = getContent(5);
-		scene1.backgroundColorIndex = App.ColorScheme.whiteIndex;
 		
 		const scene2 = new App.ProseSceneRecord();
 		scene2.content = getContent(5);
-		scene2.backgroundColorIndex = App.ColorScheme.blackIndex;
 		
 		const scene3 = new App.ProseSceneRecord();
 		scene3.content = getContent(1);
@@ -300,13 +275,7 @@ namespace Cover
 	function setup()
 	{
 		App.appendCss();
-		
 		const meta = new App.MetaRecord();
-		meta.colorScheme = [
-			{ h: 215, s: 70, l: 30 },
-			{ h: 325, s: 70, l: 30 },
-		];
-		
 		const post = new App.PostRecord();
 		return { post, meta };
 	}
@@ -315,7 +284,7 @@ namespace Cover
 	function render(post: App.PostRecord, meta: App.MetaRecord)
 	{
 		const scene = new App.CanvasSceneRecord();
-		scene.titles.push({ text: "Done", size: 4, weight: 700 });
+		scene.titles.push({ text: "Done", size: 4, weight: 700, hasColor: false });
 		post.scenes.push(scene);
 		new App.PreviewView(post, meta);
 	}

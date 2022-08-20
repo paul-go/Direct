@@ -2,7 +2,13 @@
 namespace App
 {
 	/** */
-	export class ColorConfigurator
+	export interface IColorable
+	{
+		hasColor: boolean;
+	}
+	
+	/** */
+	export class ColorSelector
 	{
 		/** */
 		constructor(readonly record: SceneRecord)
@@ -25,39 +31,43 @@ namespace App
 		/** */
 		private render()
 		{
-			const meta = AppContainer.of(this.root).meta;
-			for (let index = -1; ++index < meta.colorScheme.length;)
+			for (const pair of App.colorPairs)
 			{
-				const color = meta.colorScheme[index];
-				const configurator = new ColorConfiguratorOption(this.record, index, color);
-				this.root.append(configurator.root);
+				const cfg = new ColorOption(this.record, pair);
+				this.root.append(cfg.root);
 			}
 		}
 	}
 	
 	/** */
-	class ColorConfiguratorOption
+	class ColorOption
 	{
 		/** */
 		constructor(
 			private readonly record: SceneRecord,
-			private readonly colorIndex: number,
-			color: UI.IColor)
+			private readonly colorPair: TColorPair)
 		{
+			const darkColorString = UI.color(colorPair[0]);
+			const lightColorString = UI.color(colorPair[1]);
+			
 			this.root = Htx.div(
 				{
 					width: "75px",
 					height: "75px",
 					margin: "10px",
-					backgroundColor: UI.color(color),
-					borderRadius: UI.borderRadius.default
+					borderRadius: UI.borderRadius.default,
+					backgroundImage: `linear-gradient(
+						45deg, 
+						${darkColorString} 0,
+						${darkColorString} 50%,
+						${lightColorString} 50.1%,
+						${lightColorString} 100%)`
 				},
-				color.l > 20 ? {} : { border: "1px solid " + UI.white(0.2) },
 				UI.clickable,
 				Htx.on(UI.clickEvt, () => this.select()),
 				When.connected(() =>
 				{
-					if (record.backgroundColorIndex === colorIndex)
+					if (record.colorPair.join() === this.colorPair.join())
 						this.select();
 				})
 			);
@@ -68,7 +78,7 @@ namespace App
 		/** */
 		private select()
 		{
-			this.record.backgroundColorIndex = this.colorIndex;
+			this.record.colorPair = this.colorPair;
 			
 			Query.siblings(this.root)
 				.map(e => e.style.removeProperty("box-shadow"));
@@ -77,7 +87,7 @@ namespace App
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			
-			Cage.over(this, SceneView).updateBackgroundColor();
+			Cage.over(this, SceneView).updateColor();
 		}
 	}
 }

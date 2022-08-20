@@ -55,7 +55,6 @@ namespace App
 	/** */
 	export class MetaRecord extends Record
 	{
-		colorScheme = ColorScheme.default.colors;
 		font = "";
 		htmlHeader = "";
 		htmlFooter = "";
@@ -129,12 +128,21 @@ namespace App
 	{
 		transition = Transitions.slide.name;
 		backgroundColorIndex = 0;
+		
+		colorPair: TColorPair  = [[215, 70, 50], [215, 70, 85]];
+		contrast = 0;
+		hasColor = false;
 	}
+	
+	/** */
+	export type TColorPair = [TColor, TColor];
+	
+	/** */
+	export type TColor = [number, number, number]
 	
 	/** */
 	export class CanvasSceneRecord extends SceneRecord
 	{
-		textContrast = 0;
 		effect = Effects.none.name;
 		origin = Origin.center;
 		contentImage = Database.reference(MediaRecord);
@@ -154,6 +162,7 @@ namespace App
 		text: string;
 		size: number;
 		weight: number;
+		hasColor: boolean;
 	}
 	
 	/** */
@@ -162,6 +171,7 @@ namespace App
 		text = "";
 		target: string = "";
 		filled = false;
+		hasColor = false;
 	}
 	
 	/** */
@@ -192,7 +202,6 @@ namespace App
 	{
 		captionLine1 = "";
 		captionLine2 = "";
-		textContrast = 0;
 		size: SizeMethod = "contain";
 		media = Database.reference(MediaRecord);
 	}

@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class CanvasActionManager
+	export class CanvasActionSet
 	{
 		/** */
 		constructor(readonly record: CanvasSceneRecord)
@@ -26,6 +26,7 @@ namespace App
 				record.actions = this.actions.map(ca => ca.actionRecord);
 				record.save();
 			});
+			
 			Cage.set(this);
 		}
 		
@@ -39,14 +40,14 @@ namespace App
 		private setupSizeObserver()
 		{
 			const csv = Cage.over(this, CanvasSceneView);
-			const ctv = Not.nullable(Cage.under(csv, CanvasTitleView)?.at(0));
+			const ctv = Not.nullable(Cage.under(csv, CanvasTitleSetView)?.at(0));
 			const cdv = Not.nullable(Cage.under(csv, CanvasDescriptionView)?.at(0));
 			
 			const ro = new ResizeObserver(() =>
 			{
 				const widthTarget =
 					cdv.text ? cdv.root :
-					ctv.getTextBox(-1)?.root || null;
+					ctv.getCanvasTitles().at(-1)?.root || null;
 				
 				this.root.style.minWidth = widthTarget ?
 					widthTarget.offsetWidth + "px" :
@@ -57,7 +58,7 @@ namespace App
 			
 			const updateTitleWatchers = () =>
 			{
-				for (const box of ctv.getTextBoxes())
+				for (const box of ctv.getCanvasTitles())
 					ro.observe(box.root);
 			};
 			
@@ -90,7 +91,7 @@ namespace App
 	}
 	
 	/** */
-	export class CanvasAction
+	export class CanvasAction implements IColorable
 	{
 		/** */
 		constructor(
@@ -268,5 +269,16 @@ namespace App
 			if (visible)
 				setTimeout(() => this.linkEditor.focus());
 		}
+		
+		/** */
+		get hasColor()
+		{
+			return this._hasColor;
+		}
+		set hasColor(hasColor: boolean)
+		{
+			this._hasColor = hasColor;
+		}
+		private _hasColor = false;
 	}
 }

@@ -15,6 +15,7 @@ namespace App
 				Editable.multi(),
 				{
 					width: "100%",
+					minWidth: "0.1em",
 					lineHeight: ConstN.descriptionLineHeight.toString(),
 					whiteSpace: "pre-wrap"
 				}

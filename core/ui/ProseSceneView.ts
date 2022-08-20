@@ -22,7 +22,7 @@ namespace App
 						flexDirection: "column",
 						minHeight: UI.vsize(100),
 					},
-					e => void new ForegroundMixin(e, this.record),
+					e => void new ForegroundMixin(e),
 					Htx.div(
 						CssClass.proseSceneForeground,
 						{
@@ -117,7 +117,7 @@ namespace App
 				}
 			});
 			
-			this.colorConfigurator = new ColorConfigurator(this.record);
+			this.colorConfigurator = new ColorSelector(this.record);
 			
 			Htx.from(this.colorConfigurator.root)(
 				{ tabIndex: 0 },

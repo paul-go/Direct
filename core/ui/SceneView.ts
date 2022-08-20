@@ -102,7 +102,7 @@ namespace App
 				// Final add
 				(this.footerBox = new HeightBox("footer-box", this.renderDefaultFooter())).root,
 				
-				When.connected(() => this.updateBackgroundColor())
+				When.connected(() => this.updateColor())
 			)
 			
 			// Populate this with data in the future.
@@ -202,13 +202,12 @@ namespace App
 		}
 		
 		/** */
-		updateBackgroundColor()
+		updateColor()
 		{
-			Cage.under(this, ForegroundMixin).at(0)?.updateTextColor();
-			const meta = AppContainer.of(this).meta;
-			const colorIndex = this.record.backgroundColorIndex;
-			const color = RenderUtil.resolveBackgroundColor(colorIndex, meta);
-			this.sceneContainer.style.backgroundColor = UI.color(color);
+			const colors = RenderUtil.resolveColors(this.record);
+			const s = this.sceneContainer.style;
+			s.setProperty(ConstS.forecolorProperty, colors.fore);
+			s.backgroundColor = colors.back;
 		}
 		
 		/** */

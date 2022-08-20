@@ -4,7 +4,8 @@ const enum ConstS
 {
 	baseFolderPrefix = "post-base-folder-",
 	mainDatabaseName = "main",
-	textContrastProperty = "--text-contrast",
+	contrastProperty = "--contrast",
+	forecolorProperty = "--forecolor",
 	htmlFileName = "index.html",
 	cssFileNameGeneral = "index.general.css",
 	cssFileNameSpecific = "index.css",

@@ -3,158 +3,37 @@
 namespace App
 {
 	/** */
-	export class CanvasTitleView extends CanvasTextView
+	export class CanvasTitleSetView extends CanvasTextView
 	{
 		/** */
 		constructor(record: CanvasSceneRecord)
 		{
 			super(record);
 			this.root.classList.add("canvas-title-view");
+			
+			const titleDatas = record.titles;
+			for (const [, titleData] of titleDatas.entries())
+			{
+				const title = new CanvasTitleView(titleData.text);
+				title.size = title.size;
+				title.weight = title.weight;
+				title.hasColor = titleData.hasColor;
+			}
+			
+			this.hide(titleDatas.length === 0);
+			Cage.set(this);
 		}
 		
 		/** */
 		protected handleTextChanged()
 		{
-			this.record.titles = this.getTitleData();
+			this.save();
 		}
 		
 		/** */
 		protected get isEmpty()
 		{
-			const data = this.getTitleData();
-			return data.length === 0 || data.every(d => d.text.trim() === "");
-		}
-		
-		/** */
-		setTitles(titles: ITitle[] = [])
-		{
-			for (const [i, title] of titles.entries())
-			{
-				this.insertTitle(title.text);
-				this.setFontSize(i, title.size);
-				this.setFontWeight(i, title.weight);
-			}
-			
-			if (titles.length > 0)
-				this.hide(false);
-		}
-		
-		/** */
-		insertTitle(titleText: string, before: TextBox | null = null)
-		{
-			const textbox = new TextBox();
-			textbox.isMultiLine = false;
-			textbox.html = titleText;
-			
-			Htx.from(textbox.root)(
-				{
-					width: "fit-content",
-					fontSize: UI.vsize(6),
-					fontWeight: "700",
-					marginLeft: "inherit",
-					marginRight: "inherit",
-				},
-			);
-			
-			textbox.root.addEventListener("keydown", ev =>
-			{
-				const charPos = window.getSelection()?.focusOffset || 0;
-				const charCount = textbox.text.length;
-				const atStart = charPos === 0;
-				const atEnd = charPos > charCount - 2;
-				
-				switch (ev.key)
-				{
-					case "Enter":
-					{
-						if (atStart)
-						{
-							this.insertTitle("", textbox);
-						}
-						else if (atEnd)
-						{
-							const next = Cage.next(textbox.root, TextBox);
-							const tb = this.insertTitle("", next);
-							tb.focus();
-						}
-						else
-						{
-							const next = Cage.next(textbox.root, TextBox);
-							const text = textbox.text.slice(charPos);
-							const newTextBox = this.insertTitle(text, next);
-							newTextBox.focus();
-							textbox.html = textbox.text.slice(0, charPos);
-						}
-						
-						ev.preventDefault();
-					}
-					break; case "Backspace":
-					{
-						if (atStart)
-						{
-							const prev = Cage.previous(textbox.root, TextBox);
-							if (prev)
-							{
-								const position = prev.text.length;
-								prev.html += textbox.text;
-								textbox.root.remove();
-								prev.focus({ position });
-								ev.preventDefault();
-							}
-						}
-					}
-					break; case "Delete":
-					{
-						if (atEnd)
-						{
-							const next = Cage.next(textbox.root, TextBox);
-							if (next)
-							{
-								const position = textbox.text.length;
-								textbox.html += next.text;
-								next.root.remove();
-								textbox.focus({ position });
-								ev.preventDefault();
-							}
-						}
-					}
-					break; case "ArrowUp":
-					{
-						const previous = Cage.previous(textbox.root, TextBox);
-						if (previous)
-							previous.focus({ position: previous.text.length });
-					}
-					break; case "ArrowDown":
-					{
-						const next = Cage.next(textbox.root, TextBox);
-						if (next)
-							next.focus({ position: next.text.length });
-					}
-					break; case "ArrowLeft":
-					{
-						if (atStart)
-						{
-							const previous = Cage.previous(textbox.root, TextBox);
-							if (previous)
-								previous.focus({ position: previous.text.length });
-						}
-					}
-					break; case "ArrowRight":
-					{
-						if (atEnd)
-						{
-							const next = Cage.next(textbox.root, TextBox);
-							if (next)
-								next.focus({ position: next.text.length });
-						}
-					}
-				}
-			},
-			{ capture: true });
-			
-			this.root.insertBefore(textbox.root, before?.root || null);
-			textbox.acceptedCommands.add(InputCommand.formatBold);
-			return textbox;
+			return (this.root.textContent || "").trim().length === 0;
 		}
 		
 		/** */
@@ -163,86 +42,202 @@ namespace App
 			this.hide(false);
 			await UI.wait();
 			
-			const boxes = this.getTextBoxes();
+			const boxes = this.getCanvasTitles();
 			if (boxes.length === 0)
-				this.insertTitle("").focus();
-			else
-				this.getTextBox(0)!.focus();
-		}
-		
-		/** */
-		getTextBox(index: number)
-		{
-			const e = Query.children(this.root).at(index);
-			return e ? Cage.get(e, TextBox) : null;
-		}
-		
-		/** */
-		getTextBoxes()
-		{
-			return Cage.map(Query.children(this.root), TextBox);
-		}
-		
-		/** */
-		getFontSize(index: number)
-		{
-			const tb = this.getTextBox(index);
-			return tb ? UI.extractVSize(tb.root.style.fontSize) || 5 : 5;
-		}
-		
-		/** */
-		setFontSize(index: number, size: number)
-		{
-			const tb = this.getTextBox(index);
-			if (tb)
-				tb.root.style.fontSize = UI.vsize(size);
-		}
-		
-		/** */
-		getFontWeight(index: number)
-		{
-			const tb = this.getTextBox(index);
-			if (tb)
 			{
-				const n = Number(tb.root.style.fontWeight);
-				if (n)
-					return n;
+				const canvasTitle = new CanvasTitleView();
+				this.root.append(canvasTitle.root)
+				canvasTitle.root.focus();
 			}
+			else boxes[0].root.focus();
+		}
+		
+		/** */
+		getCanvasTitles()
+		{
+			return Cage.map(this, CanvasTitleView);
+		}
+		
+		/** */
+		save()
+		{
+			this.record.titles = this.getCanvasTitles().map(ct => ct.getData());
+		}
+	}
+	
+	/** */
+	export class CanvasTitleView
+	{
+		/** */
+		constructor(defaultText: string = "")
+		{
+			this.root = Htx.div(
+				{
+					width: "fit-content",
+					minWidth: "0.1em",
+					fontSize: UI.vsize(6),
+					fontWeight: "700",
+					marginLeft: "inherit",
+					marginRight: "inherit",
+				},
+				Htx.on("keydown", ev =>
+				{
+					const charPos = window.getSelection()?.focusOffset || 0;
+					const charCount = this.text.length;
+					const atStart = charPos === 0;
+					const atEnd = charPos > charCount - 2;
+					
+					switch (ev.key)
+					{
+						case "Enter":
+						{
+							if (atStart)
+							{
+								this.root.before(new CanvasTitleView().root);
+							}
+							else if (atEnd)
+							{
+								const title = new CanvasTitleView();
+								this.root.after(title.root);
+								title.root.focus();
+							}
+							else
+							{
+								const textSecondHalf = this.text.slice(charPos);
+								this.text = this.text.slice(0, charPos);
+								const title = new CanvasTitleView(textSecondHalf);
+								title.root.after(title.root);
+								title.root.focus();
+							}
+							
+							ev.preventDefault();
+						}
+						break; case "Backspace":
+						{
+							if (atStart)
+							{
+								const prev = Cage.previous(this, CanvasTitleView);
+								if (prev)
+								{
+									const position = prev.text.length;
+									prev.text += this.text;
+									this.root.remove();
+									Editable.focus(prev.root, { position });
+									ev.preventDefault();
+								}
+							}
+						}
+						break; case "Delete":
+						{
+							if (atEnd)
+							{
+								const next = Cage.next(this, CanvasTitleView);
+								if (next)
+								{
+									const position = this.text.length;
+									this.text += next.text;
+									next.root.remove();
+									Editable.focus(this.root, { position });
+									ev.preventDefault();
+								}
+							}
+						}
+						break; case "ArrowUp":
+						{
+							const previous = Cage.previous(this, CanvasTitleView);
+							if (previous)
+								Editable.focus(previous.root, { position: previous.text.length });
+						}
+						break; case "ArrowDown":
+						{
+							const next = Cage.next(this, CanvasTitleView);
+							if (next)
+								Editable.focus(next.root, { position: next.text.length });
+						}
+						break; case "ArrowLeft":
+						{
+							if (atStart)
+							{
+								const previous = Cage.previous(this, CanvasTitleView);
+								if (previous)
+									Editable.focus(previous.root, { position: previous.text.length });
+							}
+						}
+						break; case "ArrowRight":
+						{
+							if (atEnd)
+							{
+								const next = Cage.next(this, CanvasTitleView);
+								if (next)
+									Editable.focus(next.root, { position: next.text.length });
+							}
+						}
+					}
+				},
+				{ capture: true }),
+				Editable.single(),
+			);
 			
-			return 400;
+			this.text = defaultText;
+			Cage.set(this);
 		}
 		
-		/** */
-		setFontWeight(index: number, weight: number)
-		{
-			const tb = this.getTextBox(index);
-			if (tb)
-				Htx.from(tb.root)(UI.specificWeight(weight));
-		}
+		readonly root;
 		
 		/** */
-		getTitleFromPoint(x: number, y: number)
+		getData(): ITitle
 		{
-			// You don't need to get the HTML, you just need the thing that will
-			// You need to return some object that you can 
-		}
-		
-		/** */
-		getTitleData()
-		{
-			const textBoxes = Cage.map(Query.children(this.root), TextBox);
-			const data: ITitle[] = [];
-			
-			for (let i = -1; ++i < textBoxes.length;)
-			{
-				data.push({
-					text: textBoxes[i].text,
-					size: this.getFontSize(i),
-					weight: this.getFontWeight(i),
-				});
+			return {
+				text: this.text,
+				size: this.size,
+				weight: this.weight,
+				hasColor: this.hasColor,
 			}
-			
-			return data;
 		}
+		
+		/** */
+		get text()
+		{
+			return this.root.textContent || "";
+		}
+		set text(text: string)
+		{
+			this.root.textContent = text;
+			Cage.up(this, CanvasTitleSetView)?.save();
+		}
+		
+		/** */
+		get size()
+		{
+			return UI.extractVSize(this.root.style.fontSize) || 5;
+		}
+		set size(size: number)
+		{
+			this.root.style.fontSize = UI.vsize(size);
+			Cage.up(this, CanvasTitleSetView)?.save();
+		}
+		
+		/** */
+		get weight()
+		{
+			return Number(this.root.style.fontWeight) || 400;
+		}
+		set weight(weight: number)
+		{
+			Htx.from(this.root)(UI.specificWeight(weight));
+			Cage.up(this, CanvasTitleSetView)?.save();
+		}
+		
+		/** */
+		get hasColor()
+		{
+			return this._hasColor;
+		}
+		set hasColor(hasColor: boolean)
+		{
+			this._hasColor = hasColor;
+			Cage.up(this, CanvasTitleSetView)?.save();
+		}
+		private _hasColor = false;
 	}
 }

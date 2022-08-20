@@ -10,9 +10,9 @@ namespace App
 		{
 			super(record);
 			
-			this.titleView = new CanvasTitleView(record);
+			this.titleView = new CanvasTitleSetView(record);
 			this.descriptionView = new CanvasDescriptionView(record);
-			this.actionManager = new CanvasActionManager(record);
+			this.actionManager = new CanvasActionSet(record);
 			
 			Htx.from(this.sceneContainer)(
 				Drop.here({
@@ -25,7 +25,7 @@ namespace App
 				(this.backgroundPreview = new BackgroundPreview(this.record)).root,
 				
 				this.foregroundPreview = Htx.div(
-					e => void new ForegroundMixin(e, this.record),
+					e => void new ForegroundMixin(e),
 					CssClass.canvasSceneForeground,
 					this.islandElement = Htx.div(
 						CssClass.canvasSceneIsland,
@@ -62,11 +62,9 @@ namespace App
 			);
 			
 			this.setContentImageSize(this.record.contentImageWidth);
-			
-			this.titleView.setTitles(this.record.titles);
 			this.setDescriptionText(this.record.description);
 			this.setDescriptionSize(this.record.descriptionSize);
-			this.setContrast(this.record.textContrast);
+			this.setContrast(this.record.contrast);
 			this.setTwist(this.record.twist);
 			
 			this.picker = new ElementPicker(this.sceneContainer);
@@ -291,11 +289,10 @@ namespace App
 				{
 					slider.place = this.record.contentImageWidth;
 				}
-				else if (picked instanceof TextBox)
+				else if (picked instanceof CanvasTitleView)
 				{
-					const idx = this.titleView.getTextBoxes().indexOf(picked);
 					slider.max = 50;
-					slider.place = this.titleView.getFontSize(idx);
+					slider.place = picked.size;
 				}
 				else if (picked instanceof CanvasDescriptionView)
 				{
@@ -317,15 +314,13 @@ namespace App
 				{
 					this.setContentImageSize(slider.place);
 				}
+				else if (picked instanceof CanvasTitleView)
+				{
+					picked.size = slider.place;
+				}
 				else if (picked instanceof CanvasDescriptionView)
 				{
 					this.setDescriptionSize(slider.place);
-				}
-				else if (picked instanceof TextBox)
-				{
-					const idx = this.titleView.getTextBoxes().indexOf(picked);
-					if (idx >= 0)
-						this.setTitleSize(idx, slider.place);
 				}
 			});
 		}
@@ -350,16 +345,6 @@ namespace App
 		}
 		
 		/** */
-		private setTitleSize(titleIdx: number, size: number)
-		{
-			const titleDatas = this.titleView.getTitleData();
-			const titleData = titleDatas[titleIdx];
-			titleData.size = size;
-			this.titleView.setFontSize(titleIdx, size);
-			this.record.titles = titleDatas;
-		}
-		
-		/** */
 		private setDescriptionSize(size: number)
 		{
 			this.descriptionView.fontSize = size;
@@ -379,18 +364,13 @@ namespace App
 			const updatePick = () =>
 			{
 				const picked = this.getPicked();
-				if (!(picked instanceof TextBox))
+				if (!(picked instanceof CanvasTitleView))
 					return;
 				
-				const idx = this.titleView.getTextBoxes().indexOf(picked);
-				if (idx < 0)
-					return;
-				
-				const titleData = this.titleView.getTitleData()[idx];
 				slider.decimals = 0;
 				slider.min = 100;
 				slider.max = 900;
-				slider.place = titleData.weight;
+				slider.place = picked.weight;
 			};
 			
 			this.picker.setPickChangedFn(updatePick);
@@ -399,28 +379,11 @@ namespace App
 			slider.setPlaceChangeFn(() =>
 			{
 				const picked = this.getPicked();
-				if (!(picked instanceof TextBox))
-					return;
-				
-				const idx = this.titleView.getTextBoxes().indexOf(picked);
-				if (idx < 0)
-					return;
-				
-				this.setTitleWeight(idx, slider.place);
+				if (picked instanceof CanvasTitleView)
+					picked.weight = slider.place;
 			});
 			
 			this.setSceneConfigurator(slider.root);
-		}
-		
-		/** */
-		private setTitleWeight(titleIdx: number, weight: number)
-		{
-			const titleDatas = this.titleView.getTitleData();
-			weight = Math.round(weight);
-			const titleData = titleDatas[titleIdx];
-			titleData.weight = weight;
-			this.titleView.setFontWeight(titleIdx, weight);
-			this.record.titles = titleDatas;
 		}
 		
 		/** */
@@ -428,9 +391,7 @@ namespace App
 		{
 			this.setPickableElements(
 				Pickable.titles,
-				Pickable.descriptions,
 				Pickable.actions,
-				Pickable.backgroundObjects,
 				Pickable.backgroundSurface);
 			
 			const slider = new Slider();
@@ -439,32 +400,38 @@ namespace App
 			slider.decimals = 0;
 			slider.min = -100;
 			slider.max = 100;
-			slider.place = this.record.textContrast;
+			slider.place = this.record.contrast;
 			slider.setPlaceChangeFn(() => this.setContrast(slider.place));
+			
+			const colorToggle = new ColorToggleView();
+			
+			colorToggle.setChangedFn(() =>
+			{
+				const picked = this.getPicked();
+				(picked as IColorable).hasColor = colorToggle.hasColor;
+			});
 			
 			const updatePick = () =>
 			{
 				const picked = this.getPicked();
 				
-				if (picked instanceof TextBox)
+				if (picked instanceof CanvasTitleView)
 				{
-					
-				}
-				else if (picked instanceof CanvasDescriptionView)
-				{
-					
+					colorToggle.hasColor = picked.hasColor
 				}
 				else if (picked instanceof CanvasAction)
 				{
-					
+					colorToggle.hasColor = picked.actionRecord.hasColor;
 				}
-				else if (picked instanceof BackgroundObjectPreview)
+				else if (picked instanceof BackgroundPreview)
 				{
-					
+					colorToggle.hasColor = this.record.hasColor;
 				}
-			}
-			updatePick();
+			};
 			
+			updatePick();
+			When.disconnected(slider.root, () => colorToggle.root.remove());
+			this.sceneContainer.append(colorToggle.root);
 			this.setSceneConfigurator(slider.root);
 		}
 		
@@ -472,7 +439,7 @@ namespace App
 		private setContrast(amount: number)
 		{
 			RenderUtil.setContrast(this.islandElement, amount);
-			this.record.textContrast = amount;
+			this.record.contrast = amount;
 		}
 		
 		/** */
@@ -569,15 +536,10 @@ namespace App
 			
 			if (pickableTypes.includes(Pickable.titles))
 			{
-				const titleTextBoxes = this.titleView.getTextBoxes();
-				const titleDatas = this.titleView.getTitleData();
-				
-				for (let i = -1; ++i < titleDatas.length;)
+				for (const canvasTitle of this.titleView.getCanvasTitles())
 				{
-					const tb = titleTextBoxes[i];
-					const e = tb.editableElement;
-					this.picker.registerElement(e);
-					this.pickerDataMap.set(e, tb);
+					this.picker.registerElement(canvasTitle.root);
+					this.pickerDataMap.set(canvasTitle.root, canvasTitle);
 				}
 			}
 			
@@ -632,7 +594,7 @@ namespace App
 	/** */
 	type TPickable = 
 		HTMLImageElement |
-		TextBox | // For Titles ... this is temporary because these should be their own view
+		CanvasTitleView |
 		CanvasDescriptionView |
 		CanvasAction |
 		BackgroundObjectPreview |
