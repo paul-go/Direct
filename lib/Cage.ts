@@ -64,8 +64,11 @@ namespace Cage
 	/**
 	 * Scans upward through the DOM, starting at the specified Node, 
 	 * looking for the first element whose cage matches the specified type.
+	 * 
+	 * @returns A reference to the Cage that exists above the specified Node
+	 * in the DOM, or null if no such Cage was found.
 	 */
-	export function over<T extends ICage>(
+	export function up<T extends ICage>(
 		via: Node | ICage,
 		type: Constructor<T>)
 	{
@@ -83,19 +86,52 @@ namespace Cage
 			current = current.parentElement;
 		}
 		
-		throw new Error("Cage not found.");
+		return null;
 	}
 	
 	/**
-	 * Finds all descendent elements that have an attached cage of the
-	 * specified type, that exist underneath the specified Node or cage,
-	 * The specified function is executed against each cage, if it is provided.
+	 * Scans upward through the DOM, starting at the specified Node, 
+	 * looking for the first element whose cage matches the specified type.
+	 * 
+	 * @throws An exception if no Cage of the specified type is found.
+	 */
+	export function over<T extends ICage>(
+		via: Node | ICage,
+		type: Constructor<T>)
+	{
+		const cage = up(via, type);
+		if (!cage)
+			throw new Error("Cage not found.");
+		
+		return cage;
+	}
+	
+	/**
+	 * Finds the first descendent element that has an attached cage of the
+	 * specified type, that exists underneath the specified Node or Cage.
+	 * 
+	 * @returns The Cage associated with the descendent element, or
+	 * null if no such Cage is found.
+	 */
+	export function down<T extends ICage>(via: Node | ICage, type: Constructor<T>)
+	{
+		const cages = within(via, type, true);
+		return cages.length > 0 ? cages[0] : null;
+	}
+	
+	/**
+	 * Finds all descendent elements that have an attached Cage of the
+	 * specified type, that exist underneath the specified Node or Cage.
 	 * 
 	 * @returns An array of Cages whose type matches the type specified.
 	 */
-	export function under<T extends ICage>(
-		via: Node | ICage,
-		type: Constructor<T>)
+	export function under<T extends ICage>(via: Node | ICage, type: Constructor<T>)
+	{
+		return within(via, type, false);
+	}
+	
+	/** */
+	function within<T extends ICage>(via: Node | ICage, type: Constructor<T>, one: boolean)
 	{
 		const e = 
 			via instanceof Element ? via : 
@@ -117,8 +153,9 @@ namespace Cage
 		
 		const descendents = e.getElementsByClassName(className);
 		const cages: T[] = [];
+		const len = one ? 1 : descendents.length;
 		
-		for (let i = -1; ++i < descendents.length;)
+		for (let i = -1; ++i < len;)
 		{
 			const descendent = descendents[i];
 			const cage = Cage.get(descendent, type);
@@ -134,9 +171,10 @@ namespace Cage
 	 * which are extracted from the specified array of elements.
 	 */
 	export function map<T extends ICage>(elements: Element[], type: Constructor<T>): T[];
-	export function map<T extends ICage>(elementContainer: Element, type: Constructor<T>): T[];
-	export function map<T extends ICage>(e: Element | Element[], type: Constructor<T>): T[]
+	export function map<T extends ICage>(elementContainer: Element | ICage, type: Constructor<T>): T[];
+	export function map<T extends ICage>(e: ICage | Element | Element[], type: Constructor<T>): T[]
 	{
+		e = (!(e instanceof Element) && !window.Array.isArray(e)) ? e.root : e;
 		const elements = e instanceof Element ? window.Array.from(e.children) : e;
 		return elements
 			.map(e => get(e, type))
@@ -147,8 +185,10 @@ namespace Cage
 	 * Returns the element succeeding the specified element in the DOM
 	 * that is connected to a cage of the specified type.
 	 */
-	export function next<T extends ICage>(via: Element, type: Constructor<T>): T | null
+	export function next<T extends ICage>(via: Element | ICage, type: Constructor<T>): T | null
 	{
+		via = via instanceof Element ? via : via.root;
+		
 		for (;;)
 		{
 			via = via.nextElementSibling as Element;
@@ -165,8 +205,10 @@ namespace Cage
 	 * Returns the element preceeding the specified element in the DOM
 	 * that is connected to a cage of the specified type.
 	 */
-	export function previous<T extends ICage>(via: Element, type: Constructor<T>): T | null
+	export function previous<T extends ICage>(via: Element | ICage, type: Constructor<T>): T | null
 	{
+		via = via instanceof Element ? via : via.root;
+		
 		for (;;)
 		{
 			via = via.previousElementSibling as Element;
