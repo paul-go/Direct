@@ -69,7 +69,7 @@ namespace App
 					{
 						backgroundColor: UI.darkGrayBackground,
 						position: "sticky",
-						bottom: "0",
+						bottom: 0,
 					},
 					this.configuratorButtonsContainer = Hot.div(
 						"config-buttons-width",
@@ -175,7 +175,7 @@ namespace App
 					width: "fit-content",
 					marginLeft: "auto",
 					padding: headerPadding,
-					paddingLeft: "0",
+					paddingLeft: 0,
 				},
 				Icon.plus(
 					Hot.on(UI.clickEvt, () => 
@@ -218,7 +218,7 @@ namespace App
 				UI.anchorTop(),
 				UI.flexCenter,
 				{
-					zIndex: "2",
+					zIndex: 2,
 				},
 				...params,
 			);

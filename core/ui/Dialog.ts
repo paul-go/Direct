@@ -78,13 +78,13 @@ namespace App
 			
 			const overlayDiv = Hot.div({
 				position: "fixed",
-				top: "0",
-				left: "0",
+				top: 0,
+				left: 0,
 				width: "100%",
 				height: "100%",
 				backgroundColor: "rgba(0, 0, 0, 0.66)",
 				color: "white",
-				opacity: "0",
+				opacity: 0,
 				transitionProperty: "opacity",
 				transitionDuration: "0.3s",
 				display: "flex",

@@ -14,7 +14,7 @@ namespace App
 				{
 					borderRadius: "inherit",
 					transitionDuration: "0.75s",
-					zIndex: "999",
+					zIndex: 999,
 					
 					// It's necessary to have a background color, 
 					// otherwise the blur won't render (at least in webkit)
@@ -39,7 +39,7 @@ namespace App
 		{
 			Hot.get(this.root)(
 				{
-					opacity: "0",
+					opacity: 0,
 					// It's necessary to have a background color, 
 					// otherwise the blur won't render (at least in webkit)
 					backgroundColor: "rgba(0, 0, 0, 0.01)", 
@@ -53,7 +53,7 @@ namespace App
 		{
 			Hot.get(this.root)(
 				UI.backdropBlur(7),
-				{ opacity: "1" }
+				{ opacity: 1 }
 			);
 		}
 		

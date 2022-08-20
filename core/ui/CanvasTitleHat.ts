@@ -76,7 +76,7 @@ namespace App
 					width: "fit-content",
 					minWidth: "0.1em",
 					fontSize: UI.vsize(6),
-					fontWeight: "700",
+					fontWeight: 700,
 					marginLeft: "inherit",
 					marginRight: "inherit",
 				},

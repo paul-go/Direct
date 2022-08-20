@@ -20,8 +20,8 @@ namespace App.Icon
 				bar,
 				{
 					width: UI.lineIconThickness + "px",
-					top: "0",
-					bottom: "0",
+					top: 0,
+					bottom: 0,
 					left: `calc(50% - ${UI.lineIconThickness / 2}px)`,
 				}
 			),
@@ -29,8 +29,8 @@ namespace App.Icon
 				bar,
 				{
 					height: UI.lineIconThickness + "px",
-					left: "0",
-					right: "0",
+					left: 0,
+					right: 0,
 					top: `calc(50% - ${UI.lineIconThickness / 2}px)`,
 				}
 			),
@@ -132,8 +132,8 @@ namespace App.Icon
 					width: "40%",
 					height: "40%",
 					borderWidth: thickness + "px",
-					borderBottomWidth: "0",
-					borderLeftWidth: "0",
+					borderBottomWidth: 0,
+					borderLeftWidth: 0,
 					borderStyle: "solid",
 					borderColor: "inherit",
 				},
@@ -177,13 +177,13 @@ namespace App.Icon
 	/** */
 	export function chevron(origin: Origin, ...params: Hot.Param[])
 	{
-		const b = { borderLeftWidth: "0", borderTopWidth: "0" };
+		const b: Hot.Style = { borderLeftWidth: 0, borderTopWidth: 0 };
 		const r = (deg: number) => <Hot.Style>{ transform: `rotate(${deg}deg)` };
 		
 		const css: Hot.Style = 
-			origin === Origin.topLeft ? { borderRightWidth: "0", borderBottomWidth: "0" } :
-			origin === Origin.topRight ? { borderLeftWidth: "0", borderBottomWidth: "0" } :
-			origin === Origin.bottomLeft ? { borderRightWidth: "0", borderTopWidth: "0" } :
+			origin === Origin.topLeft ? { borderRightWidth: 0, borderBottomWidth: 0 } :
+			origin === Origin.topRight ? { borderLeftWidth: 0, borderBottomWidth: 0 } :
+			origin === Origin.bottomLeft ? { borderRightWidth: 0, borderTopWidth: 0 } :
 			origin === Origin.bottomRight ? b :
 			origin === Origin.top ? { ...b, ...r(225) } :
 			origin === Origin.right ? { ...b, ...r(325) } :

@@ -147,9 +147,9 @@ namespace App
 				Class.indicator,
 				{
 					position: "absolute",
-					top: "0",
+					top: 0,
 					height: "3px",
-					opacity: "0",
+					opacity: 0,
 					backgroundColor: "rgb(128, 128, 128)",
 					transitionProperty: "left, width, opacity",
 					transitionDuration: "0.2s",

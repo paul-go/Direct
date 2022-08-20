@@ -102,7 +102,7 @@ namespace App
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
-					fontWeight: "600",
+					fontWeight: 600,
 					fontSize: "20px",
 				},
 				...params,
@@ -116,7 +116,7 @@ namespace App
 			return [
 				{
 					fontStyle: "italic",
-					fontWeight: "700",
+					fontWeight: 700,
 					fontSize: "25px",
 					color: UI.white(0.5),
 				},
@@ -163,7 +163,7 @@ namespace App
 		/** */
 		export const keyable: Hot.Param = {
 			tabIndex: 0,
-			outline: "0",
+			outline: 0,
 		};
 		
 		/**
@@ -565,7 +565,7 @@ namespace App
 			return [
 				{
 					tabIndex: 0,
-					outline: "0",
+					outline: 0,
 				},
 				e => Hot.on("keydown", async ev =>
 				{
@@ -587,7 +587,7 @@ namespace App
 			return [
 				{
 					tabIndex: 0,
-					outline: "0",
+					outline: 0,
 				},
 				e => Hot.on("keydown", async ev =>
 				{
@@ -691,7 +691,7 @@ namespace App
 				{
 					margin: "auto",
 					textAlign: "center",
-					fontWeight: "800",
+					fontWeight: 800,
 					padding: "25px",
 					fontSize: "25px",
 					borderRadius: UI.borderRadius.max
@@ -738,7 +738,7 @@ namespace App
 			const overlay = Hot.div(
 				UI.fixed(),
 				{
-					zIndex: "0",
+					zIndex: 0,
 				},
 				Hot.on(document.body, "pointerdown", ev =>
 				{
@@ -776,7 +776,7 @@ namespace App
 								padding: "20px",
 								color: "white",
 								fontSize: "22px",
-								fontWeight: "600",
+								fontWeight: 600,
 							},
 							Hot.css(":hover", { backgroundColor: "#007cd3" }),
 							UI.clickable,
@@ -914,12 +914,12 @@ namespace App
 			type: "error" | "info")
 		{
 			const clsVisible = Hot.css({
-				opacity: "1",
+				opacity: 1,
 				transform: "translateY(0)",
 			});
 			
 			const clsInvisible = Hot.css({
-				opacity: "0",
+				opacity: 0,
 				transform: "translateY(20px)",
 			});
 			

@@ -32,7 +32,7 @@ namespace App
 					transitionDuration: "0.5s",
 					transitionProperty: "transform, opacity",
 					transformOrigin: "0 0",
-					opacity: "1",
+					opacity: 1,
 				},
 				minHeight,
 				this.scenesElement = Hot.div(
@@ -47,7 +47,7 @@ namespace App
 					UI.visibleWhenEmpty(this.scenesElement),
 					minHeight,
 					{
-						zIndex: "1",
+						zIndex: 1,
 					},
 					(this.noScenesBox = new HeightBox(this.renderNoScenes())).root,
 				),
@@ -106,13 +106,13 @@ namespace App
 					"header-screen",
 					{
 						position: "fixed",
-						top: "0",
+						top: 0,
 						height: SceneHat.headerHeight,
 						transitionDuration: "0.33s",
 						transitionProperty: "background-color",
 						padding: "25px",
 						// Elevate the chevron so that it goes above the "no scenes" message
-						zIndex: "1",
+						zIndex: 1,
 						borderBottomRightRadius: UI.borderRadius.large,
 					},
 					!TAURI && Hot.css("." + CssClass.appContainerMaxed + " &", {
@@ -169,7 +169,7 @@ namespace App
 					UI.presentational,
 					{
 						fontSize: "30px",
-						fontWeight: "600",
+						fontWeight: 600,
 						marginBottom: "30px",
 					},
 					new Text("This post has no scenes."),
@@ -307,14 +307,14 @@ namespace App
 						paddingBottom: "50px",
 						color: UI.white(0.5),
 						textAlign: "center",
-						lineHeight: "1.5",
+						lineHeight: 1.5,
 						verticalAlign: "top",
 					},
 					
 					dstRoot && Hot.span(
 						{
 							paddingRight: "10px",
-							opacity: "0.66",
+							opacity: 0.66,
 							whiteSpace: "nowrap",
 							verticalAlign: "bottom",
 						},
@@ -326,7 +326,7 @@ namespace App
 							display: "inline-block",
 							maxWidth: (ConstN.appMaxWidth - 250) + "px",
 							fontSize: "24px",
-							fontWeight: "800",
+							fontWeight: 800,
 							verticalAlign: "bottom",
 							textAlign: "left",
 							wordBreak: "break-all"
@@ -355,7 +355,7 @@ namespace App
 				Editable.single({
 					placeholderText: "...Enter a slug...",
 					placeholderCss: {
-						opacity: "1"
+						opacity: 1
 					}
 				}),
 				{

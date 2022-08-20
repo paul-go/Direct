@@ -161,15 +161,15 @@ namespace App
 				.${CssClass.canvasSceneIsland}.${Origin.topLeft},
 				.${CssClass.canvasSceneIsland}.${Origin.left},
 				.${CssClass.canvasSceneIsland}.${Origin.bottomLeft}`, {
-				"margin-left": "0",
-				"margin-right": "0",
+				"margin-left": 0,
+				"margin-right": 0,
 			}),
 			rule(`
 				.${CssClass.canvasSceneIsland}.${Origin.topRight},
 				.${CssClass.canvasSceneIsland}.${Origin.right},
 				.${CssClass.canvasSceneIsland}.${Origin.bottomRight}`, {
 				"margin-left": "auto",
-				"margin-right": "0",
+				"margin-right": 0,
 			}),
 			rule(`
 				.${Origin.topLeft} .${CssClass.canvasActions},
@@ -246,10 +246,10 @@ namespace App
 			}),
 			rule("." + CssClass.galleryFrameLegend, {
 				"position": "absolute",
-				"top": "0",
-				"right": "0",
-				"bottom": "0",
-				"left": "0",
+				"top": 0,
+				"right": 0,
+				"bottom": 0,
+				"left": 0,
 				"display": "flex",
 				"flex-direction": "column",
 				"justify-content": "flex-end",
@@ -301,10 +301,10 @@ namespace App
 			rule("." + CssClass.textContrast + ":before", {
 				"content": `""`,
 				"position": "absolute",
-				"top": "0",
-				"right": "0",
-				"bottom": "0",
-				"left": "0",
+				"top": 0,
+				"right": 0,
+				"bottom": 0,
+				"left": 0,
 				"z-index": "-1",
 				"transform-origin": "50% 50%",
 				"transform": "scaleX(3) scaleY(3.5)",
@@ -403,14 +403,14 @@ namespace App
 	{
 		return [
 			rule("HTML, BODY", {
-				"margin": "0",
-				"padding": "0",
+				"margin": 0,
+				"padding": 0,
 				"height": "100%",
 				"background-color": UI.darkGrayBackground,
 				"color": "white",
 			}),
 			rule("*", {
-				"outline": "0",
+				"outline": 0,
 			}),
 			rule("." + CssClass.hide, {
 				display: "none !important",

@@ -321,7 +321,7 @@ namespace Hot
 		columns: string | number;
 		fontSize: string | 0;
 		fontSizeAdjust: string | 0;
-		fontWeight: string | 0;
+		fontWeight: string | number;
 		gridAutoColumns: string | 0;
 		gridColumn: string | 0;
 		gridColumnEnd: string | 0;

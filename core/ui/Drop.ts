@@ -79,11 +79,11 @@ namespace App
 					{
 						pointerEvents: "none",
 						margin: "auto",
-						zIndex: "9",
+						zIndex: 9,
 						backgroundColor: UI.color({ h: 215, s: 80, l: 50, a: 0.85 }),
 						borderRadius: UI.borderRadius.large,
 						fontSize: "40px",
-						fontWeight: "700",
+						fontWeight: 700,
 						color: "white"
 					},
 					...params

@@ -116,7 +116,7 @@ namespace App
 						placeholderText: "Enter Button Text...",
 						placeholderCss: {
 							fontStyle: "italic",
-							fontWeight: "500",
+							fontWeight: 500,
 						},
 					}),
 				),

@@ -12,7 +12,7 @@ namespace App
 				{
 					top: "auto",
 					bottom: "10px",
-					zIndex: "1",
+					zIndex: 1,
 				},
 				UI.click(() =>
 				{

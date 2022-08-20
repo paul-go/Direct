@@ -137,7 +137,7 @@ namespace App.RenderUtil
 			UI.anchor(),
 			{
 				overflow: "hidden",
-				zIndex: "-1",
+				zIndex: -1,
 			},
 			fillerVideo = Hot.video({
 				src,

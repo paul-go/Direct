@@ -11,7 +11,7 @@ namespace App
 				"element-picker",
 				UI.anchor(),
 				{
-					zIndex: "1"
+					zIndex: 1
 				},
 				Hot.on("pointerdown", ev =>
 				{

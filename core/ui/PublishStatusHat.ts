@@ -34,7 +34,7 @@ namespace App
 				When.rendered(() => Hot.get(this.root)(this.show)),
 				Hot.span(
 					{
-						opacity: "0.8",
+						opacity: 0.8,
 						margin: "0 6px 0 20px",
 					},
 					...UI.text("Publishing to: ", 22)
@@ -50,13 +50,13 @@ namespace App
 		
 		/** */
 		private readonly show = Hot.css({
-			opacity: "1",
+			opacity: 1,
 			transform: "translateY(0) scale(1)",
 		});
 		
 		/** */
 		private readonly hide = Hot.css({
-			opacity: "0",
+			opacity: 0,
 			transform: "translateY(10px) scale(0.8)",
 		});
 		

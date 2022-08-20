@@ -30,9 +30,9 @@ namespace App
 					},
 					Hot.css("&:before, &:after", {
 						margin: "auto",
-						fontWeight: "600",
+						fontWeight: 600,
 						fontSize: "1.25em",
-						opacity: "0.33",
+						opacity: 0.33,
 						height: "fit-content",
 					}),
 					Hot.css(":before", {
@@ -58,7 +58,7 @@ namespace App
 							borderRadius: "100%",
 							boxShadow: "inset 0 0 0 4px white",
 							color: "white",
-							fontWeight: "900",
+							fontWeight: 900,
 						}
 					)
 				),

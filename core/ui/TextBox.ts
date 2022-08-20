@@ -18,10 +18,10 @@ namespace App
 						maxHeight: "min-content",
 						margin: "auto",
 						whiteSpace: "nowrap",
-						zIndex: "-1",
+						zIndex: -1,
 						pointerEvents: "none",
 						fontStyle: "italic",
-						opacity: "0.33",
+						opacity: 0.33,
 						padding: "inherit"
 					}
 				),
@@ -29,7 +29,7 @@ namespace App
 					"text-box-editable",
 					{
 						contentEditable: "true",
-						outline: "0",
+						outline: 0,
 						minWidth: "1px" // Minimum width needed so that the caret is visible
 					}
 				)

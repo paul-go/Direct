@@ -108,10 +108,10 @@ namespace App
 				Hot.css(":empty:before", {
 					content: `"${options?.placeholderText || ""}"`,
 					pointerEvents: "none",
-					height: "0",
+					height: 0,
 					display: "inline-block",
-					opacity: "0.5",
-					zIndex: "-1",
+					opacity: 0.5,
+					zIndex: -1,
 					...options?.placeholderCss
 				}),
 				Hot.on("keydown", ev =>

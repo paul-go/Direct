@@ -37,7 +37,7 @@ namespace App
 						
 						Hot.get(this.trixEditorElement)({
 							flex: "1 0",
-							outline: "0",
+							outline: 0,
 						}),
 						
 						(this.linkEditor = new LinkEditorHat()).root
@@ -193,7 +193,7 @@ namespace App
 			const tempElement = Hot.div(
 				"temp-element",
 				UI.anchor(),
-				{ left: "-99999px", pointerEvents: "none", opacity: "0" },
+				{ left: "-99999px", pointerEvents: "none", opacity: 0 },
 				trixEditor
 			);
 			

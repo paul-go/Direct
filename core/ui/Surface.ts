@@ -45,7 +45,7 @@ namespace App
 				UI.fixed(-10),
 				{
 					padding: "40px",
-					opacity: "0",
+					opacity: 0,
 					transitionDuration: "0.5s",
 					transitionProperty: "opacity, transform",
 					maxHeight: "calc(100% + 20px)",
@@ -85,7 +85,7 @@ namespace App
 					"closer",
 					{
 						position: "fixed",
-						zIndex: "9",
+						zIndex: 9,
 						top: "30px",
 						right: "30px",
 						color: fgcolor,
@@ -111,7 +111,7 @@ namespace App
 					position: "fixed",
 					bottom: "30px",
 					right: "30px",
-					zIndex: "9",
+					zIndex: 9,
 					color: fgcolor,
 					cursor: "pointer",
 					userSelect: "none",

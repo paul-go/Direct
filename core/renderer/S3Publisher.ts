@@ -16,7 +16,7 @@ namespace App
 					textAlign: "center",
 					fontStyle: "italic",
 					fontSize: "22px",
-					opacity: "0.66",
+					opacity: 0.66,
 					border: "1px solid " + UI.black(0.25),
 					borderRadius: UI.borderRadius.default,
 				},

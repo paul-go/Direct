@@ -38,7 +38,7 @@ namespace App
 						borderTopLeftRadius: "inherit",
 						borderBottomLeftRadius: "inherit",
 						backgroundColor: UI.white(0.1),
-						fontWeight: "700",
+						fontWeight: 700,
 					},
 					...UI.click(ev => UI.springMenu(ev.target, {
 						"https://": () => this.protocol = "https://",

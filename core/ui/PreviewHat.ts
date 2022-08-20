@@ -12,9 +12,9 @@ namespace App
 				UI.fixed(),
 				UI.keyable,
 				{
-					zIndex: "1",
+					zIndex: 1,
 					borderRadius: UI.borderRadius.large,
-					opacity: "0",
+					opacity: 0,
 					transform: "scale(0.66)",
 					transformOrigin: "50% 50%",
 					transitionProperty: "transform, opacity, border-radius",

@@ -20,11 +20,11 @@ namespace App
 			this.windowFlipper = createFlipper({
 				invisible: {
 					transform: "translateY(100%)",
-					opacity: "0",
+					opacity: 0,
 				},
 				visible: {
 					transform: "translateY(0)",
-					opacity: "1",
+					opacity: 1,
 				},
 			})
 			
