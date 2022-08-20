@@ -207,17 +207,20 @@ namespace Hot { { } }
 		const idx = inlineRuleSheet.insertRule(selectorFinal + "{}");
 		const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
 		
-		for (let [propertyName, propertyValue] of Object.entries(styles))
+		for (let [pName, pVal] of Object.entries(styles))
 		{
-			if (typeof propertyValue === "string")
+			if (typeof pVal === "number")
+				pVal = String(pVal || 0);
+			
+			if (typeof pVal === "string")
 			{
-				propertyName = propertyName.replace(
+				pName = pName.replace(
 					/[A-Z]/g,
 					(char: string) => "-" + char.toLowerCase());
 				
 				// The properties of inline rules are always important, because there
 				// are no conceivable cases where they shouldn't override the inline styles.
-				cssRule.style.setProperty(propertyName, propertyValue, "important");
+				cssRule.style.setProperty(pName, pVal, "important");
 			}
 		}
 		
