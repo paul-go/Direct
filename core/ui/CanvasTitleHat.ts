@@ -179,6 +179,7 @@ namespace App
 			);
 			
 			this.text = defaultText;
+			this.hasColor = false;
 			Hat.wear(this);
 		}
 		
