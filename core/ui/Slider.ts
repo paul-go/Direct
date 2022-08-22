@@ -11,7 +11,9 @@ namespace App
 				{
 					height: (thumbSize + thumbPadding * 2) + "px",
 					padding: thumbPadding + "px",
-					boxShadow: "inset 0 0 0 5px " + UI.white(0.15),
+					boxShadow: 
+						"inset 0 0 0 5px " + UI.white(0.15) +
+						", 0 3px 15px " + UI.black(0.75),
 					borderRadius: "1000px",
 				},
 				Hot.on("pointerdown", ev => this.startDrag(ev)),
@@ -161,6 +163,34 @@ namespace App
 		}
 		private _decimals = 1;
 		
+		/**
+		 * Indicates whether the Slider should display values
+		 * via Math.abs(), so that negative values are actually
+		 * displayed as positive.
+		 */
+		get abs()
+		{
+			return this._abs;
+		}
+		set abs(abs: boolean)
+		{
+			this._abs = abs;
+			this.updateThumb();
+		}
+		private _abs = false;
+		
+		/** */
+		get skipZero()
+		{
+			return this._skipZero;
+		}
+		set skipZero(skipZero: boolean)
+		{
+			this._skipZero = skipZero;
+			this.updateThumb();
+		}
+		private _skipZero = false;
+		
 		/** */
 		private handlePointerMove(ev: PointerEvent)
 		{
@@ -172,7 +202,8 @@ namespace App
 			const xPixel = Math.max(0, Math.min(this.sliderRect.width, ev.clientX - this.sliderRect.x));
 			const xPercent = xPixel / this.sliderRect.width;
 			const range = this.max - this.min;
-			this._place = (xPercent * range) + this.min;
+			const place = this.fix((xPercent * range) + this.min);
+			this._place = this.maybeSkipZero(place);
 			
 			this.updateThumb();
 			this.progressChangeFn();
@@ -184,8 +215,27 @@ namespace App
 			const range = this.max - this.min;
 			const cssLeftAmount = (this.place - this.min) / range * 100;
 			this.thumb.style.left = cssLeftAmount + "%";
-			const power = this.decimals ? 10 ** this.decimals : 1;
-			this.thumb.textContent = (Math.round(this.place * power) / power).toString();
+			let visibleNumber = this.fix(this.place);
+			visibleNumber = this.maybeSkipZero(visibleNumber);
+			
+			if (this.abs)
+				visibleNumber = Math.abs(visibleNumber);
+			
+			this.thumb.textContent = visibleNumber.toString();
+		}
+		
+		/** */
+		private fix(val: number)
+		{
+			return Number(val.toFixed(this.decimals));
+		}
+		
+		/** */
+		private maybeSkipZero(val: number)
+		{
+			return this.skipZero && val === 0 ?
+				val + 1 / (10 ** this.decimals) :
+				val;
 		}
 		
 		/** */
