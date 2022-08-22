@@ -92,7 +92,7 @@ namespace App
 		/** */
 		async importMedia(files: FileLike[], dropOffsetX = 0)
 		{
-			const mediaRecords = this.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
+			const mediaRecords = Util.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
 			if (mediaRecords.length === 0)
 				return;
 			

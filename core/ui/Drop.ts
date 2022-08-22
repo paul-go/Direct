@@ -44,9 +44,7 @@ namespace App
 		{
 			accept?: string[];
 			dropFn: (files: FileLike[], x: number, y: number) => void;
-			drippers?: HTMLElement[];
-			
-			cover?: Hot.Param | Hot.Param[];
+			center?: Hot.Param | Hot.Param[];
 			top?: Hot.Param | Hot.Param[];
 			right?: Hot.Param | Hot.Param[];
 			bottom?: Hot.Param | Hot.Param[];
@@ -62,14 +60,14 @@ namespace App
 			const half = `calc(50% - ${edge * 1.5}px)`;
 			
 			const createDripper = (
-				position: "cover" | "top" | "right" | "bottom" | "left",
+				position: "center" | "top" | "right" | "bottom" | "left",
 				...params: Hot.Param[]) =>
 			{
 				const dripper = Hot.div(
 					"dripper",
 					CssClass.hide,
 					UI.flexCenter,
-					position === "cover" && UI.anchor(edge),
+					position === "center" && UI.anchor(edge),
 					(position === "top" || position === "bottom") && { height: half },
 					(position === "left" || position === "right") && { width: half },
 					position === "top" && UI.anchorTop(edge),
@@ -93,7 +91,7 @@ namespace App
 			};
 			
 			const drippers = [
-				options.cover && createDripper("cover", options.cover),
+				options.center && createDripper("center", options.center),
 				options.top && createDripper("top", options.top),
 				options.right && createDripper("right", options.right),
 				options.bottom && createDripper("bottom", options.bottom),

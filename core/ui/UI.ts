@@ -541,6 +541,24 @@ namespace App
 		}
 		
 		/** */
+		export function onLostFocus(fn: () => void): Hot.Param
+		{
+			return [
+				{
+					tabIndex: 0,
+				},
+				e => Hot.on("focusout", () =>
+				{
+					setTimeout(() =>
+					{
+						if (!Query.ancestors(document.activeElement).includes(e))
+							fn();
+					});
+				})
+			];
+		}
+		
+		/** */
 		export function onChildrenChanged(e: HTMLElement, fn: () => void)
 		{
 			new MutationObserver(() => fn()).observe(e, { childList: true });

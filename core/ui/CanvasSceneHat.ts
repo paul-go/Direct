@@ -147,7 +147,7 @@ namespace App
 				const imageBytes = await Tauri.fs.readBinaryFile(dialogResult);
 				const mime = MimeType.fromFileName(fileName);
 				const fileLike = new FileLike(fileName, mime, imageBytes);
-				const mediaRecord = this.createMediaRecords([fileLike]);
+				const mediaRecord = Util.createMediaRecords([fileLike]);
 				await this.addContentImage(mediaRecord[0]);
 			}
 			else return new Promise<void>(resolve =>
@@ -173,7 +173,7 @@ namespace App
 								type: Not.nullable(MimeType.from(nativeFile.type))
 							};
 							
-							const mediaRecords = this.createMediaRecords([fileLike]);
+							const mediaRecords = Util.createMediaRecords([fileLike]);
 							await this.addContentImage(mediaRecords[0]);
 						}
 						
@@ -189,7 +189,7 @@ namespace App
 		/** */
 		private handleMediaDrop(files: FileLike[], layerX: number, layerY: number)
 		{
-			const mediaRecords = this.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
+			const mediaRecords = Util.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
 			if (mediaRecords.length === 0)
 				return;
 			

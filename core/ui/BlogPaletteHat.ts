@@ -16,7 +16,7 @@ namespace App
 				Drop.here({
 					accept: [MimeType.zip],
 					dropFn: files => files.length > 0 && this.importDatabase(files[0].data),
-					cover: new Text("Import")
+					center: new Text("Import")
 				}),
 				Hot.div(
 					"blog-palette-window",

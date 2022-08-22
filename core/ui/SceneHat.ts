@@ -44,7 +44,7 @@ namespace App
 					Drop.here({
 						accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
 						dropFn: files => this.insertGalleryScene(files),
-						cover: new Text("Add Here")
+						center: new Text("Add Here")
 					})
 				),
 				
@@ -392,32 +392,6 @@ namespace App
 			//	this.transitionAnchor.innerHTML = `<b>Transition</b>&nbsp;&#8212; ${value.label}`;
 		}
 		private _transition = Transitions.slide;
-		
-		/** */
-		protected createMediaRecords(
-			files: FileLike[],
-			guardedMimes?: MimeClass[])
-		{
-			const records: MediaRecord[] = [];
-			
-			for (const file of files)
-			{
-				const mimeType = MimeType.from(file.type);
-				if (!mimeType)
-					continue;
-				
-				if (guardedMimes && !guardedMimes.includes(MimeType.getClass(file.type)))
-					continue;
-				
-				const record = new MediaRecord();
-				record.blob = new Blob([file.data], { type: file.type });
-				record.name = file.name;
-				record.type = mimeType;
-				records.push(record);
-			}
-		
-			return records;
-		}
 		
 		/** */
 		private moveSceneUp()

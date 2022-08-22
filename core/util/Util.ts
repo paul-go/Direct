@@ -213,6 +213,32 @@ namespace App
 		
 		//# Record Related
 		
+		/** */
+		export function createMediaRecords(
+			files: FileLike[],
+			guardedMimes?: MimeClass[])
+		{
+			const records: MediaRecord[] = [];
+			
+			for (const file of files)
+			{
+				const mimeType = MimeType.from(file.type);
+				if (!mimeType)
+					continue;
+				
+				if (guardedMimes && !guardedMimes.includes(MimeType.getClass(file.type)))
+					continue;
+				
+				const record = new MediaRecord();
+				record.blob = new Blob([file.data], { type: file.type });
+				record.name = file.name;
+				record.type = mimeType;
+				records.push(record);
+			}
+		
+			return records;
+		}
+		
 		/**
 		 * 
 		 */

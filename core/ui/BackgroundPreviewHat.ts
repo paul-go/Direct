@@ -7,25 +7,34 @@ namespace App
 		/** */
 		constructor(private readonly record: CanvasSceneRecord)
 		{
-			this.root = Hot.div(
-				"backgrounds-container",
-				UI.anchor()
-			);
+			this.root = Hot.div(UI.anchor());
 			
-			let imagesConfigurators: HTMLElement;
+			let configurators: HTMLElement;
+			const mimeClasses = [MimeClass.image, MimeClass.video];
 			
 			this.configuratorElement = Hot.div(
-				"background-manager",
-				imagesConfigurators = Hot.div(
-					"background-manager-images",
+				"configurator-element",
+				configurators = Hot.div(
+					"configurators",
 					{
+						display: "flex",
+						flexDirection: "column-reverse",
 						marginBottom: "20px",
-					}
+					},
 				),
+				Drop.here({
+					accept: MimeType.ofClass(...mimeClasses),
+					center: new Text("Add Background"),
+					dropFn: files =>
+					{
+						for (const record of Util.createMediaRecords(files, mimeClasses))
+							this.addBackground(record);
+					},
+				}),
 			);
 			
 			this.previews = new Hat.Array(this.root, BackgroundObjectPreviewHat);
-			this.configurators = new Hat.Array(imagesConfigurators, BackgroundConfiguratorHat);
+			this.configurators = new Hat.Array(configurators, BackgroundConfiguratorHat);
 			
 			for (const bg of record.backgrounds)
 				if (bg.media)
@@ -106,7 +115,7 @@ namespace App
 		{
 			this.root = Hot.div(
 				"background-configurator",
-				Hot.css(" + .background-configurator", { marginTop: "10px" }),
+				Hot.css(":not(:last-child)", { marginTop: "10px" }),
 				{
 					display: "flex",
 				},
@@ -282,23 +291,29 @@ namespace App
 			this.root = Hot.div(
 				"background-image-preview",
 				UI.anchor(),
-				Hot.on("pointerdown", () =>
 				{
-					this.imgContainer.setPointerCapture(1);
-				}),
-				Hot.on("pointerup", () =>
-				{
-					this.imgContainer.releasePointerCapture(1);
-				}),
-				Hot.on("pointermove", ev =>
-				{
-					if (ev.buttons === 1)
-						this.handleImageMove(ev.movementX, ev.movementY);
-				}),
+					pointerEvents: "none",
+				},
 				this.imgBoundary = Hot.div(
 					"image-boundary",
 					this.imgContainer = Hot.div(
 						"image-container",
+						{
+							pointerEvents: "all",
+						},
+						Hot.on("pointerdown", () =>
+						{
+							this.imgContainer.setPointerCapture(1);
+						}),
+						Hot.on("pointerup", () =>
+						{
+							this.imgContainer.releasePointerCapture(1);
+						}),
+						Hot.on("pointermove", ev =>
+						{
+							if (ev.buttons === 1)
+								this.handleImageMove(ev.movementX, ev.movementY);
+						}),
 						this.selectionBox = Hot.div(
 							"selection-box",
 							{
