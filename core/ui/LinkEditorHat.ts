@@ -6,7 +6,7 @@ namespace App
 	{
 		constructor()
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"link-editor-hat",
 				UI.anchorCenter("fit-content"),
 				UI.toolButtonTheme,
@@ -48,7 +48,7 @@ namespace App
 					})),
 					...UI.text()
 				),
-				(this.linkTextBox = this.createLinkTextBox()).root
+				(this.linkTextBox = this.createLinkTextBox()).head
 			);
 			
 			// Sets the default protocol
@@ -57,7 +57,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly linkTextBox;
 		private readonly protocolElement;
 		
@@ -126,7 +126,7 @@ namespace App
 		/** */
 		toggle(show: boolean)
 		{
-			UI.toggle(this.root, show);
+			UI.toggle(this.head, show);
 		}
 		
 		/** */

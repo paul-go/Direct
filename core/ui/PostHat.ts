@@ -21,7 +21,7 @@ namespace App
 			
 			this.isNewRecord = !record;
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"post-hat",
 				Hot.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
 				
@@ -49,7 +49,7 @@ namespace App
 					{
 						zIndex: 1,
 					},
-					(this.noScenesBox = new HeightBox(this.renderNoScenes())).root,
+					(this.noScenesBox = new HeightBox(this.renderNoScenes())).head,
 				),
 				
 				this.footerElement = Hot.div(
@@ -149,7 +149,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		readonly scenes;
 		private readonly record;
 		private readonly headerScreen;
@@ -184,9 +184,9 @@ namespace App
 						ibv.setCancelCallback(() => this.noScenesBox.back());
 						ibv.setInsertCallback(scene =>
 						{
-							this.scenesElement.append(scene.root);
+							this.scenesElement.append(scene.head);
 						});
-						this.noScenesBox.push(ibv.root);
+						this.noScenesBox.push(ibv.head);
 					}),
 					new Text("Add One"),
 				)
@@ -230,17 +230,17 @@ namespace App
 			// If there is no BlogHat sitting behind this PostHat, its because
 			// the application launched directly into a PostHat for editing the
 			// home page, and so we need to insert a new BlogHat.
-			if (!Query.find(CssClass.blogHat, AppContainer.of(this).root))
+			if (!Query.find(CssClass.blogHat, AppContainer.of(this).head))
 			{
 				const blogHat = new BlogHat();
 				const app = AppContainer.of(this);
-				app.root.prepend(blogHat.root);
+				app.head.prepend(blogHat.head);
 				await UI.wait();
-				const s = this.root.style;
+				const s = this.head.style;
 				s.opacity = "0";
 				s.transform = "scale(0.3333)";
-				await UI.waitTransitionEnd(this.root);
-				this.root.remove();
+				await UI.waitTransitionEnd(this.head);
+				this.head.remove();
 			}
 			else
 			{
@@ -288,7 +288,7 @@ namespace App
 		{
 			const app = AppContainer.of(this);
 			const publishSetupHat = new PublishSetupHat(this.record, app);
-			this.root.append(publishSetupHat.root);
+			this.head.append(publishSetupHat.head);
 		}
 		
 		/** */

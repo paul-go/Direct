@@ -8,14 +8,14 @@ namespace App
 		static show(target: string)
 		{
 			const hat = new PublishStatusHat(target);
-			document.body.append(hat.root);
+			document.body.append(hat.head);
 			return () => hat.remove();
 		}
 		
 		/** */
 		private constructor(target: string)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				UI.flexCenter,
 				UI.anchorBottomRight(20),
 				UI.spinner(),
@@ -31,7 +31,7 @@ namespace App
 				},
 				UI.backdropBlur(5),
 				this.hide,
-				When.rendered(() => Hot.get(this.root)(this.show)),
+				When.rendered(() => Hot.get(this.head)(this.show)),
 				Hot.span(
 					{
 						opacity: 0.8,
@@ -45,7 +45,7 @@ namespace App
 			);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly showTime = Date.now();
 		
 		/** */
@@ -72,10 +72,10 @@ namespace App
 			if (ms < 0)
 				await UI.wait(Math.abs(ms));
 			
-			this.root.classList.remove(this.show);
-			this.root.classList.add(this.hide);
-			await UI.waitTransitionEnd(this.root);
-			this.root.remove();
+			this.head.classList.remove(this.show);
+			this.head.classList.add(this.hide);
+			await UI.waitTransitionEnd(this.head);
+			this.head.remove();
 		}
 		private isRemoving = false;
 	}

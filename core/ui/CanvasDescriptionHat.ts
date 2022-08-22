@@ -9,7 +9,7 @@ namespace App
 		constructor(record: CanvasSceneRecord)
 		{
 			super(record);
-			this.root.classList.add("canvas-description-hat");
+			this.head.classList.add("canvas-description-hat");
 			
 			this.textArea = Hot.div(
 				Editable.multi(),
@@ -21,7 +21,7 @@ namespace App
 				}
 			);
 			
-			this.root.append(this.textArea);
+			this.head.append(this.textArea);
 			this.fontSize = 4;
 			this.fontWeight = ConstN.descriptionFontWeight;
 		}

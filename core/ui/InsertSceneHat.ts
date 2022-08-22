@@ -22,7 +22,7 @@ namespace App
 						const scene = new sceneCtor();
 						this.insertCallback?.(scene);
 						
-						setTimeout(() => scene.root.scrollIntoView({
+						setTimeout(() => scene.head.scrollIntoView({
 							behavior: "smooth",
 							block: "nearest",
 							inline: "nearest"
@@ -30,7 +30,7 @@ namespace App
 					})
 				);
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"insert-scene-hat",
 				{
 					display: orientation === "v" ? "block" : "flex",
@@ -48,7 +48,7 @@ namespace App
 				}),
 				Hot.on(document.body, "click", ev =>
 				{
-					if (!Query.ancestors(ev.target).includes(this.root))
+					if (!Query.ancestors(ev.target).includes(this.head))
 						this.cancelCallback?.();
 				}),
 				renderButton("Canvas", CanvasSceneHat),
@@ -59,7 +59,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		
 		/** */
 		setInsertCallback(fn: (scene: SceneHat) => void)

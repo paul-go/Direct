@@ -9,7 +9,7 @@ namespace App
 		constructor(record: CanvasSceneRecord)
 		{
 			super(record);
-			this.root.classList.add("canvas-title-hat");
+			this.head.classList.add("canvas-title-hat");
 			
 			const titleDatas = record.titles;
 			for (const [, titleData] of titleDatas.entries())
@@ -33,7 +33,7 @@ namespace App
 		/** */
 		protected get isEmpty()
 		{
-			return (this.root.textContent || "").trim().length === 0;
+			return (this.head.textContent || "").trim().length === 0;
 		}
 		
 		/** */
@@ -46,10 +46,10 @@ namespace App
 			if (boxes.length === 0)
 			{
 				const canvasTitle = new CanvasTitleHat();
-				this.root.append(canvasTitle.root)
-				canvasTitle.root.focus();
+				this.head.append(canvasTitle.head)
+				canvasTitle.head.focus();
 			}
-			else boxes[0].root.focus();
+			else boxes[0].head.focus();
 		}
 		
 		/** */
@@ -71,7 +71,7 @@ namespace App
 		/** */
 		constructor(defaultText: string = "")
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				{
 					width: "fit-content",
 					minWidth: "0.1em",
@@ -93,21 +93,21 @@ namespace App
 						{
 							if (atStart)
 							{
-								this.root.before(new CanvasTitleHat().root);
+								this.head.before(new CanvasTitleHat().head);
 							}
 							else if (atEnd)
 							{
 								const title = new CanvasTitleHat();
-								this.root.after(title.root);
-								title.root.focus();
+								this.head.after(title.head);
+								title.head.focus();
 							}
 							else
 							{
 								const textSecondHalf = this.text.slice(charPos);
 								this.text = this.text.slice(0, charPos);
 								const title = new CanvasTitleHat(textSecondHalf);
-								title.root.after(title.root);
-								title.root.focus();
+								title.head.after(title.head);
+								title.head.focus();
 							}
 							
 							ev.preventDefault();
@@ -121,8 +121,8 @@ namespace App
 								{
 									const position = prev.text.length;
 									prev.text += this.text;
-									this.root.remove();
-									Editable.focus(prev.root, { position });
+									this.head.remove();
+									Editable.focus(prev.head, { position });
 									ev.preventDefault();
 								}
 							}
@@ -136,8 +136,8 @@ namespace App
 								{
 									const position = this.text.length;
 									this.text += next.text;
-									next.root.remove();
-									Editable.focus(this.root, { position });
+									next.head.remove();
+									Editable.focus(this.head, { position });
 									ev.preventDefault();
 								}
 							}
@@ -146,13 +146,13 @@ namespace App
 						{
 							const previous = Hat.previous(this, CanvasTitleHat);
 							if (previous)
-								Editable.focus(previous.root, { position: previous.text.length });
+								Editable.focus(previous.head, { position: previous.text.length });
 						}
 						break; case "ArrowDown":
 						{
 							const next = Hat.next(this, CanvasTitleHat);
 							if (next)
-								Editable.focus(next.root, { position: next.text.length });
+								Editable.focus(next.head, { position: next.text.length });
 						}
 						break; case "ArrowLeft":
 						{
@@ -160,7 +160,7 @@ namespace App
 							{
 								const previous = Hat.previous(this, CanvasTitleHat);
 								if (previous)
-									Editable.focus(previous.root, { position: previous.text.length });
+									Editable.focus(previous.head, { position: previous.text.length });
 							}
 						}
 						break; case "ArrowRight":
@@ -169,7 +169,7 @@ namespace App
 							{
 								const next = Hat.next(this, CanvasTitleHat);
 								if (next)
-									Editable.focus(next.root, { position: next.text.length });
+									Editable.focus(next.head, { position: next.text.length });
 							}
 						}
 					}
@@ -183,7 +183,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		
 		/** */
 		getData(): ITitle
@@ -199,33 +199,33 @@ namespace App
 		/** */
 		get text()
 		{
-			return this.root.textContent || "";
+			return this.head.textContent || "";
 		}
 		set text(text: string)
 		{
-			this.root.textContent = text;
+			this.head.textContent = text;
 			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		
 		/** */
 		get size()
 		{
-			return UI.extractVSize(this.root.style.fontSize) || 5;
+			return UI.extractVSize(this.head.style.fontSize) || 5;
 		}
 		set size(size: number)
 		{
-			this.root.style.fontSize = UI.vsize(size);
+			this.head.style.fontSize = UI.vsize(size);
 			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		
 		/** */
 		get weight()
 		{
-			return Number(this.root.style.fontWeight) || 400;
+			return Number(this.head.style.fontWeight) || 400;
 		}
 		set weight(weight: number)
 		{
-			Hot.get(this.root)(UI.specificWeight(weight));
+			Hot.get(this.head)(UI.specificWeight(weight));
 			Hat.up(this, CanvasTitleSetHat)?.save();
 		}
 		
@@ -240,7 +240,7 @@ namespace App
 				ConstS.foreColorProperty :
 				ConstS.foreUncolorProperty;
 			
-			this.root.style.color = `var(${cssVar})`;
+			this.head.style.color = `var(${cssVar})`;
 			this._hasColor = hasColor;
 			Hat.up(this, CanvasTitleSetHat)?.save();
 		}

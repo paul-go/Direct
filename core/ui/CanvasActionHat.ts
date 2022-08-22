@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(readonly record: CanvasSceneRecord)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				CssClass.canvasActions,
 				{
 					width: "fit-content",
@@ -16,7 +16,7 @@ namespace App
 				When.connected(() => this.setupSizeObserver())
 			);
 			
-			this.actions = new Hat.Array(this.root, CanvasActionHat);
+			this.actions = new Hat.Array(this.head, CanvasActionHat);
 			
 			for (const action of record.actions)
 				this.bindAction(action);
@@ -30,7 +30,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly actions;
 		
 		/**
@@ -46,23 +46,23 @@ namespace App
 			const ro = new ResizeObserver(() =>
 			{
 				const widthTarget =
-					cdv.text ? cdv.root :
-					ctv.getCanvasTitles().at(-1)?.root || null;
+					cdv.text ? cdv.head :
+					ctv.getCanvasTitles().at(-1)?.head || null;
 				
-				this.root.style.minWidth = widthTarget ?
+				this.head.style.minWidth = widthTarget ?
 					widthTarget.offsetWidth + "px" :
 					"10em";
 			});
 			
-			ro.observe(cdv.root);
+			ro.observe(cdv.head);
 			
 			const updateTitleWatchers = () =>
 			{
 				for (const box of ctv.getCanvasTitles())
-					ro.observe(box.root);
+					ro.observe(box.head);
 			};
 			
-			UI.onChildrenChanged(ctv.root, updateTitleWatchers);
+			UI.onChildrenChanged(ctv.head, updateTitleWatchers);
 			updateTitleWatchers();
 		}
 		
@@ -78,7 +78,7 @@ namespace App
 		/** */
 		setFontSize(size: number)
 		{
-			this.root.style.fontSize = UI.vsize(size);
+			this.head.style.fontSize = UI.vsize(size);
 		}
 		
 		/** */
@@ -101,7 +101,7 @@ namespace App
 			this.linkEditor = new LinkEditorHat();
 			this.linkEditor.setCommitFn(target => this.target = target);
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"canvas-action-container",
 				this.editableContainer = Hot.div(
 					CssClass.canvasAction,
@@ -135,8 +135,8 @@ namespace App
 					
 					UI.click(() =>
 					{
-						const canMoveUp = !!Hat.previous(this.root, CanvasActionHat);
-						const canMoveDown = !!Hat.next(this.root, CanvasActionHat);
+						const canMoveUp = !!Hat.previous(this.head, CanvasActionHat);
+						const canMoveDown = !!Hat.next(this.head, CanvasActionHat);
 						
 						UI.springMenu(this.menuContainer, {
 							
@@ -158,11 +158,11 @@ namespace App
 				),
 				When.connected(() =>
 				{
-					Hat.over(this, ForegroundMixin).root.append(this.linkEditor.root);
+					Hat.over(this, ForegroundMixin).head.append(this.linkEditor.head);
 				}),
 				When.disconnected(() =>
 				{
-					this.linkEditor.root.remove();
+					this.linkEditor.head.remove();
 				}),
 			);
 			
@@ -174,7 +174,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly menuContainer;
 		private readonly editableContainer;
 		private readonly linkEditor;
@@ -188,21 +188,21 @@ namespace App
 		/** */
 		moveUp()
 		{
-			const prev = Hat.previous(this.root, CanvasActionHat);
-			prev?.root.before(this.root);
+			const prev = Hat.previous(this.head, CanvasActionHat);
+			prev?.head.before(this.head);
 		}
 		
 		/** */
 		moveDown()
 		{
-			const next = Hat.next(this.root, CanvasActionHat);
-			next?.root.after(this.root);
+			const next = Hat.next(this.head, CanvasActionHat);
+			next?.head.after(this.head);
 		}
 		
 		/** */
 		delete()
 		{
-			this.root.remove();
+			this.head.remove();
 		}
 		
 		/** */
@@ -225,8 +225,8 @@ namespace App
 		{
 			this.sceneRecord.actionShape = shape;
 			
-			const siblings = this.root.parentElement ? 
-				Hat.map(this.root.parentElement, CanvasActionHat) :
+			const siblings = this.head.parentElement ? 
+				Hat.map(this.head.parentElement, CanvasActionHat) :
 				[this];
 				
 			for (const sibling of siblings)
@@ -264,7 +264,7 @@ namespace App
 		/** */
 		private toggleLinkEditor(visible: boolean)
 		{
-			this.linkEditor.root.classList.toggle(CssClass.hide, !visible);
+			this.linkEditor.head.classList.toggle(CssClass.hide, !visible);
 			
 			if (visible)
 				setTimeout(() => this.linkEditor.focus());
@@ -283,7 +283,7 @@ namespace App
 				`var(${ConstS.foreColorProperty})` :
 				`var(${ConstS.backColorProperty})`;
 			
-			Hot.get(this.root)({
+			Hot.get(this.head)({
 				borderColor: value,
 				color: value,
 			});

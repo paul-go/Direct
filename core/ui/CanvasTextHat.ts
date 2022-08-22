@@ -9,7 +9,7 @@ namespace App
 		/** */
 		constructor(readonly record: CanvasSceneRecord)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				{
 					width: "fit-content",
 				},
@@ -28,7 +28,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		
 		/** */
 		protected abstract get isEmpty(): boolean;
@@ -36,7 +36,7 @@ namespace App
 		/** */
 		protected hide(hide = true)
 		{
-			if (UI.toggle(this.root, !hide))
+			if (UI.toggle(this.head, !hide))
 				this.hideChangedHandler(hide);
 		}
 		

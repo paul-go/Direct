@@ -5,16 +5,16 @@ namespace Player
 	export class Story
 	{
 		/** */
-		constructor(root: HTMLElement | string)
+		constructor(head: HTMLElement | string)
 		{
-			// Needs to go through the root and create all the scenes.
-			this.root = typeof root === "string" ?
-				document.getElementById(root) as HTMLElement :
-				root;
+			// Needs to go through the head and create all the scenes.
+			this.head = typeof head === "string" ?
+				document.getElementById(head) as HTMLElement :
+				head;
 			
 			const scenes: Scene[] = [];
 			
-			for (const child of Array.from(this.root.children))
+			for (const child of Array.from(this.head.children))
 			{
 				if (!(child instanceof HTMLElement) || !child.classList.contains(CssClass.scene))
 					continue;
@@ -34,6 +34,6 @@ namespace Player
 		}
 		
 		/** */
-		readonly root: HTMLElement;
+		readonly head;
 	}
 }

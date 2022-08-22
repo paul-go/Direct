@@ -9,7 +9,7 @@ namespace App
 		{
 			let firstItem: BlogPaletteItem | null = null;
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				UI.fixed(),
 				UI.removeOnClick(),
 				UI.removeOnEscape(),
@@ -60,7 +60,7 @@ namespace App
 							if (!firstItem)
 								firstItem = item;
 							
-							return item.root;
+							return item.head;
 						})
 					)
 				),
@@ -74,7 +74,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly itemsElement;
 		
 		/** */
@@ -86,7 +86,7 @@ namespace App
 				return;
 			
 			const newItem = new BlogPaletteItem();
-			selectedItem.root.before(newItem.root);
+			selectedItem.head.before(newItem.head);
 			newItem.selected = true;
 			newItem.beginEdit();
 		}
@@ -159,7 +159,7 @@ namespace App
 			
 			const newItem = new BlogPaletteItem(db.name);
 			newItem.selected = true;
-			refItem.root.before(newItem.root);
+			refItem.head.before(newItem.head);
 		}
 	}
 	
@@ -170,7 +170,7 @@ namespace App
 		{
 			this.isCreatingNew = !name;
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"blog-palette-item",
 				{
 					tabIndex: 0,
@@ -189,13 +189,13 @@ namespace App
 					}
 					else if (ev.key === "ArrowUp")
 					{
-						const prev = Hat.previous(this.root, BlogPaletteItem);
+						const prev = Hat.previous(this.head, BlogPaletteItem);
 						if (prev)
 							prev.selected = true;
 					}
 					else if (ev.key === "ArrowDown")
 					{
-						const prev = Hat.next(this.root, BlogPaletteItem);
+						const prev = Hat.next(this.head, BlogPaletteItem);
 						if (prev)
 							prev.selected = true;
 					}
@@ -207,7 +207,7 @@ namespace App
 				{
 					this.isEditing && setTimeout(() =>
 					{
-						if (!Query.ancestors(document.activeElement).includes(this.root))
+						if (!Query.ancestors(document.activeElement).includes(this.head))
 							this.tryAcceptEdit("blurring");
 					});
 				}),
@@ -254,7 +254,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly nameElement;
 		private readonly menuElement;
 		
@@ -279,14 +279,14 @@ namespace App
 		set selected(selected: boolean)
 		{
 			this._selected = selected;
-			this.root.focus();
+			this.head.focus();
 			
-			for (const sibling of Hat.map(Query.siblings(this.root), BlogPaletteItem))
+			for (const sibling of Hat.map(Query.siblings(this.head), BlogPaletteItem))
 			{
 				if (sibling !== this)
 					sibling._selected = false;
 				
-				sibling.root.style.backgroundColor = sibling === this && selected ?
+				sibling.head.style.backgroundColor = sibling === this && selected ?
 					UI.themeColor : 
 					"transparent";
 			}
@@ -389,7 +389,7 @@ namespace App
 			{
 				this.nameElement.replaceChildren(new Text(newName));
 				this.setName(newName);
-				this.root.focus();
+				this.head.focus();
 			}
 			else if (isBlurring)
 			{
@@ -408,7 +408,7 @@ namespace App
 			if (this.isCreatingNew)
 			{
 				const fallback = this.getFallbackItem();
-				this.root.remove();
+				this.head.remove();
 				
 				if (fallback)
 					fallback.selected = true;
@@ -417,7 +417,7 @@ namespace App
 			{
 				this.isEditing = false;
 				this.nameElement.replaceChildren(new Text(this.storedName));
-				this.root.focus();
+				this.head.focus();
 			}
 		}
 		
@@ -455,7 +455,7 @@ namespace App
 			if (accept)
 			{
 				await Database.delete(this.name);
-				this.root.remove();
+				this.head.remove();
 				
 				if (fallbackItem)
 					fallbackItem.selected = true;
@@ -469,8 +469,8 @@ namespace App
 		private getFallbackItem()
 		{
 			return (
-				Hat.next(this.root, BlogPaletteItem) || 
-				Hat.previous(this.root, BlogPaletteItem));
+				Hat.next(this.head, BlogPaletteItem) || 
+				Hat.previous(this.head, BlogPaletteItem));
 		}
 		
 		/** */
@@ -479,7 +479,7 @@ namespace App
 			AppContainer.of(this).changeDatabase(this.name);
 			
 			if (closeDialog)
-				Hat.over(this, BlogPaletteHat).root.remove();
+				Hat.over(this, BlogPaletteHat).head.remove();
 		}
 	}
 }

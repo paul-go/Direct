@@ -5,7 +5,7 @@ namespace Player
 	export abstract class Scene
 	{
 		/** */
-		constructor(readonly root: HTMLElement)
+		constructor(readonly head: HTMLElement)
 		{
 			
 		}

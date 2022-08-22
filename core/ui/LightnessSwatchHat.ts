@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(origin: Origin)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				{
 					position: "absolute",
 					width: "fit-content",
@@ -35,15 +35,15 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly choices;
 		
 		/** */
 		setOrigin(origin: Origin)
 		{
 			const classes = Object.keys(Origin).filter(k => k.startsWith("origin"));
-			this.root.classList.remove(...classes);
-			this.root.classList.add(origin);
+			this.head.classList.remove(...classes);
+			this.head.classList.add(origin);
 		}
 		
 		/** */
@@ -90,9 +90,9 @@ namespace App
 			const choice = Not.nullable(this.choices.find(c => c.lightness === lightness));
 			
 			for (const choice of this.choices)
-				choice.root.style.boxShadow = defaultShadow;
+				choice.head.style.boxShadow = defaultShadow;
 			
-			choice.root.style.boxShadow = [
+			choice.head.style.boxShadow = [
 				defaultShadow,
 				"inset 0 0 2px 1px " + UI.black(0.5),
 				"0 0 0 3px white"
@@ -123,7 +123,7 @@ namespace App
 			/** */
 			constructor(readonly lightness: Lightness)
 			{
-				this.root = Hot.div(
+				this.head = Hot.div(
 					{
 						width: "50px",
 						height: "50px",
@@ -144,7 +144,7 @@ namespace App
 				Hat.wear(this);
 			}
 			
-			readonly root;
+			readonly head;
 			
 			/** */
 			private handleClick()

@@ -9,7 +9,7 @@ namespace App
 		{
 			super(post, meta);
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"s3-publisher",
 				{
 					padding: "60px 0",
@@ -24,7 +24,7 @@ namespace App
 			)
 		}
 		
-		readonly root;
+		readonly head;
 		readonly key = "s3";
 		readonly label = "My Server";
 		

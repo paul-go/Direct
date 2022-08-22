@@ -9,7 +9,7 @@ namespace App
 		{
 			const app = AppContainer.of(via);
 			const hat = new PublishSetupHat(record, app);
-			app.root.append(hat.root);
+			app.head.append(hat.head);
 		}
 		
 		/** */
@@ -53,9 +53,9 @@ namespace App
 						
 						UI.waitTransitionEnd(e).then(() =>
 						{
-							this.root.addEventListener("transitionstart", ev =>
+							this.head.addEventListener("transitionstart", ev =>
 							{
-								if (ev.target === this.root)
+								if (ev.target === this.head)
 									this.windowFlipper.invisible();
 							});
 						});
@@ -85,13 +85,13 @@ namespace App
 				)
 			);
 			
-			this.root = overlay.element;
+			this.head = overlay.element;
 			this.overlayFlipper = overlay.flipper;
 			
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		readonly windowElement;
 		private readonly overlayFlipper;
 		private readonly windowFlipper;
@@ -111,7 +111,7 @@ namespace App
 					if (await publisher.shouldInsert())
 					{
 						this.app.meta.publishMethod = publisher.key;
-						this.contents.replaceChildren(publisher.root);
+						this.contents.replaceChildren(publisher.head);
 					}
 				})
 			);

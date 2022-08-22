@@ -178,10 +178,11 @@ namespace Hot { { } }
 					}
 				}
 				// Ugly, but high-performance way to check if the param is a Hat
-				// coming from the Hat library.
-				default: if (!!(param as any).root && (param as any).root.ELEMENT_NODE === 1)
+				// (meaning, an object with a .head HTMLElement property) coming 
+				// from the Hat library.
+				default: if (!!(param as any).head && (param as any).head.ELEMENT_NODE === 1)
 				{
-					apply(e, [(param as any).root]);
+					apply(e, [(param as any).head]);
 				}
 			}
 		}
@@ -504,7 +505,7 @@ namespace Hot
 		Style |
 		Partial<T> |
 		// Affordance for Hats
-		{ readonly root: HTMLElement; };
+		{ readonly head: HTMLElement; };
 	
 	export declare function a(...params: Param<AnchorElementAttribute>[]): HTMLAnchorElement;
 	export declare function abbr(...params: Param[]): HTMLElement;

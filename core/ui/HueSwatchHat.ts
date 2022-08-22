@@ -13,7 +13,7 @@ namespace App
 		/** */
 		constructor(readonly record: SceneRecord)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				{
 					display: "flex",
 					justifyContent: "center",
@@ -24,7 +24,7 @@ namespace App
 					for (const pair of App.colorPairs)
 					{
 						const cfg = new HueChoiceHat(this.record, pair);
-						this.root.append(cfg.root);
+						this.head.append(cfg.head);
 					}
 				})
 			);
@@ -32,7 +32,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 	}
 	
 	/** */
@@ -46,7 +46,7 @@ namespace App
 			const darkColorString = UI.color(colorPair[0]);
 			const lightColorString = UI.color(colorPair[1]);
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				{
 					width: "75px",
 					height: "75px",
@@ -71,17 +71,17 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		
 		/** */
 		private select()
 		{
 			this.record.colorPair = this.colorPair;
 			
-			Query.siblings(this.root)
+			Query.siblings(this.head)
 				.map(e => e.style.removeProperty("box-shadow"));
 			
-			this.root.style.boxShadow = 
+			this.head.style.boxShadow = 
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			

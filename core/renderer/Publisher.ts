@@ -58,7 +58,7 @@ namespace App
 		}
 		
 		/** */
-		abstract readonly root: HTMLElement;
+		abstract readonly head: HTMLElement;
 		
 		/** */
 		abstract readonly key: string;
@@ -148,7 +148,7 @@ namespace App
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
 			this.meta.setPublishParam(this.key, paramKey, value);
-			When.connected(this.root, () => Hat.over(this, PostHat).updatePublishInfo());
+			When.connected(this.head, () => Hat.over(this, PostHat).updatePublishInfo());
 		}
 		
 		/** */

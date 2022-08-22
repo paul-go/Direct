@@ -11,23 +11,23 @@ namespace App
 		}
 		
 		/** */
-		static async new(root: HTMLElement, databaseName: string)
+		static async new(head: HTMLElement, databaseName: string)
 		{
 			const database = await App.createDatabase({ name: databaseName });
 			const meta = await App.getDatabaseMeta(database);
-			return new AppContainer(root, database, meta);
+			return new AppContainer(head, database, meta);
 		}
 		
 		/** */
 		private constructor(
-			readonly root: HTMLElement,
+			readonly head: HTMLElement,
 			database: Database,
 			meta: MetaRecord)
 		{
 			this._database = database;
 			this._meta = meta;
 			
-			Hot.get(root)(
+			Hot.get(head)(
 				
 				CssClass.appContainer,
 				{
@@ -78,7 +78,7 @@ namespace App
 		private toggleMaxClass()
 		{
 			const maxed = window.innerWidth >= ConstN.appMaxWidth;
-			this.root.classList.toggle(CssClass.appContainerMaxed, maxed);
+			this.head.classList.toggle(CssClass.appContainerMaxed, maxed);
 		}
 		
 		/** */
@@ -108,17 +108,17 @@ namespace App
 			if (!db)
 				return;
 			
-			this.root.replaceChildren();
+			this.head.replaceChildren();
 			this._database = db;
 			this._meta = await App.getDatabaseMeta(db);
-			this.root.append(new BlogHat().root);
+			this.head.append(new BlogHat().head);
 		}
 		
 		/** */
 		showBlogPalette()
 		{
 			const pal = new BlogPaletteHat();
-			this.root.append(pal.root);
+			this.head.append(pal.head);
 		}
 		
 		/** */

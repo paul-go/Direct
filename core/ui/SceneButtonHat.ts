@@ -19,7 +19,7 @@ namespace App
 			this.isUnselectable = options?.unselectable ?? true;
 			this.isIndependent = options?.independent ?? false;
 			
-			this.root = UI.clickLabel(
+			this.head = UI.clickLabel(
 				{
 					tabIndex: 0,
 					display: "inline-block",
@@ -34,7 +34,7 @@ namespace App
 			
 			if (this.isSelectable)
 			{
-				this.root.addEventListener(UI.clickEvt, ev =>
+				this.head.addEventListener(UI.clickEvt, ev =>
 				{
 					ev.preventDefault();
 					const wasSelected = this.selected;
@@ -48,7 +48,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		
 		private readonly isSelectable: boolean;
 		private readonly isUnselectable: boolean;
@@ -57,11 +57,11 @@ namespace App
 		/** */
 		get text()
 		{
-			return this.root.textContent || "";
+			return this.head.textContent || "";
 		}
 		set text(value: string)
 		{
-			this.root.textContent = value;
+			this.head.textContent = value;
 		}
 		
 		/** */
@@ -72,7 +72,7 @@ namespace App
 		set enabled(value: boolean)
 		{
 			this._enabled = value;
-			const s = this.root.style;
+			const s = this.head.style;
 			s.pointerEvents = value ? "all" : "none";
 			s.opacity = value ? "1" : "0.33";
 		}
@@ -88,7 +88,7 @@ namespace App
 			if (this._selected === value)
 				return;
 			
-			const siblings = Query.siblings(this.root);
+			const siblings = Query.siblings(this.head);
 			
 			for (const b of Hat.map(siblings, SceneButtonHat))
 				if (b !== this)
@@ -107,8 +107,8 @@ namespace App
 			
 			if (this.selected)
 			{
-				const left = this.isIndependent ? 0 : this.root.offsetLeft;
-				const width = this.root.offsetWidth;
+				const left = this.isIndependent ? 0 : this.head.offsetLeft;
+				const width = this.head.offsetWidth;
 				s.left = left + "px";
 				s.width = width + "px";
 				s.opacity = "1";
@@ -127,14 +127,14 @@ namespace App
 			
 			if (this.isIndependent)
 			{
-				this.root.append(this._indicator = this.createIndicator());
+				this.head.append(this._indicator = this.createIndicator());
 			}
 			else
 			{
-				const siblings = Query.siblings(this.root);
+				const siblings = Query.siblings(this.head);
 				this._indicator = siblings.find(e => e.classList.contains(Class.indicator)) || null;
 				if (!this._indicator)
-					this.root.parentElement!.prepend(this._indicator = this.createIndicator());
+					this.head.parentElement!.prepend(this._indicator = this.createIndicator());
 			}
 			
 			return this._indicator;

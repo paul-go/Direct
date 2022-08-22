@@ -18,7 +18,7 @@ namespace App
 		/** */
 		export function open(options: ISurfaceOptions)
 		{
-			return new SurfaceHat(options).root;
+			return new SurfaceHat(options).head;
 		}
 		
 		/** */
@@ -41,7 +41,7 @@ namespace App
 	{
 		constructor(private readonly options: ISurfaceOptions)
 		{
-			this.root = Hot.div(options.class || "",
+			this.head = Hot.div(options.class || "",
 				UI.fixed(-10),
 				{
 					padding: "40px",
@@ -60,23 +60,23 @@ namespace App
 				...options.params || []
 			);
 			
-			When.rendered(this.root, () =>
+			When.rendered(this.head, () =>
 			{
-				this.root.style.opacity = "1";
-				this.root.style.transform = UI.translateZ(0);
+				this.head.style.opacity = "1";
+				this.head.style.transform = UI.translateZ(0);
 			});
 			
 			const fgcolor = options.background === "white" ? "black" : "white";
 			
 			if (options.closeOnEscape)
 			{
-				this.root.addEventListener("keydown", ev =>
+				this.head.addEventListener("keydown", ev =>
 				{
 					if (ev.key === "Escape")
 						this.close();
 				});
 				
-				this.root.tabIndex = -1;
+				this.head.tabIndex = -1;
 			}
 			
 			if (options.closeFn)
@@ -97,12 +97,12 @@ namespace App
 				closer.textContent = UI.mul;
 				closer.addEventListener(UI.clickEvt, () => this.close());
 				
-				When.connected(this.root, () =>
+				When.connected(this.head, () =>
 				{
-					this.root.insertAdjacentElement("afterend", closer);
+					this.head.insertAdjacentElement("afterend", closer);
 				});
 				
-				When.disconnected(this.root, () => closer.remove());
+				When.disconnected(this.head, () => closer.remove());
 			}
 			
 			const accepter = Hot.div(
@@ -123,28 +123,28 @@ namespace App
 				this.close("accept");
 			});
 			
-			When.connected(this.root, () =>
+			When.connected(this.head, () =>
 			{
-				this.root.insertAdjacentElement("afterend", accepter);
+				this.head.insertAdjacentElement("afterend", accepter);
 			});
 			
-			When.disconnected(this.root, () => accepter.remove());
+			When.disconnected(this.head, () => accepter.remove());
 			
 			if (options.class)
-				this.root.classList.add(options.class);
+				this.head.classList.add(options.class);
 			
 			Hat.wear(this);
 		}
 		
-		readonly root: HTMLElement;
+		readonly head: HTMLElement;
 		
 		/** */
 		close(accept?: "accept")
 		{
-			const s = this.root.style;
+			const s = this.head.style;
 			s.transform = UI.translateZ(-100);
 			s.opacity = "0";
-			UI.disconnectAfterTransition(this.root);
+			UI.disconnectAfterTransition(this.head);
 			
 			if (accept)
 				this.options.acceptFn();

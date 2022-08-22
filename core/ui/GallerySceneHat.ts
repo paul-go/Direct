@@ -23,7 +23,7 @@ namespace App
 					},
 					Hot.on("scroll", () => this.updateButtons()),
 					
-					...this.record.frames.map(f => new FrameHat(f).root)
+					...this.record.frames.map(f => new FrameHat(f).head)
 				),
 				
 				Drop.here({
@@ -108,13 +108,13 @@ namespace App
 			}
 			
 			const isLeft = dropOffsetX < window.innerWidth / 2;
-			const elements = newFrames.map(f => f.root);
+			const elements = newFrames.map(f => f.head);
 			
 			if (visibleFrame && isLeft)
-				visibleFrame.root.before(...elements);
+				visibleFrame.head.before(...elements);
 			
 			else if (visibleFrame && !isLeft)
-				visibleFrame.root.after(...elements);
+				visibleFrame.head.after(...elements);
 			
 			else this.galleryContainer.append(...elements);
 			
@@ -141,13 +141,13 @@ namespace App
 			
 			if (visibleFrame === null)
 			{
-				UI.toggle(this.coverButton.root, false);
-				UI.toggle(this.containButton.root, false);
+				UI.toggle(this.coverButton.head, false);
+				UI.toggle(this.containButton.head, false);
 			}
 			else
 			{
-				UI.toggle(this.coverButton.root, true);
-				UI.toggle(this.containButton.root, true);
+				UI.toggle(this.coverButton.head, true);
+				UI.toggle(this.containButton.head, true);
 				const cover = visibleFrame.record.size === "cover";
 				this.coverButton.selected = cover;
 				this.containButton.selected = !cover;
@@ -191,7 +191,7 @@ namespace App
 			s.height = "100%";
 			s.objectFit = "contain";
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				{
 					scrollSnapAlign: "start",
 					display: "inline-block",
@@ -206,7 +206,7 @@ namespace App
 					UI.anchorTopRight(20),
 					...UI.click(ev => 
 					{
-						this.root.remove();
+						this.head.remove();
 						ev.stopPropagation();
 					}),
 					new Text("Delete"),
@@ -217,7 +217,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly mediaElement;
 		
 		/** */

@@ -12,7 +12,7 @@ namespace App
 		{
 			super(post, meta);
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"local-publisher",
 				
 				this.renderTitle("Publish folder:"),
@@ -40,7 +40,7 @@ namespace App
 			);
 		}
 		
-		readonly root;
+		readonly head;
 		readonly key = "local";
 		readonly label = "My Device";
 		private readonly saveLocationElement;

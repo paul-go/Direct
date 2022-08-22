@@ -7,7 +7,7 @@ namespace Hat
 	/** */
 	export interface IHat
 	{
-		readonly root: Element;
+		readonly head: Element;
 	}
 	
 	/** */
@@ -20,13 +20,13 @@ namespace Hat
 	 */
 	export function wear(hat: IHat)
 	{
-		const array = hats.get(hat.root) || [];
+		const array = hats.get(hat.head) || [];
 		array.push(hat);
-		hats.set(hat.root, array);
-		(hat.root as any)._hat = hat;
+		hats.set(hat.head, array);
+		(hat.head as any)._hat = hat;
 		
 		const ctorClassName = getConstructorClassName(hat);
-		hat.root.classList.add(ctorClassName);
+		hat.head.classList.add(ctorClassName);
 	}
 	
 	/**
@@ -68,7 +68,7 @@ namespace Hat
 		via: Node | IHat,
 		type: Constructor<T>)
 	{
-		let current: Node | null = via instanceof Node ? via : via.root;
+		let current: Node | null = via instanceof Node ? via : via.head;
 		
 		while (current instanceof Node)
 		{
@@ -133,7 +133,7 @@ namespace Hat
 		const e = 
 			via instanceof Element ? via : 
 			via instanceof Node ? via.parentElement :
-			via.root;
+			via.head;
 		
 		if (!e)
 			throw "Cannot perform this method using the specified node.";
@@ -171,7 +171,7 @@ namespace Hat
 	export function map<T extends IHat>(elementContainer: Element | IHat, type: Constructor<T>): T[];
 	export function map<T extends IHat>(e: IHat | Element | Element[], type: Constructor<T>): T[]
 	{
-		e = (!(e instanceof Element) && !window.Array.isArray(e)) ? e.root : e;
+		e = (!(e instanceof Element) && !window.Array.isArray(e)) ? e.head : e;
 		const elements = e instanceof Element ? window.Array.from(e.children) : e;
 		return elements
 			.map(e => get(e, type))
@@ -184,7 +184,7 @@ namespace Hat
 	 */
 	export function next<T extends IHat>(via: Element | IHat, type: Constructor<T>): T | null
 	{
-		via = via instanceof Element ? via : via.root;
+		via = via instanceof Element ? via : via.head;
 		
 		for (;;)
 		{
@@ -204,7 +204,7 @@ namespace Hat
 	 */
 	export function previous<T extends IHat>(via: Element | IHat, type: Constructor<T>): T | null
 	{
-		via = via instanceof Element ? via : via.root;
+		via = via instanceof Element ? via : via.head;
 		
 		for (;;)
 		{
@@ -315,16 +315,16 @@ namespace Hat
 			
 			if (existingHats.length === 0)
 			{
-				this.parentElement.prepend(...newHats.map(c => c.root));
+				this.parentElement.prepend(...newHats.map(c => c.head));
 			}
 			else
 			{
 				const target = index >= existingHats.length ? 
-					(existingHats.at(index) as IHat).root :
+					(existingHats.at(index) as IHat).head :
 					this.marker;
 				
 				for (const hat of newHats)
-					this.parentElement.insertBefore(hat.root, target);
+					this.parentElement.insertBefore(hat.head, target);
 			}
 			
 			return index < 0 ? existingHats.length + newHats.length : index;
@@ -346,7 +346,7 @@ namespace Hat
 		{
 			const children = childrenOf(this.parentElement, this.hatType);
 			for (let i = -1; ++i < children.length;)
-				if (children[i] === hat.root)
+				if (children[i] === hat.head)
 					return i;
 			
 			return -1;

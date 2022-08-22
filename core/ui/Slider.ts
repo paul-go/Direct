@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(...params: Hot.Param[])
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				{
 					height: (thumbSize + thumbPadding * 2) + "px",
 					padding: thumbPadding + "px",
@@ -71,7 +71,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly slideArea;
 		private readonly thumb;
 		
@@ -82,7 +82,7 @@ namespace App
 		{
 			if (ev.buttons === 1)
 			{
-				this.root.setPointerCapture(ev.pointerId);
+				this.head.setPointerCapture(ev.pointerId);
 				this.sliderRect = this.slideArea.getBoundingClientRect();
 				this.draggingChangedFn(true);
 			}
@@ -91,7 +91,7 @@ namespace App
 		/** */
 		private endDrag(ev: PointerEvent)
 		{
-			this.root.releasePointerCapture(ev.pointerId);
+			this.head.releasePointerCapture(ev.pointerId);
 			this.sliderRect = null;
 			this.draggingChangedFn(false);
 		}
@@ -194,7 +194,7 @@ namespace App
 		/** */
 		private handlePointerMove(ev: PointerEvent)
 		{
-			this.root.style.cursor = ev.buttons === 1 ? "pointer" : "default";
+			this.head.style.cursor = ev.buttons === 1 ? "pointer" : "default";
 			
 			if (this.sliderRect === null)
 				return;

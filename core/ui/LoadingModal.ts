@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(container: HTMLElement)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"loading-modal",
 				UI.anchor(),
 				UI.flexCenter,
@@ -29,15 +29,15 @@ namespace App
 			);
 			
 			this.hide();
-			container.append(this.root);
+			container.append(this.head);
 		}
 		
-		readonly root;
+		readonly head;
 		
 		/** */
 		private hide()
 		{
-			Hot.get(this.root)(
+			Hot.get(this.head)(
 				{
 					opacity: 0,
 					// It's necessary to have a background color, 
@@ -51,7 +51,7 @@ namespace App
 		/** */
 		private show()
 		{
-			Hot.get(this.root)(
+			Hot.get(this.head)(
 				UI.backdropBlur(7),
 				{ opacity: 1 }
 			);
@@ -61,8 +61,8 @@ namespace App
 		async terminate()
 		{
 			this.hide();
-			await UI.waitTransitionEnd(this.root);
-			this.root.remove();
+			await UI.waitTransitionEnd(this.head);
+			this.head.remove();
 		}
 	}
 }

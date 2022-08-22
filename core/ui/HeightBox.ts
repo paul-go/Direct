@@ -9,7 +9,7 @@ namespace App
 	{
 		constructor(...params: Hot.Param[])
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"height-box",
 				{
 					transitionDuration: "0.3s",
@@ -19,7 +19,7 @@ namespace App
 			);
 		}
 		
-		readonly root;
+		readonly head;
 		
 		private readonly elementStack: HTMLElement[] = [];
 		
@@ -34,11 +34,11 @@ namespace App
 			if (e)
 			{
 				this.elementStack.push(e);
-				this.root.append(e);
+				this.head.append(e);
 			}
 			
 			/*
-			const s = this.root.style;
+			const s = this.head.style;
 			const storedOverflow = s.overflow;
 			const storedHeight = e.offsetHeight;
 			const storedTransitionDuration = s.transitionDuration;
@@ -51,7 +51,7 @@ namespace App
 				},
 				e);
 			
-			this.root.append(measureDiv);
+			this.head.append(measureDiv);
 			await UI.wait();
 			const height = measureDiv.offsetHeight;
 			
@@ -68,7 +68,7 @@ namespace App
 			
 			// Set the new height
 			
-			this.root.replaceChildren();
+			this.head.replaceChildren();
 			
 			
 			s.overflow = storedOverflow;
@@ -79,18 +79,18 @@ namespace App
 		/** */
 		async push(e: HTMLElement)
 		{
-			this.elementStack.push(...Query.children(this.root));
-			this.root.replaceChildren();
-			this.root.append(e);
+			this.elementStack.push(...Query.children(this.head));
+			this.head.replaceChildren();
+			this.head.append(e);
 		}
 		
 		/** */
 		async back()
 		{
-			this.root.replaceChildren();
+			this.head.replaceChildren();
 			const next = this.elementStack.pop();
 			if (next)
-				this.root.append(next);
+				this.head.append(next);
 		}
 	}
 }

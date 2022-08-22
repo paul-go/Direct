@@ -9,7 +9,7 @@ namespace App
 		/** */
 		constructor()
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"text-box",
 				this.placeholderElement = Hot.div(
 					"text-box-placeholder",
@@ -74,7 +74,7 @@ namespace App
 		}
 		
 		/** */
-		readonly root: HTMLElement;
+		readonly head: HTMLElement;
 		
 		/** */
 		readonly editableElement: HTMLElement;

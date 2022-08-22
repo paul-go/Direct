@@ -6,9 +6,9 @@ namespace Player
 	export class VideoScene extends Scene
 	{
 		/** */
-		constructor(readonly root: HTMLElement)
+		constructor(readonly head: HTMLElement)
 		{
-			super(root);
+			super(head);
 		}
 	}
 }

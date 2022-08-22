@@ -47,7 +47,7 @@ namespace App
 							}),
 						),
 						
-						(this.linkEditor = new LinkEditorHat()).root
+						(this.linkEditor = new LinkEditorHat()).head
 					)
 				),
 				When.connected(() =>
@@ -67,7 +67,7 @@ namespace App
 				this.colorButton,
 			);
 			
-			this.root.addEventListener("paste", ev =>
+			this.head.addEventListener("paste", ev =>
 			{
 				ev.preventDefault();
 				
@@ -114,7 +114,7 @@ namespace App
 			this.linkEditor.setCommitFn(link => this.commitLink(link));
 			this.setupAutoSaver();
 			
-			When.connected(this.root, () =>
+			When.connected(this.head, () =>
 			{
 				if (record.content)
 				{
@@ -127,7 +127,7 @@ namespace App
 			});
 			
 			this.hueSwatch = new HueSwatchHat(this.record);
-			Hot.get(this.hueSwatch.root)(
+			Hot.get(this.hueSwatch.head)(
 				{ tabIndex: 0 },
 				Hot.on("focusout", () => setTimeout(() =>
 				{
@@ -172,7 +172,7 @@ namespace App
 		private maybeHideColorConfigurator()
 		{
 			const ancestors = Query.ancestors(document.activeElement);
-			if (!ancestors.includes(this.hueSwatch.root))
+			if (!ancestors.includes(this.hueSwatch.head))
 			{
 				this.colorButton.selected = false;
 				this.setSceneConfigurator(null);
@@ -244,7 +244,7 @@ namespace App
 		/** */
 		private setupButton(button: SceneButtonHat, attribute: TrixAttribute)
 		{
-			button.root.addEventListener("click", ev =>
+			button.head.addEventListener("click", ev =>
 			{
 				ev.preventDefault();
 				
@@ -298,11 +298,11 @@ namespace App
 			const hasLink = this.editor.attributeIsActive("href");
 			const hasContent = (this.trixEditorElement.textContent?.trim() || "").length > 0;
 			
-			UI.toggle(this.headingButton.root, hasContent && !hasRangeSelection && !hasHeading);
-			UI.toggle(this.paragraphButton.root, hasContent && !hasRangeSelection && hasHeading);
-			UI.toggle(this.boldButton.root, hasContent && !hasHeading && (hasRangeSelection || hasBold));
-			UI.toggle(this.italicButton.root, hasContent && !hasHeading && (hasRangeSelection || hasItalic));
-			UI.toggle(this.linkButton.root, hasContent && !hasHeading && (hasRangeSelection || hasLink));
+			UI.toggle(this.headingButton.head, hasContent && !hasRangeSelection && !hasHeading);
+			UI.toggle(this.paragraphButton.head, hasContent && !hasRangeSelection && hasHeading);
+			UI.toggle(this.boldButton.head, hasContent && !hasHeading && (hasRangeSelection || hasBold));
+			UI.toggle(this.italicButton.head, hasContent && !hasHeading && (hasRangeSelection || hasItalic));
+			UI.toggle(this.linkButton.head, hasContent && !hasHeading && (hasRangeSelection || hasLink));
 			this.linkEditor.toggle(hasLink);
 			
 			if (hasLink)
@@ -310,27 +310,27 @@ namespace App
 			
 			if (this.colorButton.selected)
 			{
-				this.sceneContainer.append(this.lightnessBackSwatch.root);
+				this.sceneContainer.append(this.lightnessBackSwatch.head);
 				
 				const firstHeading = this.trixEditorElement.querySelector("H1, H2") as HTMLElement | null;
 				if (firstHeading)
 				{
 					const fgRect = this.sceneForeground.getBoundingClientRect();
 					const headingRect = firstHeading.getBoundingClientRect();
-					const s = this.lightnessForeSwatch.root.style;
+					const s = this.lightnessForeSwatch.head.style;
 					const swatchHeight = 90; // Hack
 					s.padding = "0";
 					s.top = ((headingRect.top - fgRect.top) - swatchHeight) + "px";
 					s.left = "-" + UI.borderRadius.large;
-					this.sceneForeground.append(this.lightnessForeSwatch.root);
+					this.sceneForeground.append(this.lightnessForeSwatch.head);
 				}
 				
-				this.setSceneConfigurator(this.hueSwatch.root);
+				this.setSceneConfigurator(this.hueSwatch.head);
 			}
 			else
 			{
-				this.lightnessForeSwatch.root.remove();
-				this.lightnessBackSwatch.root.remove();
+				this.lightnessForeSwatch.head.remove();
+				this.lightnessBackSwatch.head.remove();
 				this.setSceneConfigurator(null);
 			}
 		}

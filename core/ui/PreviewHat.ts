@@ -7,8 +7,7 @@ namespace App
 		/** */
 		constructor(post: PostRecord, meta: MetaRecord)
 		{
-			this.root = Hot.div(
-				"preview-hat",
+			this.head = Hot.div(
 				UI.fixed(),
 				UI.keyable,
 				{
@@ -50,7 +49,7 @@ namespace App
 					},
 					UI.backdropBlur(10),
 					Icon.plus(),
-					Hot.on(UI.clickEvt, () => UI.removeWithFade(this.root))
+					Hot.on(UI.clickEvt, () => UI.removeWithFade(this.head))
 				),
 				
 				When.rendered(e =>
@@ -61,11 +60,11 @@ namespace App
 				})
 			);
 			
-			document.body.append(this.root);
+			document.body.append(this.head);
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly previewRoot;
 	}
 }

@@ -6,9 +6,9 @@ namespace Player
 	export class GalleryScene extends Scene
 	{
 		/** */
-		constructor(readonly root: HTMLElement)
+		constructor(readonly head: HTMLElement)
 		{
-			super(root);
+			super(head);
 			
 			// Synchronize the videos
 			const framesQuery = document.getElementsByClassName(CssClass.galleryFrame);

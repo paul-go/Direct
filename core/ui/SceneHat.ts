@@ -26,7 +26,7 @@ namespace App
 		/** */
 		constructor(readonly record: SceneRecord)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				{
 					backgroundColor: UI.darkGrayBackground
 				},
@@ -40,7 +40,7 @@ namespace App
 				// Controls header
 				Hot.div(
 					"scene-header",
-					(this.headerBox = new HeightBox(this.renderDefaultHeader())).root,
+					(this.headerBox = new HeightBox(this.renderDefaultHeader())).head,
 					Drop.here({
 						accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
 						dropFn: files => this.insertGalleryScene(files),
@@ -95,10 +95,10 @@ namespace App
 					{
 						ev.key === "Escape" && this.deselectSceneButtons();
 					})
-				)).root,
+				)).head,
 				
 				// Final add
-				(this.footerBox = new HeightBox("footer-box", this.renderDefaultFooter())).root,
+				(this.footerBox = new HeightBox("footer-box", this.renderDefaultFooter())).head,
 				
 				When.connected(() => this.updateHue())
 			)
@@ -106,13 +106,13 @@ namespace App
 			// Populate this with data in the future.
 			this.transition = Transitions.slide;
 			
-			Hot.get(this.moreButton.root)(
+			Hot.get(this.moreButton.head)(
 				Hot.on(UI.clickEvt, ev =>
 				{
 					return UI.springMenu(ev.target, {
-						...(this.root.previousElementSibling ? { "Move Up": () => this.moveSceneUp() } : {}),
-						...(this.root.nextElementSibling ? { "Move Down": () => this.moveSceneDown() } : {}),
-						"Delete": () => this.root.remove(),
+						...(this.head.previousElementSibling ? { "Move Up": () => this.moveSceneUp() } : {}),
+						...(this.head.nextElementSibling ? { "Move Down": () => this.moveSceneDown() } : {}),
+						"Delete": () => this.head.remove(),
 					});
 				})
 			);
@@ -124,7 +124,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root: HTMLDivElement;
+		readonly head: HTMLDivElement;
 		private readonly headerBox;
 		private readonly footerBox;
 		readonly sceneContainer;
@@ -183,7 +183,7 @@ namespace App
 					Hot.on(UI.clickEvt, () => 
 					{
 						const hat = this.renderInsertScene(this.footerBox, "afterend");
-						Hot.get(hat.root)({ marginBottom: "100px" });
+						Hot.get(hat.head)({ marginBottom: "100px" });
 					}),
 				)
 			);
@@ -195,11 +195,11 @@ namespace App
 			const ibv = new InsertSceneHat("h");
 			ibv.setInsertCallback(scene =>
 			{
-				this.root.insertAdjacentElement(where, scene.root);
+				this.head.insertAdjacentElement(where, scene.head);
 				box.back();
 			});
 			ibv.setCancelCallback(() => box.back());
-			box.push(ibv.root);
+			box.push(ibv.head);
 			return ibv;
 		}
 		
@@ -207,7 +207,7 @@ namespace App
 		updateHue()
 		{
 			const colors = RenderUtil.renderColors(this.record);
-			const s = this.root.style;
+			const s = this.head.style;
 			s.setProperty(ConstS.lightColorProperty, colors.light);
 			s.setProperty(ConstS.darkColorProperty, colors.dark);
 		}
@@ -231,7 +231,7 @@ namespace App
 			const fu = inverted ? "black" : "white";
 			const bu = inverted ? "white" : "black";
 			
-			const s = this.root.style;
+			const s = this.head.style;
 			s.setProperty(ConstS.foreColorProperty, fc);
 			s.setProperty(ConstS.backColorProperty, bc);
 			s.setProperty(ConstS.foreUncolorProperty, fu);
@@ -310,13 +310,13 @@ namespace App
 			
 			for (const btn of sceneButtons)
 			{
-				this.configuratorButtonsContainer.append(btn.root);
+				this.configuratorButtonsContainer.append(btn.head);
 				btn.setSelectedChangedFn(changedFn);
 			}
 			
 			this.configuratorButtonsContainer.append(
-				...sceneButtons.map(bb => bb.root),
-				this.moreButton.root
+				...sceneButtons.map(bb => bb.head),
+				this.moreButton.head
 			);
 			
 			new MutationObserver(() =>
@@ -396,15 +396,15 @@ namespace App
 		/** */
 		private moveSceneUp()
 		{
-			this.root.previousElementSibling?.before(this.root);
-			this.root.scrollIntoView({ behavior: "smooth" });
+			this.head.previousElementSibling?.before(this.head);
+			this.head.scrollIntoView({ behavior: "smooth" });
 		}
 		
 		/** */
 		private moveSceneDown()
 		{
-			this.root.nextElementSibling?.after(this.root);
-			this.root.scrollIntoView({ behavior: "smooth" });
+			this.head.nextElementSibling?.after(this.head);
+			this.head.scrollIntoView({ behavior: "smooth" });
 		}
 		
 		/** */
@@ -412,7 +412,7 @@ namespace App
 		{
 			const galleryScene = new GallerySceneHat();
 			galleryScene.importMedia(files);
-			this.root.before(galleryScene.root);
+			this.head.before(galleryScene.head);
 		}
 	}
 }

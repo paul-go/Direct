@@ -22,7 +22,7 @@ namespace App
 					bottom: new Text("Add Background"),
 				}),
 				
-				(this.backgroundPreview = new BackgroundPreviewHat(this.record)).root,
+				(this.backgroundPreview = new BackgroundPreviewHat(this.record)).head,
 				
 				this.foregroundPreview = Hot.div(
 					e => void new ForegroundMixin(e),
@@ -38,9 +38,9 @@ namespace App
 								this.handleSelectionChange();
 							}),
 						),
-						this.titleHat.root,
-						this.descriptionHat.root,
-						this.actionManager.root,
+						this.titleHat.head,
+						this.descriptionHat.head,
+						this.actionManager.head,
 					)
 				),
 				
@@ -276,7 +276,7 @@ namespace App
 			const slider = new Slider();
 			slider.setLeftLabel("Smaller");
 			slider.setRightLabel("Larger");
-			this.setSceneConfigurator(slider.root);
+			this.setSceneConfigurator(slider.head);
 			
 			const updatePick = () =>
 			{
@@ -380,7 +380,7 @@ namespace App
 					picked.weight = slider.place;
 			});
 			
-			this.setSceneConfigurator(slider.root);
+			this.setSceneConfigurator(slider.head);
 		}
 		
 		/** */
@@ -394,7 +394,7 @@ namespace App
 			const slider = new Slider(
 				When.disconnected(() =>
 				{
-					this.lightnessSwatch.root.remove();
+					this.lightnessSwatch.head.remove();
 				})
 			);
 			
@@ -409,8 +409,8 @@ namespace App
 			slider.setPlaceChangeFn(() => this.setContrast(slider.place));
 			
 			const configurator = Hot.div(
-				new HueSwatchHat(this.record).root,
-				slider.root);
+				new HueSwatchHat(this.record).head,
+				slider.head);
 			
 			const updatePick = () =>
 			{
@@ -434,7 +434,7 @@ namespace App
 			
 			updatePick();
 			this.picker.setPickChangedFn(updatePick);
-			this.sceneContainer.append(this.lightnessSwatch.root);
+			this.sceneContainer.append(this.lightnessSwatch.head);
 			this.setSceneConfigurator(configurator);
 		}
 		
@@ -468,7 +468,7 @@ namespace App
 			});
 			
 			this.originPicker.setSelectedFn(origin => this.setOrigin(origin));
-			this.sceneContainer.append(this.originPicker.root);
+			this.sceneContainer.append(this.originPicker.head);
 			
 			const slider = new Slider();
 			slider.setLeftLabel("Twist Left");
@@ -479,9 +479,9 @@ namespace App
 			slider.setPlaceChangeFn(() => this.setTwist(slider.place));
 			slider.setDraggingChangedFn(dragging =>
 			{
-				UI.toggle(picker.root, !dragging);
+				UI.toggle(picker.head, !dragging);
 			});
-			this.setSceneConfigurator(slider.root);
+			this.setSceneConfigurator(slider.head);
 		}
 		
 		/** */
@@ -555,8 +555,8 @@ namespace App
 			{
 				for (const canvasTitle of this.titleHat.getCanvasTitles())
 				{
-					this.picker.registerElement(canvasTitle.root);
-					this.pickerDataMap.set(canvasTitle.root, canvasTitle);
+					this.picker.registerElement(canvasTitle.head);
+					this.pickerDataMap.set(canvasTitle.head, canvasTitle);
 				}
 			}
 			
@@ -564,7 +564,7 @@ namespace App
 			{
 				if (this.descriptionHat.text)
 				{
-					const e = this.descriptionHat.root;
+					const e = this.descriptionHat.head;
 					this.picker.registerElement(e);
 					this.pickerDataMap.set(e, this.descriptionHat);
 				}
@@ -574,8 +574,8 @@ namespace App
 			{
 				for (const action of Hat.under(this, CanvasActionHat))
 				{
-					this.picker.registerElement(action.root);
-					this.pickerDataMap.set(action.root, action);
+					this.picker.registerElement(action.head);
+					this.pickerDataMap.set(action.head, action);
 				}
 			}
 			
@@ -583,8 +583,8 @@ namespace App
 			{
 				for (const bg of Hat.under(this, BackgroundObjectPreviewHat))
 				{
-					this.picker.registerElement(bg.root);
-					this.pickerDataMap.set(bg.root, bg);
+					this.picker.registerElement(bg.head);
+					this.pickerDataMap.set(bg.head, bg);
 				}
 			}
 			

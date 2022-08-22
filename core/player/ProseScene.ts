@@ -6,9 +6,9 @@ namespace Player
 	export class ProseScene extends Scene
 	{
 		/** */
-		constructor(readonly root: HTMLElement)
+		constructor(readonly head: HTMLElement)
 		{
-			super(root);
+			super(head);
 		}
 	}
 }

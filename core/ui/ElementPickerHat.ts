@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(container: HTMLElement)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"element-picker",
 				UI.anchor(),
 				{
@@ -30,13 +30,13 @@ namespace App
 			);
 			
 			this.toggle(false);
-			container.append(this.root);
+			container.append(this.head);
 			this.resizeObserver = new ResizeObserver(() => this.updateIndicator());
-			this.resizeObserver.observe(this.root);
+			this.resizeObserver.observe(this.head);
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly indicator;
 		private readonly registeredElements = new Map<HTMLElement, number>();
 		private readonly resizeObserver;
@@ -44,7 +44,7 @@ namespace App
 		/** */
 		toggle(visible: boolean)
 		{
-			Hot.get(this.root)({
+			Hot.get(this.head)({
 				pointerEvents: visible ? "all" : "none",
 				visibility: visible ? "visible" : "hidden",
 			});
@@ -117,7 +117,7 @@ namespace App
 					await UI.wait();
 				}
 				
-				const overlayRect = this.root.getBoundingClientRect();
+				const overlayRect = this.head.getBoundingClientRect();
 				const targetRect = e.getBoundingClientRect();
 				
 				s.top = (targetRect.top - overlayRect.top - expand) + "px";

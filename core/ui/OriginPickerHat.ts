@@ -20,7 +20,7 @@ namespace App
 				Hot.on(UI.clickEvt, () =>
 				{
 					this.selectedFn(origin);
-					UI.removeWithFade(this.root);
+					UI.removeWithFade(this.head);
 				}),
 				Hot.div(
 					UI.anchorCenter("30px"),
@@ -28,7 +28,7 @@ namespace App
 				)
 			);
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				UI.anchor(),
 				renderSlice(Origin.topLeft),
 				renderSlice(Origin.top),
@@ -47,7 +47,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		
 		/** */
 		setSelectedFn(fn: (origin: Origin | null) => void)
@@ -59,7 +59,7 @@ namespace App
 		/** */
 		remove()
 		{
-			return UI.removeWithFade(this.root);
+			return UI.removeWithFade(this.head);
 		}
 	}
 }

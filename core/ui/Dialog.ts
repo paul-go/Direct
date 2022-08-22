@@ -9,7 +9,7 @@ namespace App
 		{
 			return new Promise<string | null>(resolve =>
 			{
-				const root = Surface.open({
+				const head = Surface.open({
 					background: "black",
 					closeOnEscape: true,
 					closeFn: () => resolve(null),
@@ -17,7 +17,7 @@ namespace App
 				});
 				
 				{
-					const s = root.style;
+					const s = head.style;
 					s.padding = "35px";
 					s.display = "flex";
 					s.alignItems = "flex-start";
@@ -31,7 +31,7 @@ namespace App
 					s.fontSize = "5vmin";
 					s.fontWeight = "500";
 				}
-				root.append(heading);
+				head.append(heading);
 				
 				const input = document.createElement("input");
 				input.type = "text";
@@ -54,7 +54,7 @@ namespace App
 				input.addEventListener("keydown", ev =>
 				{
 					if (ev.key === "Enter")
-						Surface.accept(root);
+						Surface.accept(head);
 				});
 				
 				When.connected(input, () =>
@@ -62,8 +62,8 @@ namespace App
 					setTimeout(() => input.focus());
 				});
 				
-				root.append(input);
-				document.body.append(root);
+				head.append(input);
+				document.body.append(head);
 			});
 		}
 		

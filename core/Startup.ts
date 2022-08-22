@@ -54,7 +54,7 @@ namespace App
 		if (options?.shell !== true)
 		{
 			const hat = new App.PostHat(app.homePost);
-			app.root.append(hat.root);
+			app.head.append(hat.head);
 		}
 		
 		return app;

@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(...params: Hot.Param[])
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"segmented-button",
 				{
 					display: "flex",
@@ -19,7 +19,7 @@ namespace App
 			);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly titles: string[] = [];
 		private readonly fgColor = UI.themeColor;
 		
@@ -30,7 +30,7 @@ namespace App
 			{
 				this.titles.push(title);
 				
-				this.root.append(Hot.div(
+				this.head.append(Hot.div(
 					{
 						flex: "1 0",
 						padding: "15px 5px",
@@ -71,7 +71,7 @@ namespace App
 		/** */
 		private updateSelectedIndex(idx: number)
 		{
-			const children = Query.children(this.root);
+			const children = Query.children(this.head);
 			for (let i = -1; ++i < children.length;)
 			{
 				const child = children[i];

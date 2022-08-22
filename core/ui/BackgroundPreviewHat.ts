@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor(private readonly record: CanvasSceneRecord)
 		{
-			this.root = Hot.div(UI.anchor());
+			this.head = Hot.div(UI.anchor());
 			
 			let configurators: HTMLElement;
 			const mimeClasses = [MimeClass.image, MimeClass.video];
@@ -33,7 +33,7 @@ namespace App
 				}),
 			);
 			
-			this.previews = new Hat.Array(this.root, BackgroundObjectPreviewHat);
+			this.previews = new Hat.Array(this.head, BackgroundObjectPreviewHat);
 			this.configurators = new Hat.Array(configurators, BackgroundConfiguratorHat);
 			
 			for (const bg of record.backgrounds)
@@ -44,7 +44,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		readonly configuratorElement;
 		private readonly configurators;
 		private readonly previews;
@@ -91,13 +91,13 @@ namespace App
 			{
 				const ancestors = Query.ancestors(document.activeElement);
 				const visible = 
-					ancestors.includes(configurator.root) ||
-					ancestors.includes(preview.root);
+					ancestors.includes(configurator.head) ||
+					ancestors.includes(preview.head);
 				
 				preview.toggleSelectionBox(visible);
 			};
 			
-			Hot.get(configurator.root, preview.root)(
+			Hot.get(configurator.head, preview.head)(
 				{ tabIndex: 0 },
 				Hot.on("focusout", () => update()),
 				Hot.on("focusin", () => update()),
@@ -113,7 +113,7 @@ namespace App
 			readonly record: BackgroundRecord,
 			readonly preview: BackgroundObjectPreviewHat)
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"background-configurator",
 				Hot.css(":not(:last-child)", { marginTop: "10px" }),
 				{
@@ -133,7 +133,7 @@ namespace App
 						flex: "1 0",
 						padding: "0 25px",
 					},
-					(this.sizeSlider = new Slider(...this.getSizeParams(false))).root
+					(this.sizeSlider = new Slider(...this.getSizeParams(false))).head
 				),
 				this.coverButton = UI.clickLabel(
 					{
@@ -148,8 +148,8 @@ namespace App
 					},
 					Hot.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
 						// These are backwards because the flow of elements is column-reverse
-						...(this.root.nextElementSibling ? { "Move Up": () => this.moveUp() } : {}),
-						...(this.root.previousElementSibling ? { "Move Down": () => this.moveDown() } : {}),
+						...(this.head.nextElementSibling ? { "Move Up": () => this.moveUp() } : {}),
+						...(this.head.previousElementSibling ? { "Move Down": () => this.moveDown() } : {}),
 						"Delete": () => this.delete(),
 					})),
 					
@@ -165,7 +165,7 @@ namespace App
 					bip.updateSize(this.sizeSlider.place);
 				});
 				
-				When.connected(this.preview.root, () =>
+				When.connected(this.preview.head, () =>
 				{
 					this.setUsingCover(record.size < 0);
 				});
@@ -174,7 +174,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly coverButton;
 		private readonly sizeSlider;
 		
@@ -224,7 +224,7 @@ namespace App
 				return;
 			
 			this.coverButton.style.opacity = usingCover ? "1" : "0.5";
-			this.sizeSlider.root.style.opacity = usingCover ? "0.5" : "1";
+			this.sizeSlider.head.style.opacity = usingCover ? "0.5" : "1";
 			
 			if (usingCover)
 				this.sizeSlider.place = this.sizeSlider.max;
@@ -236,22 +236,22 @@ namespace App
 		/** */
 		private moveUp()
 		{
-			this.root.nextElementSibling?.after(this.root);
-			this.preview.root.nextElementSibling?.after(this.preview.root);
+			this.head.nextElementSibling?.after(this.head);
+			this.preview.head.nextElementSibling?.after(this.preview.head);
 		}
 		
 		/** */
 		private moveDown()
 		{
-			this.root.previousElementSibling?.before(this.root);
-			this.preview.root.previousElementSibling?.before(this.preview.root);
+			this.head.previousElementSibling?.before(this.head);
+			this.preview.head.previousElementSibling?.before(this.preview.head);
 		}
 		
 		/** */
 		private delete()
 		{
-			this.root.remove();
-			this.preview.root.remove();
+			this.head.remove();
+			this.preview.head.remove();
 		}
 	}
 	
@@ -269,7 +269,7 @@ namespace App
 		/** */
 		constructor(readonly record: BackgroundRecord) { }
 		
-		abstract readonly root: HTMLElement;
+		abstract readonly head: HTMLElement;
 	}
 	
 	/** */
@@ -283,7 +283,7 @@ namespace App
 			const blobUrl = record.media?.getBlobUrl() || "";
 			const mimeType = record.media?.type || "";
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"background-video-preview",
 				UI.anchor(),
 				RenderUtil.createVideoBackground(blobUrl, mimeType)
@@ -292,7 +292,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 	}
 	
 	/** */
@@ -303,7 +303,7 @@ namespace App
 		{
 			super(record);
 			
-			this.root = Hot.div(
+			this.head = Hot.div(
 				"background-image-preview",
 				UI.anchor(),
 				{
@@ -366,7 +366,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly imgContainer;
 		private readonly imgBoundary;
 		private readonly img;
@@ -420,7 +420,7 @@ namespace App
 				});
 				
 				const s = this.img.style;
-				const sceneContainer = Hat.over(this, BackgroundPreviewHat).root;
+				const sceneContainer = Hat.over(this, BackgroundPreviewHat).head;
 				
 				if (this.imgWidth > this.imgHeight)
 				{

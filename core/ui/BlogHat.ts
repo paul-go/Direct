@@ -7,7 +7,7 @@ namespace App
 		/** */
 		constructor()
 		{
-			this.root = Hot.div(
+			this.head = Hot.div(
 				CssClass.blogHat,
 				UI.appMaxWidth(),
 				this.headerElement = this.renderHeader(),
@@ -20,7 +20,7 @@ namespace App
 			);
 		}
 		
-		readonly root;
+		readonly head;
 		private readonly headerElement;
 		private readonly addPostButton;
 		private readonly postList;
@@ -231,9 +231,9 @@ namespace App
 			{
 				this.headerElement.style.transform = "translateY(-150%)";
 				
-				postHat.root.classList.add(CssClass.postHatTransition);
+				postHat.head.classList.add(CssClass.postHatTransition);
 				transformable.style.height = (window.innerWidth / 3) + "px";
-				transformable.append(postHat.root);
+				transformable.append(postHat.head);
 				
 				await new Promise<void>(r => setTimeout(r));
 				
@@ -245,8 +245,8 @@ namespace App
 				
 				await new Promise<void>(r => transformable.addEventListener("transitionend", () => r()));
 				
-				AppContainer.of(this).root.append(postHat.root);
-				postHat.root.classList.remove(CssClass.postHatTransition);
+				AppContainer.of(this).head.append(postHat.head);
+				postHat.head.classList.remove(CssClass.postHatTransition);
 				this.postList.style.display = "none";
 			});
 			
@@ -269,7 +269,7 @@ namespace App
 					
 					if (doingKeep)
 					{
-						const s = postHat.root.style;
+						const s = postHat.head.style;
 						s.transitionDuration = "0";
 						await UI.wait();
 						s.opacity = "1";
@@ -279,8 +279,8 @@ namespace App
 						await UI.wait();
 						s.transform = "scale(0.3333)";
 						s.opacity = "0";
-						await UI.waitTransitionEnd(postHat.root);
-						postHat.root.remove();
+						await UI.waitTransitionEnd(postHat.head);
+						postHat.head.remove();
 					}
 					else
 					{
@@ -289,8 +289,8 @@ namespace App
 						
 						window.scroll(0, scrollY);
 						
-						transformable.append(postHat.root);
-						postHat.root.classList.add(CssClass.postHatTransition);
+						transformable.append(postHat.head);
+						postHat.head.classList.add(CssClass.postHatTransition);
 						transformable.style.transitionDuration = transitionDuration;
 						
 						await UI.wait();
@@ -303,7 +303,7 @@ namespace App
 						
 						transformable.style.removeProperty("z-index");
 						parent.style.removeProperty("z-index");
-						postHat.root.remove();
+						postHat.head.remove();
 					}
 				});
 			});

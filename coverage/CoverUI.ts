@@ -35,17 +35,17 @@ namespace Cover
 		
 		document.body.style.padding = "30px";
 		document.body.append(
-			slider1.root,
+			slider1.head,
 			Hot.br(),
-			slider2.root,
+			slider2.head,
 			Hot.br(),
-			slider3.root,
+			slider3.head,
 			Hot.br(),
-			slider4.root,
+			slider4.head,
 			Hot.br(),
-			slider5.root,
+			slider5.head,
 			Hot.br(),
-			slider6.root,
+			slider6.head,
 			Hot.br(),
 			Hot.a(
 				Hot.on("click", () =>
@@ -66,7 +66,7 @@ namespace Cover
 		let element2: HTMLElement;
 		let element3: HTMLElement;
 		
-		const root = Hot.div(
+		const head = Hot.div(
 			{
 				backgroundColor: "gray",
 			},
@@ -104,11 +104,11 @@ namespace Cover
 		);
 		
 		document.body.style.padding = "30px";
-		document.body.append(root);
+		document.body.append(head);
 		
 		await App.UI.wait();
 		
-		const picker = new App.ElementPickerHat(root);
+		const picker = new App.ElementPickerHat(head);
 		picker.registerElement(element1);
 		picker.registerElement(element2);
 		picker.registerElement(element3);
@@ -119,7 +119,7 @@ namespace Cover
 	{
 		App.appendCss();
 		const np = new App.OriginPickerHat();
-		document.body.append(np.root);
+		document.body.append(np.head);
 	}
 	
 	/** */
@@ -141,7 +141,7 @@ namespace Cover
 		
 		document.body.style.backgroundColor = "white";
 		document.body.style.padding = "100px";
-		document.body.append(sb.root);
+		document.body.append(sb.head);
 	}
 	
 	/** */

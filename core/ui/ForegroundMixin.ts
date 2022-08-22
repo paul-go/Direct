@@ -7,9 +7,9 @@ namespace App
 	export class ForegroundMixin
 	{
 		/** */
-		constructor(readonly root: HTMLElement)
+		constructor(readonly head: HTMLElement)
 		{
-			Hot.get(this.root)("foreground-hat");
+			Hot.get(this.head)("foreground-hat");
 			Hat.wear(this);
 		}
 	}
