@@ -8,39 +8,35 @@ namespace App
 	}
 	
 	/** */
-	export class ColorSelectorHat
+	export class HueSwatchHat
 	{
 		/** */
 		constructor(readonly record: SceneRecord)
 		{
 			this.root = Hot.div(
-				"color-configurator",
 				{
 					display: "flex",
 					justifyContent: "center",
-					marginTop: "10px",
+					paddingBottom: "30px",
 				},
-				When.connected(() => this.render())
+				When.connected(() =>
+				{
+					for (const pair of App.colorPairs)
+					{
+						const cfg = new HueChoiceHat(this.record, pair);
+						this.root.append(cfg.root);
+					}
+				})
 			);
 			
 			Hat.wear(this);
 		}
 		
 		readonly root;
-		
-		/** */
-		private render()
-		{
-			for (const pair of App.colorPairs)
-			{
-				const cfg = new ColorOptionHat(this.record, pair);
-				this.root.append(cfg.root);
-			}
-		}
 	}
 	
 	/** */
-	class ColorOptionHat
+	class HueChoiceHat
 	{
 		/** */
 		constructor(
@@ -57,14 +53,14 @@ namespace App
 					margin: "10px",
 					borderRadius: UI.borderRadius.default,
 					backgroundImage: `linear-gradient(
-						45deg, 
+						-45deg, 
 						${darkColorString} 0,
 						${darkColorString} 50%,
 						${lightColorString} 50.1%,
-						${lightColorString} 100%)`
+						${lightColorString} 100%)`,
+					boxShadow: "0 3px 15px black",
 				},
-				UI.clickable,
-				Hot.on(UI.clickEvt, () => this.select()),
+				UI.click(() => this.select()),
 				When.connected(() =>
 				{
 					if (record.colorPair.join() === this.colorPair.join())
@@ -89,7 +85,7 @@ namespace App
 				"inset 0 0 2px 1px " + UI.black(0.5) +
 				", 0 0 0 3px white";
 			
-			Hat.over(this, SceneHat).updateColor();
+			Hat.up(this, SceneHat)?.updateHue();
 		}
 	}
 }

@@ -7,7 +7,7 @@ namespace App
 	export abstract class CanvasTextHat
 	{
 		/** */
-		constructor(protected record: CanvasSceneRecord)
+		constructor(readonly record: CanvasSceneRecord)
 		{
 			this.root = Hot.div(
 				{

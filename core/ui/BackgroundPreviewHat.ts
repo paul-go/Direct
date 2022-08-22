@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class BackgroundPreviewHat implements IColorable
+	export class BackgroundPreviewHat
 	{
 		/** */
 		constructor(private readonly record: CanvasSceneRecord)
@@ -31,12 +31,7 @@ namespace App
 				if (bg.media)
 					this.bindBackground(bg);
 			
-			this.configurators.observe(() =>
-			{
-				const records = this.configurators!.map(r => r.record);
-				this.record.backgrounds = records;
-			});
-			
+			this.configurators.observe(() => this.save());
 			Hat.wear(this);
 		}
 		
@@ -44,6 +39,13 @@ namespace App
 		readonly configuratorElement;
 		private readonly configurators;
 		private readonly previews;
+		
+		/** */
+		private save()
+		{
+			const records = this.configurators!.map(r => r.record);
+			this.record.backgrounds = records;
+		}
 		
 		/**
 		 * Creates a new BackgroundRecord around the specified
@@ -92,17 +94,6 @@ namespace App
 				Hot.on("focusin", () => update()),
 			);
 		}
-		
-		/** */
-		get hasColor()
-		{
-			return this._hasColor;
-		}
-		set hasColor(hasColor: boolean)
-		{
-			this._hasColor = hasColor;
-		}
-		private _hasColor = false;
 	}
 	
 	/** */

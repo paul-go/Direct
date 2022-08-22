@@ -265,7 +265,6 @@ namespace Cover
 		
 		const scene3 = new App.ProseSceneRecord();
 		scene3.content = getContent(1);
-		scene3.backgroundColorIndex = 1;
 		
 		post.scenes.push(scene1, scene2, scene3);
 		render(post, meta);

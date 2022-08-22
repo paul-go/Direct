@@ -235,6 +235,11 @@ namespace App
 		}
 		set hasColor(hasColor: boolean)
 		{
+			const cssVar = hasColor ? 
+				ConstS.foreColorProperty :
+				ConstS.foreUncolorProperty;
+			
+			this.root.style.color = `var(${cssVar})`;
 			this._hasColor = hasColor;
 			Hat.up(this, CanvasTitleSetHat)?.save();
 		}

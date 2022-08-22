@@ -127,11 +127,22 @@ namespace App
 	export abstract class SceneRecord extends Record
 	{
 		transition = Transitions.slide.name;
-		backgroundColorIndex = 0;
-		
 		colorPair: TColorPair  = [[215, 70, 50], [215, 70, 85]];
-		contrast = 0;
+		contrast = 1;
 		hasColor = false;
+		
+		/** */
+		getDarkOnLight()
+		{
+			return this.contrast < 0;
+		}
+		
+		/** */
+		setDarkOnLight(value: boolean)
+		{
+			if (value !== this.contrast < 0)
+				this.contrast *= -1;
+		}
 	}
 	
 	/** */
@@ -195,6 +206,7 @@ namespace App
 	export class ProseSceneRecord extends SceneRecord
 	{
 		content: ITrixSerializedObject | null = null;
+		hasColorAccents = false;
 	}
 	
 	/** */

@@ -273,12 +273,20 @@ namespace App
 		/** */
 		get hasColor()
 		{
-			return this._hasColor;
+			return this.actionRecord.hasColor;
 		}
 		set hasColor(hasColor: boolean)
 		{
-			this._hasColor = hasColor;
+			this.actionRecord.hasColor = hasColor;
+			
+			const value = hasColor ?
+				`var(${ConstS.foreColorProperty})` :
+				`var(${ConstS.backColorProperty})`;
+			
+			Hot.get(this.root)({
+				borderColor: value,
+				color: value,
+			});
 		}
-		private _hasColor = false;
 	}
 }

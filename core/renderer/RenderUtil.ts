@@ -30,30 +30,30 @@ namespace App.RenderUtil
 		});
 	}
 	
+	/** */
+	export function renderColors(record: SceneRecord)
+	{
+		const [darkHsl, lightHsl] = record.colorPair;
+		const dark = UI.color({ h: darkHsl[0], s: darkHsl[1], l: darkHsl[2] });
+		const light = UI.color({ h: lightHsl[0], s: lightHsl[1], l: lightHsl[2] });
+		return { dark, light };
+	}
+	
 	/**
 	 * 
 	 */
 	export function resolveColors(record: SceneRecord)
 	{
 		const contrast = record.contrast;
-		const hasColor = record.hasColor;
 		const [darkHsl, lightHsl] = record.colorPair;
-		
-		const darkColor = hasColor ?
-			UI.color({ h: darkHsl[0], s: darkHsl[1], l: darkHsl[2] }) :
-			black;
-		
-		const lightColor = hasColor ?
-			UI.color({ h: lightHsl[0], s: lightHsl[1], l: lightHsl[2] }) :
-			white;
+		const darkColor = UI.color({ h: darkHsl[0], s: darkHsl[1], l: darkHsl[2] });
+		const lightColor = UI.color({ h: lightHsl[0], s: lightHsl[1], l: lightHsl[2] });
 		
 		return {
-			/** Used for the background. */
-			back: contrast < 0 ? lightColor : darkColor,
-			/** Used for colored objects. */
-			fore: contrast < 0 ? darkColor : lightColor,
-			/** Used for uncolored text. */
-			default: contrast < 0 ? black : white,
+			backgroundColored: contrast < 0 ? lightColor : darkColor,
+			foregroundColored: contrast < 0 ? darkColor : lightColor,
+			backgroundUncolored: contrast < 0 ? white : black,
+			foregroundUncolored: contrast < 0 ? black : white,
 		};
 	}
 	

@@ -217,8 +217,6 @@ namespace App
 	function renderScene(bun: Bundle)
 	{
 		const colors = RenderUtil.resolveColors(bun.scene);
-		
-		
 		let snapFooter: HTMLElement | null = null;
 		const includeSnapFooter = () => snapFooter = Hot.div(CssClass.snapFooter);
 		
@@ -243,8 +241,10 @@ namespace App
 			Hot.section(
 				CssClass.scene,
 				{
-					color: colors.default,
-					backgroundColor: colors.back,
+					color: colors.foregroundUncolored,
+					backgroundColor: bun.scene.hasColor ?
+						colors.backgroundColored :
+						colors.backgroundUncolored,
 					height: "100vh",
 					data: {
 						[DataAttributes.transition]: bun.useAnimation(bun.scene.transition)
@@ -615,11 +615,21 @@ namespace App
 	 */
 	function renderProseScene(bun: Bundle<ProseSceneRecord>)
 	{
+		const proseElements = renderProseDocument(bun.scene.content);
+		
+		if (bun.scene.hasColorAccents)
+		{
+			const colors = RenderUtil.resolveColors(bun.scene);
+			proseElements
+				.filter(e => e instanceof HTMLHeadingElement)
+				.map(e => e.style.color = colors.foregroundColored);
+		}
+		
 		return [
 			CssClass.proseScene,
 			Hot.div(
 				CssClass.proseSceneForeground,
-				...renderProseDocument(bun.scene.content)
+				proseElements
 			)
 		];
 	}

@@ -21,24 +21,31 @@ namespace App
 						display: "flex",
 						flexDirection: "column",
 						minHeight: UI.vsize(100),
+						color: `var(${ConstS.foreUncolorProperty})`,
 					},
 					e => void new ForegroundMixin(e),
-					Hot.div(
+					this.sceneForeground = Hot.div(
 						CssClass.proseSceneForeground,
 						{
 							display: "flex",
 							flex: "1 0",
 							
-							// These values are different from what gets rendered in the output.
-							paddingTop: "10vmin",
-							paddingBottom: "10vmin",
+							// These values overridden from what is here by default
+							// (and and what is rendered in the output).
+							paddingTop: "100px",
+							paddingBottom: "100px",
 						},
 						UI.keyable,
 						
-						Hot.get(this.trixEditorElement)({
-							flex: "1 0",
-							outline: 0,
-						}),
+						Hot.get(this.trixEditorElement)(
+							{
+								flex: "1 0",
+								outline: 0,
+							},
+							Hot.css("& H1, & H2", {
+								color: `var(${accentColorProperty})`
+							}),
+						),
 						
 						(this.linkEditor = new LinkEditorHat()).root
 					)
@@ -57,7 +64,7 @@ namespace App
 				this.setupButton(this.boldButton, "bold"),
 				this.setupButton(this.italicButton, "italic"),
 				this.setupButton(this.linkButton, "href"),
-				this.backgroundButton,
+				this.colorButton,
 			);
 			
 			this.root.addEventListener("paste", ev =>
@@ -98,7 +105,9 @@ namespace App
 			this.trixEditorElement.setAttribute("placeholder", "Write something inspiring here...");
 			Hot.get(this.trixEditorElement)(
 				Hot.css(":before", {
-					fontSize: "30px"
+					fontSize: "30px",
+					color: `var(${ConstS.foreUncolorProperty})`,
+					opacity: 0.33,
 				})
 			);
 			
@@ -117,26 +126,55 @@ namespace App
 				}
 			});
 			
-			this.colorConfigurator = new ColorSelectorHat(this.record);
-			
-			Hot.get(this.colorConfigurator.root)(
+			this.hueSwatch = new HueSwatchHat(this.record);
+			Hot.get(this.hueSwatch.root)(
 				{ tabIndex: 0 },
 				Hot.on("focusout", () => setTimeout(() =>
 				{
 					this.maybeHideColorConfigurator();
 				}))
 			);
+			
+			this.lightnessForeSwatch = new LightnessSwatchHat(Origin.topLeft);
+			this.lightnessForeSwatch.targetsBackground = false;
+			this.lightnessForeSwatch.setChangedFn(() =>
+			{
+				this.lightnessBackSwatch.isDarkSelected = !this.lightnessForeSwatch.isDarkSelected;
+			});
+			
+			this.lightnessBackSwatch = new LightnessSwatchHat(Origin.bottomRight);
+			this.lightnessBackSwatch.targetsBackground = true;
+			this.lightnessBackSwatch.setChangedFn(() =>
+			{
+				this.lightnessForeSwatch.isDarkSelected = !this.lightnessBackSwatch.isDarkSelected;
+			});
 		}
 		
-		private readonly colorConfigurator;
+		private readonly sceneForeground;
+		private readonly hueSwatch;
+		private readonly lightnessForeSwatch;
+		private readonly lightnessBackSwatch;
+		
+		/** */
+		updateLightness()
+		{
+			this.record.hasColorAccents = this.lightnessForeSwatch.isColorSelected;
+			this.trixEditorElement.style.setProperty(accentColorProperty, this.record.hasColorAccents ? 
+				`var(${ConstS.foreColorProperty})` :
+				`var(${ConstS.foreUncolorProperty})`);
+			
+			this.hasColor = this.lightnessBackSwatch.isColorSelected;
+			this.record.setDarkOnLight(!this.lightnessBackSwatch.isDarkSelected);
+			super.updateLightness();
+		}
 		
 		/** */
 		private maybeHideColorConfigurator()
 		{
 			const ancestors = Query.ancestors(document.activeElement);
-			if (!ancestors.includes(this.colorConfigurator.root))
+			if (!ancestors.includes(this.hueSwatch.root))
 			{
-				this.backgroundButton.selected = false;
+				this.colorButton.selected = false;
 				this.setSceneConfigurator(null);
 			}
 		}
@@ -177,7 +215,7 @@ namespace App
 			unselectable: false
 		});
 		
-		private readonly backgroundButton = new SceneButtonHat("Background", {
+		private readonly colorButton = new SceneButtonHat("Color", {
 			selectable: true,
 			unselectable: true,
 		});
@@ -270,10 +308,31 @@ namespace App
 			if (hasLink)
 				this.linkEditor.link = this.getCurrentHref();
 			
-			this.setSceneConfigurator(
-				this.backgroundButton.selected ?
-					this.colorConfigurator.root :
-					null);
+			if (this.colorButton.selected)
+			{
+				this.sceneContainer.append(this.lightnessBackSwatch.root);
+				
+				const firstHeading = this.trixEditorElement.querySelector("H1, H2") as HTMLElement | null;
+				if (firstHeading)
+				{
+					const fgRect = this.sceneForeground.getBoundingClientRect();
+					const headingRect = firstHeading.getBoundingClientRect();
+					const s = this.lightnessForeSwatch.root.style;
+					const swatchHeight = 90; // Hack
+					s.padding = "0";
+					s.top = ((headingRect.top - fgRect.top) - swatchHeight) + "px";
+					s.left = "-" + UI.borderRadius.large;
+					this.sceneForeground.append(this.lightnessForeSwatch.root);
+				}
+				
+				this.setSceneConfigurator(this.hueSwatch.root);
+			}
+			else
+			{
+				this.lightnessForeSwatch.root.remove();
+				this.lightnessBackSwatch.root.remove();
+				this.setSceneConfigurator(null);
+			}
 		}
 		
 		/** */
@@ -366,4 +425,6 @@ namespace App
 			this.record.content = Util.deepObjectClone(this.editor.toJSON());
 		}
 	}
+	
+	const accentColorProperty = "--accent-color";
 }

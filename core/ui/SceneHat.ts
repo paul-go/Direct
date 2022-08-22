@@ -27,7 +27,6 @@ namespace App
 		constructor(readonly record: SceneRecord)
 		{
 			this.root = Hot.div(
-				"scene-hat",
 				{
 					backgroundColor: UI.darkGrayBackground
 				},
@@ -77,7 +76,6 @@ namespace App
 							width: "max-content",
 							maxWidth: "100%",
 							margin: "auto",
-							paddingBottom: "20px",
 							overflowX: "auto",
 							overflowY: "scroll",
 							color: "white",
@@ -102,7 +100,7 @@ namespace App
 				// Final add
 				(this.footerBox = new HeightBox("footer-box", this.renderDefaultFooter())).root,
 				
-				When.connected(() => this.updateColor())
+				When.connected(() => this.updateHue())
 			)
 			
 			// Populate this with data in the future.
@@ -118,6 +116,10 @@ namespace App
 					});
 				})
 			);
+			
+			this.updateHue();
+			this.updateLightnessPrivate();
+			this.hasColor = this.record.hasColor;
 			
 			Hat.wear(this);
 		}
@@ -202,12 +204,50 @@ namespace App
 		}
 		
 		/** */
-		updateColor()
+		updateHue()
 		{
-			const colors = RenderUtil.resolveColors(this.record);
-			const s = this.sceneContainer.style;
-			s.setProperty(ConstS.forecolorProperty, colors.fore);
-			s.backgroundColor = colors.back;
+			const colors = RenderUtil.renderColors(this.record);
+			const s = this.root.style;
+			s.setProperty(ConstS.lightColorProperty, colors.light);
+			s.setProperty(ConstS.darkColorProperty, colors.dark);
+		}
+		
+		/** */
+		updateLightness()
+		{
+			this.updateLightnessPrivate();
+		}
+		
+		/**
+		 * This method is separated from the main updateLightness() method
+		 * because it needs to be called directly from the constructor,
+		 * without invoking any overridden versions of the method.
+		 */
+		private updateLightnessPrivate()
+		{
+			const inverted = this.record.getDarkOnLight();
+			const fc = `var(${inverted ? ConstS.darkColorProperty : ConstS.lightColorProperty})`;
+			const bc = `var(${inverted ? ConstS.lightColorProperty : ConstS.darkColorProperty})`;
+			const fu = inverted ? "black" : "white";
+			const bu = inverted ? "white" : "black";
+			
+			const s = this.root.style;
+			s.setProperty(ConstS.foreColorProperty, fc);
+			s.setProperty(ConstS.backColorProperty, bc);
+			s.setProperty(ConstS.foreUncolorProperty, fu);
+			s.setProperty(ConstS.backUncolorProperty, bu);
+		}
+		
+		/** */
+		get hasColor()
+		{
+			return this.record.hasColor;
+		}
+		set hasColor(hasColor: boolean)
+		{
+			const back = hasColor ? ConstS.backColorProperty : ConstS.backUncolorProperty;
+			this.sceneContainer.style.backgroundColor = `var(${back})`;
+			this.record.hasColor = hasColor;
 		}
 		
 		/** */

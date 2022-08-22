@@ -86,23 +86,6 @@ namespace Hat
 	}
 	
 	/**
-	 * Scans upward through the DOM, starting at the specified Node, 
-	 * looking for the first element wearing a Hat of the specified type.
-	 * 
-	 * @throws An exception if no Hat of the specified type is found.
-	 */
-	export function over<T extends IHat>(
-		via: Node | IHat,
-		type: Constructor<T>)
-	{
-		const hat = up(via, type);
-		if (!hat)
-			throw new Error("Hat not found.");
-		
-		return hat;
-	}
-	
-	/**
 	 * Finds the first descendent element that has an attached Hat of the
 	 * specified type, that exists underneath the specified Node or Hat.
 	 * 
@@ -113,6 +96,24 @@ namespace Hat
 	{
 		const hats = within(via, type, true);
 		return hats.length > 0 ? hats[0] : null;
+	}
+	
+	/**
+	 * Scans upward through the DOM, starting at the specified Node, 
+	 * looking for the first element wearing a Hat of the specified type.
+	 * 
+	 * @throws An exception if no Hat of the specified type is found.
+	 * @returns The ancestor Hat of the specified type.
+	 */
+	export function over<T extends IHat>(
+		via: Node | IHat,
+		type: Constructor<T>)
+	{
+		const hat = up(via, type);
+		if (!hat)
+			throw new Error("Hat not found.");
+		
+		return hat;
 	}
 	
 	/**
@@ -178,8 +179,8 @@ namespace Hat
 	}
 	
 	/**
-	 * Returns the element succeeding the specified element in the DOM
-	 * that is connected to a hat of the specified type.
+	 * Returns the element succeeding the specified element in
+	 * the DOM that is connected to a hat of the specified type.
 	 */
 	export function next<T extends IHat>(via: Element | IHat, type: Constructor<T>): T | null
 	{

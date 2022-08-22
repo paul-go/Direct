@@ -67,6 +67,7 @@ namespace App
 			this.setContrast(this.record.contrast);
 			this.setTwist(this.record.twist);
 			
+			this.lightnessSwatch = new LightnessSwatchHat(Origin.bottom);
 			this.picker = new ElementPickerHat(this.sceneContainer);
 		}
 		
@@ -78,9 +79,8 @@ namespace App
 		private readonly descriptionHat;
 		private readonly actionManager;
 		private readonly backgroundPreview: BackgroundPreviewHat;
+		private readonly lightnessSwatch;
 		
-		//private sizePicker: ElementPicker | null = null;
-		//private weightPicker: ElementPicker | null = null;
 		private originPicker: OriginPickerHat | null = null;
 		
 		private readonly animationButton = new SceneButtonHat("Animation");
@@ -106,10 +106,7 @@ namespace App
 				{
 					await this.beginAddContentImage();
 					if (this.contentImage)
-					{
-						icon.classList.add("asidyuaosidfyauisfd");
 						icon.style.transform = "rotate(45deg)";
-					}
 				}
 			});
 			
@@ -392,47 +389,66 @@ namespace App
 			this.setPickableElements(
 				Pickable.titles,
 				Pickable.actions,
-				Pickable.backgroundSurface);
+				Pickable.scene);
 			
-			const slider = new Slider();
+			const slider = new Slider(
+				When.disconnected(() =>
+				{
+					this.lightnessSwatch.root.remove();
+				})
+			);
+			
 			slider.setLeftLabel("Dark on light");
 			slider.setRightLabel("Light on dark");
+			slider.skipZero = true;
+			slider.abs = true;
 			slider.decimals = 0;
 			slider.min = -100;
 			slider.max = 100;
 			slider.place = this.record.contrast;
 			slider.setPlaceChangeFn(() => this.setContrast(slider.place));
 			
-			const colorToggle = new ColorToggleHat();
-			
-			colorToggle.setChangedFn(() =>
-			{
-				const picked = this.getPicked();
-				(picked as IColorable).hasColor = colorToggle.hasColor;
-			});
+			const configurator = Hot.div(
+				new HueSwatchHat(this.record).root,
+				slider.root);
 			
 			const updatePick = () =>
 			{
 				const picked = this.getPicked();
+				const rec = this.record;
+				const dol = rec.getDarkOnLight();
+				const sw = this.lightnessSwatch;
+				sw.targetsBackground = picked instanceof SceneHat;
 				
-				if (picked instanceof CanvasTitleHat)
+				if (picked instanceof CanvasTitleHat || picked instanceof CanvasActionHat)
 				{
-					colorToggle.hasColor = picked.hasColor
+					sw.isColorSelected = picked.hasColor;
+					sw.isDarkSelected = dol;
 				}
-				else if (picked instanceof CanvasActionHat)
+				else if (picked instanceof SceneHat)
 				{
-					colorToggle.hasColor = picked.actionRecord.hasColor;
-				}
-				else if (picked instanceof BackgroundPreviewHat)
-				{
-					colorToggle.hasColor = this.record.hasColor;
+					sw.isColorSelected = rec.hasColor
+					sw.isDarkSelected = !dol;
 				}
 			};
 			
 			updatePick();
-			When.disconnected(slider.root, () => colorToggle.root.remove());
-			this.sceneContainer.append(colorToggle.root);
-			this.setSceneConfigurator(slider.root);
+			this.picker.setPickChangedFn(updatePick);
+			this.sceneContainer.append(this.lightnessSwatch.root);
+			this.setSceneConfigurator(configurator);
+		}
+		
+		/** */
+		updateLightness()
+		{
+			const picked = this.getPicked();
+				
+			if (picked instanceof CanvasTitleHat ||
+				picked instanceof CanvasActionHat ||
+				picked instanceof SceneHat)
+				picked.hasColor = this.lightnessSwatch.isColorSelected;
+			
+			super.updateLightness();
 		}
 		
 		/** */
@@ -571,11 +587,10 @@ namespace App
 				}
 			}
 			
-			if (pickableTypes.includes(Pickable.backgroundSurface))
+			if (pickableTypes.includes(Pickable.scene))
 			{
-				const bp = this.backgroundPreview;
-				this.picker.registerElement(bp.root, -20);
-				this.pickerDataMap.set(bp.root, bp);
+				this.picker.registerElement(this.sceneContainer, -20);
+				this.pickerDataMap.set(this.sceneContainer, this);
 			}
 		}
 	}
@@ -588,7 +603,7 @@ namespace App
 		descriptions,
 		actions,
 		backgroundObjects,
-		backgroundSurface,
+		scene,
 	}
 	
 	/** */
@@ -598,5 +613,5 @@ namespace App
 		CanvasDescriptionHat |
 		CanvasActionHat |
 		BackgroundObjectPreviewHat |
-		BackgroundPreviewHat;
+		SceneHat;
 }
