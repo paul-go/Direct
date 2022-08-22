@@ -147,8 +147,9 @@ namespace App
 						padding: "20px",
 					},
 					Hot.on(UI.clickEvt, ev => UI.springMenu(ev.target, {
-						"Move Up": () => {},
-						"Move Down": () => {},
+						// These are backwards because the flow of elements is column-reverse
+						...(this.root.nextElementSibling ? { "Move Up": () => this.moveUp() } : {}),
+						...(this.root.previousElementSibling ? { "Move Down": () => this.moveDown() } : {}),
 						"Delete": () => this.delete(),
 					})),
 					
@@ -230,6 +231,20 @@ namespace App
 			
 			this.record.size = usingCover ? -1 : this.sizeSlider.place;
 			this.preview.updateSize();
+		}
+		
+		/** */
+		private moveUp()
+		{
+			this.root.nextElementSibling?.after(this.root);
+			this.preview.root.nextElementSibling?.after(this.preview.root);
+		}
+		
+		/** */
+		private moveDown()
+		{
+			this.root.previousElementSibling?.before(this.root);
+			this.preview.root.previousElementSibling?.before(this.preview.root);
 		}
 		
 		/** */
