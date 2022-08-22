@@ -456,6 +456,7 @@ namespace App
 		{
 			RenderUtil.setContrast(this.islandElement, amount);
 			this.record.contrast = amount;
+			super.updateLightness();
 		}
 		
 		/** */
