@@ -177,6 +177,12 @@ namespace Hot { { } }
 							apply(e, Array.isArray(subParams) ? subParams : [subParams]);
 					}
 				}
+				// Ugly, but high-performance way to check if the param is a Hat
+				// coming from the Hat library.
+				default: if (!!(param as any).root && (param as any).root.ELEMENT_NODE === 1)
+				{
+					apply(e, [(param as any).root]);
+				}
 			}
 		}
 		
@@ -233,9 +239,10 @@ namespace Hot { { } }
 	/** */
 	function animation(animationName: string, style: Record<number, Hot.Style>)
 	{
-		if (animationsWritten.has(animationName))
-			return;
+		if (animationsWritten.includes(animationName))
+			return { animationName };
 		
+		animationsWritten.push(animationName);
 		const css: string[] = [];
 		
 		for (const [keyframe, styles] of Object.entries(style))
@@ -258,7 +265,7 @@ namespace Hot { { } }
 		
 		return { animationName };
 	}
-	const animationsWritten = new Set<string>();
+	const animationsWritten: string[] = [];
 }
 
 namespace Hot
@@ -495,7 +502,9 @@ namespace Hot
 		false | undefined | null | void |
 		NodeLike |
 		Style |
-		Partial<T>;
+		Partial<T> |
+		// Affordance for Hats
+		{ readonly root: HTMLElement; };
 	
 	export declare function a(...params: Param<AnchorElementAttribute>[]): HTMLAnchorElement;
 	export declare function abbr(...params: Param[]): HTMLElement;
