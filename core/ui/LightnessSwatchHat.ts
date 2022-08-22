@@ -10,6 +10,7 @@ namespace App
 			this.root = Hot.div(
 				{
 					position: "absolute",
+					width: "fit-content",
 					padding: "20px",
 					pointerEvents: "none",
 					zIndex: 1,
