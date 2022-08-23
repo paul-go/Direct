@@ -198,6 +198,8 @@ namespace App
 					backgroundColor: UI.gray(50),
 					backgroundImage: record.media!.getBlobCssUrl(),
 					backgroundSize: "contain",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat",
 				};
 			}
 			
@@ -447,7 +449,7 @@ namespace App
 				await UI.wait();
 				
 				Hot.get(this.imgBoundary)(
-					UI.anchor(this.img.offsetHeight / 2, this.img.offsetWidth / 2),
+					UI.anchor(),
 					{
 						width: "auto",
 						height: "auto",
