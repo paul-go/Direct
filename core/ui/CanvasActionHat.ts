@@ -281,11 +281,15 @@ namespace App
 			
 			const value = hasColor ?
 				`var(${ConstS.foreColorProperty})` :
-				`var(${ConstS.backColorProperty})`;
+				`var(${ConstS.foreUncolorProperty})`;
 			
-			Hot.get(this.head)({
+			Hot.get(this.editableContainer)({
 				borderColor: value,
 				color: value,
+			});
+			
+			Hot.get(this.menuContainer)({
+				color: value
 			});
 		}
 	}
