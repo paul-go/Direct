@@ -133,7 +133,7 @@ namespace App
 						flex: "1 0",
 						padding: "0 25px",
 					},
-					(this.sizeSlider = new Slider(...this.getSizeParams(false))).head
+					this.sizeSlider = this.createSlider()
 				),
 				this.coverButton = UI.clickLabel(
 					{
@@ -177,6 +177,15 @@ namespace App
 		readonly head;
 		private readonly coverButton;
 		private readonly sizeSlider;
+		
+		/** */
+		private createSlider()
+		{
+			const slider = new Slider(...this.getSizeParams(false));
+			slider.setLeftLabel("Smaller");
+			slider.setRightLabel("Bigger");
+			return slider;
+		}
 		
 		/** */
 		private renderMiniPreview(record: BackgroundRecord): Hot.Param
