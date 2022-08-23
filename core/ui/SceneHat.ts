@@ -236,6 +236,9 @@ namespace App
 			s.setProperty(ConstS.backColorProperty, bc);
 			s.setProperty(ConstS.foreUncolorProperty, fu);
 			s.setProperty(ConstS.backUncolorProperty, bu);
+			
+			// Sets the default text color
+			s.color = `var(${ConstS.foreUncolorProperty})`;
 		}
 		
 		/** */
