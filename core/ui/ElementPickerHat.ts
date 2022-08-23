@@ -21,11 +21,21 @@ namespace App
 					"indicator",
 					{
 						position: "absolute",
-						outline: "3px dashed rgb(128, 128, 128)",
-						boxShadow: "inset 0 0 0 3px black",
 						transitionDuration: "0.15s",
 						transitionProperty: "none",
-					}
+					},
+					Hot.css(":before", {
+						content: '""',
+						...UI.anchor(),
+						border: "1px dashed rgba(0, 0, 0, 0.75)",
+						borderRadius: UI.borderRadius.default
+					}),
+					Hot.css(":after", {
+						content: '""',
+						...UI.anchor(-1),
+						border: "1px dashed rgba(255, 255, 255, 0.75)",
+						borderRadius: UI.borderRadius.default
+					}),
 				)
 			);
 			
@@ -119,12 +129,12 @@ namespace App
 				
 				const overlayRect = this.head.getBoundingClientRect();
 				const targetRect = e.getBoundingClientRect();
+				const expand = baseExpand + (this.registeredElements.get(e) || 0);
 				
 				s.top = (targetRect.top - overlayRect.top - expand) + "px";
 				s.left = (targetRect.left - overlayRect.left - expand) + "px";
 				s.width = (targetRect.width + expand * 2) + "px";
 				s.height = (targetRect.height + expand * 2) + "px";
-				s.outlineOffset = (this.registeredElements.get(e) || 0) + "px";
 				
 				if (transition)
 				{
@@ -156,5 +166,5 @@ namespace App
 		private _cancelFn = () => {};
 	}
 	
-	const expand = 6;
+	const baseExpand = 6;
 }

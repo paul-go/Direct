@@ -590,7 +590,7 @@ namespace App
 			
 			if (pickableTypes.includes(Pickable.scene))
 			{
-				this.picker.registerElement(this.sceneContainer, -20);
+				this.picker.registerElement(this.sceneContainer, -15);
 				this.pickerDataMap.set(this.sceneContainer, this);
 			}
 		}
