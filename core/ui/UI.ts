@@ -70,7 +70,7 @@ namespace App
 		
 		/** */
 		export const toolButtonTheme: Hot.Style = {
-			backgroundColor: UI.gray(40, 0.5),
+			backgroundColor: UI.gray(50, 0.5),
 			backdropFilter: "blur(5px)",
 			borderRadius: UI.borderRadius.large,
 			color: "white",

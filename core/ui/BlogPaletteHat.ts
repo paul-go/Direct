@@ -13,6 +13,15 @@ namespace App
 				UI.fixed(),
 				UI.removeOnClick(),
 				UI.removeOnEscape(),
+				{
+					backgroundColor: UI.white(0),
+					transitionProperty: "background-color",
+					transitionDuration: "0.3s",
+				},
+				When.rendered(e =>
+				{
+					e.style.backgroundColor = UI.white(0.2);
+				}),
 				Drop.here({
 					accept: [MimeType.zip],
 					dropFn: files => files.length > 0 && this.importDatabase(files[0].data),
