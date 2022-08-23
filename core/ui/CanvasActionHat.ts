@@ -126,7 +126,6 @@ namespace App
 						position: "absolute",
 						top: "calc(10px + 0.25em)",
 						right: "-3em",
-						textShadow: "0 0 10px black, 0 0 10px black",
 					},
 					Hot.css(`.${Origin.topRight} &, .${Origin.right} &, .${Origin.bottomRight} &`, {
 						right: "auto",
@@ -139,7 +138,6 @@ namespace App
 						const canMoveDown = !!Hat.next(this.head, CanvasActionHat);
 						
 						UI.springMenu(this.menuContainer, {
-							
 							...this.shape === CanvasActionShape.box ?
 								{ "Use Round Shape": () => this.shape = CanvasActionShape.round } :
 								{ "Use Box Shape": () => this.shape = CanvasActionShape.box },
@@ -166,6 +164,7 @@ namespace App
 				}),
 			);
 			
+			this.hasColor = actionRecord.hasColor;
 			this.shape = this.sceneRecord.actionShape;
 			this.filled = actionRecord.filled;
 			this.text = actionRecord.text;
