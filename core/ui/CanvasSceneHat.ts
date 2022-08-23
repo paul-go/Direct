@@ -25,7 +25,7 @@ namespace App
 				(this.backgroundPreview = new BackgroundPreviewHat(this.record)).head,
 				
 				this.foregroundPreview = Hot.div(
-					e => void new ForegroundMixin(e),
+					e => void new ForegroundHat(e),
 					CssClass.canvasSceneForeground,
 					this.islandElement = Hot.div(
 						CssClass.canvasSceneIsland,

@@ -23,7 +23,7 @@ namespace App
 						minHeight: UI.vsize(100),
 						color: `var(${ConstS.foreUncolorProperty})`,
 					},
-					e => void new ForegroundMixin(e),
+					e => void new ForegroundHat(e),
 					this.sceneForeground = Hot.div(
 						CssClass.proseSceneForeground,
 						{

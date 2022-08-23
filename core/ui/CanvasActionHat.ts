@@ -158,7 +158,7 @@ namespace App
 				),
 				When.connected(() =>
 				{
-					Hat.over(this, ForegroundMixin).head.append(this.linkEditor.head);
+					Hat.over(this, ForegroundHat).head.append(this.linkEditor.head);
 				}),
 				When.disconnected(() =>
 				{
