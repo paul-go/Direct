@@ -126,21 +126,21 @@ namespace App
 						height: "75px",
 						borderRadius: UI.borderRadius.default
 					},
-					this.renderMiniPreview(record)
+					this.renderMiniPreview(record),
 				),
 				Hot.div(
 					{
 						flex: "1 0",
 						padding: "0 25px",
 					},
-					this.sizeSlider = this.createSlider()
+					this.sizeSlider = this.createSlider(),
 				),
 				this.coverButton = UI.clickLabel(
 					{
 						padding: "20px",
 					},
 					...this.getSizeParams(true),
-					new Text("Cover")
+					new Text("Cover"),
 				),
 				UI.clickLabel(
 					{
