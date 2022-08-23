@@ -1,7 +1,7 @@
 
 # Direct
 
-Direct is an experimental website builder and blogging engine.
+Direct is an experimental website builder and blogging engine. You can think of Direct as a kind of mix between WordPress, Instagram, Canva, and WebFlow. 
 
 Unlike other blogging engines (such as WordPress and Ghost) that focus on long-form text articles, Direct is designed to create short-form, easy-to-create content, such as the kind of content you would find on most social media sites. Want to post a video or a series of images from a trip? Or maybe a quick blurb about your thoughts on a particular topic? This is more difficult than it ought to be in WordPress. In Direct, it's a few clicks.
 
