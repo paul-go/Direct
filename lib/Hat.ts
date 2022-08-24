@@ -25,8 +25,8 @@ namespace Hat
 		hats.set(hat.head, array);
 		(hat.head as any)._hat = hat;
 		
-		const ctorClassName = getConstructorClassName(hat);
-		hat.head.classList.add(ctorClassName);
+		const names = getConstructorClassName(hat);
+		hat.head.classList.add(...names);
 	}
 	
 	/**
@@ -221,17 +221,20 @@ namespace Hat
 		if (!e)
 			throw "Cannot perform this method using the specified node.";
 		
-		const className = hatClassNames.get(type);
+		const names = hatNames.get(type);
 		
 		// If there is no class name found for the specified hat type,
 		// this could possibly be an error (meaning that the hat type
 		// wasn't registered). But it could also be a legitimate case of the
 		// hat simply not having been registered at the time of this
 		// function being called.
-		if (!className)
+		if (!names || names.length === 0)
 			return [];
 		
-		const descendents = e.getElementsByClassName(className);
+		const descendents = names.length === 1 ? 
+			e.getElementsByClassName(names[0]) :
+			e.querySelectorAll(names.map(n => "." + n).join());
+		
 		const hats: T[] = [];
 		const len = one && descendents.length > 0 ? 1 : descendents.length;
 		
@@ -263,22 +266,46 @@ namespace Hat
 	 */
 	function getConstructorClassName(hat: IHat)
 	{
-		const ctor = hat.constructor;
-		let className = hatClassNames.get(ctor);
-		if (!className)
+		const existingNames = hatNames.get(hat.constructor);
+		if (existingNames)
+			return existingNames;
+		
+		const ctors: any[] = [hat.constructor];
+		const names: string[] = [];
+		
+		for (;;)
 		{
-			className = ctor.name.length < 3 ? 
-				"_hat_" + ctor.name:
-				ctor.name;
+			const ctor = ctors[ctors.length - 1];
+			const next = Object.getPrototypeOf(ctor);
+			if (next === null || next === Object || next === Function)
+				break;
 			
-			hatClassNames.set(ctor, className);
+			ctors.push(next);
 		}
 		
-		return className;
+		for (const ctor of ctors)
+		{
+			let name = ctor.name || "";
+			
+			if (name.length < 3)
+				name = "_hat_" + name + (++inc);
+			
+			names.push(name);
+		}
+		
+		for (let i = ctors.length; i-- > 0;)
+		{
+			const ctor = ctors[i];
+			if (!hatNames.has(ctor))
+				hatNames.set(ctor, names.slice(i));
+		}
+		
+		return names;
 	}
 	
-	const hatClassNames = new WeakMap<Function, string>();
+	const hatNames = new WeakMap<Function, string[]>();
 	const hats = new WeakMap<Element, object[]>();
+	let inc = 0;
 	
 	/**
 	 * 
