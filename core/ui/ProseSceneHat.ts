@@ -42,7 +42,7 @@ namespace App
 								flex: "1 0",
 								outline: 0,
 							},
-							Hot.css("H1", {
+							Hot.css("& H1, & A", {
 								color: `var(${accentColorProperty})`
 							}),
 						),
