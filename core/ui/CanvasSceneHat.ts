@@ -238,20 +238,27 @@ namespace App
 			else if (this.colorButton.selected)
 				this.renderColorConfigurator();
 			
-			else if (!this.backgroundsButton.selected)
-				this.setPickableElements();
-			
-			if (this.backgroundsButton.selected)
+			else if (this.backgroundsButton.selected)
 			{
 				this.foregroundPreview.style.filter = "blur(3px)";
 				this.foregroundPreview.style.pointerEvents = "none";
 				this.setSceneConfigurator(this.backgroundPreview.configuratorElement);
+				this.setPickableElements(Pickable.backgroundObjects);
+				
+				const sc = this.sceneContainer;
+				const firstPreview = 
+					Hat.down(sc, BackgroundImagePreviewHat) ||
+					Hat.down(sc, BackgroundVideoPreviewHat);
+				
+				if (firstPreview)
+					this.picker.pickedElement = firstPreview.object;
 			}
 			else
 			{
 				this.foregroundPreview.style.removeProperty("filter");
 				this.foregroundPreview.style.removeProperty("pointer-events");
 				this.backgroundPreview.configuratorElement.remove();
+				this.setPickableElements();
 			}
 			
 			if (!this.sceneButtons.some(bb => bb.selected))
@@ -308,17 +315,13 @@ namespace App
 					return;
 				
 				if (picked instanceof HTMLImageElement)
-				{
 					this.setContentImageSize(slider.place);
-				}
+				
 				else if (picked instanceof CanvasTitleHat)
-				{
 					picked.size = slider.place;
-				}
+				
 				else if (picked instanceof CanvasDescriptionHat)
-				{
 					this.setDescriptionSize(slider.place);
-				}
 			});
 		}
 		
@@ -583,8 +586,8 @@ namespace App
 			{
 				for (const bg of Hat.under(this, BackgroundObjectPreviewHat))
 				{
-					this.picker.registerElement(bg.head);
-					this.pickerDataMap.set(bg.head, bg);
+					this.picker.registerElement(bg.object);
+					this.pickerDataMap.set(bg.object, bg);
 				}
 			}
 			

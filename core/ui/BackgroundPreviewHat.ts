@@ -77,31 +77,6 @@ namespace App
 			const cfg = new BackgroundConfiguratorHat(backgroundRecord, preview);
 			this.configurators.insert(cfg);
 			this.previews.insert(cfg.preview);
-			
-			if (preview instanceof BackgroundImagePreviewHat)
-				this.manageSelectionBox(cfg, preview);
-		}
-		
-		/** */
-		private manageSelectionBox(
-			configurator: BackgroundConfiguratorHat,
-			preview: BackgroundImagePreviewHat)
-		{
-			const update = () =>
-			{
-				const ancestors = Query.ancestors(document.activeElement);
-				const visible = 
-					ancestors.includes(configurator.head) ||
-					ancestors.includes(preview.head);
-				
-				preview.toggleSelectionBox(visible);
-			};
-			
-			Hot.get(configurator.head, preview.head)(
-				{ tabIndex: 0 },
-				Hot.on("focusout", () => update()),
-				Hot.on("focusin", () => update()),
-			);
 		}
 	}
 	
@@ -281,10 +256,11 @@ namespace App
 		constructor(readonly record: BackgroundRecord) { }
 		
 		abstract readonly head: HTMLElement;
+		abstract readonly object: HTMLElement;
 	}
 	
 	/** */
-	class BackgroundVideoPreviewHat extends BackgroundObjectPreviewHat
+	export class BackgroundVideoPreviewHat extends BackgroundObjectPreviewHat
 	{
 		/** */
 		constructor(record: BackgroundRecord)
@@ -295,19 +271,19 @@ namespace App
 			const mimeType = record.media?.type || "";
 			
 			this.head = Hot.div(
-				"background-video-preview",
 				UI.anchor(),
-				RenderUtil.createVideoBackground(blobUrl, mimeType)
+				this.object = RenderUtil.createVideoBackground(blobUrl, mimeType)
 			);
 			
 			Hat.wear(this);
 		}
 		
 		readonly head;
+		readonly object: HTMLElement;
 	}
 	
 	/** */
-	class BackgroundImagePreviewHat extends BackgroundObjectPreviewHat
+	export class BackgroundImagePreviewHat extends BackgroundObjectPreviewHat
 	{
 		/** */
 		constructor(record: BackgroundRecord)
@@ -315,44 +291,58 @@ namespace App
 			super(record);
 			
 			this.head = Hot.div(
-				"background-image-preview",
 				UI.anchor(),
 				{
 					pointerEvents: "none",
 				},
-				this.imgBoundary = Hot.div(
-					"image-boundary",
-					this.imgContainer = Hot.div(
-						"image-container",
+				this.boundary = Hot.div(
+					"boundary",
+					this.object = Hot.div(
+						"background-object-container",
 						{
 							pointerEvents: "all",
 						},
 						Hot.on("pointerdown", () =>
 						{
-							this.imgContainer.setPointerCapture(1);
+							this.object.setPointerCapture(1);
 						}),
 						Hot.on("pointerup", () =>
 						{
-							this.imgContainer.releasePointerCapture(1);
+							this.object.releasePointerCapture(1);
 						}),
 						Hot.on("pointermove", ev =>
 						{
 							if (ev.buttons === 1)
 								this.handleImageMove(ev.movementX, ev.movementY);
 						}),
-						this.selectionBox = Hot.div(
-							"selection-box",
-							{
-								...UI.anchor(-4),
-								border: "3px dashed white",
-								borderRadius: UI.borderRadius.default,
-								pointerEvents: "none"
-							}
-						),
 						{
 							userSelect: "none",
 							cursor: "move",
 						},
+						When.rendered(e =>
+						{
+							const picker = this.getPicker();
+							picker.registerElement(e);
+							
+							Hot.get(e)(
+								Hot.on(picker.indicator, "pointerdown", () =>
+								{
+									if (picker.pickedElement === e)
+										this.object.setPointerCapture(1);
+								}),
+								Hot.on(picker.indicator, "pointerup", () =>
+								{
+									if (picker.pickedElement === e)
+										this.object.releasePointerCapture(1);
+								}),
+								Hot.on(picker.indicator, "pointermove", ev =>
+								{
+									if (picker.pickedElement === e)
+										if (ev.buttons === 1)
+											this.handleImageMove(ev.movementX, ev.movementY);
+								}),
+							);
+						}),
 						this.img = Hot.img(
 							{
 								src: record.media?.getBlobUrl(),
@@ -371,31 +361,29 @@ namespace App
 				Hot.on(window, "resize", () => window.requestAnimationFrame(() =>
 				{
 					this.updateSize();
-				}))
+				})),
 			);
 			
 			Hat.wear(this);
 		}
 		
 		readonly head;
-		private readonly imgContainer;
-		private readonly imgBoundary;
+		readonly object;
+		private readonly boundary;
 		private readonly img;
-		private readonly selectionBox;
 		
 		private imgWidth = 0;
 		private imgHeight = 0;
 		
 		/** */
-		toggleSelectionBox(visible: boolean)
+		private getPicker()
 		{
-			const s = this.selectionBox.style;
+			if (!this.picker)
+				this.picker = Not.nullable(Hat.nearest(this, ElementPickerHat));
 			
-			if (!visible)
-				s.display = "none";
-			else
-				s.removeProperty("display");
+			return this.picker;
 		}
+		private picker: ElementPickerHat | null = null;
 		
 		/** */
 		async updateSize(size?: number)
@@ -407,11 +395,11 @@ namespace App
 			
 			if (size < 0)
 			{
-				Hot.get(this.imgBoundary)(
+				Hot.get(this.boundary)(
 					UI.anchor()
 				);
 				
-				Hot.get(this.imgContainer, this.img)({
+				Hot.get(this.object, this.img)({
 					width: "100%",
 					height: "100%",
 					transform: "none",
@@ -424,7 +412,7 @@ namespace App
 			}
 			else
 			{
-				Hot.get(this.imgContainer)({
+				Hot.get(this.object)({
 					width: "min-content",
 					height: "min-content",
 					transform: "translateX(-50%) translateY(-50%)"
@@ -448,7 +436,7 @@ namespace App
 				
 				await UI.wait();
 				
-				Hot.get(this.imgBoundary)(
+				Hot.get(this.boundary)(
 					UI.anchor(),
 					{
 						width: "auto",
@@ -471,8 +459,8 @@ namespace App
 				deltaY *= -1;
 			}
 			
-			const boundaryWidth = this.imgBoundary.offsetWidth;
-			const boundaryHeight = this.imgBoundary.offsetHeight;
+			const boundaryWidth = this.boundary.offsetWidth;
+			const boundaryHeight = this.boundary.offsetHeight;
 			
 			let [x, y] = this.record.position;
 			
@@ -494,16 +482,18 @@ namespace App
 			
 			if (this.record.size < 0)
 			{
-				this.imgContainer.style.left = "0";
-				this.imgContainer.style.top = "0";
+				this.object.style.left = "0";
+				this.object.style.top = "0";
 				this.img.style.objectPosition = `${x}% ${y}%`;
 			}
 			else
 			{
-				this.imgContainer.style.left = x + "%";
-				this.imgContainer.style.top = y + "%";
+				this.object.style.left = x + "%";
+				this.object.style.top = y + "%";
 				this.img.style.removeProperty("object-position");
 			}
+			
+			Hat.nearest(this, ElementPickerHat)?.updateIndicator();
 		}
 	}
 }

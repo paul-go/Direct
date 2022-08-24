@@ -8,7 +8,6 @@ namespace App
 		constructor(container: HTMLElement)
 		{
 			this.head = Hot.div(
-				"element-picker",
 				UI.anchor(),
 				{
 					zIndex: 1
@@ -47,9 +46,38 @@ namespace App
 		}
 		
 		readonly head;
-		private readonly indicator;
+		readonly indicator;
 		private readonly registeredElements = new Map<HTMLElement, number>();
 		private readonly resizeObserver;
+		
+		/** */
+		get pickedElement()
+		{
+			return this._pickedElement;
+		}
+		set pickedElement(e: HTMLElement | null)
+		{
+			this._pickedElement = e;
+			this.updateIndicator("transition").then(() =>
+			{
+				this._pickChangedFn();
+			});
+		}
+		private _pickedElement: HTMLElement | null = null;
+		
+		/** */
+		setPickChangedFn(fn: () => void)
+		{
+			this._pickChangedFn = fn;
+		}
+		private _pickChangedFn = () => {};
+		
+		/** */
+		setCancelFn(fn: () => void)
+		{
+			this._cancelFn = fn;
+		}
+		private _cancelFn = () => {};
 		
 		/** */
 		toggle(visible: boolean)
@@ -67,8 +95,25 @@ namespace App
 			this.registeredElements.set(e, outlineOffset);
 			this.resizeObserver.observe(e);
 			
+			When.disconnected(e => setTimeout(() =>
+			{
+				if (!e.isConnected)
+					this.unregisterElement(e);
+			},
+			100));
+			
 			if (empty)
-				this.pickElement(e);
+				this.pickedElement = e;
+		}
+		
+		/** */
+		unregisterElement(e: HTMLElement)
+		{
+			if (this.pickedElement === e)
+				this.pickedElement = null;
+			
+			this.registeredElements.delete(e);
+			this.resizeObserver.unobserve(e);
 		}
 		
 		/** */
@@ -96,7 +141,7 @@ namespace App
 			
 			if (pickedElement)
 			{
-				this.pickElement(pickedElement);
+				this.pickedElement = pickedElement;
 			}
 			else
 			{
@@ -106,20 +151,13 @@ namespace App
 		}
 		
 		/** */
-		private async pickElement(e: HTMLElement)
-		{
-			this._pickedElement = e;
-			await this.updateIndicator("transition");
-			this._pickChangedFn();
-		}
-		
-		/** */
-		private async updateIndicator(transition?: "transition")
+		async updateIndicator(transition?: "transition")
 		{
 			const e = this._pickedElement;
 			if (e)
 			{
 				const s = this.indicator.style;
+				s.removeProperty("display");
 				
 				if (transition)
 				{
@@ -142,28 +180,8 @@ namespace App
 					this.indicator.style.transitionProperty = "none";
 				}
 			}
+			else this.indicator.style.display = "none";
 		}
-		
-		/** */
-		get pickedElement()
-		{
-			return this._pickedElement;
-		}
-		private _pickedElement: HTMLElement | null = null;
-		
-		/** */
-		setPickChangedFn(fn: () => void)
-		{
-			this._pickChangedFn = fn;
-		}
-		private _pickChangedFn = () => {};
-		
-		/** */
-		setCancelFn(fn: () => void)
-		{
-			this._cancelFn = fn;
-		}
-		private _cancelFn = () => {};
 	}
 	
 	const baseExpand = 6;
