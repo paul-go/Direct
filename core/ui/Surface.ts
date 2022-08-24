@@ -24,14 +24,14 @@ namespace App
 		/** */
 		export function close(surfaceElement: HTMLElement)
 		{
-			const ctl = Hat.get(surfaceElement, SurfaceHat);
+			const ctl = Hat.of(surfaceElement, SurfaceHat);
 			ctl?.close();
 		}
 		
 		/** */
 		export function accept(surfaceElement: HTMLElement)
 		{
-			const ctl = Hat.get(surfaceElement, SurfaceHat);
+			const ctl = Hat.of(surfaceElement, SurfaceHat);
 			ctl?.close("accept");
 		}
 	}

@@ -33,7 +33,7 @@ namespace Hat
 	 * @returns The Hat of the specified Element with the specified Hat type,
 	 * or null in the case when the Element is not wearing a Hat of the specified type.
 	 */
-	export function get<T extends IHat>(
+	export function of<T extends IHat>(
 		e: Element,
 		type: Constructor<T>): T | null
 	{
@@ -74,7 +74,7 @@ namespace Hat
 		{
 			if (current instanceof Element)
 			{
-				const hat = Hat.get(current, type);
+				const hat = Hat.of(current, type);
 				if (hat)
 					return hat;
 			}
@@ -155,7 +155,7 @@ namespace Hat
 		for (let i = -1; ++i < len;)
 		{
 			const descendent = descendents[i];
-			const hat = Hat.get(descendent, type);
+			const hat = Hat.of(descendent, type);
 			if (hat)
 				hats.push(hat);
 		}
@@ -174,7 +174,7 @@ namespace Hat
 		e = (!(e instanceof Element) && !window.Array.isArray(e)) ? e.head : e;
 		const elements = e instanceof Element ? window.Array.from(e.children) : e;
 		return elements
-			.map(e => get(e, type))
+			.map(e => of(e, type))
 			.filter((o): o is T => o instanceof type);
 	}
 	
@@ -192,7 +192,7 @@ namespace Hat
 			if (!(via instanceof Element))
 				return null;
 			
-			const hat = get(via, type);
+			const hat = of(via, type);
 			if (hat)
 				return hat;
 		}
@@ -212,7 +212,7 @@ namespace Hat
 			if (!(via instanceof Element))
 				return null;
 			
-			const hat = get(via, type);
+			const hat = of(via, type);
 			if (hat)
 				return hat;
 		}
@@ -224,7 +224,7 @@ namespace Hat
 		let children = globalThis.Array.from(e.children);
 		
 		if (hatType)
-			children = children.filter(e => Hat.get(e, hatType));
+			children = children.filter(e => Hat.of(e, hatType));
 		
 		return children;
 	}
@@ -276,7 +276,7 @@ namespace Hat
 				const child = this.parentElement.children.item(i);
 				if (child)
 				{
-					const hat = Hat.get(child, this.hatType);
+					const hat = Hat.of(child, this.hatType);
 					if (hat)
 						yield hat;
 				}
