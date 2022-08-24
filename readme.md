@@ -18,4 +18,4 @@ Direct also runs entirely on your device. There's no need for any server at all 
 
 ## Current State: Alpha
 
-Direct is current in an alpha state. It's being used to build the website at [https://www.directblog.org](https://www.directblog.org). If you want to try the web version, it is available [https://app.directblog.org](https://app.directblog.org). For the optimal experience on macOS, there is a desktop macOS app. This app is built using [Tauri](https://tauri.app/) rather than Electron, so the memory footprint is minimal.
+Direct is current in an alpha state. It's being used to build the website at [https://www.directblog.org](https://www.directblog.org). If you want to try the web version, it is available at [https://app.directblog.org](https://app.directblog.org). For the optimal experience on macOS, there is a desktop macOS app. This app is built using [Tauri](https://tauri.app/) rather than Electron, so the memory footprint is minimal.
