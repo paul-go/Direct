@@ -7,8 +7,6 @@ namespace App
 		/** */
 		constructor()
 		{
-			let firstItem: BlogPaletteItem | null = null;
-			
 			this.head = Hot.div(
 				UI.fixed(),
 				UI.removeOnClick(),
@@ -63,21 +61,11 @@ namespace App
 					),
 					this.itemsElement = Hot.div(
 						"blog-palette-items",
-						Database.getNames().map(name =>
-						{
-							const item = new BlogPaletteItem(name);
-							if (!firstItem)
-								firstItem = item;
-							
-							return item.head;
-						})
+						Database
+							.getNames()
+							.map(name => new BlogPaletteItem(name))
 					)
 				),
-				When.rendered(() =>
-				{
-					if (firstItem)
-						firstItem.selected = true;
-				})
 			);
 			
 			Hat.wear(this);
@@ -257,7 +245,32 @@ namespace App
 							...(isOnlyItem ? {} : { "Delete": () => this.delete() }),
 						})
 					})
-				)
+				),
+				When.rendered(() =>
+				{
+					if (this.name === AppContainer.of(this).database.name)
+					{
+						this.selected = true;
+						
+						Hot.get(this.nameElement)(
+							{
+								fontWeight: 800,
+							},
+							Hot.css(":before", {
+								content: `""`,
+								position: "absolute",
+								top: "1px",
+								left: "8px",
+								bottom: 0,
+								height: 0,
+								margin: "auto",
+								borderWidth: "4px 0 4px 6px",
+								borderStyle: "solid",
+								borderColor: "transparent transparent transparent " + UI.white(0.75),
+							})
+						);
+					}
+				})
 			);
 			
 			Hat.wear(this);
