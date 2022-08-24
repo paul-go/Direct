@@ -71,6 +71,14 @@ namespace App
 			{
 				ev.preventDefault();
 				
+				const plainText = ev.clipboardData?.getData("text/plain");
+				if (plainText)
+				{
+					this.trixEditorElement.editor.recordUndoEntry("Paste Text");
+					this.trixEditorElement.editor.insertString(plainText);
+					return;
+				}
+				
 				const htmlText = ev.clipboardData?.getData("text/html");
 				if (!htmlText)
 					return;
