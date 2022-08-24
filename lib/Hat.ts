@@ -58,6 +58,35 @@ namespace Hat
 	}
 	
 	/**
+	 * Scans upward through the DOM, starting at the specified object,
+	 * and performs a look-down at each layer in order to find a Hat of
+	 * the specified type, which is nearest in the DOM to the specified
+	 * Node or Hat.
+	 * 
+	 * @returns A reference to the Hat that is nearest to the specified
+	 * object.
+	 */
+	export function nearest<T extends IHat>(
+		via: Node | IHat,
+		type: Constructor<T>)
+	{
+		let current: Node | null = via instanceof Node ? via : via.head;
+		
+		while (current instanceof Node)
+		{
+			if (current instanceof Element)
+			{
+				const maybe = Hat.down(current, type);
+				if (maybe)
+					return maybe;
+			}
+			current = current.parentElement;
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Scans upward through the DOM, starting at the specified Node, 
 	 * looking for the first element wearing a Hat of the specified type.
 	 * 
@@ -78,7 +107,6 @@ namespace Hat
 				if (hat)
 					return hat;
 			}
-				
 			current = current.parentElement;
 		}
 		
@@ -125,42 +153,6 @@ namespace Hat
 	export function under<T extends IHat>(via: Node | IHat, type: Constructor<T>)
 	{
 		return within(via, type, false);
-	}
-	
-	/** */
-	function within<T extends IHat>(via: Node | IHat, type: Constructor<T>, one: boolean)
-	{
-		const e = 
-			via instanceof Element ? via : 
-			via instanceof Node ? via.parentElement :
-			via.head;
-		
-		if (!e)
-			throw "Cannot perform this method using the specified node.";
-		
-		const className = hatClassNames.get(type);
-		
-		// If there is no class name found for the specified hat type,
-		// this could possibly be an error (meaning that the hat type
-		// wasn't registered). But it could also be a legitimate case of the
-		// hat simply not having been registered at the time of this
-		// function being called.
-		if (!className)
-			return [];
-		
-		const descendents = e.getElementsByClassName(className);
-		const hats: T[] = [];
-		const len = one ? 1 : descendents.length;
-		
-		for (let i = -1; ++i < len;)
-		{
-			const descendent = descendents[i];
-			const hat = Hat.of(descendent, type);
-			if (hat)
-				hats.push(hat);
-		}
-		
-		return hats;
 	}
 	
 	/**
@@ -216,6 +208,42 @@ namespace Hat
 			if (hat)
 				return hat;
 		}
+	}
+	
+	/** */
+	function within<T extends IHat>(via: Node | IHat, type: Constructor<T>, one: boolean)
+	{
+		const e = 
+			via instanceof Element ? via : 
+			via instanceof Node ? via.parentElement :
+			via.head;
+		
+		if (!e)
+			throw "Cannot perform this method using the specified node.";
+		
+		const className = hatClassNames.get(type);
+		
+		// If there is no class name found for the specified hat type,
+		// this could possibly be an error (meaning that the hat type
+		// wasn't registered). But it could also be a legitimate case of the
+		// hat simply not having been registered at the time of this
+		// function being called.
+		if (!className)
+			return [];
+		
+		const descendents = e.getElementsByClassName(className);
+		const hats: T[] = [];
+		const len = one && descendents.length > 0 ? 1 : descendents.length;
+		
+		for (let i = -1; ++i < len;)
+		{
+			const descendent = descendents[i];
+			const hat = Hat.of(descendent, type);
+			if (hat)
+				hats.push(hat);
+		}
+		
+		return hats;
 	}
 	
 	/** */
