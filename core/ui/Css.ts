@@ -284,11 +284,11 @@ namespace App
 				"padding-top": "12vmin",
 				"padding-bottom": "33vmin",
 			}),
-			rule(`.${CssClass.proseScene} H1, .${CssClass.proseScene} H2`, {
+			rule(`.${CssClass.proseScene} H1`, {
 				"font-size": "40px",
 				"font-weight": "700",
 			}),
-			rule(`.${CssClass.proseScene} * + H1, .${CssClass.proseScene} * + H2`, {
+			rule(`.${CssClass.proseScene} * + H1`, {
 				"margin-top": "1.5em"
 			}),
 			rule("." + CssClass.proseScene, {

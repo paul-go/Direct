@@ -42,7 +42,7 @@ namespace App
 								flex: "1 0",
 								outline: 0,
 							},
-							Hot.css("& H1, & H2", {
+							Hot.css("H1", {
 								color: `var(${accentColorProperty})`
 							}),
 						),
@@ -71,6 +71,15 @@ namespace App
 			{
 				ev.preventDefault();
 				
+				const htmlText = ev.clipboardData?.getData("text/html");
+				if (htmlText)
+				{
+					const htmlTextSanitized = App.sanitizeArbitraryHtml(htmlText);
+					this.trixEditorElement.editor.recordUndoEntry("Paste HTML");
+					this.trixEditorElement.editor.insertHTML(htmlTextSanitized);
+					return;
+				}
+				
 				const plainText = ev.clipboardData?.getData("text/plain");
 				if (plainText)
 				{
@@ -78,14 +87,6 @@ namespace App
 					this.trixEditorElement.editor.insertString(plainText);
 					return;
 				}
-				
-				const htmlText = ev.clipboardData?.getData("text/html");
-				if (!htmlText)
-					return;
-				
-				const htmlTextSanitized = App.sanitizeArbitraryHtml(htmlText);
-				this.trixEditorElement.editor.recordUndoEntry("Paste HTML");
-				this.trixEditorElement.editor.insertHTML(htmlTextSanitized);
 				
 			}, { capture: true });
 			

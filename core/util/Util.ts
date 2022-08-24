@@ -158,7 +158,7 @@ namespace App
 		}
 		
 		/** */
-		export function deepObjectEquals(a: object, b: object)
+		export function deepObjectEquals(a: any, b: any)
 		{
 			if (a === b)
 				return true;

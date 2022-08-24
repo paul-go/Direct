@@ -16,7 +16,7 @@ namespace App
 		
 		for (const node of Query.recurse(container))
 		{
-			if (!(node instanceof Text) || !node.nodeValue)
+			if (!(node instanceof Text) || !node.textContent)
 				continue;
 			
 			const ancestors = Query.ancestors(node)
@@ -49,7 +49,7 @@ namespace App
 			const createText = () => (<ITrixSerializedNode>{
 				type: "string",
 				attributes,
-				string: node.nodeValue
+				string: node.textContent
 			});
 			
 			const createBlock = () => (<ITrixSerializedBlock>{
@@ -63,14 +63,14 @@ namespace App
 			{
 				blocks.push(createBlock());
 			}	
-			else if (!Util.deepObjectEquals(block.attributes, attributes))
+			else if (Util.deepObjectEquals(block.text.at(-1)?.attributes, attributes))
 			{
-				block.text.push(createText());
+				const lastText = block.text.at(-1)!;
+				lastText.string = [lastText.string, node.textContent].join("");
 			}
 			else
 			{
-				const lastText = block.text.at(-1)!;
-				lastText.string = [lastText.string, node.nodeValue].join(" ").trim();
+				block.text.push(createText());
 			}
 		}
 		
@@ -79,7 +79,8 @@ namespace App
 			selectedRange: [0, 0]
 		};
 		
-		return Hot.div(...renderProseDocument(serializedObject)).innerHTML;
+		const elementsSanitized = renderProseDocument(serializedObject);
+		return Hot.div(...elementsSanitized).innerHTML;
 	}
 	
 	/** */

@@ -340,7 +340,7 @@ namespace App
 			
 			if (scene.titles.length > 0)
 			{
-				const h2 = Hot.h2();
+				const h1 = Hot.h1();
 				
 				const render = (title: ITitle) => [
 					UI.specificWeight(title.weight),
@@ -349,12 +349,12 @@ namespace App
 				];
 				
 				if (scene.titles.length === 1)
-					Hot.get(h2)(...render(scene.titles[0]));
+					Hot.get(h1)(...render(scene.titles[0]));
 				
 				else for (const title of scene.titles)
-					h2.append(Hot.div(...render(title)));
+					h1.append(Hot.div(...render(title)));
 				
-				islandElements.push(h2);
+				islandElements.push(h1);
 			}
 			
 			if (scene.description.length > 0)
@@ -637,7 +637,9 @@ namespace App
 	/**
 	 * 
 	 */
-	export function renderProseDocument(content: ITrixSerializedObject | null)
+	export function renderProseDocument(
+		content: ITrixSerializedObject | null,
+		headingLevel = 1)
 	{
 		if (!content)
 			return [];
@@ -647,7 +649,7 @@ namespace App
 		{
 			if (block.attributes.includes("heading1"))
 			{
-				elements.push(Hot.h2(
+				elements.push(Hot.h1(
 					...block.text
 						.filter(obj => !obj.attributes.blockBreak)
 						.map(obj => obj.string)
@@ -678,8 +680,6 @@ namespace App
 					{
 						let domNodes: Node[] = textContent
 							.split(/\n/g)
-							.map(s => s.trim())
-							.filter(s => !!s)
 							.flatMap(s => [Hot.br(), new Text(s)])
 							.slice(1);
 						
@@ -697,7 +697,6 @@ namespace App
 					
 					const paragraphTexts = trixNode.string
 						.split(/\n\s*\n/g)
-						.map(s => s.trim())
 						.filter(s => !!s);
 					
 					// Defensive
