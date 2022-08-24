@@ -79,7 +79,7 @@ namespace App
 			selectedRange: [0, 0]
 		};
 		
-		const elementsSanitized = renderProseDocument(serializedObject);
+		const elementsSanitized = RenderUtil.renderTrixDocument(serializedObject);
 		return Hot.div(...elementsSanitized).innerHTML;
 	}
 	

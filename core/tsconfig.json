@@ -6,6 +6,8 @@
 	"include": [
 		"../lib/*.ts",
 		"renderer/Publisher.ts",
+		"renderer/Render.ts",
+		"renderer/SceneRenderer.ts",
 		"ui/PublisherConfigurator.ts",
 		"ui/SceneHat.ts",
 		"ui/*.ts",
