@@ -231,7 +231,7 @@ namespace App
 			const fu = inverted ? "black" : "white";
 			const bu = inverted ? "white" : "black";
 			
-			const s = this.head.style;
+			const s = this.sceneContainer.style;
 			s.setProperty(ConstS.foreColorProperty, fc);
 			s.setProperty(ConstS.backColorProperty, bc);
 			s.setProperty(ConstS.foreUncolorProperty, fu);
