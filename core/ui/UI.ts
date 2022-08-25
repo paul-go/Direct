@@ -77,9 +77,27 @@ namespace App
 		};
 		
 		/** */
-		export const clickable: Hot.Style = {
+		export const unselectable: Hot.Style = {
 			userSelect: "none",
 			webkitUserSelect: "none",
+		};
+		
+		/** */
+		export const presentational: Hot.Style = {
+			...unselectable,
+			pointerEvents: "none",
+			cursor: "default",
+		};
+		
+		/** */
+		export const keyable: Hot.Param = {
+			tabIndex: 0,
+			outline: 0,
+		};
+		
+		/** */
+		export const clickable: Hot.Style = {
+			...unselectable,
 			cursor: "pointer"
 		} as const;
 		
@@ -152,19 +170,6 @@ namespace App
 				Hot.on(UI.clickEvt, clickFn));
 		}
 		let toolButtonCls = "";
-		
-		/** */
-		export const presentational: Hot.Style = {
-			pointerEvents: "none",
-			cursor: "default",
-			userSelect: "none",
-		};
-		
-		/** */
-		export const keyable: Hot.Param = {
-			tabIndex: 0,
-			outline: 0,
-		};
 		
 		/**
 		 * Sets the specified element as hidden or not hidden.
