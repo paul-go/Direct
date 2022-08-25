@@ -4,7 +4,7 @@
 
 Direct is a combination website builder & blog engine that makes cinematic web experiences. You can think of Direct as a mix between WordPress, Instagram, Canva, WebFlow, and PowerPoint.
 
-Today's blog engines focus on long-form text articles, and do a reasonably good job at this. However, most people want to consume short, impactful messages, such as the type of content you find on most social media sites. Direct is designed to make creating and posting this type of content as easy as possible, without handing ownership over to some third party platform.
+Today's blog engines focus on long-form text articles, and do a reasonably good job at this. However, most people want to consume terse, impactful content, such as what you would find on most social media sites. Direct is designed to make creating and posting this type of content as easy as possible, and without handing over to some third party platform.
 
 Direct is scene-based. Each page you post is constructed from one or more scenes which consume the whole screen, which your viewer can swipe though vertically, similar to the TikTok video feed experience. Direct has 3 different kinds of scenes:
 
