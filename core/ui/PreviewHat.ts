@@ -20,7 +20,7 @@ namespace App
 					transitionDuration: "0.5s",
 				},
 				
-				...UI.removeOnEscape(),
+				UI.removeOnEscape(),
 				
 				this.previewRoot = Hot.div(
 					"preview-root",
@@ -30,11 +30,15 @@ namespace App
 						overflowY: "auto",
 						borderRadius: "inherit",
 					},
-					When.connected(() =>
+					When.connected(async () =>
 					{
-						const renderRoot = Render.createPostPreview(post, meta);
-						this.previewRoot.replaceChildren(renderRoot);
-						new Player.Story(renderRoot);
+						const postPreview = await Render.createPostPreview(post, meta);
+						const styleElement = Hot.style(new Text(postPreview.cssText));
+						this.previewRoot.replaceChildren(
+							postPreview.storyElement,
+							styleElement);
+						
+						new Player.Story(postPreview.storyElement);
 					})
 				),
 				

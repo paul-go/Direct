@@ -1,8 +1,8 @@
 
-namespace App
+namespace App.Css
 {
 	/** */
-	export function appendCss()
+	export function append()
 	{
 		const css = [
 			...createGeneralCss(),
@@ -13,7 +13,7 @@ namespace App
 	}
 	
 	/** */
-	export function createGeneralCssText(minify?: boolean)
+	export function createGeneral(minify?: boolean)
 	{
 		const emitter = new Emitter(minify);
 		const rules = createGeneralCss();
@@ -426,13 +426,55 @@ namespace App
 	}
 	
 	/** */
-	function rule(selector: string, properties: { [property: string]: string | string[] | number; })
+	export function media(
+		query: string,
+		rules: { [selector: string]:  { [property: string]: string | string[] | number; } })
+	{
+		const vRules = Object.entries(rules)
+			.map(([selector, properties]) => new VirtualCssRule(selector, properties));
+		
+		return new VirtualCssMediaQuery(query, vRules);
+	}
+	
+	/** */
+	export class VirtualCssMediaQuery
+	{
+		/** */
+		constructor(
+			readonly query: string,
+			readonly rules: VirtualCssRule[])
+		{ }
+		
+		/** */
+		emit(emitter = new Emitter())
+		{
+			emitter.lines(`@media (${this.query}) {`);
+			emitter.indent();
+			
+			for (const rule of this.rules)
+				rule.emit(emitter);
+			
+			emitter.outdent();
+			emitter.line("}");
+		}
+		
+		/** */
+		toString()
+		{
+			const em = new Emitter(true);
+			this.emit(em);
+			return em.toString();
+		}
+	}
+	
+	/** */
+	export function rule(selector: string, properties: { [property: string]: string | string[] | number; })
 	{
 		return new VirtualCssRule(selector, properties);
 	}
 	
 	/** */
-	class VirtualCssRule
+	export class VirtualCssRule
 	{
 		constructor(
 			readonly selector: string,

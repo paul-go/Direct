@@ -7,7 +7,7 @@ namespace App
 	export class CanvasSceneRenderer extends SceneRenderer<CanvasSceneRecord>
 	{
 		/** */
-		renderContents()
+		async renderContents()
 		{
 			const scene = this.scene;
 			const out: Hot.Param[] = [
@@ -15,46 +15,12 @@ namespace App
 			];
 			
 			// Background
-			out.push(...scene.backgrounds.map(bg =>
+			for (const bg of scene.backgrounds)
 			{
-				if (bg.media)
-				{
-					const cls = MimeType.getClass(bg.media.type);
-					if (cls === MimeClass.image)
-					{
-						return Hot.div(
-							CssClass.canvasSceneBackground,
-							{
-								backgroundImage: "url(" + this.getMediaUrl(bg.media) + ")",
-								backgroundPosition: `${bg.position[0]}% ${bg.position[1]}%`,
-							},
-							bg.size === -1 ?
-								{
-									backgroundSize: "cover"
-								} :
-								{
-									maxWidth: ConstN.playerMaxWidth + "px",
-									margin: "auto",
-									backgroundSize: 
-										`min(${ConstN.playerMaxWidth}px, ${bg.size}vmin) `
-								}
-						);
-					}
-					else if (cls === MimeClass.video)
-					{
-						return Hot.video(
-							CssClass.canvasSceneBackground,
-							{
-								src: this.getMediaUrl(bg.media),
-								autoplay: true,
-								controls: false,
-								loop: true,
-								playsInline: true,
-							}
-						);
-					}
-				}
-			}).filter(b => !!b));
+				const e = await this.renderBackground(bg);
+				if (e)
+					out.push(e);
+			}
 			
 			// Foreground
 			if (scene.titles.length > 0 || scene.description.length > 0 || scene.actions.length > 0)
@@ -149,7 +115,108 @@ namespace App
 		}
 		
 		/** */
-		private  renderAction(scene: CanvasSceneRecord, action: ActionRecord)
+		private async renderBackground(bg: BackgroundRecord)
+		{
+			if (!bg.media)
+				return null;
+			
+			const within = (low: number, high: number, pct: number) => low + ((high - low) * pct);
+			const calc = (pct: number, fixed: number, unit: string) => 
+			{
+				if (fixed === 0)
+					return pct + "%";
+				
+				if (pct === 0)
+					return fixed + unit;
+				
+				const op = fixed < 0 ? "-" : "+";
+				return `calc(${pct.toFixed(2)}% ${op} ${Math.abs(fixed).toFixed(2)}${unit})`;
+			}
+			
+			const [x, y] = await RenderUtil.getDimensions(this.getMediaUrl(bg.media));
+			const isPortrait = y > x;
+			const max = ConstN.playerMaxWidth;
+			const sizePct = bg.size / 100;
+			const sizePxX = (isPortrait ? max * sizePct * (x / y) : max * sizePct);
+			const sizePxY = (isPortrait ? max * sizePct : max * sizePct * (y / x));
+			const sizeVwX = (isPortrait ? bg.size * (x / y) : bg.size);
+			const sizeVwY = (isPortrait ? bg.size : bg.size * (y / x));
+			
+			const bpX = bg.position[0];
+			const bpY = bg.position[1];
+			
+			const posPctX = bpX / 100;
+			const posPctY = bpY / 100;
+			
+			const posXVwOffset = within(sizeVwX / -2, sizeVwX / 2, posPctX);
+			const posYVwOffset = within(sizeVwY / -2, sizeVwY / 2, posPctY);
+			const posXPxOffsetWhenMaxed = within(max / -2, max / 2, posPctX);
+			const posYPxOffsetWhenMaxed = within(max / -2, max / 2, posPctY) / 2;
+			
+			let element: HTMLElement;
+			
+			const cls = MimeType.getClass(bg.media.type);
+			if (cls === MimeClass.image)
+			{
+				element = Hot.div(
+					CssClass.canvasSceneBackground,
+					{
+						backgroundImage: "url(" + this.getMediaUrl(bg.media) + ")",
+					},
+				);
+				
+				if (bg.size === -1)
+				{
+					element.style.backgroundSize = "cover";
+				}
+				else
+				{
+					const cls = "." + this.root.classOf(element);
+					
+					this.root.addCssRules(
+						Css.media(
+							"max-width: " + ConstN.playerMaxWidth + "px", {
+								[cls]: {
+									"background-position": 
+										calc(bpX, posXVwOffset, "vw") + " " +
+										calc(bpY, posYVwOffset, "vw"),
+									"background-size": `${sizeVwX.toFixed(2)}vw ${sizeVwY.toFixed(2)}vw`,
+								}
+							}
+						),
+						Css.media(
+							"min-width: " + ConstN.playerMaxWidth + "px", {
+								[cls]: {
+									"background-position": 
+										calc(50, posXPxOffsetWhenMaxed, "px") + " " +
+										calc(bpY, posYPxOffsetWhenMaxed, "px"),
+									"background-size": `${sizePxX.toFixed(1)}px ${sizePxY.toFixed(1)}px`,
+								}
+							}
+						),
+					);
+				}
+			}
+			else if (cls === MimeClass.video)
+			{
+				element = Hot.video(
+					CssClass.canvasSceneBackground,
+					{
+						src: this.getMediaUrl(bg.media),
+						autoplay: true,
+						controls: false,
+						loop: true,
+						playsInline: true,
+					}
+				);
+			}
+			else return null;
+			
+			return element;
+		}
+		
+		/** */
+		private renderAction(scene: CanvasSceneRecord, action: ActionRecord)
 		{
 			let styles: Hot.Style = {
 				color: action.hasColor ?

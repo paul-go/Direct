@@ -25,7 +25,7 @@ namespace App
 			
 			// CSS file
 			{
-				const cssText = App.createGeneralCssText();
+				const cssText = Css.createGeneral();
 				files.push({
 					data: cssText,
 					mime: MimeType.css,
@@ -101,9 +101,10 @@ namespace App
 			
 			// HTML file
 			{
-				const storyDiv = Render.createPostFinal(post, meta);
+				const postFinal = await createPostFinal(post, meta);
 				const htmlFile = new HtmlFile();
-				const htmlText = htmlFile.emit(storyDiv, folderName ? 1 : 0);
+				htmlFile.addCss(postFinal.cssText);
+				const htmlText = htmlFile.emit(postFinal.storyElement, folderName ? 1 : 0);
 				
 				files.push({
 					data: htmlText,
@@ -147,17 +148,17 @@ namespace App
 		/**
 		 * 
 		 */
-		export function createPostPreview(
+		export async function createPostPreview(
 			post: PostRecord,
 			meta: MetaRecord)
 		{
-			return new PostRenderer(post, meta, true).render();
+			return await (new PostRenderer(post, meta, true)).render();
 		}
 		
 		/**
 		 * 
 		 */
-		export function createPostFinal(
+		async function createPostFinal(
 			post: PostRecord,
 			meta: MetaRecord)
 		{
@@ -168,32 +169,68 @@ namespace App
 	/**
 	 * 
 	 */
-	class PostRenderer
+	export class PostRenderer
 	{
 		/** */
 		constructor(
-			private readonly post: PostRecord,
-			private readonly meta: MetaRecord,
-			private readonly isPreview: boolean)
+			readonly post: PostRecord,
+			readonly meta: MetaRecord,
+			readonly isPreview: boolean)
 		{ }
 		
 		/** */
-		render()
+		addCssRules(...rules: (Css.VirtualCssMediaQuery | Css.VirtualCssRule)[])
 		{
-			return Hot.div(
-				"story",
-				...this.post.scenes.flatMap(scene =>
-				{
-					if (scene instanceof CanvasSceneRecord)
-						return new CanvasSceneRenderer(scene, this.meta, this.isPreview).render();
+			this.rules.push(...rules);
+		}
+		private readonly rules: (Css.VirtualCssMediaQuery | Css.VirtualCssRule)[] = [];
+		
+		/**
+		 * Returns the CSS class name that is uniquely assigned to the specified HTMLElement.
+		 */
+		classOf(e: HTMLElement)
+		{
+			let cls = this.elementClasses.get(e);
+			if (cls)
+				return cls;
+			
+			cls = "_" + (++this.nextClassIdx);
+			this.elementClasses.set(e, cls);
+			e.classList.add(cls);
+			return cls;
+		}
+		
+		private readonly elementClasses = new WeakMap<HTMLElement, string>();
+		private nextClassIdx = 0;
+		
+		/** */
+		async render()
+		{
+			const scenes: any[] = [];
+			
+			for (const scene of this.post.scenes)
+			{
+				const renderer = 
+					scene instanceof CanvasSceneRecord ?
+						new CanvasSceneRenderer(this, scene) :
 					
-					else if (scene instanceof GallerySceneRecord)
-						return new GallerySceneRenderer(scene, this.meta, this.isPreview).render();
-					
-					else if (scene instanceof ProseSceneRecord)
-						return new ProseSceneRenderer(scene, this.meta, this.isPreview).render();
-				})
-			);
+					scene instanceof GallerySceneRecord ?
+						new GallerySceneRenderer(this, scene) :
+				
+					scene instanceof ProseSceneRecord ?
+						new ProseSceneRenderer(this, scene) : null;
+				
+				if (renderer)
+					scenes.push(await renderer.render());
+			}
+			
+			const storyElement = Hot.div("story", scenes);
+			const cssText = this.rules.join("\n");
+			
+			return {
+				storyElement,
+				cssText,
+			};
 		}
 	}
 }

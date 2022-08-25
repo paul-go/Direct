@@ -415,23 +415,22 @@ namespace App
 				Hot.get(this.object)({
 					width: "min-content",
 					height: "min-content",
-					transform: "translateX(-50%) translateY(-50%)"
+					transform: "translateX(-50%) translateY(-50%)",
 				});
 				
 				const s = this.img.style;
 				const sceneContainer = Hat.over(this, BackgroundPreviewHat).head;
+				const sceneSize = sceneContainer.offsetWidth; // width + height are equal
 				
 				if (this.imgWidth > this.imgHeight)
 				{
-					const sceneWidth = sceneContainer.offsetWidth;
-					s.width = (sceneWidth * (size / 100)) + "px";
+					s.width = (sceneSize * (size / 100)) + "px";
 					s.height = "auto";
 				}
 				else
 				{
-					const sceneHeight = sceneContainer.offsetHeight;
 					s.width = "auto";
-					s.height = (sceneHeight * (size / 100)) + "px";
+					s.height = (sceneSize * (size / 100)) + "px";
 				}
 				
 				await UI.wait();

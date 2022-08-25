@@ -4,7 +4,7 @@ namespace Cover
 	/** */
 	export function coverSlider()
 	{
-		App.appendCss();
+		App.Css.append();
 		
 		const slider1 = new App.Slider();
 		
@@ -60,7 +60,7 @@ namespace Cover
 	/** */
 	export async function coverElementPicker()
 	{
-		App.appendCss();
+		App.Css.append();
 		
 		let element1: HTMLElement;
 		let element2: HTMLElement;
@@ -117,7 +117,7 @@ namespace Cover
 	/** */
 	export async function coverOriginPicker()
 	{
-		App.appendCss();
+		App.Css.append();
 		const np = new App.OriginPickerHat();
 		document.body.append(np.head);
 	}
@@ -125,14 +125,14 @@ namespace Cover
 	/** */
 	export async function coverSpinner()
 	{
-		App.appendCss();
+		App.Css.append();
 		document.body.append(App.UI.spinner());
 	}
 	
 	/** */
 	export async function coverSegmentedButton()
 	{
-		App.appendCss();
+		App.Css.append();
 		
 		const sb = new App.SegmentedButton();
 		sb.add("First");
@@ -147,7 +147,7 @@ namespace Cover
 	/** */
 	export async function coverPublishStatusHat()
 	{
-		App.appendCss();
+		App.Css.append();
 		const remover = App.PublishStatusHat.show("Local");
 		setTimeout(remover, 2500);
 	}
@@ -258,7 +258,7 @@ namespace Cover
 	/** */
 	export async function coverOpenExternal()
 	{
-		App.appendCss();
+		App.Css.append();
 		const icon = App.Icon.openExternal();
 		document.body.style.padding = "100px";
 		document.body.append(icon);

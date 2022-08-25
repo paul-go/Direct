@@ -20,11 +20,18 @@ namespace App
 		minify = false;
 		
 		/** */
-		emit(element: HTMLElement, folderDepth = 0)
+		addCss(cssText: string)
+		{
+			this.cssTextParts.push(cssText);
+		}
+		private cssTextParts: string[] = [];
+		
+		/** */
+		emit(storyElement: HTMLElement, folderDepth = 0)
 		{
 			const em = new Emitter(this.minify);
 			this.emitUpperHtml(em, folderDepth);
-			this.emitStoryHtml(em, element);
+			this.emitStoryHtml(em, storyElement);
 			this.emitLowerHtml(em);
 			return em.toString();
 		}
@@ -59,6 +66,13 @@ namespace App
 			});
 			
 			em.tag("script", { src: relative + ConstS.jsFileNamePlayer + nocache }, "");
+			
+			if (this.cssTextParts.length > 0)
+			{
+				em.tag("style");
+				em.lines(...this.cssTextParts);
+				em.tagEnd("style");
+			}
 			
 			if (this.customHeaderHtml)
 				em.line(this.customHeaderHtml);

@@ -8,9 +8,8 @@ namespace App
 	{
 		/** */
 		constructor(
-			readonly scene: TScene,
-			readonly meta: MetaRecord,
-			readonly isPreview: boolean)
+			protected readonly root: PostRenderer,
+			protected readonly scene: TScene)
 		{
 			this.colors = RenderUtil.resolveColors(this.scene);
 		}
@@ -21,7 +20,7 @@ namespace App
 		/** */
 		protected getMediaUrl(media: MediaRecord, css?: "css")
 		{
-			if (this.isPreview)
+			if (this.root.isPreview)
 				return css ? media.getBlobCssUrl() : media.getBlobUrl();
 			
 			const url = media.getHttpUrl();
@@ -39,8 +38,13 @@ namespace App
 		private readonly usedTransitions = new Set<Animation>();
 		
 		/** */
-		render()
+		async render()
 		{
+			let contents = this.renderContents();
+			
+			if (contents instanceof Promise)
+				contents = await contents;
+			
 			return [
 				Hot.section(
 					CssClass.scene,
@@ -54,14 +58,14 @@ namespace App
 							[DataAttributes.transition]: this.useAnimation(this.scene.transition)
 						}
 					},
-					this.renderContents()
+					contents
 				),
 				this.renderContentsAfter(),
 			];
 		}
 		
 		/** */
-		protected abstract renderContents(): Hot.Param;
+		protected abstract renderContents(): Hot.Param | Promise<Hot.Param>;
 		
 		/** */
 		protected renderContentsAfter()

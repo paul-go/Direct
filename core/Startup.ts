@@ -44,7 +44,7 @@ namespace App
 				if (DEBUG && options?.clear)
 					await App.Database.delete(dbName);
 				
-				App.appendCss();
+				Css.append();
 				const container = options?.container ?? document.body;
 				app = await AppContainer.new(container, dbName);
 				r();

@@ -4,7 +4,7 @@ namespace Cover
 	/** */
 	export async function coverExporter()
 	{
-		App.appendCss();
+		App.Css.append();
 		const meta = new App.MetaRecord();
 		const post = new App.PostRecord();
 		post.slug = "slug";
