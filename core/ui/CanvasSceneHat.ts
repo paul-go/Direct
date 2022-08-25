@@ -430,7 +430,7 @@ namespace App
 				}
 				else if (picked instanceof SceneHat)
 				{
-					sw.isColorSelected = rec.hasColor
+					sw.isColorSelected = rec.hasColor;
 					sw.isDarkSelected = !dol;
 				}
 			};
@@ -586,7 +586,7 @@ namespace App
 			{
 				for (const bg of Hat.under(this, BackgroundObjectPreviewHat))
 				{
-					this.picker.registerElement(bg.object);
+					this.picker.registerElement(bg.object, 0, true);
 					this.pickerDataMap.set(bg.object, bg);
 				}
 			}

@@ -10,7 +10,7 @@ namespace App
 			this.head = Hot.div(
 				UI.anchor(),
 				{
-					zIndex: 1
+					zIndex: 1,
 				},
 				Hot.on("pointerdown", ev =>
 				{
@@ -20,20 +20,22 @@ namespace App
 					"indicator",
 					{
 						position: "absolute",
-						transitionDuration: "0.15s",
+						transitionDuration: dur,
 						transitionProperty: "none",
 					},
 					Hot.css(":before", {
 						content: '""',
 						...UI.anchor(),
 						border: "1px dashed rgba(0, 0, 0, 0.75)",
-						borderRadius: UI.borderRadius.default
+						borderRadius: UI.borderRadius.default,
+						pointerEvents: "none",
 					}),
 					Hot.css(":after", {
 						content: '""',
 						...UI.anchor(-1),
 						border: "1px dashed rgba(255, 255, 255, 0.75)",
-						borderRadius: UI.borderRadius.default
+						borderRadius: UI.borderRadius.default,
+						pointerEvents: "none",
 					}),
 				)
 			);
@@ -47,7 +49,7 @@ namespace App
 		
 		readonly head;
 		readonly indicator;
-		private readonly registeredElements = new Map<HTMLElement, number>();
+		private readonly registeredElements = new Map<HTMLElement, IRegistrationInfo>();
 		private readonly resizeObserver;
 		
 		/** */
@@ -89,10 +91,10 @@ namespace App
 		}
 		
 		/** */
-		registerElement(e: HTMLElement, outlineOffset = 0)
+		registerElement(e: HTMLElement, outlineOffset = 0, canMove = false)
 		{
 			const empty = this.registeredElements.size === 0;
-			this.registeredElements.set(e, outlineOffset);
+			this.registeredElements.set(e, { outlineOffset, canMove });
 			this.resizeObserver.observe(e);
 			
 			When.disconnected(e => setTimeout(() =>
@@ -161,18 +163,26 @@ namespace App
 				
 				if (transition)
 				{
+					s.transitionDuration = dur;
 					s.transitionProperty = "top, left, width, height";
 					await UI.wait();
+				}
+				else
+				{
+					s.transitionProperty = "none";
+					s.transitionDuration = "0";
 				}
 				
 				const overlayRect = this.head.getBoundingClientRect();
 				const targetRect = e.getBoundingClientRect();
-				const expand = baseExpand + (this.registeredElements.get(e) || 0);
+				const info = this.registeredElements.get(e) || { outlineOffset: 0, canMove: false };
+				const expand = baseExpand + info.outlineOffset;
 				
 				s.top = (targetRect.top - overlayRect.top - expand) + "px";
 				s.left = (targetRect.left - overlayRect.left - expand) + "px";
 				s.width = (targetRect.width + expand * 2) + "px";
 				s.height = (targetRect.height + expand * 2) + "px";
+				s.cursor = info.canMove ? "move" : "default";
 				
 				if (transition)
 				{
@@ -184,5 +194,13 @@ namespace App
 		}
 	}
 	
+	/** */
+	interface IRegistrationInfo
+	{
+		outlineOffset: number;
+		canMove: boolean;
+	}
+	
 	const baseExpand = 6;
+	const dur = "0.15s";
 }

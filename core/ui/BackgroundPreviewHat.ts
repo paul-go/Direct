@@ -295,68 +295,27 @@ namespace App
 				{
 					pointerEvents: "none",
 				},
-				this.boundary = Hot.div(
-					"boundary",
-					this.object = Hot.div(
-						"background-object-container",
+				this.object = Hot.div(
+					"background-object-container",
+					{
+						...UI.unselectable,
+						pointerEvents: "all",
+						cursor: "move",
+					},
+					When.rendered(e => this.registerElement(e)),
+					this.img = Hot.img(
 						{
-							pointerEvents: "all",
+							...UI.unselectable,
+							src: record.media?.getBlobUrl(),
+							display: "block",
+							pointerEvents: "none",
 						},
-						Hot.on("pointerdown", () =>
+						Hot.on("load", async () =>
 						{
-							this.object.setPointerCapture(1);
-						}),
-						Hot.on("pointerup", () =>
-						{
-							this.object.releasePointerCapture(1);
-						}),
-						Hot.on("pointermove", ev =>
-						{
-							if (ev.buttons === 1)
-								this.handleImageMove(ev.movementX, ev.movementY);
-						}),
-						{
-							userSelect: "none",
-							cursor: "move",
-						},
-						When.rendered(e =>
-						{
-							const picker = this.getPicker();
-							picker.registerElement(e);
-							
-							Hot.get(e)(
-								Hot.on(picker.indicator, "pointerdown", () =>
-								{
-									if (picker.pickedElement === e)
-										this.object.setPointerCapture(1);
-								}),
-								Hot.on(picker.indicator, "pointerup", () =>
-								{
-									if (picker.pickedElement === e)
-										this.object.releasePointerCapture(1);
-								}),
-								Hot.on(picker.indicator, "pointermove", ev =>
-								{
-									if (picker.pickedElement === e)
-										if (ev.buttons === 1)
-											this.handleImageMove(ev.movementX, ev.movementY);
-								}),
-							);
-						}),
-						this.img = Hot.img(
-							{
-								src: record.media?.getBlobUrl(),
-								display: "block",
-								userSelect: "none",
-								pointerEvents: "none",
-							},
-							Hot.on("load", async () =>
-							{
-								[this.imgWidth, this.imgHeight] = await RenderUtil.getDimensions(this.img.src);
-								this.updateSize();
-							})
-						),
-					)
+							[this.imgWidth, this.imgHeight] = await RenderUtil.getDimensions(this.img.src);
+							this.updateSize();
+						})
+					),
 				),
 				Hot.on(window, "resize", () => window.requestAnimationFrame(() =>
 				{
@@ -369,9 +328,7 @@ namespace App
 		
 		readonly head;
 		readonly object;
-		private readonly boundary;
 		private readonly img;
-		
 		private imgWidth = 0;
 		private imgHeight = 0;
 		
@@ -386,6 +343,43 @@ namespace App
 		private picker: ElementPickerHat | null = null;
 		
 		/** */
+		private registerElement(e: HTMLElement)
+		{
+			let lastScreenX = 0;
+			let lastScreenY = 0;
+			
+			const picker = this.getPicker();
+			picker.registerElement(e, 0, true);
+			
+			Hot.get(e)(
+				Hot.on(picker.indicator, "pointerdown", ev =>
+				{
+					if (picker.pickedElement === e)
+					{
+						this.object.setPointerCapture(ev.pointerId);
+						console.log(ev.pointerId);
+						lastScreenX = ev.screenX;
+						lastScreenY = ev.screenY;
+					}
+				}),
+				Hot.on(document.body, "pointermove", ev =>
+				{
+					if (ev.buttons === 1 && picker.pickedElement === e)
+					{
+						if (this.object.hasPointerCapture(ev.pointerId))
+						{
+							const deltaX = ev.screenX - lastScreenX;
+							const deltaY = ev.screenY - lastScreenY;
+							this.handleImageMove(deltaX, deltaY);
+							lastScreenX = ev.screenX;
+							lastScreenY = ev.screenY;
+						}
+					}
+				}),
+			);
+		}
+		
+		/** */
 		async updateSize(size?: number)
 		{
 			if (size === undefined)
@@ -395,10 +389,6 @@ namespace App
 			
 			if (size < 0)
 			{
-				Hot.get(this.boundary)(
-					UI.anchor()
-				);
-				
 				Hot.get(this.object, this.img)({
 					width: "100%",
 					height: "100%",
@@ -432,18 +422,6 @@ namespace App
 					s.width = "auto";
 					s.height = (sceneSize * (size / 100)) + "px";
 				}
-				
-				await UI.wait();
-				
-				Hot.get(this.boundary)(
-					UI.anchor(),
-					{
-						width: "auto",
-						height: "auto",
-					}
-				);
-				
-				await UI.wait();
 			}
 			
 			this.updateImagePosition();
@@ -458,8 +436,8 @@ namespace App
 				deltaY *= -1;
 			}
 			
-			const boundaryWidth = this.boundary.offsetWidth;
-			const boundaryHeight = this.boundary.offsetHeight;
+			const boundaryWidth = this.head.offsetWidth;
+			const boundaryHeight = this.head.offsetHeight;
 			
 			let [x, y] = this.record.position;
 			
