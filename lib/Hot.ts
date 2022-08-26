@@ -49,13 +49,11 @@ namespace Hot { { } }
 	function on(...args: any[])
 	{
 		/*
-		
 		Actual argument structure looks like:
 			target?: Node,
 			eventName: string,
 			handler: () => void,
 			options?: Hot.EventListenerOptions)
-		
 		*/
 		
 		const target: Node | null = typeof args[0] === "string" ? null : args[0];
