@@ -438,7 +438,7 @@ namespace Hot
 		name: string;
 		id: string;
 		class: string;
-		contentEditable: string;
+		contentEditable: boolean | string;
 		tabIndex: number;
 		data: Record<string, string | number | boolean>;
 	}
