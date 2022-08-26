@@ -72,6 +72,8 @@ namespace App
 			{
 				try
 				{
+					e.style.userSelect = "text";
+					e.style.webkitUserSelect = "text";
 					e.contentEditable = "plaintext-only";
 				}
 				catch (e) { }
@@ -93,6 +95,8 @@ namespace App
 		{
 			return [
 				{
+					userSelect: "text",
+					webkitUserSelect: "text",
 					contentEditable: "plaintext-only",
 					minHeight: "1em",
 				},
