@@ -199,6 +199,7 @@ namespace App
 				Hot.on("pointerdown", () =>
 				{
 					this.setUsingCover(useCover);
+					this.record.size = useCover ? -1 : this.sizeSlider.place;
 				})
 			];
 		}
@@ -211,11 +212,10 @@ namespace App
 			
 			this.coverButton.style.opacity = usingCover ? "1" : "0.5";
 			this.sizeSlider.head.style.opacity = usingCover ? "0.5" : "1";
+			this.sizeSlider.place = usingCover ?
+				this.sizeSlider.max :
+				this.record.size;
 			
-			if (usingCover)
-				this.sizeSlider.place = this.sizeSlider.max;
-			
-			this.record.size = usingCover ? -1 : this.sizeSlider.place;
 			this.preview.updateSize();
 		}
 		
@@ -357,7 +357,6 @@ namespace App
 					if (picker.pickedElement === e)
 					{
 						this.object.setPointerCapture(ev.pointerId);
-						console.log(ev.pointerId);
 						lastScreenX = ev.screenX;
 						lastScreenY = ev.screenY;
 					}
