@@ -163,13 +163,16 @@ namespace App
 	/** */
 	class BlogPaletteItem
 	{
-		constructor(name: string = "")
+		constructor(name = "")
 		{
 			this.isCreatingNew = !name;
 			
 			this.head = Hot.div(
 				"blog-palette-item",
 				{
+					data: {
+						databaseId: Database.getId(name) || "null"
+					},
 					tabIndex: 0,
 					display: "flex",
 					margin: "10px",
