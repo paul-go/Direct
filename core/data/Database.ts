@@ -25,7 +25,9 @@ namespace App
 	/** */
 	export class Database
 	{
-		/** */
+		/**
+		 * Gets a map of databases that are loaded into memory.
+		 */
 		private static get databases()
 		{
 			return this._databases || (this._databases = new IterableWeakMap<string, Database>());
@@ -202,7 +204,7 @@ namespace App
 			if (openDatabase)
 				openDatabase.close();
 			
-			return new Promise<boolean>(async resolve =>
+			return new Promise<boolean>(resolve =>
 			{
 				const request = indexedDB.deleteDatabase(id);
 				const then = () =>
@@ -479,7 +481,7 @@ namespace App
 		}
 		
 		/** */
-		save(...records: Record[])
+		async save(...records: Record[])
 		{
 			if (records.length === 0)
 				return Promise.resolve();
@@ -489,88 +491,84 @@ namespace App
 			for (const record of records)
 				this.unmarkForDeletion(record);
 			
-			return new Promise<void>(resolve =>
+			const tx = this.idb.transaction(objectTableName, "readwrite");
+			const store = tx.objectStore(objectTableName);
+			
+			for (const record of recurseRecords(records))
 			{
-				const tx = this.idb.transaction(objectTableName, "readwrite");
-				const store = tx.objectStore(objectTableName);
-				let completed = 0;
+				this.maybeImport(record);
 				
-				const maybeResolve = () =>
-				{
-					if (++completed >= records.length)
-						resolve();
-				};
+				const blobs: Blob[] = [];
 				
-				for (const record of recurseRecords(records))
+				const entries = Object.entries(record).map(([key, recordValue]) =>
 				{
-					this.maybeImport(record);
+					if (recordValue === undefined)
+						throw "Cannot serialize undefined.";
 					
-					const entries = Object.entries(record).map(([key, recordValue]) =>
+					if (recordValue !== recordValue)
+						throw "Cannot serialize NaN.";
+					
+					let serializedValue: any = null;
+					
+					if (recordValue instanceof Record)
+						serializedValue = this.maybeImport(recordValue).id;
+					
+					else if (Array.isArray(recordValue))
 					{
-						if (recordValue === undefined)
-							throw "Cannot serialize undefined.";
-						
-						if (recordValue !== recordValue)
-							throw "Cannot serialize NaN.";
-						
-						let serializedValue: any = null;
-						
-						if (recordValue instanceof Record)
-							serializedValue = this.maybeImport(recordValue).id;
-						
-						else if (Array.isArray(recordValue))
+						if (recordValue.length === 0)
 						{
-							if (recordValue.length === 0)
-							{
-								serializedValue = [];
-							}
-							else if (recordValue[0] instanceof Record)
-							{
-								const records = recordValue as Record[];
-								serializedValue = records.map(r => this.maybeImport(r).id);
-							}
-							else
-							{
-								// Clone the array. Necessary if the record value is a proxy.
-								serializedValue = JSON.parse(JSON.stringify(recordValue));
-							}
+							serializedValue = [];
 						}
-						else if (
-							recordValue === null ||
-							typeof recordValue === "string" || 
-							typeof recordValue === "number" ||
-							typeof recordValue === "boolean" ||
-							recordValue.constructor === Object ||
-							recordValue instanceof Blob)
+						else if (recordValue[0] instanceof Record)
 						{
-							serializedValue = recordValue;
+							const records = recordValue as Record[];
+							serializedValue = records.map(r => this.maybeImport(r).id);
 						}
 						else
 						{
-							throw "Value not supported on member: "  + key;
+							// Clone the array. Necessary if the record value is a proxy.
+							serializedValue = JSON.parse(JSON.stringify(recordValue));
 						}
+					}
+					else if (
+						recordValue === null ||
+						typeof recordValue === "string" || 
+						typeof recordValue === "number" ||
+						typeof recordValue === "boolean" ||
+						recordValue.constructor === Object ||
+						recordValue instanceof Blob)
+					{
+						serializedValue = recordValue;
 						
-						return [key, serializedValue];
-					});
+						if (recordValue instanceof Blob)
+							blobs.push(recordValue);
+					}
+					else
+					{
+						throw "Value not supported on member: "  + key;
+					}
 					
-					const cfg = this.resolveConfig(record);
-					entries.unshift([stableProperty, cfg.stable]);
-					
-					const serialized = Object.fromEntries(entries);
+					return [key, serializedValue];
+				});
+				
+				const cfg = this.resolveConfig(record);
+				entries.unshift([stableProperty, cfg.stable]);
+				const serialized = Object.fromEntries(entries);
+				
+				await new Promise<void>(r =>
+				{
 					const putResult = store.put(serialized, record.id);
 					
-					putResult.onerror = () =>
+					putResult.onerror = e =>
 					{
 						console.error("An error occured while trying to write to IndexedDB:");
-						maybeResolve();
+						console.log((e.currentTarget as any).error);
+						r();
 					};
 					
-					putResult.onsuccess = () =>
-					{
-						maybeResolve();
-					}
-				}
-			});
+					putResult.onsuccess = () => r();
+				});
+			}
 		}
 		
 		//# Exporting
@@ -822,7 +820,7 @@ namespace App
 			
 			Object.defineProperty(record, memberName, {
 				get: () => backingValue,
-				set: (value: Record | null) =>
+				set: (value: any) =>
 				{
 					if (value === backingValue)
 						return value;
