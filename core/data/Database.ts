@@ -244,7 +244,7 @@ namespace App
 		
 		/** */
 		private constructor(
-			private readonly id: string,
+			readonly id: string,
 			readonly idb: IDBDatabase,
 			private readonly configurations: IConfig[])
 		{

@@ -29,9 +29,16 @@ namespace App
 				console.log(consoleWelcomeMessage);
 		}
 		
-		const dbName = options?.database ? 
-			options.database :
-			ConstS.mainDatabaseName;
+		let about: IDatabaseAbout;
+		
+		if (options?.database)
+			about = { name: options.database };
+		
+		else if (AppContainer.lastLoadedDatabase)
+			about = { id: AppContainer.lastLoadedDatabase };
+		
+		else
+			about = { name: ConstS.mainDatabaseName };
 		
 		let app: AppContainer = null!;
 		
@@ -41,12 +48,12 @@ namespace App
 			App.Util.include("trix.js"),
 			new Promise<void>(async r =>
 			{
-				if (DEBUG && options?.clear)
-					await App.Database.delete(dbName);
+				if (DEBUG && options?.clear && about.name)
+					await App.Database.delete(about.name);
 				
 				Css.append();
 				const container = options?.container ?? document.body;
-				app = await AppContainer.new(container, dbName);
+				app = await AppContainer.new(container, about);
 				r();
 			})
 		]);

@@ -11,11 +11,24 @@ namespace App
 		}
 		
 		/** */
-		static async new(head: HTMLElement, databaseName: string)
+		static async new(head: HTMLElement, about: IDatabaseAbout)
 		{
-			const database = await App.createDatabase({ name: databaseName });
+			const database = await App.createDatabase(about);
 			const meta = await App.getDatabaseMeta(database);
-			return new AppContainer(head, database, meta);
+			const app = new AppContainer(head, database, meta);
+			return app;
+		}
+		
+		/**
+		 * Gets or sets the ID of the last loaded database.
+		 */
+		static get lastLoadedDatabase()
+		{
+			return localStorage.getItem("last-loaded-database") || "";
+		}
+		private static setLastLoadedDatabase(value: string)
+		{
+			localStorage.setItem("last-loaded-database", value);
 		}
 		
 		/** */
@@ -24,11 +37,10 @@ namespace App
 			database: Database,
 			meta: MetaRecord)
 		{
-			this._database = database;
+			this.setDatabase(database);
 			this._meta = meta;
 			
 			Hot.get(head)(
-				
 				CssClass.appContainer,
 				{
 					minHeight: "100%",
@@ -84,9 +96,14 @@ namespace App
 		/** */
 		get database()
 		{
-			return this._database;
+			return Not.nullable(this._db);
 		}
-		private _database: Database;
+		private setDatabase(db: Database)
+		{
+			AppContainer.setLastLoadedDatabase(db.id);
+			this._db = db;
+		}
+		private _db: Database | null = null;
 		
 		/** */
 		get meta()
@@ -109,7 +126,7 @@ namespace App
 				return;
 			
 			this.head.replaceChildren();
-			this._database = db;
+			this.setDatabase(db);
 			this._meta = await App.getDatabaseMeta(db);
 			this.head.append(new BlogHat().head);
 		}
