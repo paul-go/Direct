@@ -120,19 +120,21 @@ namespace App
 			if (!bg.media)
 				return null;
 			
-			const within = (low: number, high: number, pct: number) => low + ((high - low) * pct);
+			const within = (low: number, high: number, pct: number) => low + (high - low) * pct;
 			const calc = (pct: number, fixed: number, unit: string) => 
 			{
 				if (fixed === 0)
-					return pct + "%";
+					return pct.toFixed(2) + "%";
 				
 				if (pct === 0)
 					return fixed + unit;
 				
 				const op = fixed < 0 ? "-" : "+";
 				return `calc(${pct.toFixed(2)}% ${op} ${Math.abs(fixed).toFixed(2)}${unit})`;
-			}
+			};
 			
+			const bpX = bg.position[0];
+			const bpY = bg.position[1];
 			const [x, y] = await RenderUtil.getDimensions(this.getMediaUrl(bg.media));
 			const isPortrait = y > x;
 			const max = ConstN.playerMaxWidth;
@@ -142,16 +144,33 @@ namespace App
 			const sizeVwX = (isPortrait ? bg.size * (x / y) : bg.size);
 			const sizeVwY = (isPortrait ? bg.size : bg.size * (y / x));
 			
-			const bpX = bg.position[0];
-			const bpY = bg.position[1];
+			const bpXCssVw = within(sizeVwX / -2, sizeVwX / 2, bpX / 100);
+			const bpXCssPx = within(max / -2, max / 2, bpX / 100);
 			
-			const posPctX = bpX / 100;
-			const posPctY = bpY / 100;
+			let bpYCssPct = 0;
+			let bpYCssVw = 0;
 			
-			const posXVwOffset = within(sizeVwX / -2, sizeVwX / 2, posPctX);
-			const posYVwOffset = within(sizeVwY / -2, sizeVwY / 2, posPctY);
-			const posXPxOffsetWhenMaxed = within(max / -2, max / 2, posPctX);
-			const posYPxOffsetWhenMaxed = within(max / -2, max / 2, posPctY) / 2;
+			{
+				const localMin = sizeVwY / 2;
+				const localMax = 100 - sizeVwY / 2;
+				
+				if (bpY < localMin)
+				{
+					bpYCssPct = 0;
+					bpYCssVw = within(sizeVwY / -2, 0, bpY / localMin);
+				}
+				else if (bpY > localMax)
+				{
+					bpYCssPct = 100;
+					bpYCssVw = within(0, sizeVwY / 2, (bpY - localMax) / localMin);
+				}
+				else
+				{
+					bpYCssPct = (bpY - (sizeVwY / 2)) / (localMax - localMin) * 100;
+				}
+			}
+			
+			const bpYCssPx = (bpYCssVw / 100) * max;
 			
 			let element: HTMLElement;
 			
@@ -178,9 +197,11 @@ namespace App
 							"max-width: " + ConstN.playerMaxWidth + "px", {
 								[cls]: {
 									"background-position": 
-										calc(bpX, posXVwOffset, "vw") + " " +
-										calc(bpY, posYVwOffset, "vw"),
-									"background-size": `${sizeVwX.toFixed(2)}vw ${sizeVwY.toFixed(2)}vw`,
+										calc(bpX, bpXCssVw, "vw") + " " +
+										calc(bpYCssPct, bpYCssVw, "vw"),
+									"background-size": 
+										sizeVwX.toFixed(2) + "vw " +
+										sizeVwY.toFixed(2) + "vw",
 								}
 							}
 						),
@@ -188,9 +209,12 @@ namespace App
 							"min-width: " + ConstN.playerMaxWidth + "px", {
 								[cls]: {
 									"background-position": 
-										calc(50, posXPxOffsetWhenMaxed, "px") + " " +
-										calc(bpY, posYPxOffsetWhenMaxed, "px"),
-									"background-size": `${sizePxX.toFixed(1)}px ${sizePxY.toFixed(1)}px`,
+										calc(50, bpXCssPx, "px") + " " +
+										//calc(bpY, posYPxOffsetWhenMaxed, "px"),
+										calc(bpYCssPct, bpYCssPx, "px"),
+									"background-size": 
+										sizePxX.toFixed(1) + "px " +
+										sizePxY.toFixed(1) + "px",
 								}
 							}
 						),
