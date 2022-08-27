@@ -191,7 +191,7 @@ namespace Hot { { } }
 	let cssPropertySet: Set<string> | null = null;
 	
 	/** */
-	function css(selectorOrStyles: string | Hot.Style, maybeStyles?: Hot.Style)
+	function css(selectorOrStyles: string | Hot.Style, ...styles: Hot.Style[])
 	{
 		if (!inlineRuleSheet)
 		{
@@ -200,10 +200,11 @@ namespace Hot { { } }
 			inlineRuleSheet = style.sheet!;
 		}
 		
-		const selector = typeof selectorOrStyles === "string" ? selectorOrStyles : "";
-		const styles = maybeStyles || selectorOrStyles as Hot.Style;
-		const cssClass = "c" + (index++);
+		if (typeof selectorOrStyles !== "string")
+			styles.unshift(selectorOrStyles);
 		
+		const selector = typeof selectorOrStyles === "string" ? selectorOrStyles : "";
+		const cssClass = "c" + (index++);
 		const selectorParts = selector.split("&");
 		const selectorFinal = selectorParts.length === 1 ?
 			"." + cssClass + selector :
@@ -212,20 +213,21 @@ namespace Hot { { } }
 		const idx = inlineRuleSheet.insertRule(selectorFinal + "{}");
 		const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
 		
-		for (let [pName, pVal] of Object.entries(styles))
+		for (const stylesObject of styles)
 		{
-			if (typeof pVal === "number")
-				pVal = String(pVal || 0);
-			
-			if (typeof pVal === "string")
+			for (let [n, v] of Object.entries(stylesObject))
 			{
-				pName = pName.replace(
-					/[A-Z]/g,
-					(char: string) => "-" + char.toLowerCase());
+				if (typeof v === "number")
+					v = String(v || 0);
 				
-				// The properties of inline rules are always important, because there
-				// are no conceivable cases where they shouldn't override the inline styles.
-				cssRule.style.setProperty(pName, pVal, "important");
+				if (typeof v === "string")
+				{
+					n = n.replace(/[A-Z]/g, char => "-" + char.toLowerCase());
+					
+					// The properties of inline rules are always important, because there
+					// are no conceivable cases where they shouldn't override the inline styles.
+					cssRule.style.setProperty(n, v, "important");
+				}
 			}
 		}
 		
@@ -651,8 +653,8 @@ namespace Hot
 	}
 	
 	/** */
-	export declare function css(selectorSuffix: string, properties: Hot.Style): string;
-	export declare function css(properties: Hot.Style): string;
+	export declare function css(selectorSuffix: string, ...properties: Hot.Style[]): string;
+	export declare function css(...properties: Hot.Style[]): string;
 	
 	/**
 	 * 
