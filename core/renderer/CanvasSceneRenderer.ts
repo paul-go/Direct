@@ -150,24 +150,22 @@ namespace App
 			let bpYCssPct = 0;
 			let bpYCssVw = 0;
 			
+			const localMin = sizeVwY / 2;
+			const localMax = 100 - sizeVwY / 2;
+			
+			if (bpY < localMin)
 			{
-				const localMin = sizeVwY / 2;
-				const localMax = 100 - sizeVwY / 2;
-				
-				if (bpY < localMin)
-				{
-					bpYCssPct = 0;
-					bpYCssVw = within(sizeVwY / -2, 0, bpY / localMin);
-				}
-				else if (bpY > localMax)
-				{
-					bpYCssPct = 100;
-					bpYCssVw = within(0, sizeVwY / 2, (bpY - localMax) / localMin);
-				}
-				else
-				{
-					bpYCssPct = (bpY - (sizeVwY / 2)) / (localMax - localMin) * 100;
-				}
+				bpYCssPct = 0;
+				bpYCssVw = within(sizeVwY / -2, 0, bpY / localMin);
+			}
+			else if (bpY > localMax)
+			{
+				bpYCssPct = 100;
+				bpYCssVw = within(0, sizeVwY / 2, (bpY - localMax) / localMin);
+			}
+			else
+			{
+				bpYCssPct = (bpY - (sizeVwY / 2)) / (localMax - localMin) * 100;
 			}
 			
 			const bpYCssPx = (bpYCssVw / 100) * max;
