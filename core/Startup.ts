@@ -42,8 +42,8 @@ namespace App
 		
 		let app: AppContainer = null!;
 		
-		// Do the database initialization stuff while we're loading the trix editor,
-		// to improve load time where possible.
+		// Do the database initialization stuff while we're loading
+		// the trix editor, to improve load time where possible.
 		await Promise.all([
 			App.Util.include("trix.js"),
 			new Promise<void>(async r =>

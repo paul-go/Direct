@@ -213,7 +213,7 @@ namespace App
 				)
 			);
 			
-			this.setSize(record.size)
+			this.setSize(record.size);
 			Hat.wear(this);
 		}
 		
