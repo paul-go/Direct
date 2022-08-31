@@ -21,14 +21,16 @@ namespace App
 			{
 				const key = localStorage.key(i);
 				if (key?.startsWith(this.prefix))
-					yield Number(key.slice(this.prefix.length));
+					yield key.slice(this.prefix.length);
 			}
 		}
 		
 		/** */
-		add(value: number)
+		add(...values: string[])
 		{
-			localStorage.setItem(this.prefix + value, "");
+			for (const value of values)
+				localStorage.setItem(this.prefix + value, "");
+			
 			return this;
 		}
 		
@@ -44,17 +46,10 @@ namespace App
 		}
 		
 		/** */
-		delete(value: number)
+		delete(...values: string[])
 		{
-			localStorage.removeItem(this.prefix + value);
-		}
-		
-		/** */
-		has(value: number)
-		{
-			value ||= 0;
-			const item = Number(localStorage.getItem(String(value))) || 0;
-			return item > 0;
+			for (const value of values)
+				localStorage.removeItem(this.prefix + value);
 		}
 		
 		/** */

@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	interface IStoredDatabaseAbout
+	interface IAboutJsonSchema
 	{
 		id: string;
 		name: string;
@@ -80,7 +80,7 @@ namespace App
 				return null;
 			
 			const aboutText = await aboutFileRef.async("string");
-			const aboutFileJson = Util.tryParseJson<IStoredDatabaseAbout>(aboutText);
+			const aboutFileJson = Util.tryParseJson<IAboutJsonSchema>(aboutText);
 			if (!aboutFileJson)
 				return null;
 			

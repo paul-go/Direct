@@ -245,7 +245,7 @@ namespace App
 		/** */
 		private constructor(
 			readonly id: string,
-			readonly idb: IDBDatabase,
+			private readonly idb: IDBDatabase,
 			private readonly configurations: IConfig[])
 		{
 			Database.databases.set(id, this);
@@ -662,8 +662,8 @@ namespace App
 			},
 			1);
 		}
-		private autosaveTimeoutId: any = 0;
 		
+		private autosaveTimeoutId: any = 0;
 		private readonly dirtyRecords = new Set<Record>();
 		
 		//# Deletion Watcher
@@ -673,7 +673,7 @@ namespace App
 		{
 			for (const rec of recurseRecords([record]))
 				if (rec.id && !this.resolveConfig(record).root)
-					this.markedRecordIds.add(rec.id);
+					this.markedRecordIds.add(rec.id.toString());
 			
 			this.queueDeletion();
 		}
@@ -683,7 +683,7 @@ namespace App
 		{
 			for (const rec of recurseRecords([record]))
 				if (rec.id)
-					this.markedRecordIds.delete(rec.id);
+					this.markedRecordIds.delete(rec.id.toString());
 		}
 		
 		/** */
@@ -696,16 +696,16 @@ namespace App
 				const ids = this.markedRecordIds.toSet();
 				
 				for await (const [ownerId, refId] of this.eachEdge())
-					if (!ids.has(ownerId) && ids.has(refId))
-						ids.delete(refId);
+					if (!ids.has(ownerId.toString()) && ids.has(refId.toString()))
+						ids.delete(refId.toString());
 				
 				const tx = this.idb.transaction(objectTableName, "readwrite");
 				const store = tx.objectStore(objectTableName);
 				
 				for (const id of ids)
 				{
-					store.delete(Number(id));
-					this.heap.delete(id);
+					store.delete(id);
+					this.heap.delete(Number(id));
 				}
 				
 				for (const id of idsOriginal)
@@ -992,7 +992,6 @@ namespace App
 			
 			readonly proxy: Record[] = [];
 		}
-	
 	}
 	
 	//# Record Class
