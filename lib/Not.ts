@@ -46,7 +46,7 @@ namespace Not
 	/**
 	 * 
 	 */
-	export function reachable()
+	export function reachable(): never
 	{
 		debugger;
 		throw new TypeError();
