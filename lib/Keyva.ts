@@ -56,12 +56,26 @@ class Keyva
 	 * @param keys The key of the value to get.
 	 */
 	async get<T = any>(keys: Keyva.Key[]): Promise<T[]>;
-	async get(arg: Keyva.Key | Keyva.Key[])
+	/**
+	 * Gets an object that contains the specified indexed value.
+	 * 
+	 * @returns The first object in the Keyva database within the index,
+	 * or null in the case when no matching object could be found.
+	 */
+	async get<T = any>(value: Keyva.Key, index: string): Promise<T>;
+	async get<T>(k: Keyva.Key | Keyva.Key[], index?: string)
 	{
 		const store = await this.getStore("readonly");
-		return Array.isArray(arg) ?
-			Promise.all(arg.map(key => Keyva.asPromise(store.get(key)))) :
-			Keyva.asPromise(store.get(arg));
+		
+		if (!index)
+			return Array.isArray(k) ?
+				Promise.all(k.map(key => Keyva.asPromise(store.get(key)))) :
+				Keyva.asPromise(store.get(k));
+		
+		for await (const result of this.each({ index, range: IDBKeyRange.only(k) }))
+			return result as any as T;
+		
+		return null;
 	}
 	
 	/**
@@ -73,25 +87,31 @@ class Keyva
 	 * It's also atomic – if one of the pairs can't be added, none will be added.
 	 * @param entries Array of entries, where each entry is an array of `[key, value]`.
 	 */
-	async set(...entries: [Keyva.Key, any][]): Promise<void>;
-	async set(...args: any[])
+	async set(entries: [Keyva.Key, any][]): Promise<void>;
+	async set(a: any, b?: any)
 	{
-		if (args.length === 0)
-			return;
-		
 		const store = await this.getStore("readwrite");
-		if (Array.isArray(args[0]))
+		if (Array.isArray(a))
 		{
-			for (const entry of (args as [Keyva.Key, any][]))
+			for (const entry of (a as [Keyva.Key, any][]))
 				store.put(entry[1], entry[0]);
 			
 			return Keyva.asPromise(store.transaction);
 		}
 		
-		store.put(args[1], args[0]);
+		store.put(b, a);
 		return Keyva.asPromise(store.transaction);
 	}
 	
+	/**
+	 * Deletes all objects from this Keyva database 
+	 * (but keeps the Keyva database itself is kept)
+	 */
+	async delete(): Promise<void>;
+	/**
+	 * Delete a single object from the store with the specified key.
+	 */
+	async delete(range: IDBKeyRange): Promise<void>;
 	/**
 	 * Delete a single object from the store with the specified key.
 	 */
@@ -100,13 +120,17 @@ class Keyva
 	 * Delete a series of objects from the store at once, with the specified keys.
 	 */
 	async delete(keys: Keyva.Key[]): Promise<void>;
-	async delete(arg: Keyva.Key | Keyva.Key[])
+	async delete(arg: Keyva.Key | Keyva.Key[] | IDBKeyRange = IDBKeyRange.lowerBound(""))
 	{
 		const store = await this.getStore("readwrite");
 		if (Array.isArray(arg))
 		{
 			for (const key of arg)
 				store.delete(key);
+		}
+		else if (arg instanceof IDBKeyRange)
+		{
+			store.delete(arg);
 		}
 		else store.delete(arg);
 			
@@ -115,7 +139,6 @@ class Keyva
 	
 	/**
 	 * Iterates through all entries in the database, yielding each raw JSON value. 
-	 * This method is intended for handling database exportation.
 	 */
 	async * each<T = any>(options: { index?: string, range?: IDBKeyRange, backward?: boolean } = {})
 	{

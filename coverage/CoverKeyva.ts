@@ -38,12 +38,12 @@ namespace Cover
 	{
 		await Keyva.delete();
 		const keyva = new Keyva();
-		await keyva.set(
+		await keyva.set([
 			[1, "a"],
 			[2, "b"],
 			[3, "c"],
 			[4, "d"],
-		);
+		]);
 		
 		const values = await keyva.get<string>([2, 3]);
 		return [
@@ -51,5 +51,32 @@ namespace Cover
 			() => values[0] === "b",
 			() => values[1] === "c",
 		];
+	}
+	
+	/** */
+	export async function coverKeyvaMultipleConnections()
+	{
+		await Keyva.delete();
+		const keyva1 = new Keyva();
+		await keyva1.set(1, "a");
+		
+		const keyva2 = new Keyva();
+		await keyva2.set(2, "b");
+		
+		let count = 0;
+		
+		for await (const [value, key] of keyva1.each())
+		{
+			console.log(key + ": " + value);
+			count++;
+		}
+		
+		for await (const [value, key] of keyva2.each())
+		{
+			console.log(key + ": " + value);
+			count++;
+		}
+		
+		return () => count === 4;
 	}
 }
