@@ -39,7 +39,7 @@ class Keyva
 	constructor(options: Keyva.IConstructorOptions = {})
 	{
 		const idx = options.indexes || [];
-		this.indexes = Array.isArray(idx) ? idx : [idx];
+		this.indexes = (Array.isArray(idx) ? idx : [idx]).sort();
 		this.name = Keyva.prefix + (options.name || "");
 	}
 	
@@ -105,7 +105,7 @@ class Keyva
 	
 	/**
 	 * Deletes all objects from this Keyva database 
-	 * (but keeps the Keyva database itself is kept)
+	 * (but keeps the Keyva database itself is kept).
 	 */
 	async delete(): Promise<void>;
 	/**
@@ -120,17 +120,15 @@ class Keyva
 	 * Delete a series of objects from the store at once, with the specified keys.
 	 */
 	async delete(keys: Keyva.Key[]): Promise<void>;
-	async delete(arg: Keyva.Key | Keyva.Key[] | IDBKeyRange = IDBKeyRange.lowerBound(""))
+	async delete(arg?: Keyva.Key | Keyva.Key[] | IDBKeyRange)
 	{
 		const store = await this.getStore("readwrite");
+		arg ??= IDBKeyRange.lowerBound(Number.MIN_SAFE_INTEGER);
+		
 		if (Array.isArray(arg))
 		{
 			for (const key of arg)
 				store.delete(key);
-		}
-		else if (arg instanceof IDBKeyRange)
-		{
-			store.delete(arg);
 		}
 		else store.delete(arg);
 			
@@ -142,7 +140,7 @@ class Keyva
 	 */
 	async * each<T = any>(options: { index?: string, range?: IDBKeyRange, backward?: boolean } = {})
 	{
-		const store = await this.getStore("readwrite");
+		const store = await this.getStore("readonly");
 		const target = options.index ? store.index(options.index) : store;
 		const direction = options.backward ? "prev" : "next";
 		const cursor = target.openCursor(options.range, direction);
@@ -190,14 +188,49 @@ class Keyva
 		if (!this.database)
 		{
 			await this.maybeFixSafari();
-			const request = indexedDB.open(this.name);
-			request.onupgradeneeded = () =>
+			let quit = false;
+			let version: number | undefined;
+			let indexNamesAdded: string[] = [];
+			let indexNamesRemoved: string[] = [];
+			
+			for (;;)
 			{
-				const store = request.result.createObjectStore(this.name);
-				for (const index of this.indexes)
-					store.createIndex(index, index);
-			};
-			this.database = await Keyva.asPromise(request);
+				const request = indexedDB.open(this.name, version);
+				request.onupgradeneeded = () =>
+				{
+					const db = request.result;
+					const tx = request.transaction!;
+					
+					const store = tx.objectStoreNames.contains(this.name) ? 
+						tx.objectStore(this.name) :
+						db.createObjectStore(this.name);
+					
+					for (const index of indexNamesAdded)
+						store.createIndex(index, index);
+					
+					for (const index of indexNamesRemoved)
+						store.deleteIndex(index);
+				};
+				this.database = await Keyva.asPromise(request);
+				
+				if (quit)
+					break;
+				
+				const tx = this.database.transaction(this.name, "readonly");
+				const store = tx.objectStore(this.name);
+				const indexNames = Array.from(store.indexNames).sort();
+				tx.abort();
+				
+				indexNamesAdded = this.indexes.filter(n => !indexNames.includes(n));
+				indexNamesRemoved = indexNames.filter(n => !this.indexes.includes(n));
+				
+				if (indexNamesAdded.length + indexNamesRemoved.length === 0)
+					break;
+				
+				quit = true;
+				this.database.close();
+				version = this.database.version + 1;
+			}
 		}
 		
 		return this.database;
