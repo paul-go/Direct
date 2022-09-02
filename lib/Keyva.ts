@@ -2,6 +2,20 @@
 class Keyva
 {
 	/**
+	 * An IDBKeyRange that has no upper or lower boundary.
+	 */
+	static readonly unbound = IDBKeyRange.lowerBound(Number.MIN_SAFE_INTEGER);
+	
+	/**
+	 * Returns an IDBKeyRange that matches all keys that start
+	 * with the specified string prefix.
+	 */
+	static prefix(prefix: string)
+	{
+		return IDBKeyRange.bound(prefix, prefix + "\uFFFF");
+	}
+	
+	/**
 	 * @returns An array of strings that contain the names of all 
 	 * Keyva-created IndexedDB databases.
 	 */
@@ -10,7 +24,7 @@ class Keyva
 		const databases = await indexedDB.databases();
 		return databases
 			.map(db => db.name)
-			.filter((s): s is string => !!s && s.startsWith(this.prefix));
+			.filter((s): s is string => !!s && s.startsWith(this.kvPrefix));
 	}
 	
 	/**
@@ -24,14 +38,14 @@ class Keyva
 	static async delete(...names: string[])
 	{
 		names = names.length ? 
-			names.map(n => n.startsWith(this.prefix) ? n : this.prefix + n) : 
+			names.map(n => n.startsWith(this.kvPrefix) ? n : this.kvPrefix + n) : 
 			await this.each();
 		
 		Promise.all(names.map(n => this.asPromise(indexedDB.deleteDatabase(n))));
 	}
 	
 	/** */
-	private static readonly prefix = "-keyva-";
+	private static readonly kvPrefix = "-keyva-";
 	
 	/**
 	 * 
@@ -40,42 +54,120 @@ class Keyva
 	{
 		const idx = options.indexes || [];
 		this.indexes = (Array.isArray(idx) ? idx : [idx]).sort();
-		this.name = Keyva.prefix + (options.name || "");
+		this.name = Keyva.kvPrefix + (options.name || "");
 	}
 	
 	private readonly indexes: string[];
 	private readonly name: string;
 	
 	/**
+	 * Gets all keys and values from the Keyva database.
+	 * @param key The key of the value to get.
+	 */
+	get<T = any>(): Promise<[Keyva.Key, T][]>;
+	/**
 	 * Get a value by its key.
 	 * @param key The key of the value to get.
 	 */
-	async get<T = any>(key: Keyva.Key): Promise<T>;
+	get<T = any>(key: Keyva.Key): Promise<T>;
 	/**
 	 * Get a series of values from the keys specified.
 	 * @param keys The key of the value to get.
 	 */
-	async get<T = any>(keys: Keyva.Key[]): Promise<T[]>;
+	get<T = any>(keys: Keyva.Key[]): Promise<T[]>;
 	/**
 	 * Gets an object that contains the specified indexed value.
 	 * 
 	 * @returns The first object in the Keyva database within the index,
 	 * or null in the case when no matching object could be found.
 	 */
-	async get<T = any>(value: Keyva.Key, index: string): Promise<T>;
-	async get<T>(k: Keyva.Key | Keyva.Key[], index?: string)
+	get<T = any>(value: Keyva.Key, index: string): Promise<T>;
+	/**
+	 * Gets an array of keys and objects, where the keys are within
+	 * the specified range, optionally from the specified index.
+	 * 
+	 * @returns An array of key/value tuples containing the results.
+	 */
+	get(range: IDBKeyRange, index?: string): Promise<[Keyva.Key, any][]>;
+	/**
+	 * Gets an array of keys, where the keys are within
+	 * the specified range, optionally from the specified index.
+	 * 
+	 * @returns An array of keys containing the results.
+	 */
+	get(range: IDBKeyRange, index: string, keys?: typeof Keyva["keys"]): Promise<Keyva.Key[]>;
+	/**
+	 * Gets an array of values, where the corresponding keys are within
+	 * the specified range, optionally from the specified index.
+	 * 
+	 * @returns An array of values containing the results.
+	 */
+	get<T = any>(range: IDBKeyRange, index: string, values?: typeof Keyva["values"]): Promise<T[]>;
+	/**
+	 * Gets an array of keys, where the keys are within
+	 * the specified range.
+	 * 
+	 * @returns An array of keys containing the results.
+	 */
+	get(range: IDBKeyRange, keys?: typeof Keyva["keys"]): Promise<Keyva.Key[]>;
+	/**
+	 * Gets an array of values, where the corresponding keys are within
+	 * the specified range.
+	 * 
+	 * @returns An array of values containing the results.
+	 */
+	get<T = any>(range: IDBKeyRange, values?: typeof Keyva["values"]): Promise<T>;
+	/** */
+	async get(k?: Keyva.Key | Keyva.Key[] | IDBKeyRange, ...options: any[])
 	{
 		const store = await this.getStore("readonly");
+		const index = options.find((op): op is string => typeof op === "string") || "";
+		k ??= Keyva.unbound;
 		
-		if (!index)
+		if (k instanceof IDBKeyRange)
+		{
+			const target = index ? store.index(index) : store;
+			
+			if (options.includes(Keyva.keys))
+				return Keyva.asPromise(target.getAllKeys(k));
+			
+			if (options.includes(Keyva.values))
+				return Keyva.asPromise(target.getAll(k));
+			
+			let keys: Keyva.Key[] = [];
+			let values: any[] = [];
+			
+			await Promise.allSettled([
+				new Promise<void>(async r =>
+				{
+					const results = await Keyva.asPromise(target.getAllKeys(k));
+					keys.push(...results as Keyva.Key[]);
+					r();
+				}),
+				new Promise<void>(async r =>
+				{
+					const results = await Keyva.asPromise(target.getAll(k));
+					values.push(...results);
+					r();
+				}),
+			]);
+			
+			const tuples: [Keyva.Key, any][] = [];
+			
+			for (let i = -1; ++i < keys.length;)
+				tuples.push([keys[i], values[i]]);
+			
+			return tuples;
+		}
+		else
+		{
+			if (index)
+				return Keyva.asPromise(store.index(index).get(k));
+			
 			return Array.isArray(k) ?
 				Promise.all(k.map(key => Keyva.asPromise(store.get(key)))) :
 				Keyva.asPromise(store.get(k));
-		
-		for await (const result of this.each({ index, range: IDBKeyRange.only(k) }))
-			return result as any as T;
-		
-		return null;
+		}
 	}
 	
 	/**
@@ -123,7 +215,7 @@ class Keyva
 	async delete(arg?: Keyva.Key | Keyva.Key[] | IDBKeyRange)
 	{
 		const store = await this.getStore("readwrite");
-		arg ??= IDBKeyRange.lowerBound(Number.MIN_SAFE_INTEGER);
+		arg ??= Keyva.unbound;
 		
 		if (Array.isArray(arg))
 		{
@@ -133,46 +225,6 @@ class Keyva
 		else store.delete(arg);
 			
 		return Keyva.asPromise(store.transaction);
-	}
-	
-	/**
-	 * Iterates through all entries in the database, yielding each raw JSON value. 
-	 */
-	async * each<T = any>(options: { index?: string, range?: IDBKeyRange, backward?: boolean } = {})
-	{
-		const store = await this.getStore("readonly");
-		const target = options.index ? store.index(options.index) : store;
-		const direction = options.backward ? "prev" : "next";
-		const cursor = target.openCursor(options.range, direction);
-		
-		let resolver: (() => void) | null = null;
-		let key: Keyva.Key | null = null;
-		let object: any = null;
-		let done = false;
-		
-		cursor.onsuccess = () =>
-		{
-			const r = cursor.result;
-			if (r)
-			{
-				key = r.key as Keyva.Key;
-				object = r.value;
-				r.continue();
-			}
-			else done = true;
-			
-			if (resolver)
-				resolver();
-		};
-		
-		for (;;)
-		{
-			await new Promise<void>(r => resolver = r);
-			if (done)
-				break;
-			
-			yield [object, key] as any as [T, Keyva.Key];
-		}
 	}
 	
 	/** */
@@ -284,6 +336,12 @@ namespace Keyva
 	
 	/** */
 	export type Key = string | number | Date | BufferSource;
+	
+	if (typeof Symbol === "undefined")
+		(window as any).Symbol = () => Object.freeze({});
+	
+	export const keys = Symbol("keys");
+	export const values = Symbol("values");
 	
 	declare var module: any;
 	if (typeof module === "object")
