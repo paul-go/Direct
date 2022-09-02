@@ -1,14 +1,6 @@
 
 namespace App
 {
-	/** */
-	interface IAboutJsonSchema
-	{
-		id: string;
-		name: string;
-		objects: object[];
-	}
-	
 	/**
 	 * A namespace of functions that handle exporting
 	 * the database to .zip files.
@@ -19,7 +11,7 @@ namespace App
 		 * Generates a Uint8Array containing a .zip file
 		 * from the specified database information structure.
 		 */
-		export async function create(about: IDatabaseAbout)
+		export async function create(blogObject: IBlogExport)
 		{
 			await App.Util.include("JSZip.js");
 			
@@ -28,29 +20,17 @@ namespace App
 			// over the formatting to make the file line-based and more easily 
 			// human-readable.
 			
-			const lines: string[] = ["{"];
-			lines.push(`"id": "${about.id || ""}",`);
-			lines.push(`"name": "${about.name || ""}",`);
-			lines.push(`"objects": [`);
-			
-			if (about.objects)
-			{
-				for (let i = -1; ++i < about.objects.length;)
-				{
-					const string = JSON.stringify(about.objects[i]);
-					lines.push(string + (i < about.objects.length - 1 ? "," : ""));
-				}
-			}
-			
-			lines.push("]}");
-			const aboutFileContent = lines.join("\n");
+			const aboutFileContent = JSON.stringify(
+				blogObject, 
+				(k, v) =>k === ("blobs" as keyof IBlogExport) ? undefined : v,
+				"\t");
 			
 			const zip = new JSZip();
 			zip.file(aboutFileName, aboutFileContent);
 			
-			if (about.blobs)
+			if (blogObject.blobs)
 			{
-				for (const [name, blob] of about.blobs)
+				for (const [name, blob] of blogObject.blobs)
 				{
 					const file = new File([blob], name, { type: blob.type });
 					zip.file(name, file);
@@ -80,27 +60,14 @@ namespace App
 				return null;
 			
 			const aboutText = await aboutFileRef.async("string");
-			const aboutFileJson = Util.tryParseJson<IAboutJsonSchema>(aboutText);
+			const aboutFileJson = Util.tryParseJson<IBlogAbout>(aboutText);
 			if (!aboutFileJson)
 				return null;
 			
-			const about: Required<IDatabaseAbout> = {
-				name: "",
-				id: "",
-				objects: [],
-				blobs: new Map(),
+			const blogObject: IBlogExport = {
+				...aboutFileJson,
+				blobs: [],
 			};
-			
-			if (typeof aboutFileJson.name === "string")
-				about.name = aboutFileJson.name;
-			
-			if (typeof aboutFileJson.id === "string")
-				about.id = aboutFileJson.id;
-			
-			if (Array.isArray(aboutFileJson.objects))
-				for (const object of aboutFileJson.objects)
-					if (object && object.constructor === Object)
-						about.objects.push(object as any);
 			
 			const contents = new Map<string, JSZip.JSZipObject>();
 			
@@ -114,10 +81,10 @@ namespace App
 			{
 				const buffer = await file.async("arraybuffer");
 				const blob = new Blob([buffer], { type: MimeType.fromFileName(path) });
-				about.blobs.set(path, blob);
+				blogObject.blobs.push([path, blob]);
 			}
 			
-			return about;
+			return blogObject;
 		}
 		
 		/** */

@@ -4,7 +4,7 @@ namespace Cover
 	/** */
 	export async function coverPreview()
 	{
-		const { post, meta } = setup();
+		const { post, blog } = await setup();
 		
 		const scene1 = new App.CanvasSceneRecord();
 		
@@ -51,13 +51,13 @@ namespace Cover
 		const scene3 = new App.ProseSceneRecord();
 		
 		post.scenes.push(scene1, scene2, scene3);
-		render(post, meta);
+		render(post, blog);
 	}
 	
 	/** */
 	export async function coverPreviewCanvasVariants()
 	{
-		const { post, meta } = setup();
+		const { post, blog } = await setup();
 		const scene = new App.CanvasSceneRecord();
 		const variants: [number, number][] = [
 			[3, 300],
@@ -80,13 +80,13 @@ namespace Cover
 		
 		scene.origin = Origin.center;
 		post.scenes.push(scene);
-		render(post, meta);
+		render(post, blog);
 	}
 	
 	/** */
 	export async function coverPreviewCanvasContentAlignment()
 	{
-		const { post, meta } = setup();
+		const { post, blog } = await setup();
 		
 		const origins = [
 			Origin.topLeft,
@@ -115,13 +115,13 @@ namespace Cover
 			post.scenes.push(scene);
 		}
 		
-		render(post, meta);
+		render(post, blog);
 	}
 	
 	/** */
 	export async function coverPreviewCanvasContent()
 	{
-		const { post, meta } = setup();
+		const { post, blog } = await setup();
 		const scene = new App.CanvasSceneRecord();
 		
 		scene.titles.push({
@@ -146,38 +146,38 @@ namespace Cover
 		
 		scene.origin = Origin.bottom;
 		post.scenes.push(scene);
-		render(post, meta);
+		render(post, blog);
 	}
 	
 	/** */
-	export function coverPreviewCanvasBackgroundImage()
+	export async function coverPreviewCanvasBackgroundImage()
 	{
-		const { post, meta } = setup();
+		const { post, blog } = await setup();
 		const scene = new App.CanvasSceneRecord();
 		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("image-5.jpg");
 		scene.backgrounds.push(background);
 		post.scenes.push(scene);
-		render(post, meta);
+		render(post, blog);
 	}
 	
 	/** */
-	export function coverPreviewCanvasBackgroundVideo()
+	export async function coverPreviewCanvasBackgroundVideo()
 	{
-		const { post, meta } = setup();
+		const { post, blog } = await setup();
 		const scene = new App.CanvasSceneRecord();
 		scene.titles.push({ text: "Video", size: 20, weight: 900, hasColor: false });
 		const background = new App.BackgroundRecord();
 		background.media = Cover.readMedia("video-1.mp4");
 		scene.backgrounds.push(background);
 		post.scenes.push(scene);
-		render(post, meta);
+		render(post, blog);
 	}
 	
 	/** */
-	export function coverPreviewGallery()
+	export async function coverPreviewGallery()
 	{
-		const { post, meta } = setup();
+		const { post, blog } = await setup();
 		
 		const scene = new App.GallerySceneRecord();
 		
@@ -199,13 +199,13 @@ namespace Cover
 		
 		scene.frames.push(frame0, frame1, frame2, frame3);
 		post.scenes.push(scene);
-		render(post, meta);
+		render(post, blog);
 	}
 	
 	/** */
-	export function coverPreviewProse()
+	export async function coverPreviewProse()
 	{
-		const { post, meta } = setup();
+		const { post, blog } = await setup();
 		
 		const createBlocks = (n: number): ITrixSerializedBlock[] => [
 			{
@@ -267,24 +267,24 @@ namespace Cover
 		scene3.content = getContent(1);
 		
 		post.scenes.push(scene1, scene2, scene3);
-		render(post, meta);
+		render(post, blog);
 	}
 	
 	/** */
-	function setup()
+	async function setup()
 	{
 		App.Css.append();
-		const meta = new App.MetaRecord();
+		const [blog] = await Cover.createBlog();
 		const post = new App.PostRecord();
-		return { post, meta };
+		return { post, blog };
 	}
 	
 	/** */
-	function render(post: App.PostRecord, meta: App.MetaRecord)
+	function render(post: App.PostRecord, blog: App.Blog)
 	{
 		const scene = new App.CanvasSceneRecord();
 		scene.titles.push({ text: "Done", size: 4, weight: 700, hasColor: false });
 		post.scenes.push(scene);
-		new App.PreviewHat(post, meta);
+		new App.PreviewHat(post, blog);
 	}
 }

@@ -68,7 +68,7 @@ namespace App
 						},
 						() =>
 						{
-							const publishers = Publisher.getPublishers(record, app.meta);
+							const publishers = Publisher.getPublishers(record, app.blog);
 							
 							return Hot.div(
 								{ textAlign: "center" },
@@ -110,7 +110,7 @@ namespace App
 				{
 					if (await publisher.shouldInsert())
 					{
-						this.app.meta.publishMethod = publisher.key;
+						this.app.blog.publishMethod = publisher.key;
 						this.contents.replaceChildren(publisher.head);
 					}
 				})

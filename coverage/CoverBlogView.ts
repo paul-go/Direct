@@ -5,8 +5,7 @@ namespace Cover
 	export async function coverBlogHat()
 	{
 		await App.createApp({ shell: true });
-		const db = await App.createDatabase({ name: "coverBlogHat" });
-		const posts: App.PostRecord[] = [];
+		const [blog] = await Cover.createBlog();
 		
 		for (let i = -1; ++i < 20;)
 		{
@@ -15,10 +14,9 @@ namespace Cover
 			if (i % 4 !== 0)
 				post.datePublished = Date.now();
 			
-			posts.push(post);
+			blog.keepPost(post);
 		}
 		
-		await db.save(...posts);
 		Cover.display(new App.BlogHat());
 	}
 }

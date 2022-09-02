@@ -5,9 +5,9 @@ namespace App
 	export class S3Publisher extends Publisher
 	{
 		/** */
-		constructor(post: PostRecord, meta: MetaRecord)
+		constructor(post: PostRecord, blog: Blog)
 		{
-			super(post, meta);
+			super(post, blog);
 			
 			this.head = Hot.div(
 				"s3-publisher",
@@ -21,7 +21,7 @@ namespace App
 					borderRadius: UI.borderRadius.default,
 				},
 				...UI.text("Coming soon")
-			)
+			);
 		}
 		
 		readonly head;
@@ -31,7 +31,7 @@ namespace App
 		/** */
 		get host()
 		{
-			return this.meta.getPublishParam(this.key, "host", "");
+			return this.blog.getPublishParam(this.key, "host", "");
 		}
 		set host(host: string)
 		{
@@ -41,7 +41,7 @@ namespace App
 		/** */
 		get accessKey()
 		{
-			return this.meta.getPublishParam(this.key, "accessKey", "");
+			return this.blog.getPublishParam(this.key, "accessKey", "");
 		}
 		set accessKey(accessKey: string)
 		{
@@ -51,7 +51,7 @@ namespace App
 		/** */
 		get secretKey()
 		{
-			return this.meta.getPublishParam(this.key, "secretKey", "");
+			return this.blog.getPublishParam(this.key, "secretKey", "");
 		}
 		set secretKey(secretKey: string)
 		{

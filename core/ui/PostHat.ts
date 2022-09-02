@@ -197,6 +197,7 @@ namespace App
 		private save()
 		{
 			this.record.scenes = this.scenes.map(hat => hat.record);
+			AppContainer.of(this).blog.keepPost(this.record);
 		}
 		
 		/** */
@@ -218,7 +219,7 @@ namespace App
 		{
 			Hot.get(this.headerScreen)(
 				{ backgroundColor: visible ? UI.gray(128, 0.25) : "transparent" },
-				UI.backdropBlur(visible ? 8 : 0)
+				UI.backdropBlur(visible ? 8 : 0),
 			);
 		}
 		
@@ -254,16 +255,15 @@ namespace App
 		/** */
 		private handlePreview()
 		{
-			const meta = AppContainer.of(this).meta;
-			new PreviewHat(this.record, meta);
+			const blog = AppContainer.of(this).blog;
+			new PreviewHat(this.record, blog);
 		}
 		
 		/** */
 		private async tryPublish()
 		{
-			const app = AppContainer.of(this);
-			const meta = app.meta;
-			const publisher = Publisher.getCurrentPublisher(this.record, meta);
+			const blog = AppContainer.of(this).blog;
+			const publisher = Publisher.getCurrentPublisher(this.record, blog);
 			
 			if (publisher?.canPublish())
 			{
@@ -296,8 +296,8 @@ namespace App
 		{
 			When.connected(this.publishInfoElement, () =>
 			{
-				const meta = AppContainer.of(this).meta;
-				const publisher = Publisher.getCurrentPublisher(this.record, meta);
+				const blog = AppContainer.of(this).blog;
+				const publisher = Publisher.getCurrentPublisher(this.record, blog);
 				const dstRoot = publisher?.getPublishDestinationRoot();
 				
 				this.publishInfoElement.replaceWith(this.publishInfoElement = Hot.div(

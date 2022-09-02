@@ -11,34 +11,29 @@ namespace App
 		}
 		
 		/** */
-		static async new(head: HTMLElement, about: IDatabaseAbout)
+		static async new(head: HTMLElement, name: Partial<IBlogName>)
 		{
-			const database = await App.createDatabase(about);
-			const meta = await App.getDatabaseMeta(database);
-			const app = new AppContainer(head, database, meta);
+			const blog = await Blog.new(name);
+			const app = new AppContainer(head, blog);
 			return app;
 		}
 		
 		/**
-		 * Gets or sets the ID of the last loaded database.
+		 * Gets or sets the fixed name of the last loaded database.
 		 */
 		static get lastLoadedDatabase()
 		{
 			return localStorage.getItem("last-loaded-database") || "";
 		}
-		private static setLastLoadedDatabase(value: string)
+		static set lastLoadedDatabase(value: string)
 		{
 			localStorage.setItem("last-loaded-database", value);
 		}
 		
 		/** */
-		private constructor(
-			readonly head: HTMLElement,
-			database: Database,
-			meta: MetaRecord)
+		private constructor(readonly head: HTMLElement, blog: Blog)
 		{
-			this.setDatabase(database);
-			this._meta = meta;
+			this.setBlog(blog);
 			
 			Hot.get(head)(
 				CssClass.appContainer,
@@ -94,40 +89,32 @@ namespace App
 		}
 		
 		/** */
-		get database()
+		get blog()
 		{
-			return Not.nullable(this._db);
+			return Not.nullable(this._blog);
 		}
-		private setDatabase(db: Database)
+		private setBlog(blog: Blog)
 		{
-			AppContainer.setLastLoadedDatabase(db.id);
-			this._db = db;
+			AppContainer.lastLoadedDatabase = blog.fixedName;
+			this._blog = blog;
 		}
-		private _db: Database | null = null;
-		
-		/** */
-		get meta()
-		{
-			return this._meta;
-		}
-		private _meta: MetaRecord;
+		private _blog: Blog | null = null;
 		
 		/** */
 		get homePost()
 		{
-			return Not.nullable(this.meta.homePost);
+			return Not.nullable(this.blog.homePost);
 		}
 		
 		/** */
-		async changeDatabase(name: string)
+		async changeDatabase(fixedName: string)
 		{
-			const db = await App.getDatabase(name);
-			if (!db)
+			const blog = Blog.get({ fixedName });
+			if (!blog)
 				return;
 			
 			this.head.replaceChildren();
-			this.setDatabase(db);
-			this._meta = await App.getDatabaseMeta(db);
+			this.setBlog(blog);
 			this.head.append(new BlogHat().head);
 		}
 		
@@ -141,7 +128,7 @@ namespace App
 		/** */
 		async restartFromScratch()
 		{
-			await Database.clear();
+			await Store.clear();
 			localStorage.clear();
 			window.location.reload();
 		}

@@ -2,6 +2,21 @@
 namespace Cover
 {
 	/** */
+	export async function createBlog()
+	{
+		const friendlyName = Moduless.getRunningFunctionName();
+		const blog = await App.Blog.new({ friendlyName });
+		return [blog, friendlyName] as [App.Blog, string];
+	}
+	
+	/** */
+	export async function createBlogFromScratch()
+	{
+		await App.Store.clear();
+		return Cover.createBlog();
+	}
+	
+	/** */
 	export function readMedia(sampleFileName: string)
 	{
 		const path = Electron.path.join(

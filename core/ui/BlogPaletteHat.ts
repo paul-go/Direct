@@ -61,9 +61,7 @@ namespace App
 					),
 					this.itemsElement = Hot.div(
 						"blog-palette-items",
-						Database
-							.getNames()
-							.map(name => new BlogPaletteItem(name))
+						Blog.getAll().map(b => new BlogPaletteItem(b))
 					)
 				),
 			);
@@ -117,23 +115,18 @@ namespace App
 		private async importDatabase(databaseBuffer: ArrayBuffer)
 		{
 			const bytes = new Uint8Array(databaseBuffer);
-			const databaseAbout = await BlogFile.parse(bytes);
+			const blogObject = await BlogFile.parse(bytes);
 			
-			if (!databaseAbout)
+			if (!blogObject)
 			{
 				const msg = `This .zip archive wasn't exported from ${ConstS.appName}.`;
 				await Util.alert(msg);
 				return;
 			}
 			
-			const hasId = Database.getIds().includes(databaseAbout.id);
-			if (hasId)
-				databaseAbout.id = Database.generateId();
-			
-			const hasName = Database.getNames().includes(databaseAbout.name);
-			if (hasName)
+			if (Blog.get({ friendlyName: blogObject.friendlyName }))
 			{
-				let name = databaseAbout.name;
+				let name = blogObject.friendlyName;
 				
 				// The name is already an incremented name
 				if (/[^:]\s[0-9]+$/.test(name))
@@ -145,16 +138,16 @@ namespace App
 				// Increment the name
 				else name += " 2";
 				
-				databaseAbout.name = name;
+				blogObject.friendlyName = name;
 			}
 			
-			const db = await App.createDatabase(databaseAbout);
+			const blog = await Blog.new(blogObject);
 			const items = Hat.map(this.itemsElement, BlogPaletteItem).reverse();
-			const refItem = items.find(i => db.name < i.name) || items.at(0);
+			const refItem = items.find(i => blog.friendlyName < i.friendlyName) || items.at(0);
 			if (!refItem)
 				return;
 			
-			const newItem = new BlogPaletteItem(db.name);
+			const newItem = new BlogPaletteItem(blog);
 			newItem.selected = true;
 			refItem.head.before(newItem.head);
 		}
@@ -163,15 +156,15 @@ namespace App
 	/** */
 	class BlogPaletteItem
 	{
-		constructor(name = "")
+		constructor(private blog?: Blog)
 		{
-			this.isCreatingNew = !name;
+			this.isCreatingNew = !blog;
 			
 			this.head = Hot.div(
 				"blog-palette-item",
 				{
 					data: {
-						databaseId: Database.getId(name) || "null"
+						fixedName: blog?.fixedName || "(empty)"
 					},
 					tabIndex: 0,
 					display: "flex",
@@ -227,7 +220,7 @@ namespace App
 						flex: "1 0",
 						padding: "20px",
 					},
-					UI.text(name)
+					UI.text(blog?.friendlyName || "")
 				),
 				this.menuElement = Hot.div(
 					this.isCreatingNew && CssClass.hide,
@@ -240,7 +233,7 @@ namespace App
 					{
 						this.selected = true;
 						ev.stopImmediatePropagation();
-						const isOnlyItem = Database.getNames().length === 1;
+						const isOnlyItem = Blog.getAll().length === 1;
 						
 						UI.springMenu(ev.target, {
 							"Export": () => this.export(),
@@ -251,7 +244,7 @@ namespace App
 				),
 				When.rendered(() =>
 				{
-					if (this.name === AppContainer.of(this).database.name)
+					if (this.friendlyName === AppContainer.of(this).blog.friendlyName)
 					{
 						this.selected = true;
 						
@@ -259,7 +252,7 @@ namespace App
 							{
 								fontWeight: 800,
 							},
-							Hot.css(":before", {
+							Hot.css(":after", {
 								content: `""`,
 								position: "absolute",
 								top: "1px",
@@ -287,7 +280,7 @@ namespace App
 		private isCreatingNew = false;
 		
 		/** */
-		get name()
+		get friendlyName()
 		{
 			return this.nameElement.textContent || "";
 		}
@@ -321,14 +314,14 @@ namespace App
 		/** */
 		private async export()
 		{
-			const db = await App.getDatabase(this.name);
-			if (!db)
+			const blog = Blog.get({ friendlyName: this.friendlyName });
+			if (!blog)
 				return;
 			
 			const createBytes = async () =>
 			{
-				const about = await db.export();
-				const blogFileBytes = await BlogFile.create(about);
+				const blogObject = await blog.export();
+				const blogFileBytes = await BlogFile.create(blogObject);
 				return blogFileBytes;
 			};
 			
@@ -337,7 +330,7 @@ namespace App
 				const savePath = await Tauri.dialog.save({
 					filters: [{
 						extensions: [ConstS.portableExtension],
-						name: db.name,
+						name: blog.friendlyName,
 					}]
 				});
 				
@@ -355,7 +348,7 @@ namespace App
 				const savePath = path.join(
 					process.cwd(), 
 					ConstS.debugExportsFolderName,
-					db.name + "." + ConstS.portableExtension);
+					blog.friendlyName + "." + ConstS.portableExtension);
 				
 				fs.writeFileSync(savePath, bytes);
 				await Util.alert("(DEBUG MESSAGE) Database saved to:\n" + savePath);
@@ -371,7 +364,7 @@ namespace App
 		beginEdit()
 		{
 			this.isEditing = true;
-			this.storedName = this.name;
+			this.storedName = this.friendlyName;
 			this.nameElement.replaceChildren();
 			
 			Hot.get(this.nameElement)(
@@ -392,29 +385,22 @@ namespace App
 		/** */
 		private async tryAcceptEdit(isBlurring?: "blurring")
 		{
-			const newName = (this.nameElement.textContent || "").trim();
-			this.isEditing = false;
-			let success = false;
+			const friendlyName = (this.nameElement.textContent || "").trim();
+			//this.isEditing = false;
 			
-			if (this.isCreatingNew)
+			if (Blog.isValidFriendlyName(friendlyName))
 			{
-				if (newName && !Database.getNames().includes(newName))
+				if (this.isCreatingNew)
 				{
-					await App.createDatabase({ name: newName });
 					this.isCreatingNew = false;
-					success = true;
+					this.blog = await Blog.new({ friendlyName });
 				}
-			}
-			else
-			{
-				success = Database.tryRename(this.storedName, newName);
-			}
-			
-			if (success)
-			{
-				this.nameElement.replaceChildren(new Text(newName));
-				this.setName(newName);
+				
+				Not.nullable(this.blog).friendlyName = friendlyName;
+				this.nameElement.replaceChildren(new Text(friendlyName));
+				this.setName(friendlyName);
 				this.head.focus();
+				this.isEditing = false;
 			}
 			else if (isBlurring)
 			{
@@ -422,7 +408,7 @@ namespace App
 			}
 			else
 			{
-				await Util.alert("This name is already in use. Please choose another.");
+				await Util.alert("This name isn't valid. Please choose another.");
 				this.nameElement.focus();
 			}
 		}
@@ -479,7 +465,7 @@ namespace App
 			
 			if (accept)
 			{
-				await Database.delete(this.name);
+				await Blog.delete({ friendlyName: this.friendlyName });
 				this.head.remove();
 				
 				if (fallbackItem)
@@ -501,7 +487,10 @@ namespace App
 		/** */
 		private async load(closeDialog?: "close")
 		{
-			AppContainer.of(this).changeDatabase(this.name);
+			if (!this.blog)
+				return;
+			
+			AppContainer.of(this).changeDatabase(this.blog.fixedName);
 			
 			if (closeDialog)
 				Hat.over(this, BlogPaletteHat).head.remove();

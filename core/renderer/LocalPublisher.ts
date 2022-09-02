@@ -8,9 +8,9 @@ namespace App
 	export class LocalPublisher extends Publisher
 	{
 		/** */
-		constructor(post: PostRecord, meta: MetaRecord)
+		constructor(post: PostRecord, blog: Blog)
 		{
-			super(post, meta);
+			super(post, blog);
 			
 			this.head = Hot.div(
 				"local-publisher",
@@ -90,7 +90,7 @@ namespace App
 		/** */
 		get folder()
 		{
-			return this.meta.getPublishParam(this.key, "folder", "");
+			return this.blog.getPublishParam(this.key, "folder", "");
 		}
 		set folder(folder: string)
 		{

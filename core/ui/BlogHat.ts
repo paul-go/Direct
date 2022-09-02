@@ -109,11 +109,11 @@ namespace App
 		private async populatePosts()
 		{
 			const app = AppContainer.of(this);
-			const db = app.database;
+			const blog = app.blog;
 			
-			for await (const post of db.each(PostRecord, "peek"))
+			for await (const post of blog.eachPartialPost())
 			{
-				if (post === app.homePost)
+				if (post.equals(blog.homePost))
 					continue;
 				
 				const tile = this.renderPostTile(post);
@@ -122,7 +122,7 @@ namespace App
 		}
 		
 		/** */
-		private renderPostTile(post: PostRecord)
+		private renderPostTile(post: PartialPost | PostRecord)
 		{
 			const date = new Date(post.dateCreated);
 			
@@ -155,7 +155,7 @@ namespace App
 		/** */
 		private renderTile(
 			previewDisplayParams: Hot.Param[],
-			post?: PostRecord)
+			post?: PartialPost | PostRecord)
 		{
 			let previewTransformable: HTMLElement;
 			let previewDisplay: HTMLElement;
@@ -205,11 +205,14 @@ namespace App
 		}
 		
 		/** */
-		private animateTile(
+		private async animateTile(
 			transformable: HTMLElement,
 			previewDisplay: HTMLElement,
-			post?: PostRecord)
+			post?: PartialPost | PostRecord)
 		{
+			if (post instanceof PartialPost)
+				post = await Model.get<PostRecord>(post.key);
+			
 			const postHat = new PostHat(post);
 			const parent = transformable.parentElement!;
 			parent.style.zIndex = "2";

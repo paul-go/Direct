@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export type PublisherCtor = new(post: PostRecord, meta: MetaRecord) => Publisher;
+	export type PublisherCtor = new(post: PostRecord, blog: Blog) => Publisher;
 	
 	/** */
 	export abstract class Publisher
@@ -17,13 +17,13 @@ namespace App
 		/**
 		 * 
 		 */
-		static getPublishers(post: PostRecord, meta: MetaRecord)
+		static getPublishers(post: PostRecord, blog: Blog)
 		{
 			const publishers: Publisher[] = [];
 			
 			for (const ctor of this.registrations)
 			{
-				const pub = new ctor(post, meta);
+				const pub = new ctor(post, blog);
 				publishers.push(pub);
 			}
 			
@@ -33,15 +33,15 @@ namespace App
 		/**
 		 * Returns the Publisher that is currently set for use.
 		 */
-		static getCurrentPublisher(post: PostRecord, meta: MetaRecord)
+		static getCurrentPublisher(post: PostRecord, blog: Blog)
 		{
-			const key = meta.publishMethod;
+			const key = blog.publishMethod;
 			if (!key)
 				return null;
 			
 			for (const ctor of this.registrations)
 			{
-				const pub = new ctor(post, meta);
+				const pub = new ctor(post, blog);
 				if (pub.key === key)
 					return pub;
 			}
@@ -52,9 +52,9 @@ namespace App
 		/** */
 		constructor(
 			readonly post: PostRecord,
-			protected readonly meta: MetaRecord)
+			protected readonly blog: Blog)
 		{
-			this.canHaveSlug = post !== meta.homePost;
+			this.canHaveSlug = post !== blog.homePost;
 		}
 		
 		/** */
@@ -147,7 +147,7 @@ namespace App
 		/** */
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
-			this.meta.setPublishParam(this.key, paramKey, value);
+			this.blog.setPublishParam(this.key, paramKey, value);
 			When.connected(this.head, () => Hat.over(this, PostHat).updatePublishInfo());
 		}
 		
@@ -165,7 +165,7 @@ namespace App
 		async publish()
 		{
 			const files = [
-				...(await Render.getPostFiles(this.post, this.meta)),
+				...(await Render.getPostFiles(this.post, this.blog)),
 				...(await Render.getSupportFiles()),
 			];
 			

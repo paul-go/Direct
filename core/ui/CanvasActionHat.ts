@@ -24,7 +24,6 @@ namespace App
 			this.actions.observe(() =>
 			{
 				record.actions = this.actions.map(ca => ca.actionRecord);
-				record.save();
 			});
 			
 			Hat.wear(this);

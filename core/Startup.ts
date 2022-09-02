@@ -29,16 +29,25 @@ namespace App
 				console.log(consoleWelcomeMessage);
 		}
 		
-		let about: IDatabaseAbout;
+		if (options?.clear)
+		{
+			AppContainer.lastLoadedDatabase = "";
+			await Store.clear();
+			
+			if (DEBUG)
+				Key.reset();
+		}
+		
+		let name: Partial<IBlogName>;
 		
 		if (options?.database)
-			about = { name: options.database };
+			name = { friendlyName: options.database };
 		
 		else if (AppContainer.lastLoadedDatabase)
-			about = { id: AppContainer.lastLoadedDatabase };
+			name = { fixedName: AppContainer.lastLoadedDatabase };
 		
 		else
-			about = { name: ConstS.mainDatabaseName };
+			name = { friendlyName: ConstS.mainDatabaseName };
 		
 		let app: AppContainer = null!;
 		
@@ -48,12 +57,10 @@ namespace App
 			App.Util.include("trix.js"),
 			new Promise<void>(async r =>
 			{
-				if (DEBUG && options?.clear && about.name)
-					await App.Database.delete(about.name);
-				
 				Css.append();
+				await Blog.init();
 				const container = options?.container ?? document.body;
-				app = await AppContainer.new(container, about);
+				app = await AppContainer.new(container, name);
 				r();
 			})
 		]);

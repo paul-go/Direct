@@ -18,6 +18,7 @@ namespace App
 				title.size = title.size;
 				title.weight = title.weight;
 				title.hasColor = titleData.hasColor;
+				this.head.append(title.head);
 			}
 			
 			this.hide(titleDatas.length === 0);

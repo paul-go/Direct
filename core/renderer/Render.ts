@@ -94,14 +94,14 @@ namespace App
 		}
 		
 		/** */
-		export async function getPostFiles(post: PostRecord, meta: MetaRecord)
+		export async function getPostFiles(post: PostRecord, blog: Blog)
 		{
 			const files: IRenderedFile[] = [];
-			const folderName = post === meta.homePost ? "" : post.slug;
+			const folderName = post === blog.homePost ? "" : post.slug;
 			
 			// HTML file
 			{
-				const postFinal = await createPostFinal(post, meta);
+				const postFinal = await createPostFinal(post, blog);
 				const htmlFile = new HtmlFile();
 				htmlFile.addCss(postFinal.cssText);
 				const htmlText = htmlFile.emit(postFinal.storyElement, folderName ? 1 : 0);
@@ -119,7 +119,7 @@ namespace App
 			const records: MediaRecord[] = [];
 			const promises: Promise<ArrayBuffer>[] = [];
 			
-			for (const record of Util.eachDeepRecord(post))
+			for (const record of Model.recurse(post))
 			{
 				if (record instanceof MediaRecord)
 				{
@@ -150,9 +150,9 @@ namespace App
 		 */
 		export async function createPostPreview(
 			post: PostRecord,
-			meta: MetaRecord)
+			blog: Blog)
 		{
-			return await (new PostRenderer(post, meta, true)).render();
+			return await (new PostRenderer(post, blog, true)).render();
 		}
 		
 		/**
@@ -160,9 +160,9 @@ namespace App
 		 */
 		async function createPostFinal(
 			post: PostRecord,
-			meta: MetaRecord)
+			blog: Blog)
 		{
-			return new PostRenderer(post, meta, false).render();
+			return new PostRenderer(post, blog, false).render();
 		}
 	}
 	
@@ -174,7 +174,7 @@ namespace App
 		/** */
 		constructor(
 			readonly post: PostRecord,
-			readonly meta: MetaRecord,
+			readonly blog: Blog,
 			readonly isPreview: boolean)
 		{ }
 		

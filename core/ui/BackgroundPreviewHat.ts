@@ -447,7 +447,6 @@ namespace App
 			y = Math.max(0, Math.min(100, y + yPct));
 			
 			this.record.position = [x, y];
-			this.record.save();
 			this.updateImagePosition();
 		}
 		

@@ -19,7 +19,7 @@ namespace Cover
 		
 		const range = IDBKeyRange.only("number");
 		
-		for await (const [value, key] of keyva.each({ index: "type", range }))
+		for (const [value, key] of await keyva.get(range, "type"))
 			console.log("Key: " + key + ", Value: " + JSON.stringify(value));
 	}
 	
@@ -54,6 +54,97 @@ namespace Cover
 	}
 	
 	/** */
+	export async function coverKeyaGetRangeKeysValues()
+	{
+		await Keyva.delete();
+		const keyva = new Keyva();
+		await keyva.set([
+			[1, "a"],
+			[2, "b"],
+			[3, "c"],
+			[4, "d"],
+		]);
+		
+		const results = await keyva.get(IDBKeyRange.bound(2, 3));
+		
+		return [
+			() => results.length === 2,
+			() => JSON.stringify(results[0]) === JSON.stringify([2, "b"]),
+			() => JSON.stringify(results[1]) === JSON.stringify([3, "c"]),
+		];
+	}
+	
+	/** */
+	export async function coverKeyaGetRangeKeys()
+	{
+		await Keyva.delete();
+		const keyva = new Keyva();
+		await keyva.set([
+			[1, "a"],
+			[2, "b"],
+			[3, "c"],
+			[4, "d"],
+		]);
+		
+		const results = await keyva.get(IDBKeyRange.bound(2, 3), Keyva.keys);
+		
+		return [
+			() => results.length === 2,
+			() => results[0] === 2,
+			() => results[1] === 3,
+		];
+	}
+	
+	/** */
+	export async function coverKeyaGetRangeValues()
+	{
+		await Keyva.delete();
+		const keyva = new Keyva();
+		await keyva.set([
+			[1, "a"],
+			[2, "b"],
+			[3, "c"],
+			[4, "d"],
+		]);
+		
+		const results = await keyva.get(IDBKeyRange.bound(2, 3), Keyva.values);
+		
+		return [
+			() => results.length === 2,
+			() => results[0] === "b",
+			() => results[1] === "c",
+		];
+	}
+	
+	/** */
+	export async function coverKeyvaDelete()
+	{
+		await Keyva.delete();
+		const keyva = new Keyva();
+		await keyva.set([
+			[-1, "a"],
+			[String.fromCharCode(0), "b"],
+			["(", "c"],
+			[1, "d"],
+			[2, "e"],
+			[3, "f"],
+			[4, "g"],
+			["0", "h"],
+		]);
+		
+		await keyva.delete();
+		let hasItems = false;
+		
+		for (const [, k] of await keyva.get())
+		{
+			hasItems = true;
+			console.log("Error, found: " + k);
+		}
+		
+		return () => !hasItems;
+	}
+	
+	/** */
 	export async function coverKeyvaMultipleConnections()
 	{
 		await Keyva.delete();
@@ -65,13 +156,13 @@ namespace Cover
 		
 		let count = 0;
 		
-		for await (const [value, key] of keyva1.each())
+		for (const [value, key] of await keyva1.get())
 		{
 			console.log(key + ": " + value);
 			count++;
 		}
 		
-		for await (const [value, key] of keyva2.each())
+		for (const [value, key] of await keyva2.get())
 		{
 			console.log(key + ": " + value);
 			count++;

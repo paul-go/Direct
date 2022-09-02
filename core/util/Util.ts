@@ -18,18 +18,12 @@ namespace App
 		}
 		
 		/**
-		 * Generates a short unique string value containing the base 36 character set.
+		 * Generates a globally unique string value containing the base 36 character set.
 		 */
 		export function unique()
 		{
-			let now = Date.now() - 1648215698766;
-			if (now <= lastNow)
-				return (++lastNow).toString(36);
-			
-			lastNow = now;
-			return now.toString(36);
+			return Date.now().toString(36) + "-" + Util.randomChars(16);
 		}
-		let lastNow = 0;
 		
 		/**
 		 * Generates a string of the specified length containing 

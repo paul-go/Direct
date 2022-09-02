@@ -5,7 +5,7 @@ namespace App
 	export class PreviewHat
 	{
 		/** */
-		constructor(post: PostRecord, meta: MetaRecord)
+		constructor(post: PostRecord, blog: Blog)
 		{
 			this.head = Hot.div(
 				UI.fixed(),
@@ -32,7 +32,7 @@ namespace App
 					},
 					When.connected(async () =>
 					{
-						const postPreview = await Render.createPostPreview(post, meta);
+						const postPreview = await Render.createPostPreview(post, blog);
 						const styleElement = Hot.style(new Text(postPreview.cssText));
 						this.previewRoot.replaceChildren(
 							postPreview.storyElement,

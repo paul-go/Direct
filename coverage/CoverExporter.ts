@@ -5,7 +5,9 @@ namespace Cover
 	export async function coverExporter()
 	{
 		App.Css.append();
-		const meta = new App.MetaRecord();
+		
+		const [blog] = await Cover.createBlog();
+		
 		const post = new App.PostRecord();
 		post.slug = "slug";
 		const scene = new App.CanvasSceneRecord();
@@ -18,7 +20,7 @@ namespace Cover
 		post.scenes.push(scene);
 		
 		const folder = getExportsFolder();
-		const publisher = new App.LocalPublisher(post, meta);
+		const publisher = new App.LocalPublisher(post, blog);
 		publisher.folder = folder;
 		await publisher.publish();
 		
