@@ -149,7 +149,15 @@ namespace Hot { { } }
 					
 					for (const [name, value] of Object.entries(param))
 					{
-						if (name === "data")
+						// JavaScript numbers that are specified in the width and height properties
+						// are injected as HTML attributes rather than assigned as CSS properties.
+						if (value && 
+							(name === "width" || name === "height") &&
+							typeof value === "number")
+						{
+							e.setAttribute(name, value.toString());
+						}
+						else if (name === "data")
 						{
 							for (const [attrName, attrValue] of Object.entries(value || {}))
 								e.setAttribute("data-" + attrName, String(attrValue));
@@ -345,7 +353,7 @@ namespace Hot
 		gridTemplateAreas: string | 0;
 		gridTemplateColumns: string | 0;
 		gridTemplateRows: string | 0;
-		height: string | 0;
+		height: string | number;
 		inlineSize: string | 0;
 		inset: string | 0;
 		insetBlock: string | 0;
@@ -427,7 +435,7 @@ namespace Hot
 		top: string | 0;
 		transitionDelay: string | 0;
 		transitionDuration: string | 0;
-		width: string | 0;
+		width: string | number;
 		wordSpacing: string | 0;
 		zIndex: string | number;
 	};
