@@ -5,7 +5,9 @@ namespace App
 	export class Emitter
 	{
 		/** */
-		constructor(minify: boolean = false)
+		constructor(
+			minify: boolean = false,
+			private readonly formatAsXml = false)
 		{
 			this.indentChar = minify ? "" : "\t";
 			this.lineChar = minify ? "" : "\n";
@@ -58,10 +60,43 @@ namespace App
 		private currentIndent = 0;
 		
 		/** */
+		open(tag: string, attributes: Literal<string, string | number> = {})
+		{
+			this.line(this.tagStart(tag, attributes) + ">");
+		}
+		
+		/** */
+		close(tag: string)
+		{
+			this.line("</" + tag + ">");
+		}
+		
+		/** */
 		tag(
 			tagName: string,
 			attributes: Literal<string, string | number> = {},
 			innerText?: string)
+		{
+			let text = this.tagStart(tagName, attributes);
+			const hasClose = this.hasCloseTag(tagName);
+			
+			if (hasClose)
+			{
+				if (innerText)
+					text += innerText;
+				
+				text += "</" + tagName + ">";
+			}
+			else
+			{
+				text += this.formatAsXml ? "/>" : ">";
+			}
+			
+			this.line(text);
+		}
+		
+		/** */
+		private tagStart(tagName: string, attributes: Literal<string, string | number>)
 		{
 			let text = "<" + tagName;
 			
@@ -80,19 +115,13 @@ namespace App
 					text += ` ${key}="${value}"`;
 			}
 			
-			text += ">";
-			
-			if (innerText !== undefined)
-				text += innerText + "</" + tagName + ">";
-			
-			this.line(text);
+			return text;
 		}
 		
 		/** */
-		tagEnd(tag: string | HTMLElement)
+		private hasCloseTag(tag: string)
 		{
-			const name = typeof tag === "string" ? tag : tag.tagName.toLowerCase();
-			this.line("</" + name + ">");
+			return !["meta", "link", "br", "img", ].includes(tag);
 		}
 		
 		/** */

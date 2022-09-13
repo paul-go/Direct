@@ -20,6 +20,9 @@ namespace App
 		minify = false;
 		
 		/** */
+		formatAsXml = false;
+		
+		/** */
 		addCss(cssText: string)
 		{
 			this.cssTextParts.push(cssText);
@@ -29,7 +32,7 @@ namespace App
 		/** */
 		emit(storyElement: HTMLElement, folderDepth = 0)
 		{
-			const em = new Emitter(this.minify);
+			const em = new Emitter(this.minify, this.formatAsXml);
 			this.emitUpperHtml(em, folderDepth);
 			this.emitStoryHtml(em, storyElement);
 			this.emitLowerHtml(em);
@@ -65,13 +68,13 @@ namespace App
 				href: relative + ConstS.cssFileNameGeneral + nocache,
 			});
 			
-			em.tag("script", { src: relative + ConstS.jsFileNamePlayer + nocache }, "");
+			em.tag("script", { src: relative + ConstS.jsFileNamePlayer + nocache });
 			
 			if (this.cssTextParts.length > 0)
 			{
-				em.tag("style");
+				em.open("style");
 				em.lines(...this.cssTextParts);
-				em.tagEnd("style");
+				em.close("style");
 			}
 			
 			if (this.customHeaderHtml)
@@ -99,15 +102,13 @@ namespace App
 					}
 				}
 				
-				if (e.childElementCount === 0 && (e.textContent || "").trim() === "")
+				if (e.childElementCount === 0)
 				{
-					// Awkward AF
-					const noCloseTag = name === "br" || name === "img";
-					em.tag(name, attributesTable, noCloseTag ? undefined : "");
+					em.tag(name, attributesTable, e.textContent || "");
 				}
 				else
 				{
-					em.tag(name, attributesTable);
+					em.open(name, attributesTable);
 					em.indent();
 					
 					for (const child of Array.from(e.childNodes))
@@ -125,7 +126,7 @@ namespace App
 					}
 					
 					em.outdent();
-					em.tagEnd(name);
+					em.close(name);
 				}
 			}
 			
@@ -148,7 +149,7 @@ namespace App
 			if (this.customFooterHtml)
 				em.line(this.customFooterHtml);
 			
-			em.tagEnd("html");
+			em.close("html");
 		}
 	}
 }
