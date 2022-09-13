@@ -5,6 +5,7 @@
 	},
 	"include": [
 		"../lib/*.ts",
+		"player/*.ts",
 		"renderer/Publisher.ts",
 		"renderer/Render.ts",
 		"renderer/SceneRenderer.ts",

@@ -197,9 +197,7 @@ namespace App
 									"background-position": 
 										calc(bpX, bpXCssVw, "vw") + " " +
 										calc(bpYCssPct, bpYCssVw, "vw"),
-									"background-size": 
-										sizeVwX.toFixed(2) + "vw " +
-										sizeVwY.toFixed(2) + "vw",
+									"background-size": sizeVwX.toFixed(2) + "% auto",
 								}
 							}
 						),
@@ -208,7 +206,6 @@ namespace App
 								[cls]: {
 									"background-position": 
 										calc(50, bpXCssPx, "px") + " " +
-										//calc(bpY, posYPxOffsetWhenMaxed, "px"),
 										calc(bpYCssPct, bpYCssPx, "px"),
 									"background-size": 
 										sizePxX.toFixed(1) + "px " +
