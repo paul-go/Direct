@@ -12,7 +12,7 @@ namespace App
 				{
 					width: "fit-content",
 				},
-				Hot.css(":not(:empty)", { display: "inline-block" }),
+				Hot.css(":not(:empty) !", { display: "inline-block" }),
 				When.connected(() => this.setupSizeObserver())
 			);
 			
@@ -109,7 +109,7 @@ namespace App
 					},
 					Hot.on("focusout", () => this.actionRecord.text = this.text),
 					Hot.on("input", () => this.actionRecord.text = this.text),
-					Hot.css(":empty", { textAlign: "left" }),
+					Hot.css(":empty !", { textAlign: "left" }),
 					
 					Editable.single({
 						placeholderText: "Enter Button Text...",

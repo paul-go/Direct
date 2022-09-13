@@ -115,7 +115,7 @@ namespace App
 						zIndex: 1,
 						borderBottomRightRadius: UI.borderRadius.large,
 					},
-					!TAURI && Hot.css("." + CssClass.appContainerMaxed + " &", {
+					!TAURI && Hot.css("." + CssClass.appContainerMaxed + " & !", {
 						borderBottomLeftRadius: UI.borderRadius.large
 					}),
 					

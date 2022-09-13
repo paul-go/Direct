@@ -49,13 +49,13 @@ namespace App
 		private readonly showTime = Date.now();
 		
 		/** */
-		private readonly show = Hot.css({
+		private readonly show = Hot.css("& !", {
 			opacity: 1,
 			transform: "translateY(0) scale(1)",
 		});
 		
 		/** */
-		private readonly hide = Hot.css({
+		private readonly hide = Hot.css("& !", {
 			opacity: 0,
 			transform: "translateY(10px) scale(0.8)",
 		});

@@ -159,7 +159,7 @@ namespace App
 		 */
 		export function createPublishButton(label: string, clickFn: () => void)
 		{
-			toolButtonCls ||= Hot.css(":not(:first-child)", { marginTop: "10px" });
+			toolButtonCls ||= Hot.css(":not(:first-child) !", { marginTop: "10px" });
 			
 			return UI.toolButton(
 				toolButtonCls,
@@ -494,13 +494,13 @@ namespace App
 		/** */
 		export function visibleWhenAlone()
 		{
-			return Hot.css(":not(:only-child)", { display: "none" });
+			return Hot.css(":not(:only-child) !", { display: "none" });
 		}
 		
 		/** */
 		export function visibleWhenNotAlone()
 		{
-			return Hot.css(":only-child", { display: "none" });
+			return Hot.css(":only-child !", { display: "none" });
 		}
 		
 		/** */
@@ -801,7 +801,7 @@ namespace App
 								fontSize: "22px",
 								fontWeight: 600,
 							},
-							Hot.css(":hover", { backgroundColor: "#007cd3" }),
+							Hot.css(":hover !", { backgroundColor: "#007cd3" }),
 							UI.clickable,
 							Hot.on("click", ev =>
 							{
@@ -936,12 +936,12 @@ namespace App
 			message: string,
 			type: "error" | "info")
 		{
-			const clsVisible = Hot.css({
+			const clsVisible = Hot.css("& !", {
 				opacity: 1,
 				transform: "translateY(0)",
 			});
 			
-			const clsInvisible = Hot.css({
+			const clsInvisible = Hot.css("& !", {
 				opacity: 0,
 				transform: "translateY(20px)",
 			});

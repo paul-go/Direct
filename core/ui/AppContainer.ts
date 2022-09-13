@@ -55,7 +55,7 @@ namespace App
 							transitionProperty: "opacity",
 						},
 						UI.backdropBlur(8),
-						Hot.css(":hover", { opacity: 1 })
+						Hot.css(":hover !", { opacity: 1 })
 					);
 					
 					titleBar.setAttribute("data-tauri-drag-region", "");
