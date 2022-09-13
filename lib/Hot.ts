@@ -8,6 +8,8 @@ interface CSSStyleDeclaration
 {
 	backdropFilter: string;
 	webkitBackdropFilter: string;
+	scrollbarWidth: string;
+	msOverflowStyle: string;
 }
 
 /**
@@ -65,13 +67,18 @@ namespace Hot { { } }
 	}
 	
 	/** */
-	function get(...elements: Element[])
+	function get(...elements: (Element | Hot.HatLike)[])
 	{
 		return (...params: Hot.Param[]) =>
 		{
 			for (const e of elements)
+			{
 				if (e instanceof Element)
 					apply(e, params);
+				
+				else if ((e as Hot.HatLike).head instanceof HTMLElement)
+					apply((e as Hot.HatLike).head, params);
+			}
 			
 			return elements[0] || null;
 		};
@@ -162,14 +169,17 @@ namespace Hot { { } }
 							for (const [attrName, attrValue] of Object.entries(value || {}))
 								e.setAttribute("data-" + attrName, String(attrValue));
 						}
-						// Width and height properties are special cased.
+						// Width, height, and background properties are special cased.
 						// They are interpreted as CSS properties rather
 						// than HTML attributes.
-						else if (name in e && name !== "width" && name !== "height")
+						else if (name in e && 
+							name !== "background" && 
+							name !== "width" && 
+							name !== "height")
 							el[name] = value;
 						
 						else if (cssPropertySet.has(name))
-							el.style[name] = value.toString();
+							setProperty(el, name, value);
 					}
 				}
 				break; case Function:
@@ -199,7 +209,7 @@ namespace Hot { { } }
 	let cssPropertySet: Set<string> | null = null;
 	
 	/** */
-	function css(selectorOrStyles: string | Hot.Style, ...styles: Hot.Style[])
+	function css(...components: (string | Hot.Style)[])
 	{
 		if (!inlineRuleSheet)
 		{
@@ -208,38 +218,78 @@ namespace Hot { { } }
 			inlineRuleSheet = style.sheet!;
 		}
 		
-		if (typeof selectorOrStyles !== "string")
-			styles.unshift(selectorOrStyles);
+		const groups: { selector: string, styles: Hot.Style[] }[] = [{ selector: "", styles: [] }];
 		
-		const selector = typeof selectorOrStyles === "string" ? selectorOrStyles : "";
-		const cssClass = "c" + (index++);
-		const selectorParts = selector.split("&");
-		const selectorFinal = selectorParts.length === 1 ?
-			"." + cssClass + selector :
-			selectorParts.join("." + cssClass);
-		
-		const idx = inlineRuleSheet.insertRule(selectorFinal + "{}");
-		const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
-		
-		for (const stylesObject of styles)
+		for (let i = -1; ++i < components.length;)
 		{
-			for (let [n, v] of Object.entries(stylesObject))
-			{
-				if (typeof v === "number")
-					v = String(v || 0);
+			const cur = components[i];
+			const last = i > 0 && components[i - 1];
+			
+			if (typeof cur === "string" && typeof last === "object")
+				groups.push({ selector: "", styles: [] });
 				
-				if (typeof v === "string")
+			const group = groups[groups.length - 1];
+			
+			if (typeof cur === "string")
+				group.selector += cur;
+			else
+				group.styles.push(cur);
+		}
+		
+		const generatedCssClass = "c" + (index++);
+		
+		for (const group of groups)
+		{
+			const selectorParts = group.selector.split("&");
+			const [selector] = trimImportant(
+				selectorParts.length === 1 ?
+					"." + generatedCssClass + group.selector :
+					selectorParts.join("." + generatedCssClass));
+			
+			const idx = inlineRuleSheet.insertRule(selector + "{}");
+			const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
+			
+			for (const stylesObject of group.styles)
+			{
+				for (let [n, v] of Object.entries(stylesObject))
 				{
-					n = n.replace(/[A-Z]/g, char => "-" + char.toLowerCase());
+					if (typeof v === "number")
+						v = String(v || 0);
 					
-					// The properties of inline rules are always important, because there
-					// are no conceivable cases where they shouldn't override the inline styles.
-					cssRule.style.setProperty(n, v, "important");
+					if (typeof v === "string")
+						setProperty(cssRule, n, v, selector);
 				}
 			}
 		}
 		
-		return cssClass;
+		return generatedCssClass;
+	}
+	
+	/** */
+	function setProperty(
+		styleable: { style: CSSStyleDeclaration },
+		property: string,
+		value: string | number,
+		selectorOfContainingRule = "")
+	{
+		const [, selectorImportant] = trimImportant(selectorOfContainingRule);
+		const [v, valueImportant] = trimImportant(String(value));
+		const n = property.replace(/[A-Z]/g, char => "-" + char.toLowerCase());
+		styleable.style.setProperty(n, v, selectorImportant || valueImportant);
+	}
+	
+	/** */
+	function trimImportant(str: string): [string, string | undefined]
+	{
+		if (str.slice(-1) === "!")
+			str = str.slice(0, -1);
+		
+		else if (str.slice(-10) === "!important")
+			str = str.slice(0, -10);
+		
+		else return [str, undefined];
+		
+		return [str, "important"];
 	}
 	
 	let inlineRuleSheet: CSSStyleSheet | undefined;
@@ -448,6 +498,7 @@ namespace Hot
 		name: string;
 		id: string;
 		class: string;
+		style: string;
 		contentEditable: boolean | string;
 		tabIndex: number;
 		data: Record<string, string | number | boolean>;
@@ -500,6 +551,9 @@ namespace Hot
 	export type Closure = ((e: HTMLElement) => Param | Param[]);
 	
 	/** */
+	export type HatLike = { readonly head: HTMLElement; };
+	
+	/** */
 	export type Param<T = ElementAttribute> =
 		// Single class name
 		string |
@@ -514,8 +568,7 @@ namespace Hot
 		NodeLike |
 		Style |
 		Partial<T> |
-		// Affordance for Hats
-		{ readonly head: HTMLElement; };
+		HatLike;
 	
 	export declare function a(...params: Param<AnchorElementAttribute>[]): HTMLAnchorElement;
 	export declare function abbr(...params: Param[]): HTMLElement;
@@ -663,8 +716,7 @@ namespace Hot
 	}
 	
 	/** */
-	export declare function css(selectorSuffix: string, ...properties: Hot.Style[]): string;
-	export declare function css(...properties: Hot.Style[]): string;
+	export declare function css(...components: (string | Hot.Style)[]): string;
 	
 	/**
 	 * 
@@ -674,7 +726,9 @@ namespace Hot
 	/**
 	 * Creates a new Hot context from the specified Element or series of Elements.
 	 */
-	export declare function get<E extends Element>(e: E, ...others: Element[]): (...params: Param[]) => E;
+	export declare function get<T extends Element | HatLike>(
+		e: T, ...others: Element[]
+	): (...params: Param[]) => T;
 	
 	declare var module: any;
 	if (typeof module === "object")
