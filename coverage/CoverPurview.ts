@@ -23,9 +23,9 @@ namespace Cover
 		
 		purview.handleReviewRequest(async preview =>
 		{
-			const snappable = new Player.Snappable();
+			const scenery = new Player.Scenery();
 			
-			snappable.insert(
+			scenery.insert(
 				Hot.div(
 					squareClass,
 					{
@@ -44,7 +44,7 @@ namespace Cover
 				),
 			);
 			
-			return snappable;
+			return scenery;
 		});
 		
 		purview.gotoPreviews();

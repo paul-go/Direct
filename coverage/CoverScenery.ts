@@ -2,11 +2,11 @@
 namespace Cover
 {
 	/** */
-	export async function coverSnappable()
+	export async function coverScenery()
 	{
 		App.Css.append();
 		
-		const snappable = new Player.Snappable({
+		const scenery = new Player.Scenery({
 			height: "100vh",
 			fontSize: "20vw",
 			textAlign: "center",
@@ -42,7 +42,7 @@ namespace Cover
 			),
 		);
 		
-		snappable.scrollFn(visibles =>
+		scenery.scrollFn(visibles =>
 		{
 			for (const visible of visibles)
 			{
@@ -55,7 +55,7 @@ namespace Cover
 		});
 		
 		Hot.get(document.body)(
-			snappable,
+			scenery,
 			{
 				tabIndex: 0,
 				height: "auto",
@@ -65,11 +65,11 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverSnappableInsertingSections()
+	export async function coverSceneryInsertingSections()
 	{
 		App.Css.append();
 		
-		const snappable = new Player.Snappable({
+		const scenery = new Player.Scenery({
 			height: "100vh",
 			fontSize: "20vw",
 			textAlign: "center",
@@ -78,7 +78,7 @@ namespace Cover
 		
 		const insert = (at: number) =>
 		{
-			snappable.insert(at, Hot.div(
+			scenery.insert(at, Hot.div(
 				{
 					height: "100%",
 					background: "linear-gradient(black, white)",
@@ -91,11 +91,11 @@ namespace Cover
 		insert(-2);
 		insert(10);
 		
-		document.body.append(snappable.head);
+		document.body.append(scenery.head);
 	}
 	
 	/** */
-	export async function coverSnappableStickySections()
+	export async function coverSceneryStickySections()
 	{
 		App.Css.append();
 		
@@ -105,7 +105,7 @@ namespace Cover
 		let last: HTMLElement;
 		let exit: HTMLElement;
 		
-		const snappable = new Player.Snappable({
+		const scenery = new Player.Scenery({
 			height: "100vh",
 			fontSize: "20vw",
 			textAlign: "center",
@@ -149,7 +149,7 @@ namespace Cover
 			),
 		);
 		
-		snappable.scrollFn(states =>
+		scenery.scrollFn(states =>
 		{
 			const enterState = states.find(st => st.element === enter);
 			if (enterState)
@@ -176,17 +176,17 @@ namespace Cover
 		});
 		
 		Hot.get(document.body)(
-			snappable,
+			scenery,
 		);
 		
 		setTimeout(() =>
 		{
-			snappable.getSection(1).anchor.scrollIntoView({ block: "start", behavior: "auto" });
+			scenery.getSection(1).anchor.scrollIntoView({ block: "start", behavior: "auto" });
 		});
 	}
 	
 	/** */
-	export async function coverSnappableOneStickySection()
+	export async function coverSceneryOneStickySection()
 	{
 		App.Css.append();
 		
@@ -194,7 +194,7 @@ namespace Cover
 		let section: HTMLElement;
 		let exit: HTMLElement;
 		
-		const snappable = new Player.Snappable({
+		const scenery = new Player.Scenery({
 			height: "100vh",
 			fontSize: "20vw",
 			textAlign: "center",
@@ -225,7 +225,7 @@ namespace Cover
 			),
 		);
 		
-		snappable.scrollFn(states =>
+		scenery.scrollFn(states =>
 		{
 			const enterState = states.find(st => st.element === enter);
 			const exitState = states.find(st => st.element === exit);
@@ -248,12 +248,12 @@ namespace Cover
 		});
 		
 		Hot.get(document.body)(
-			snappable,
+			scenery,
 		);
 		
 		setTimeout(() =>
 		{
-			snappable.getSection(1).anchor.scrollIntoView({ block: "start", behavior: "auto" });
+			scenery.getSection(1).anchor.scrollIntoView({ block: "start", behavior: "auto" });
 		});
 	}
 }

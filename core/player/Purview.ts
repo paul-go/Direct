@@ -390,14 +390,14 @@ namespace Player
 		//# Review Related
 		
 		/**
-		 * Gets a reference to the Snappable class being used
+		 * Gets a reference to the Scenery class being used
 		 * to display the current review.
 		 */
-		get currentSnappable()
+		get currentScenery()
 		{
-			return this._currentSnappable;
+			return this._currentScenery;
 		}
-		private _currentSnappable: Snappable | null = null;
+		private _currentScenery: Scenery | null = null;
 		
 		/**
 		 * Gets a reference to the object that was specified
@@ -477,9 +477,9 @@ namespace Player
 			if (!requestResult)
 				return;
 			
-			const snappable = requestResult instanceof Snappable ?
+			const scenery = requestResult instanceof Scenery ?
 				requestResult :
-				new Snappable().insert(requestResult);
+				new Scenery().insert(requestResult);
 			
 			const exitHeight = 100;
 			const exitStyles: Hot.Style = {
@@ -490,17 +490,17 @@ namespace Player
 			const exitUpElement = Hot.div("exit-up", exitStyles);
 			const exitDownElement = Hot.div("exit-down", exitStyles);
 			
-			snappable.insert(0, exitUpElement);
-			snappable.insert(exitDownElement);
+			scenery.insert(0, exitUpElement);
+			scenery.insert(exitDownElement);
 			
-			this._currentSnappable = snappable;
+			this._currentScenery = scenery;
 			this._currentPreview = previewHat;
 			this._mode = PurviewMode.review;
-			this.reviewContainer.replaceChildren(snappable.head);
+			this.reviewContainer.replaceChildren(scenery.head);
 			
 			// Make sure the first visible frame is shown (not the exitUpElement)
-			const section1 = snappable.getSection(1);
-			const sectionLast = snappable.getSection(-2);
+			const section1 = scenery.getSection(1);
+			const sectionLast = scenery.getSection(-2);
 			
 			// This is a bit awkward, but if the height of section1 is less
 			// than the height of the viewport, strange UI will happen.
@@ -517,7 +517,7 @@ namespace Player
 			
 			this.setScalerTransform(1);
 			
-			Hot.get(snappable)({
+			Hot.get(scenery)({
 				position: "absolute",
 				top: 0,
 				left: 0,
@@ -533,12 +533,12 @@ namespace Player
 			});
 			
 			await new Promise(r => setTimeout(r));
-			snappable.head.scrollTo({ top: section1.anchor.offsetTop });
+			scenery.head.scrollTo({ top: section1.anchor.offsetTop });
 			this.reviewContainer.style.opacity = "1";
 			await waitTransitionEnd(this.reviewContainer);
 			this.toggleScalerTransitions(false);
 			
-			snappable.scrollFn(states => window.requestAnimationFrame(() =>
+			scenery.scrollFn(states => window.requestAnimationFrame(() =>
 			{
 				const exitUpState = states.find(st => st.element === exitUpElement);
 				const exitDownState = states.find(st => st.element === exitDownElement);
@@ -582,7 +582,7 @@ namespace Player
 		/** */
 		private exitReview()
 		{
-			this._currentSnappable = null;
+			this._currentScenery = null;
 			this._mode = PurviewMode.preview;
 			this._scalerTranslateX = minInt;
 			this._scalerTranslateY = minInt;
@@ -704,7 +704,7 @@ namespace Player
 	
 	/** */
 	export type GetReviewFn<THat extends Hot.HatLike> = 
-		(hat: THat) => Promise<HTMLElement | Snappable>;
+		(hat: THat) => Promise<HTMLElement | Scenery>;
 	
 	/** */
 	export interface IReviewRequestInfo

@@ -2,7 +2,7 @@
 namespace Player
 {
 	/** */
-	export class Snappable
+	export class Scenery
 	{
 		/** */
 		constructor(...params: Hot.Param[])
@@ -10,7 +10,7 @@ namespace Player
 			[this.scrollFn, this._scrollFn] = Force.create<(states: IVisibleElementState[]) => void>();
 			
 			this.head = Hot.div(
-				"snappable",
+				"scenery",
 				{
 					overflowX: "hidden",
 					overflowY: "auto",
@@ -36,7 +36,7 @@ namespace Player
 					this.handleConnected();
 					
 					// The scroll-snapping is enabled after the sections have
-					// been added to the Snappable. If we do this right away
+					// been added to the Scenery. If we do this right away
 					// in the constructor, you'll get weird jumping behavior.
 					this.head.style.scrollSnapType = "y mandatory";
 				}),
@@ -46,7 +46,7 @@ namespace Player
 		}
 		
 		readonly head: HTMLElement;
-		private readonly sections: ISnappableSectionInternal[] = [];
+		private readonly sections: IScenerySectionInternal[] = [];
 		
 		readonly scrollFn;
 		private readonly _scrollFn;
@@ -65,12 +65,12 @@ namespace Player
 				index = this.sections.length + index;
 			
 			index = Math.max(0, Math.min(this.sections.length - 1, index));
-			return this.sections[index] as ISnappableSection;
+			return this.sections[index] as IScenerySection;
 		}
 		
 		/** */
-		insert(...elements: HTMLElement[]): Snappable;
-		insert(at: number, ...elements: HTMLElement[]): Snappable;
+		insert(...elements: HTMLElement[]): Scenery;
+		insert(at: number, ...elements: HTMLElement[]): Scenery;
 		insert(a: number | HTMLElement, ...elements: HTMLElement[])
 		{
 			elements = elements.slice();
@@ -78,7 +78,7 @@ namespace Player
 				elements.unshift(a);
 			
 			const newElements: HTMLElement[] = [];
-			const newSections: ISnappableSectionInternal[] = [];
+			const newSections: IScenerySectionInternal[] = [];
 			
 			for (const element of elements)
 			{
@@ -275,7 +275,7 @@ namespace Player
 	}
 	
 	/** */
-	export interface ISnappableSection
+	export interface IScenerySection
 	{
 		readonly anchor: HTMLAnchorElement;
 		readonly spacer: HTMLElement;
@@ -283,7 +283,7 @@ namespace Player
 	}
 	
 	/** */
-	interface ISnappableSectionInternal extends ISnappableSection
+	interface IScenerySectionInternal extends IScenerySection
 	{
 		height: number;
 	}
@@ -299,7 +299,7 @@ namespace Player
 		
 		/**
 		 * The height of the element, expressed percentage
-		 * of the height of the Snappable viewport.
+		 * of the height of the Scenery viewport.
 		 */
 		readonly elementHeight: number;
 		
