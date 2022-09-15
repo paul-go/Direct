@@ -172,8 +172,8 @@ namespace App
 			
 			let element: HTMLElement;
 			
-			const cls = MimeType.getClass(bg.media.type);
-			if (cls === MimeClass.image)
+			const mimeClass = MimeType.getClass(bg.media.type);
+			if (mimeClass === MimeClass.image)
 			{
 				element = Hot.div(
 					CssClass.canvasSceneBackground,
@@ -188,9 +188,9 @@ namespace App
 				}
 				else
 				{
-					const cls = "." + this.root.classOf(element);
+					const cls = "." + this.classGenerator.classOf(element);
 					
-					this.root.addCssRules(
+					this.cssRules.push(
 						Css.media(
 							"max-width: " + ConstN.playerMaxWidth + "px", {
 								[cls]: {
@@ -216,7 +216,7 @@ namespace App
 					);
 				}
 			}
-			else if (cls === MimeClass.video)
+			else if (mimeClass === MimeClass.video)
 			{
 				element = Hot.video(
 					CssClass.canvasSceneBackground,

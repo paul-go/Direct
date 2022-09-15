@@ -179,53 +179,34 @@ namespace App
 		{ }
 		
 		/** */
-		addCssRules(...rules: (Css.VirtualCssMediaQuery | Css.VirtualCssRule)[])
-		{
-			this.rules.push(...rules);
-		}
-		private readonly rules: (Css.VirtualCssMediaQuery | Css.VirtualCssRule)[] = [];
-		
-		/**
-		 * Returns the CSS class name that is uniquely assigned to the specified HTMLElement.
-		 */
-		classOf(e: HTMLElement)
-		{
-			let cls = this.elementClasses.get(e);
-			if (cls)
-				return cls;
-			
-			cls = "_" + (++this.nextClassIdx);
-			this.elementClasses.set(e, cls);
-			e.classList.add(cls);
-			return cls;
-		}
-		
-		private readonly elementClasses = new WeakMap<HTMLElement, string>();
-		private nextClassIdx = 0;
-		
-		/** */
 		async render()
 		{
 			const scenes: any[] = [];
+			const classGenerator = new CssClassGenerator();
+			const rules: (Css.VirtualCssMediaQuery | Css.VirtualCssRule)[] = [];
 			
 			for (const scene of this.post.scenes)
 			{
 				const renderer = 
 					scene instanceof CanvasSceneRecord ?
-						new CanvasSceneRenderer(this, scene) :
+						new CanvasSceneRenderer(scene, this.isPreview) :
 					
 					scene instanceof GallerySceneRecord ?
-						new GallerySceneRenderer(this, scene) :
+						new GallerySceneRenderer(scene, this.isPreview) :
 				
 					scene instanceof ProseSceneRecord ?
-						new ProseSceneRenderer(this, scene) : null;
+						new ProseSceneRenderer(scene, this.isPreview) : null;
 				
-				if (renderer)
-					scenes.push(await renderer.render());
+				if (!renderer)
+					continue;
+				
+				renderer.classGenerator = classGenerator;
+				scenes.push(await renderer.render());
+				rules.push(...renderer.cssRules);
 			}
 			
 			const storyElement = Hot.div("story", scenes);
-			const cssText = this.rules.join("\n");
+			const cssText = rules.join("\n");
 			
 			return {
 				storyElement,
