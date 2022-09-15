@@ -127,40 +127,6 @@ namespace App.RenderUtil
 	/**
 	 * 
 	 */
-	export function createVideoFiller(src: string, srcVideo: HTMLVideoElement)
-	{
-		const type = srcVideo.getAttribute("type") || "";
-		let fillerVideo: HTMLVideoElement;
-		
-		const container = Hot.div(
-			"video-filler",
-			UI.anchor(),
-			{
-				overflow: "hidden",
-				zIndex: -1,
-			},
-			fillerVideo = Hot.video({
-				src,
-				type,
-				controls: false,
-				playsInline: true,
-				objectFit: "fill",
-				position: "absolute",
-				top: -(ConstN.fillerContentBlur * 4) + "px",
-				left: -(ConstN.fillerContentBlur * 4) + "px",
-				width: `calc(100% + ${ConstN.fillerContentBlur * 8}px)`,
-				height: `calc(100% + ${ConstN.fillerContentBlur * 8}px)`,
-				filter: `blur(${ConstN.fillerContentBlur}px)`,
-			})
-		);
-		
-		Player.synchronizeVideos(srcVideo, fillerVideo);
-		return container;
-	}
-	
-	/**
-	 * 
-	 */
 	export function createVideoBackground(src: string, mimeType: string)
 	{
 		return Hot.video({

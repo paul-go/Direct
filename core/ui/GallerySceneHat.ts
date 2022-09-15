@@ -164,7 +164,7 @@ namespace App
 		{
 			const media = record.media!;
 			const isImage = MimeType.getClass(media.type) === MimeClass.image;
-			let filler: HTMLElement;
+			let filler: HTMLElement | null = null;
 			
 			if (isImage)
 			{
@@ -181,9 +181,9 @@ namespace App
 					src: media.getBlobUrl()
 				});
 				
+				// Add this regardless of whether the video uses the filled object style
+				this.mediaElement.classList.add(Player.VideoFiller.fillObjectClass);
 				this.mediaElement.controls = true;
-				const src = media.getBlobUrl();
-				filler = RenderUtil.createVideoFiller(src, this.mediaElement);
 			}
 			
 			const s = this.mediaElement.style;

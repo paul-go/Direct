@@ -39,14 +39,8 @@ namespace App
 			else
 			{
 				const mainVideo = RenderUtil.createVideo(htmlSrc, frame.media.type, frame.size);
-				const fillerVideo = frame.size === "contain" ?
-					RenderUtil.createVideoFiller(htmlSrc, mainVideo) :
-					null;
-				
-				Hot.get(frameDiv)(
-					fillerVideo,
-					mainVideo,
-				);
+				mainVideo.classList.add(Player.VideoFiller.fillObjectClass);
+				frameDiv.append(mainVideo);
 			}
 			
 			if (frame.captionLine1 || frame.captionLine2)
