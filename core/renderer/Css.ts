@@ -312,10 +312,10 @@ namespace App.Css
 				"opacity": `var(${ConstS.contrastProperty})`,
 			}),
 			rule("." + CssClass.textContrastDark + ":before", {
-				"background-image": Util.createCssUrl("res.blur-black.png"),
+				"background-image": `url(${CssDataUris.blurBlack})`,
 			}),
 			rule("." + CssClass.textContrastLight + ":before", {
-				"background-image": Util.createCssUrl("res.blur-white.png"),
+				"background-image": `url(${CssDataUris.blurWhite})`,
 			}),
 			rule("." + CssClass.inheritMargin, {
 				"margin-left": "inherit",

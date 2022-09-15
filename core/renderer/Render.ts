@@ -46,27 +46,6 @@ namespace App
 				});
 			}
 			
-			// Text Contrast Images
-			{
-				const blurBlack = await readStandardFile(ConstS.textContrastBlackName);
-				const blurWhite = await readStandardFile(ConstS.textContrastWhiteName);
-				
-				files.push(
-					{
-						data: blurBlack,
-						mime: MimeType.png,
-						fileName: ConstS.textContrastBlackName,
-						folderName: "",
-					},
-					{
-						data: blurWhite,
-						mime: MimeType.png,
-						fileName: ConstS.textContrastWhiteName,
-						folderName: "",
-					}
-				);
-			}
-			
 			return files;
 		}
 		
@@ -164,54 +143,39 @@ namespace App
 		{
 			return new PostRenderer(post, blog, false).render();
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	export class PostRenderer
-	{
-		/** */
-		constructor(
-			readonly post: PostRecord,
-			readonly blog: Blog,
-			readonly isPreview: boolean)
-		{ }
 		
-		/** */
-		async render()
+		/**
+		 * Rasterizes the specified HTML content to a CanvasRenderingContext2D,
+		 * whose dimensions are equal to the specified viewport width and height.
+		 */
+		export async function rasterizeHtml(
+			htmlContent: string,
+			viewportWidth: number,
+			viewportHeight: number)
 		{
-			const scenes: any[] = [];
-			const classGenerator = new CssClassGenerator();
-			const rules: (Css.VirtualCssMediaQuery | Css.VirtualCssRule)[] = [];
+			const image = new Image();
+			const [w, h] = [viewportWidth, viewportHeight];
+			const canvas = Hot.canvas({ width: w, height: h });
+			const ctx = canvas.getContext("2d")!;
+			const svgText = 
+				`<svg xmlns="http://www.w3.org/2000/svg" width="${w}px" height="${h}px">` +
+					`<foreignObject width="100%" height="100%">` +
+						`<div xmlns="http://www.w3.org/1999/xhtml">` +
+							htmlContent +
+						`</div>` +
+					`</foreignObject>` +
+				`</svg>`;
 			
-			for (const scene of this.post.scenes)
+			return new Promise<CanvasRenderingContext2D>(resolve =>
 			{
-				const renderer = 
-					scene instanceof CanvasSceneRecord ?
-						new CanvasSceneRenderer(scene, this.isPreview) :
-					
-					scene instanceof GallerySceneRecord ?
-						new GallerySceneRenderer(scene, this.isPreview) :
+				image.onload = () =>
+				{
+					ctx.drawImage(image, 0, 0, w, h);
+					resolve(ctx);
+				};
 				
-					scene instanceof ProseSceneRecord ?
-						new ProseSceneRenderer(scene, this.isPreview) : null;
-				
-				if (!renderer)
-					continue;
-				
-				renderer.classGenerator = classGenerator;
-				scenes.push(await renderer.render());
-				rules.push(...renderer.cssRules);
-			}
-			
-			const storyElement = Hot.div("story", scenes);
-			const cssText = rules.join("\n");
-			
-			return {
-				storyElement,
-				cssText,
-			};
+				image.src = `data:image/svg+xml;charset=utf-8,` + svgText;
+			});
 		}
 	}
 }
