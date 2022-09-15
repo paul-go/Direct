@@ -81,7 +81,7 @@ class Keyva
 	 * @returns The first object in the Keyva database within the index,
 	 * or null in the case when no matching object could be found.
 	 */
-	get<T = any>(value: Keyva.Key, index: string): Promise<T>;
+	get<T = any>(key: Keyva.Key, index: string): Promise<T>;
 	/**
 	 * Gets an array of keys and objects, where the keys are within
 	 * the specified range, optionally from the specified index.
@@ -338,7 +338,7 @@ namespace Keyva
 	export type Key = string | number | Date | BufferSource;
 	
 	if (typeof Symbol === "undefined")
-		(window as any).Symbol = () => Object.freeze({});
+		(window as any).Symbol = (name: string) => Object.freeze({ name });
 	
 	export const keys = Symbol("keys");
 	export const values = Symbol("values");
