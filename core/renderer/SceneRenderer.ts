@@ -7,9 +7,24 @@ namespace App
 	export abstract class SceneRenderer<TScene extends SceneRecord>
 	{
 		/** */
-		constructor(
+		static create<TScene extends SceneRecord>(scene: TScene, isPreview = true)
+		{
+			if (scene instanceof CanvasSceneRecord)
+				return new CanvasSceneRenderer(scene, isPreview);
+					
+			if (scene instanceof GallerySceneRecord)
+				return new GallerySceneRenderer(scene, isPreview);
+			
+			if (scene instanceof ProseSceneRecord)
+				return new ProseSceneRenderer(scene, isPreview);
+			
+			return null;
+		}
+		
+		/** */
+		protected constructor(
 			protected readonly scene: TScene,
-			protected readonly isPreview = true)
+			protected readonly isPreview: boolean)
 		{
 			this.colors = RenderUtil.resolveColors(this.scene);
 		}
