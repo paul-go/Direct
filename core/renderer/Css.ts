@@ -65,9 +65,6 @@ namespace App.Css
 				"width": "100%",
 				"height": "100%",
 			}),
-			rule("." + CssClass.snapFooter, {
-				"scroll-snap-align": "end",
-			}),
 			rule("." + CssClass.canvasScene + ", ." + CssClass.proseScene, {
 				"padding": "20px",
 			}),

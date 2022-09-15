@@ -66,7 +66,6 @@ const enum CssClass
 	galleryFrame = "frame",
 	galleryFrameLegend = "frame-legend",
 	videoScene = "scene-video",
-	snapFooter = "snap-footer",
 	textContrast = "text-contrast",
 	textContrastDark = "text-contrast-dark",
 	textContrastLight = "text-contrast-light",

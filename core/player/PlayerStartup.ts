@@ -15,10 +15,5 @@ namespace Player
 			return;
 		
 		document.removeEventListener("readystatechange", fn);
-		const storiesQuery = document.getElementsByClassName("story");
-		const stories = Array.from(storiesQuery) as HTMLElement[];
-		
-		for (const story of stories)
-			new Story(story);
 	});
 }

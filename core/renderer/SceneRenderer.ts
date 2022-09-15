@@ -86,18 +86,11 @@ namespace App
 						}
 					},
 					contents
-				),
-				this.renderContentsAfter(),
+				)
 			];
 		}
 		
 		/** */
 		protected abstract renderContents(): Hot.Param | Promise<Hot.Param>;
-		
-		/** */
-		protected renderContentsAfter()
-		{
-			return null as Hot.Param;
-		}
 	}
 }

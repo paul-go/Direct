@@ -27,11 +27,5 @@ namespace App
 				)
 			];
 		}
-		
-		/** */
-		protected renderContentsAfter()
-		{
-			return Hot.div(CssClass.snapFooter);
-		}
 	}
 }

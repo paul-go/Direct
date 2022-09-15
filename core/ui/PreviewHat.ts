@@ -37,8 +37,6 @@ namespace App
 						this.previewRoot.replaceChildren(
 							postPreview.storyElement,
 							styleElement);
-						
-						new Player.Story(postPreview.storyElement);
 					})
 				),
 				
