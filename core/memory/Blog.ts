@@ -70,7 +70,7 @@ namespace App
 			for (const [key, object] of blogResults)
 			{
 				const blog = await Blog.create(object);
-				blog._segment = Key.segmentOf(key as string);
+				blog._keySegment = Key.segmentOf(key as string);
 			}
 		}
 		
@@ -134,7 +134,7 @@ namespace App
 				return;
 			
 			const store = Store.current();
-			const range = Key.startsWith(blog.segment);
+			const range = Key.startsWith(blog.keySegment);
 			
 			await Promise.allSettled([
 				store.delete(range),
@@ -156,11 +156,11 @@ namespace App
 		private constructor() { }
 		
 		/** */
-		private get segment()
+		private get keySegment()
 		{
-			return this._segment ||= Key.next();
+			return this._keySegment ||= Key.next();
 		}
-		private _segment = "";
+		private _keySegment = "";
 		
 		/** */
 		get friendlyName()
@@ -269,19 +269,19 @@ namespace App
 		private save()
 		{
 			const blogObject = this.toJSON();
-			return Store.current().set(this.segment.toString(), blogObject);
+			return Store.current().set(this.keySegment, blogObject);
 		}
 		
 		/** */
 		keepPost(post: PostRecord)
 		{
-			return Model.keep(post, this.segment);
+			return Model.keep(post, this.keySegment);
 		}
 		
 		/** */
 		async * eachPartialPost()
 		{
-			const range = Key.startsWith(this.segment, Key.stableOf(PostRecord));
+			const range = Key.startsWith(this.keySegment, Key.stableOf(PostRecord));
 			for (const [key, result] of await Store.current().get(range))
 			{
 				const rawPost: PostRecord = result;
@@ -303,7 +303,7 @@ namespace App
 				blobs: [],
 			};
 			
-			const range = Key.startsWith(this.segment);
+			const range = Key.startsWith(this.keySegment);
 			
 			for (const [key, object] of await Store.current().get(range))
 			{

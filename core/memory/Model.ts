@@ -14,24 +14,19 @@ namespace App.Model
 	}
 	
 	/** */
-	export async function keep(object: object, segment?: string | object)
+	export async function keep(object: object, keySegment = "")
 	{
-		const seg =
-			typeof segment === "string" ?
-				segment :
-			typeof segment === "object" ?
-				Key.segmentOf(segment) :
-				Key.segmentOf(object);
+		const segment = keySegment || Key.segmentOf(object);
 		
 		for (const sub of Model.recurse(object))
-			if (Key.set(sub, seg))
+			if (Key.set(sub, segment))
 				upgrade(sub);
 		
 		const entries: [Key, object][] = [];
 		
 		const relocateBlob = (blob: Blob) =>
 		{
-			const [key, ref] = BlobReference.create(seg);
+			const [key, ref] = BlobReference.create(segment);
 			entries.push([key, blob]);
 			return ref;
 		};
@@ -275,7 +270,7 @@ namespace App.Model
 					queueDelete(backingValue);
 				
 				if (assignee)
-					queueSave(assignee);
+					queueSave(assignee, object);
 				
 				queueSave(object);
 				return backingValue = assignee;
@@ -299,7 +294,7 @@ namespace App.Model
 						queueDelete(existingObject);
 					
 					for (const newObject of newObjects)
-						queueSave(newObject);
+						queueSave(newObject, object);
 				}
 				
 				queueSave(object);
@@ -342,7 +337,7 @@ namespace App.Model
 						
 						if (forModel)
 							for (const arg of args)
-								queueSave(arg);
+								queueSave(arg, owner);
 						
 						queueSave(owner);
 						return array.push(...args);
@@ -373,7 +368,7 @@ namespace App.Model
 						
 						if (forModel)
 							for (const arg of args)
-								queueSave(arg);
+								queueSave(arg, owner);
 						
 						queueSave(owner);
 						return array.unshift(...args);
@@ -400,7 +395,7 @@ namespace App.Model
 								queueDelete(del);
 							
 							for (const ins of insertables)
-								queueSave(ins);
+								queueSave(ins, owner);
 						}
 						
 						if (deleteCount > 0 || insertables.length > 0)
@@ -432,6 +427,13 @@ namespace App.Model
 			for (const sub of Model.recurse(object))
 				marked.delete(Key.of(sub), ...BlobReference.find(sub));
 		
+		const segment = container ? 
+			Key.segmentOf(container) :
+			Key.segmentOf(object);
+		
+		if (segment)
+			tempSegmentStorage.set(object, segment);
+		
 		clearTimeout(saveTimeoutId);
 		saveTimeoutId = setTimeout(() =>
 		{
@@ -442,11 +444,16 @@ namespace App.Model
 			dirtyObjects.clear();
 			
 			for (const dirtyObject of dirtyObjectsCopy)
-				Model.keep(dirtyObject, container);
+			{
+				const seg = tempSegmentStorage.get(dirtyObject);
+				tempSegmentStorage.delete(dirtyObject);
+				Model.keep(dirtyObject, seg || "");
+			}
 		},
 		1);
 	}
 	let saveTimeoutId: any = 0;
+	const tempSegmentStorage = new WeakMap<object, string>();
 	
 	/** */
 	function queueDelete(object: object)

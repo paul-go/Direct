@@ -95,7 +95,7 @@ namespace App
 		export function segmentOf(via: string | object)
 		{
 			const key = typeof via === "string" ? via : Key.of(via);
-			return parse(key).segment;
+			return key ? parse(key).segment : "";
 		}
 		
 		/** */
@@ -124,7 +124,7 @@ namespace App
 		{
 			Not.falsey(key);
 			
-			const parts = key.split();
+			const parts = key.split(`,`);
 			const unique = parseInt(parts.pop() || "", 36);
 			const stable = Number(parts.pop()) || 0;
 			const segment = parts.pop() || "";
@@ -147,14 +147,4 @@ namespace App
 		
 		const incKey = "__inc__";
 	}
-}
-
-/** */
-declare interface String
-{
-	/**
-	 * Splits this string on the comma character.
-	 * (This is a missing definition from lib.d.ts)
-	 */
-	split(): string[];
 }
