@@ -6,7 +6,7 @@ namespace Cover
 	{
 		App.Css.append();
 		
-		const [blog] = await Cover.createBlog();
+		const [blog] = await Sample.createBlog();
 		
 		const post = new App.PostRecord();
 		post.slug = "slug";
@@ -14,7 +14,7 @@ namespace Cover
 		scene.titles.push({ text: "Title", weight: 700, size: 10, hasColor: false });
 		
 		const background = new App.BackgroundRecord();
-		background.media = readMedia("image-1.jpg");
+		background.media = Sample.readImage(1);
 		scene.backgrounds.push(background);
 		
 		post.scenes.push(scene);

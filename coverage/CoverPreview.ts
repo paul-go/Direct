@@ -43,7 +43,7 @@ namespace Cover
 		scene2.description = "Scene 2 paragraph content.";
 		
 		const background = new App.BackgroundRecord();
-		background.media = Cover.readMedia("image-5.jpg");
+		background.media = Sample.readImage(5);
 		background.zoom = 1;
 		
 		scene2.backgrounds.push(background);
@@ -155,7 +155,7 @@ namespace Cover
 		const { post, blog } = await setup();
 		const scene = new App.CanvasSceneRecord();
 		const background = new App.BackgroundRecord();
-		background.media = Cover.readMedia("image-5.jpg");
+		background.media = Sample.readImage(5);
 		scene.backgrounds.push(background);
 		post.scenes.push(scene);
 		render(post, blog);
@@ -168,7 +168,7 @@ namespace Cover
 		const scene = new App.CanvasSceneRecord();
 		scene.titles.push({ text: "Video", size: 20, weight: 900, hasColor: false });
 		const background = new App.BackgroundRecord();
-		background.media = Cover.readMedia("video-1.mp4");
+		background.media = Sample.readVideo(1);
 		scene.backgrounds.push(background);
 		post.scenes.push(scene);
 		render(post, blog);
@@ -182,18 +182,18 @@ namespace Cover
 		const scene = new App.GallerySceneRecord();
 		
 		const frame0 = new App.FrameRecord();
-		frame0.media = Cover.readMedia("video-1.mp4");
+		frame0.media = Sample.readVideo(1);
 		
 		const frame1 = new App.FrameRecord();
-		frame1.media = Cover.readMedia("image-1.jpg");
+		frame1.media = Sample.readImage(1);
 		frame1.captionLine1 = "Caption Line 1";
 		frame1.size = "cover";
 		
 		const frame2 = new App.FrameRecord();
-		frame2.media = Cover.readMedia("image-2.jpg");
+		frame2.media = Sample.readImage(2);
 		
 		const frame3 = new App.FrameRecord();
-		frame3.media = Cover.readMedia("image-3.jpg");
+		frame3.media = Sample.readImage(3);
 		frame3.captionLine1 = "Caption Line 1";
 		frame3.captionLine2 = "Caption Line 2";
 		
@@ -274,7 +274,7 @@ namespace Cover
 	async function setup()
 	{
 		App.Css.append();
-		const [blog] = await Cover.createBlog();
+		const [blog] = await Sample.createBlog();
 		const post = new App.PostRecord();
 		return { post, blog };
 	}

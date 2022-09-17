@@ -197,7 +197,7 @@ namespace App
 		private save()
 		{
 			this.record.scenes = this.scenes.map(hat => hat.record);
-			AppContainer.of(this).blog.keepPost(this.record);
+			AppContainer.of(this).blog.retainPost(this.record);
 		}
 		
 		/** */
