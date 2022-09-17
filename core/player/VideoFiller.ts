@@ -86,10 +86,10 @@ namespace Player
 				container.style.width = filler.offsetWidth + "px";
 				container.style.height = filler.offsetHeight + "px";
 				
-				Player.observeResize(video, rect =>
+				Player.observeResize(video, (width, height) =>
 				{
-					container.style.width = rect.width + "px";
-					container.style.height = rect.height + "px";
+					container.style.width = width + "px";
+					container.style.height = height + "px";
 				});
 			});
 		}

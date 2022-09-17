@@ -7,7 +7,7 @@ namespace App
 	export class ProseSceneRenderer extends SceneRenderer<ProseSceneRecord>
 	{
 		/** */
-		renderContents()
+		protected renderContents()
 		{
 			const proseElements = RenderUtil.renderTrixDocument(this.scene.content);
 			

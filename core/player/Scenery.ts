@@ -21,9 +21,11 @@ namespace Player
 					right: 0,
 				}),
 				Hot.css("& > A, & > SPAN", {
+					zIndex: -1,
 					position: "relative",
 					display: "block",
 					scrollSnapStop: "always",
+					pointerEvents: "none",
 				}),
 				Hot.css("& > A", {
 					scrollSnapAlign: "start",
@@ -162,10 +164,10 @@ namespace Player
 				if (!usesLayout())
 					dst.style.height = src.offsetHeight + "px";
 				
-				Player.observeResize(src, rect =>
+				Player.observeResize(src, (width, height) =>
 				{
 					if (!usesLayout())
-						dst.style.height = rect.height + "px";
+						dst.style.height = height + "px";
 				});
 			});
 		}

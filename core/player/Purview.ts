@@ -198,18 +198,9 @@ namespace Player
 				return;
 			
 			if (this.mode === PurviewMode.review)
-				return this.gotoPreview();
+				return void await this.exitReviewWithAnimation();
 			
 			this.populatePreviews("below");
-		}
-		
-		/** */
-		async gotoPreview()
-		{
-			if (this.mode === PurviewMode.preview)
-				return;
-			
-			this.exitReviewWithAnimation();
 		}
 		
 		/** */
@@ -226,12 +217,12 @@ namespace Player
 			if (!result)
 				return;
 			
-			const count = rr.rangeEnd - rr.rangeStart;
+			const requestedCount = rr.rangeEnd - rr.rangeStart;
 			const hats = await result;
 			
 			return {
 				promises: hats,
-				terminate: hats.length < count,
+				terminate: hats.length < requestedCount,
 			};
 		}
 		
@@ -260,33 +251,46 @@ namespace Player
 			
 			const elements: HTMLElement[] = [];
 			
-			for (const promise of itemRequest.promises)
+			for (const maybePromise of itemRequest.promises)
 			{
-				const shim = Hot.div("element-placeholder");
-				elements.push(shim);
-				
-				promise.then(hat =>
+				if (maybePromise instanceof Promise)
 				{
-					for (const n of shim.getAttributeNames())
-						if (n !== "style" && n !== "class")
-							hat.head.setAttribute(n, shim.getAttribute(n) || "");
+					const shim = Hot.div("element-placeholder");
+					elements.push(shim);
 					
-					for (const definedProperty of Array.from(shim.style))
+					maybePromise.then(hat =>
 					{
-						hat.head.style.setProperty(
-							definedProperty,
-							shim.style.getPropertyValue(definedProperty));
-					}
+						for (const n of shim.getAttributeNames())
+							if (n !== "style" && n !== "class")
+								hat.head.setAttribute(n, shim.getAttribute(n) || "");
+						
+						for (const definedProperty of Array.from(shim.style))
+						{
+							hat.head.style.setProperty(
+								definedProperty,
+								shim.style.getPropertyValue(definedProperty));
+						}
+						
+						Hot.get(hat.head)(
+							// Classes that have been set on the shim since it was inserted
+							// must be copied over to the element.
+							Array.from(shim.classList), 
+							Hot.on("pointerdown", () => this.gotoReview(hat))
+						);
+						
+						shim.replaceWith(hat.head);
+					});
+				}
+				else
+				{
+					const hat = maybePromise;
 					
 					Hot.get(hat.head)(
-						// Classes that have been set on the shim since it was inserted
-						// must be copied over to the element.
-						Array.from(shim.classList), 
 						Hot.on("pointerdown", () => this.gotoReview(hat))
 					);
 					
-					shim.replaceWith(hat.head);
-				});
+					elements.push(hat.head);
+				}
 			}
 			
 			if (above)
@@ -294,10 +298,7 @@ namespace Player
 				const count = this.prependedPreviewCount;
 				const len = elements.length;
 				for (let i = -1; ++i < len;)
-				{
-					const e = elements[i];
-					setIndex(e, -(count + len + i + 1));
-				}
+					setIndex(elements[i], -(count + len + i + 1));
 				
 				// This thing needs to change the window.scrollY
 				//this.origin.prepend(...elements);
@@ -333,9 +334,15 @@ namespace Player
 			
 			for (let i = visibleItemStart; i < visibleItemEnd; i++)
 			{
-				const e = this.previewsContainer.children.item(i);
+				const children = this.previewsContainer.children;
+				const e = children.item(i);
 				if (!(e instanceof HTMLElement))
+				{
+					if (i >= children.length)
+						break;
+					
 					continue;
+				}
 				
 				const mul = getIndex(e) > 0 ? 1 : -1;
 				e.style.top = (100 * this.rowOf(e) * mul || 0).toFixed(5) + "vh";
@@ -357,6 +364,10 @@ namespace Player
 			this.head.style.height = (100 * rowCount / this.size).toFixed(5) + "vh";
 			this.scalerElement.style.height = (100 * rowCount).toFixed(5) + "vh";
 			
+			if (y === this.lastScrollY)
+				return;
+			
+			this.lastScrollY = y;
 			const isNearingTop = y < rowHeight;
 			const isNearingBottom = (y + wh) > (rowCount - 1) * (wh / this.size);
 			
@@ -367,6 +378,7 @@ namespace Player
 				this.populatePreviews("above", 1);
 		}
 		
+		private lastScrollY = -1;
 		private isPopulatingPreviews = false;
 		
 		/** */
@@ -664,7 +676,7 @@ namespace Player
 	
 	/** */
 	const showClass = Hot.css("&&", {
-		display: "flex",
+		display: "block",
 	});
 	
 	/** */
@@ -700,11 +712,14 @@ namespace Player
 	
 	/** */
 	export type GetPreviewFn<THat extends Hot.HatLike> = 
-		(info: IReviewRequestInfo) => Promise<Promise<THat>[]>;
+		(info: IReviewRequestInfo) => MaybePromise<MaybePromise<THat>[]>;
 	
 	/** */
 	export type GetReviewFn<THat extends Hot.HatLike> = 
-		(hat: THat) => Promise<HTMLElement | Scenery>;
+		(hat: THat) => MaybePromise<HTMLElement | Scenery>;
+	
+	/** */
+	export type MaybePromise<T> = Promise<T> | T;
 	
 	/** */
 	export interface IReviewRequestInfo

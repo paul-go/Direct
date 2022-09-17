@@ -89,6 +89,9 @@ namespace App
 		}
 		
 		/** */
+		inEditMode = false;
+		
+		/** */
 		get blog()
 		{
 			return Not.nullable(this._blog);

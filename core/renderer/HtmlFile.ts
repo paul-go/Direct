@@ -30,11 +30,12 @@ namespace App
 		private cssTextParts: string[] = [];
 		
 		/** */
-		emit(storyElement: HTMLElement, folderDepth = 0)
+		emit(elements: HTMLElement | HTMLElement[], folderDepth = 0)
 		{
+			elements = Array.isArray(elements) ? elements : [elements];
 			const em = new Emitter(this.minify, this.formatAsXml);
 			this.emitUpperHtml(em, folderDepth);
-			this.emitStoryHtml(em, storyElement);
+			this.emitStoryHtml(em, elements);
 			this.emitLowerHtml(em);
 			return em.toString();
 		}
@@ -82,7 +83,7 @@ namespace App
 		}
 		
 		/** */
-		private emitStoryHtml(em: Emitter, storyElement: HTMLElement)
+		private emitStoryHtml(em: Emitter, elements: HTMLElement[])
 		{
 			const recurse = (e: HTMLElement) =>
 			{
@@ -130,17 +131,8 @@ namespace App
 				}
 			}
 			
-			recurse(storyElement);
-			
-			if (!"is this necessary?")
-			{
-				// Pick up the initialization script tag that follows the story element,
-				// though this is unnecessary if the HTML being generated is for the
-				// draft, because the story will have already been initialized.
-				const next = storyElement.nextElementSibling;
-				if (next instanceof HTMLScriptElement)
-					recurse(next);
-			}
+			for (const e of elements)
+				recurse(e);
 		}
 		
 		/** */

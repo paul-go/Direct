@@ -69,28 +69,29 @@ namespace App
 			
 			for (const [key, object] of blogResults)
 			{
-				const blog = await Blog.create(object);
-				blog._keySegment = Key.segmentOf(key as string);
+				const segment = Key.segmentOf(key as string);
+				await Blog.create(object, segment);
 			}
 		}
 		
 		/** */
 		static async new(blogObject: Partial<IBlogExport>)
 		{
-			const blog = await this.create(blogObject);
+			const blog = await this.create(blogObject, Key.next());
 			await blog.save();
 			return blog;
 		}
 		
 		/** */
-		private static async create(blogObject: Partial<IBlogExport>)
+		private static async create(blogObject: Partial<IBlogExport>, segment: string)
 		{
 			const store = Store.current();
-			const blog = new Blog();
+			const blog = new Blog(segment);
 			
 			blog._fixedName = blogObject.fixedName || Util.unique();
 			blog._friendlyName = blogObject.friendlyName || "Untitled";
 			blog._publishMethod = blogObject.publishMethod || "";
+			blog._postStream = await PostStream.new(segment);
 			
 			if (blogObject.objects?.length)
 			{
@@ -153,14 +154,9 @@ namespace App
 		}
 		
 		/** */
-		private constructor() { }
-		
-		/** */
-		private get keySegment()
-		{
-			return this._keySegment ||= Key.next();
-		}
-		private _keySegment = "";
+		private constructor(
+			private readonly keySegment: string
+		) { }
 		
 		/** */
 		get friendlyName()
@@ -185,6 +181,13 @@ namespace App
 			this.save();
 		}
 		private _fixedName = "";
+		
+		/** */
+		get postStream()
+		{
+			return Not.nullable(this._postStream);
+		}
+		private _postStream: PostStream | null = null;
 		
 		/** */
 		get homePost()
@@ -273,9 +276,10 @@ namespace App
 		}
 		
 		/** */
-		keepPost(post: PostRecord)
+		async retainPost(post: PostRecord)
 		{
-			return Model.keep(post, this.keySegment);
+			await Model.retain(post, this.keySegment);
+			this.postStream.insert(post);
 		}
 		
 		/** */

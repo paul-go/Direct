@@ -83,7 +83,7 @@ namespace App
 				const postFinal = await createPostFinal(post, blog);
 				const htmlFile = new HtmlFile();
 				htmlFile.addCss(postFinal.cssText);
-				const htmlText = htmlFile.emit(postFinal.storyElement, folderName ? 1 : 0);
+				const htmlText = htmlFile.emit(postFinal.scenes, folderName ? 1 : 0);
 				
 				files.push({
 					data: htmlText,
@@ -131,7 +131,7 @@ namespace App
 			post: PostRecord,
 			blog: Blog)
 		{
-			return await (new PostRenderer(post, blog, true)).render();
+			return await (new PostRenderer(post, blog)).render(true);
 		}
 		
 		/**
@@ -141,7 +141,7 @@ namespace App
 			post: PostRecord,
 			blog: Blog)
 		{
-			return new PostRenderer(post, blog, false).render();
+			return new PostRenderer(post, blog).render(false);
 		}
 		
 		/**
@@ -149,10 +149,11 @@ namespace App
 		 * whose dimensions are equal to the specified viewport width and height.
 		 */
 		export async function rasterizeHtml(
-			htmlContent: string,
+			html: string | HTMLElement,
 			viewportWidth: number,
 			viewportHeight: number)
 		{
+			const htmlContent = typeof html === "string" ? html : html.outerHTML;
 			const image = new Image();
 			const [w, h] = [viewportWidth, viewportHeight];
 			const canvas = Hot.canvas({ width: w, height: h });

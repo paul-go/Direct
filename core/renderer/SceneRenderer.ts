@@ -18,7 +18,7 @@ namespace App
 			if (scene instanceof ProseSceneRecord)
 				return new ProseSceneRenderer(scene, isPreview);
 			
-			return null;
+			Not.reachable();
 		}
 		
 		/** */
@@ -67,27 +67,22 @@ namespace App
 		/** */
 		async render()
 		{
-			let contents = this.renderContents();
+			const contents = await this.renderContents();
 			
-			if (contents instanceof Promise)
-				contents = await contents;
-			
-			return [
-				Hot.section(
-					CssClass.scene,
-					{
-						color: this.colors.foregroundUncolored,
-						backgroundColor: this.scene.hasColor ?
-							this.colors.backgroundColored :
-							this.colors.backgroundUncolored,
-						height: "100vh",
-						data: {
-							[DataAttributes.transition]: this.useAnimation(this.scene.transition)
-						}
-					},
-					contents
-				)
-			];
+			return Hot.section(
+				CssClass.scene,
+				{
+					color: this.colors.foregroundUncolored,
+					backgroundColor: this.scene.hasColor ?
+						this.colors.backgroundColored :
+						this.colors.backgroundUncolored,
+					height: "100vh",
+					data: {
+						[DataAttributes.transition]: this.useAnimation(this.scene.transition)
+					}
+				},
+				contents
+			);
 		}
 		
 		/** */

@@ -7,7 +7,7 @@ namespace App
 	export class GallerySceneRenderer extends SceneRenderer<GallerySceneRecord>
 	{
 		/** */
-		renderContents()
+		protected renderContents()
 		{
 			return [
 				CssClass.galleryScene,

@@ -7,7 +7,7 @@ namespace App
 	export class CanvasSceneRenderer extends SceneRenderer<CanvasSceneRecord>
 	{
 		/** */
-		async renderContents()
+		protected async renderContents()
 		{
 			const scene = this.scene;
 			const out: Hot.Param[] = [

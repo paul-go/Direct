@@ -32,11 +32,13 @@ namespace App
 					},
 					When.connected(async () =>
 					{
+						/*
 						const postPreview = await Render.createPostPreview(post, blog);
 						const styleElement = Hot.style(new Text(postPreview.cssText));
 						this.previewRoot.replaceChildren(
 							postPreview.storyElement,
 							styleElement);
+						*/
 					})
 				),
 				

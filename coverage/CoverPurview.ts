@@ -93,6 +93,7 @@ namespace Cover
 		color: "white",
 		fontWeight: 900,
 		fontSize: "10vw",
+		lineHeight: "100vh",
 		backgroundSize: "cover",
 	});
 	
