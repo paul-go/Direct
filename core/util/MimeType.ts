@@ -86,7 +86,11 @@ namespace App
 		 */
 		export function fromFileName(fileName: string)
 		{
-			const ext = fileName.split(".").slice(-1)[0] || "";
+			let ext = (fileName.split(".").slice(-1)[0] || "").toLowerCase();
+			
+			if (ext === "jpeg")
+				ext = "jpg";
+			
 			return (mimes.get(ext) || "") as MimeType;
 		}
 	}
