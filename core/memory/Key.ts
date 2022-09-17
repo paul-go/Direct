@@ -109,6 +109,13 @@ namespace App
 		}
 		
 		/** */
+		export function ctorOf(stable: number)
+		{
+			const keyable = keyables.find(k => k.stable === stable);
+			return Not.nullable(keyable).ctor;
+		}
+		
+		/** */
 		function getKeyInfo(object: object)
 		{
 			const ctor = object.constructor;

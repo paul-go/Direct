@@ -14,7 +14,7 @@ namespace App.Model
 	}
 	
 	/** */
-	export async function keep(object: object, keySegment = "")
+	export async function retain(object: object, keySegment = "")
 	{
 		const segment = keySegment || Key.segmentOf(object);
 		
@@ -65,15 +65,21 @@ namespace App.Model
 	}
 	
 	/** */
-	export function inspect<T>(via: T | (new() => T)): MemberLayout
+	export function inspect<T extends object>(object: T): MemberLayout
 	{
 		const ctor = 
-			typeof via === "function" ? via :
-			typeof via === "object" ? (via as any).constructor : null;
+			typeof object === "function" ? object :
+			typeof object === "object" ? (object as any).constructor : null;
 		
 		if (!ctor || ctor === Object)
-			return [];
+			throw new Error("Cannot inspect the provided object.");
 		
+		return inspectCtor(ctor);
+	}
+	
+	/** */
+	function inspectCtor<T extends object>(ctor: new() => T): MemberLayout
+	{
 		let layout = memberLayouts.get(ctor);
 		if (!layout)
 		{
@@ -155,8 +161,10 @@ namespace App.Model
 		if (keys.length === 0)
 			return [];
 		
+		keys = keys.filter((v, i, a) => a.indexOf(v) === i);
+		
 		const entries: [Key, object | null][] = [];
-		const absent: Key[] = [];
+		const keysOfNeeded: Key[] = [];
 		
 		for (let i = -1; ++i < keys.length;)
 		{
@@ -165,30 +173,37 @@ namespace App.Model
 			if (existing)
 				entries.push([key, existing]);
 			else
-				absent.push(key);
+				keysOfNeeded.push(key);
 		}
 		 
-		const map = new Map(entries);
-		const objects = await Store.current().get(absent);
+		const modelObjects: object[] = [];
+		const plainObjects = await Store.current().get(keysOfNeeded);
 		
-		for (let i = -1; ++i < absent.length;)
-			map.set(absent[i], objects[i]);
+		for (let i = -1; ++i < keysOfNeeded.length;)
+		{
+			const key = keysOfNeeded[i];
+			const plainObject = plainObjects[i];
+			const modelized = await modelize(key, plainObject);
+			modelObjects.push(modelized);
+		}
 		
-		return [...map.values()];
+		return modelObjects;
 	}
 	
 	/** */
-	async function modelize<T extends object>(key: Key, json: object)
+	async function modelize<T extends object>(key: Key, plainObject: object): Promise<T>
 	{
 		const instance = Key.instantiate(key);
 		const instany = instance as any;
+		const ctor = Key.ctorOf(Key.stableOf(key));
+		const layout = inspectCtor(ctor);
 		
-		for (const [memberName, memberType] of Model.inspect(json))
+		for (const [memberName, memberType] of layout)
 		{
-			if (!(memberName in json))
+			if (!(memberName in plainObject))
 				continue;
 			
-			const rawValue = (json as any)[memberName];
+			const rawValue = (plainObject as any)[memberName];
 			
 			if (memberType === "model-array")
 			{
@@ -198,7 +213,7 @@ namespace App.Model
 			}
 			else if (memberType === "model-reference")
 			{
-				instany[memberName] = rawValue > 0 ?
+				instany[memberName] = rawValue ?
 					await get(rawValue) :
 					null;
 			}
@@ -447,7 +462,7 @@ namespace App.Model
 			{
 				const seg = tempSegmentStorage.get(dirtyObject);
 				tempSegmentStorage.delete(dirtyObject);
-				Model.keep(dirtyObject, seg || "");
+				Model.retain(dirtyObject, seg || "");
 			}
 		},
 		1);
