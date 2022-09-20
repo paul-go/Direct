@@ -540,15 +540,12 @@ namespace Player
 			scenery.addScrollComputer(state =>
 			{
 				if (state.element === sectionFirst.element)
-				{
 					if (state.elementTopRatio > 0 && state.elementTopRatio <= exitHeightRatio)
 						return 0;
-				}
-				else if (state.element === sectionLast.element)
-				{
+				
+				if (state.element === sectionLast.element)
 					if (state.elementBottomRatio <= 1)
 						return Math.max(window.innerHeight - state.elementHeight, state.elementTop);
-				}
 			});
 			
 			scenery.addScrollListener(states =>
