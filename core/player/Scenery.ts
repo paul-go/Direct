@@ -126,13 +126,15 @@ namespace Player
 					newSupportElements.push(anchor, spacer);
 				}
 				
-				newScenes.push({
+				const scene: ISceneInternal = {
 					anchor,
 					spacer,
 					element,
 					height: element.offsetHeight,
-				});
+				};
 				
+				newScenes.push(scene);
+				this.streamSceneHeight(scene);
 				When.disconnected(element, () => anchor.remove());
 			}
 			
@@ -161,6 +163,17 @@ namespace Player
 			}
 			
 			return this;
+		}
+		
+		/**
+		 * 
+		 */
+		private streamSceneHeight(scene: ISceneInternal)
+		{
+			Player.observeResize(scene.element, (width, height) =>
+			{
+				scene.height = height;
+			});
 		}
 		
 		/**

@@ -117,13 +117,27 @@ namespace Cover
 			),
 		);
 		
+		Hot.get(scenery)(
+			{
+				tabIndex: 0
+			},
+			Hot.on("keydown", ev =>
+			{
+				if (ev.key === "=")
+					scene.style.height = (parseInt(scene.style.height) + 50) + "vh";
+				
+				else if (ev.key === "-")
+					scene.style.height = (parseInt(scene.style.height) - 50) + "vh";
+			})
+		);
+		
 		document.body.append(scenery.head);
 		
 		scenery.addScrollComputer(s =>
 		{
 			if (s.element === scene)
 			{
-				if (s.elementTopRatio > 0 && s.elementTopRatio <= 0.5)
+				if (s.elementTopRatio >= 0)
 					return 0;
 				
 				if (s.elementBottomRatio <= 1)

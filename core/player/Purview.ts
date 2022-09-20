@@ -540,7 +540,7 @@ namespace Player
 			scenery.addScrollComputer(state =>
 			{
 				if (state.element === sectionFirst.element)
-					if (state.elementTopRatio > 0 && state.elementTopRatio <= exitHeightRatio)
+					if (state.elementTopRatio >= 0 && state.elementTopRatio <= exitHeightRatio)
 						return 0;
 				
 				if (state.element === sectionLast.element)
