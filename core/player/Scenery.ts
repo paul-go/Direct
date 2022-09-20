@@ -7,51 +7,63 @@ namespace Player
 		/** */
 		constructor(...params: Hot.Param[])
 		{
-			[this.scrollFn, this._scrollFn] = Force.create<(states: IVisibleElementState[]) => void>();
-			
 			this.head = Hot.div(
 				"scenery",
 				{
 					overflowX: "hidden",
 					overflowY: "auto",
 				},
-				Hot.css("& > *", {
-					position: "absolute",
-					left: 0,
-					right: 0,
-				}),
-				Hot.css("& > A, & > SPAN", {
+				Hot.css(`& > .${Class.anchor}, & > .${Class.spacer}`, {
 					zIndex: -1,
 					position: "relative",
 					display: "block",
 					scrollSnapStop: "always",
 					pointerEvents: "none",
 				}),
-				Hot.css("& > A", {
+				Hot.css(`& > .${Class.anchor}`, {
 					scrollSnapAlign: "start",
 				}),
-				Hot.css("& > SPAN", {
+				Hot.css(`& > .${Class.spacer}`, {
 					scrollSnapAlign: "end",
 				}),
 				When.connected(() =>
 				{
-					this.handleConnected();
+					Player.observeResize(this.head, () => this.handleResize());
+					const mo = new MutationObserver(() => this.recomputeHeights());
+					mo.observe(this.head, { childList: true });
+					this.recomputeHeights();
+					this.updateScroll();
 					
-					// The scroll-snapping is enabled after the sections have
+					// The scroll-snapping is enabled after the scenes have
 					// been added to the Scenery. If we do this right away
 					// in the constructor, you'll get weird jumping behavior.
 					this.head.style.scrollSnapType = "y mandatory";
 				}),
-				Hot.on("scroll", () => this.handleScroll()),
+				Hot.on("scroll", () => 
+					window.requestAnimationFrame(() => 
+						this.updateScroll())),
+				
+				this.content = Hot.div(
+					"scenes-content",
+					{
+						position: "sticky",
+						height: 0,
+						top: 0,
+					},
+					Hot.css(" > *", {
+						position: "absolute",
+						left: 0,
+						right: 0,
+						zIndex: 0,
+					})
+				),
 				params
 			);
 		}
 		
 		readonly head: HTMLElement;
-		private readonly sections: IScenerySectionInternal[] = [];
-		
-		readonly scrollFn;
-		private readonly _scrollFn;
+		readonly content: HTMLElement;
+		private readonly scenes: ISceneInternal[] = [];
 		
 		/** */
 		get viewportHeight()
@@ -61,13 +73,13 @@ namespace Player
 		private _viewportHeight = 0;
 		
 		/** */
-		getSection(index: number)
+		getScene(index: number)
 		{
 			if (index < 0)
-				index = this.sections.length + index;
+				index = this.scenes.length + index;
 			
-			index = Math.max(0, Math.min(this.sections.length - 1, index));
-			return this.sections[index] as IScenerySection;
+			index = Math.max(0, Math.min(this.scenes.length - 1, index));
+			return this.scenes[index] as IScene;
 		}
 		
 		/** */
@@ -79,8 +91,9 @@ namespace Player
 			if (a instanceof HTMLElement)
 				elements.unshift(a);
 			
-			const newElements: HTMLElement[] = [];
-			const newSections: IScenerySectionInternal[] = [];
+			const newSceneElements: HTMLElement[] = [];
+			const newSupportElements: HTMLElement[] = [];
+			const newScenes: ISceneInternal[] = [];
 			
 			for (const element of elements)
 			{
@@ -99,20 +112,21 @@ namespace Player
 				}
 				else
 				{
-					anchor = Hot.a({
+					anchor = Hot.a(Class.anchor, {
 						name: (++this.anchorIndex).toString(),
 						scrollSnapAlign: "start"
 					});
 					
-					spacer = Hot.span({
+					spacer = Hot.span(Class.spacer, {
 						scrollSnapAlign: "end"
 					});
 					
-					this.maybeSynchronizeHeight(element, spacer);
-					newElements.push(anchor, element, spacer);
+					this.synchronizeHeight(element, spacer);
+					newSceneElements.push(element);
+					newSupportElements.push(anchor, spacer);
 				}
 				
-				newSections.push({
+				newScenes.push({
 					anchor,
 					spacer,
 					element,
@@ -127,61 +141,40 @@ namespace Player
 			
 			const at = typeof a === "number" ? a : anchors.length;
 			
-			if (at >= anchors.length)
+			if (at === 0 || at <= -anchors.length)
 			{
-				this.head.append(...newElements);
-				this.sections.push(...newSections);
+				this.content.prepend(...newSceneElements);
+				this.content.after(...newSupportElements);
+				this.scenes.unshift(...newScenes);
 			}
-			else if (at <= -anchors.length)
+			else if (at >= anchors.length)
 			{
-				this.head.prepend(...newElements);
-				this.sections.unshift(...newSections);
+				this.content.append(...newSceneElements);
+				this.head.append(...newSupportElements);
+				this.scenes.push(...newScenes);
 			}
 			else
 			{
-				anchors.at(at)?.before(...newElements);
-				this.sections.splice(at, 0, ...newSections);
+				this.content.children.item(at)!.before(...newSceneElements);
+				anchors.at(at)?.before(...newSupportElements);
+				this.scenes.splice(at, 0, ...newScenes);
 			}
 			
 			return this;
 		}
 		
 		/**
-		 * Synchronizes the height of the two elements, but avoid this in the
-		 * case when the CSS position property on the source element is set
-		 * to a value that causes the element to consume layout space.
+		 * Synchronizes the height of the two elements.
 		 */
-		private maybeSynchronizeHeight(src: HTMLElement, dst: HTMLElement)
+		private synchronizeHeight(src: HTMLElement, dst: HTMLElement)
 		{
-			const usesLayout = () =>
+			Player.observeResize(src, (width, height) =>
 			{
-				const pos = src.style.position;
-				return ["-webkit-sticky", "sticky", "relative", "static"].includes(pos);
-			}
-			
-			When.connected(src, () =>
-			{
-				if (!usesLayout())
-					dst.style.height = src.offsetHeight + "px";
-				
-				Player.observeResize(src, (width, height) =>
-				{
-					if (!usesLayout())
-						dst.style.height = height + "px";
-				});
+				dst.style.height = height + "px";
 			});
 		}
 	
 		private anchorIndex = 0;
-		
-		/** */
-		private handleConnected()
-		{
-			Player.observeResize(this.head, () => this.handleResize());
-			const mo = new MutationObserver(() => this.recomputeHeights());
-			mo.observe(this.head, { childList: true });
-			this.recomputeHeights();
-		}
 		
 		/** */
 		private handleResize()
@@ -189,7 +182,7 @@ namespace Player
 			clearTimeout(this.resizeTimeout);
 			this.resizeTimeout = setTimeout(() =>
 			{
-				const contentElements = this.sections.map(s => s.element);
+				const contentElements = this.scenes.map(s => s.element);
 				const rect = this.head.getBoundingClientRect();
 				const elementsAtPoint = toHtmlElements(
 					document.elementsFromPoint(
@@ -211,58 +204,115 @@ namespace Player
 		private recomputeHeights()
 		{
 			this._viewportHeight = this.head.offsetHeight;
-			for (const section of this.sections)
-				section.height = section.element.offsetHeight;
+			for (const scene of this.scenes)
+				scene.height = scene.element.offsetHeight;
 		}
 		
 		/** */
-		private handleScroll()
+		private updateScroll()
 		{
-			window.requestAnimationFrame(() =>
+			const viewportTop = this.head.scrollTop;
+			const states: IVisibleElementState[] = [];
+			let sceneTop = 0;
+			let disable = false;
+			
+			for (const scene of this.scenes)
 			{
-				const viewportTop = this.head.scrollTop;
-				const states: IVisibleElementState[] = [];
-				let sectionTop = 0;
-				let disable = false;
+				const viewportBottom = viewportTop + this._viewportHeight;
+				const sceneBottom = sceneTop + scene.height;
 				
-				for (const section of this.sections)
+				if (scene.height > this._viewportHeight &&
+					viewportTop > sceneTop && 
+					viewportBottom < sceneBottom)
+					disable = true;
+				
+				const isAboveViewport = sceneBottom < viewportTop;
+				const isBelowViewport = sceneTop > viewportBottom;
+				if (!isAboveViewport && !isBelowViewport)
 				{
-					const viewportBottom = viewportTop + this._viewportHeight;
-					const sectionBottom = sectionTop + section.height;
+					const elementTopRatio = percentify(
+						viewportTop,
+						viewportBottom,
+						sceneTop);
 					
-					if (section.height > this._viewportHeight &&
-						viewportTop > sectionTop && 
-						viewportBottom < sectionBottom)
-						disable = true;
+					const elementBottomRatio = percentify(
+						viewportTop,
+						viewportBottom,
+						sceneBottom);
 					
-					if (viewportTop <= sectionBottom && viewportBottom >= sectionTop)
+					const state: IVisibleElementState ={
+						element: scene.element,
+						elementHeight: scene.height,
+						elementHeightRatio: scene.height / this._viewportHeight,
+						elementTop: sceneTop - viewportTop,
+						elementTopRatio,
+						elementBottom: sceneBottom - viewportBottom,
+						elementBottomRatio,
+					};
+					
+					states.push(state);
+					
+					let y = state.elementTop;
+					for (const compFn of this.scrollComputers)
 					{
-						const elementTopRatio = percentify(
-							viewportTop,
-							viewportBottom,
-							sectionTop);
-						
-						const elementBottomRatio = percentify(
-							viewportTop,
-							viewportBottom,
-							sectionBottom);
-						
-						states.push({
-							element: section.element,
-							elementHeight: section.height / this._viewportHeight,
-							elementTopRatio,
-							elementBottomRatio,
-						});
+						const yReturned = compFn(state);
+						if (yReturned !== undefined)
+						{
+							y = yReturned;
+							break;
+						}
 					}
 					
-					sectionTop += section.height;
+					const e = state.element;
+					const s = e.style;
+					s.top = (y || 0) + "px";
+					s.removeProperty("visibility");
+				}
+				else
+				{
+					scene.element.style.visibility = "hidden";
 				}
 				
-				this.head.style.scrollSnapType = disable ? "none" : "y mandatory";
-				this._scrollFn(states);
-			});
+				sceneTop += scene.height;
+			}
+			
+			this.head.style.scrollSnapType = disable ? "none" : "y mandatory";
+			
+			for (const listenerFn of this.scrollListeners)
+				listenerFn(states);
 		}
+		
+		/**
+		 * Adds a computation function that returns a numeric Y value,
+		 * which is used to calculate the display position of a scene. 
+		 * This function will be called for every visible scene, unless
+		 * a previously added computer function has already returned
+		 * a Y value. The function should return void for scenes that
+		 * aren't applicable to the function.
+		 */
+		addScrollComputer(computerFn: ScrollComputerFn)
+		{
+			this.scrollComputers.push(computerFn);
+		}
+		private readonly scrollComputers: ScrollComputerFn[] = [];
+		
+		/**
+		 * Adds a function that is called after scroll event has been
+		 * invoked, and after the scroll computation process has
+		 * occured.
+		 */
+		addScrollListener(listenerFn: ScrollListenerFn)
+		{
+			this.scrollListeners.push(listenerFn);
+		}
+		private readonly scrollListeners: ScrollListenerFn[] = [];
 	}
+	
+	/** */
+	export type ScrollComputerFn = (state: IVisibleElementState) => number | void;
+	
+	/** */
+	export type ScrollListenerFn = (states: IVisibleElementState[]) => void;
 	
 	/** */
 	function percentify(low: number, high: number, point: number)
@@ -277,7 +327,7 @@ namespace Player
 	}
 	
 	/** */
-	export interface IScenerySection
+	export interface IScene
 	{
 		readonly anchor: HTMLAnchorElement;
 		readonly spacer: HTMLElement;
@@ -285,7 +335,7 @@ namespace Player
 	}
 	
 	/** */
-	interface IScenerySectionInternal extends IScenerySection
+	interface ISceneInternal extends IScene
 	{
 		height: number;
 	}
@@ -300,10 +350,21 @@ namespace Player
 		readonly element: HTMLElement;
 		
 		/**
+		 * The height of the element in pixels.
+		 */
+		readonly elementHeight: number;
+		
+		/**
 		 * The height of the element, expressed percentage
 		 * of the height of the Scenery viewport.
 		 */
-		readonly elementHeight: number;
+		readonly elementHeightRatio: number;
+		
+		/**
+		 * Represents the number of pixels between the top of the
+		 *  element and the top of the viewport.
+		 */
+		readonly elementTop: number;
 		
 		/**
 		 * Represents the location of the top of the element within
@@ -312,9 +373,23 @@ namespace Player
 		readonly elementTopRatio: number;
 		
 		/**
+		 * Represents the number of pixels between the bottom of the
+		 *  element and the bottom of the viewport.
+		 */
+		readonly elementBottom: number;
+		
+		/**
 		 * Represents the location of the bottom of the element within
 		 * the viewport, expressed as a percentage.
 		 */
 		readonly elementBottomRatio: number;
+	}
+	
+	/** */
+	const enum Class
+	{
+		anchor = "anchor",
+		spacer = "spacer",
+		intersector = "intersector",
 	}
 }

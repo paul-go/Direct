@@ -49,16 +49,6 @@ namespace App.Css
 			
 			// Player CSS
 			
-			rule("." + CssClass.story, {
-				"scroll-snap-type": "y mandatory",
-				"overflow-x": "hidden",
-				"overflow-y": "auto",
-				"height": "100vh",
-			}),
-			rule("." + CssClass.scene, {
-				"min-height": "100%",
-				"scroll-snap-align": "start",
-			}),
 			rule("." + CssClass.scene + " VIDEO", {
 				"position": "absolute",
 				"object-fit": "cover",

@@ -493,15 +493,19 @@ namespace Player
 				requestResult :
 				new Scenery().insert(requestResult);
 			
-			const exitHeight = 100;
+			// Make sure the first visible frame is shown (not the exitUpElement)
+			const sectionFirst = scenery.getScene(0);
+			const sectionLast = scenery.getScene(-1);
+			
+			const exitHeight = 60;
+			const exitHeightRatio = exitHeight / 100;
 			const exitStyles: Hot.Style = {
 				height: exitHeight + "vh",
-				zIndex: -1,
+				zIndex: -2,
 			};
 			
 			const exitUpElement = Hot.div("exit-up", exitStyles);
 			const exitDownElement = Hot.div("exit-down", exitStyles);
-			
 			scenery.insert(0, exitUpElement);
 			scenery.insert(exitDownElement);
 			
@@ -509,23 +513,6 @@ namespace Player
 			this._currentPreview = previewHat;
 			this._mode = PurviewMode.review;
 			this.reviewContainer.replaceChildren(scenery.head);
-			
-			// Make sure the first visible frame is shown (not the exitUpElement)
-			const section1 = scenery.getSection(1);
-			const sectionLast = scenery.getSection(-2);
-			
-			// This is a bit awkward, but if the height of section1 is less
-			// than the height of the viewport, strange UI will happen.
-			Hot.get(section1.element)({
-				minHeight: "100%",
-				position: "sticky",
-				bottom: 0,
-			});
-			
-			Hot.get(sectionLast.element)({
-				position: "sticky",
-				top: 0,
-			});
 			
 			this.setScalerTransform(1);
 			
@@ -545,38 +532,51 @@ namespace Player
 			});
 			
 			await new Promise(r => setTimeout(r));
-			scenery.head.scrollTo({ top: section1.anchor.offsetTop });
+			scenery.head.scrollTo({ top: sectionFirst.anchor.offsetTop });
 			this.reviewContainer.style.opacity = "1";
 			await waitTransitionEnd(this.reviewContainer);
 			this.toggleScalerTransitions(false);
 			
-			scenery.scrollFn(states => window.requestAnimationFrame(() =>
+			scenery.addScrollComputer(state =>
 			{
-				const exitUpState = states.find(st => st.element === exitUpElement);
-				const exitDownState = states.find(st => st.element === exitDownElement);
+				if (state.element === sectionFirst.element)
+				{
+					if (state.elementTopRatio > 0 && state.elementTopRatio <= exitHeightRatio)
+						return 0;
+				}
+				else if (state.element === sectionLast.element)
+				{
+					if (state.elementBottomRatio <= 1)
+						return Math.max(window.innerHeight - state.elementHeight, state.elementTop);
+				}
+			});
+			
+			scenery.addScrollListener(states =>
+			{
+				const state = states.find(s => 
+					s.element === exitUpElement || 
+					s.element === exitDownElement);
+				
 				let mul = 1;
-				
-				if (exitUpState)
+				if (state)
 				{
-					mul = 1 - exitUpState.elementBottomRatio / (exitHeight / 100);
-					this.setScalerTransform(mul);
-				}
-				else if (exitDownState)
-				{
-					mul = exitDownState.elementTopRatio / (exitHeight / 100);
-					this.setScalerTransform(mul);
-				}
-				else 
-				{
-					this.setScalerTransform(1);
+					const tr = state.elementTopRatio;
+					const hr = state.elementHeightRatio;
+					
+					if (state.element === exitUpElement)
+						mul = 1 - ((tr + hr) / hr);
+					
+					else if (state.element === exitDownElement)
+						mul = (tr - (1 - hr)) / hr;
 				}
 				
+				this.setScalerTransform(mul);
 				this.reviewContainer.style.opacity = mul.toString();
 				
 				// Actually exit
-				if (mul === 0)
+				if (mul < 0.005)
 					this.exitReview();
-			}));
+			});
 			
 			this._mode = PurviewMode.review;
 		}
@@ -628,7 +628,6 @@ namespace Player
 				`&`, {
 					width: (size * 100) + `%`,
 					zIndex: 1,
-					//transform: `translateX(0) translateY(0) scale(${1 / size})`,
 				}
 			];
 			

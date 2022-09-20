@@ -29,18 +29,18 @@ namespace Cover
 				Hot.div(
 					squareClass,
 					{
-						backgroundColor: "orange",
-						minHeight: "100%",
+						backgroundImage: "linear-gradient(orange, crimson)",
+						height: "100vh",
 					},
 					new Text(preview.head.textContent || "")
 				),
 				Hot.div(
 					squareClass,
 					{
-						backgroundColor: "crimson",
-						minHeight: "100%",
+						background: "linear-gradient(maroon, crimson)",
+						height: "100vh",
 					},
-					new Text(preview.head.textContent || "")
+					new Text("Next Screen")
 				),
 			);
 			
