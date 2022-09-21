@@ -2,7 +2,7 @@
 namespace Cover
 {
 	/** */
-	export async function coverSceneryNewStructure()
+	export async function coverSceneryVaryingHeights()
 	{
 		App.Css.append();
 		

@@ -152,24 +152,23 @@ namespace Player
 				{
 					anchor = Hot.a(Class.anchor, {
 						name: (++this.anchorIndex).toString(),
-						scrollSnapAlign: "start"
 					});
 					
-					spacer = Hot.span(Class.spacer, {
-						scrollSnapAlign: "end"
-					});
+					spacer = Hot.span(Class.spacer);
 					
 					newSceneElements.push(element);
 					newSupportElements.push(anchor, spacer);
 				}
 				
 				const elementHeight = element.offsetHeight;
+				const that = this;
 				const scene: ISceneInternal = {
 					anchor,
 					spacer,
 					element,
 					sceneHeight: this.maybeAdjustHeight(elementHeight),
 					elementHeight,
+					toggleSnapping(edge, enabled) { that.toggleSnapping(this, edge, enabled); }
 				};
 				
 				newScenes.push(scene);
@@ -291,6 +290,23 @@ namespace Player
 		}
 		
 		/**
+		 * Unused code. Leaving it here because this might be necessary in the future.
+		 */
+		private toggleSnapping(scene: ISceneInternal, edge: SceneEdge, enabled: boolean)
+		{
+			if (edge === "top")
+			{
+				scene.anchor.style.scrollSnapStop = enabled ? "always" : "none";
+				scene.anchor.style.scrollSnapAlign = enabled ? "start" : "none";
+			}
+			else
+			{
+				scene.spacer.style.scrollSnapStop = enabled ? "always" : "none";
+				scene.spacer.style.scrollSnapAlign = enabled ? "bottom" : "none";
+			}
+		}
+		
+		/**
 		 * Adds a computation function that returns a numeric Y value,
 		 * which is used to calculate the display position of a scene. 
 		 * This function will be called for every visible scene, unless
@@ -350,7 +366,15 @@ namespace Player
 		readonly anchor: HTMLAnchorElement;
 		readonly spacer: HTMLElement;
 		readonly element: HTMLElement;
+		
+		/**
+		 * Enables or disables snapping of the scene to the specified edge.
+		 */
+		toggleSnapping(edge: SceneEdge, enabled: boolean): void;
 	}
+	
+	/** */
+	export type SceneEdge = "top" | "bottom";
 	
 	/** */
 	interface ISceneInternal extends IScene
