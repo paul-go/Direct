@@ -78,20 +78,29 @@ namespace Player
 		private readonly previewsContainer;
 		private readonly reviewContainer;
 		
+		/**
+		 * Gets or sets whether the size of the purview can be
+		 * changed with keyboard control.
+		 */
+		enableKeyboardSizing = true;
+		
 		/** */
 		private handleKeyDown(ev: KeyboardEvent)
 		{
 			if (ev.metaKey || ev.ctrlKey)
 			{
-				if (ev.key === "=")
-					this.size--;
-				
-				else if (ev.key === "-")
-					this.size++;
-				
-				else return;
-				
-				ev.preventDefault();
+				if (this.enableKeyboardSizing)
+				{
+					if (ev.key === "=")
+						this.size--;
+					
+					else if (ev.key === "-")
+						this.size++;
+					
+					else return;
+					
+					ev.preventDefault();
+				}
 			}
 			else if (ev.key === "Escape")
 			{
