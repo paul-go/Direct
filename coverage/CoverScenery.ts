@@ -23,48 +23,63 @@ namespace Cover
 					zIndex: -1,
 					background: "linear-gradient(black, white)",
 				},
-				new Text("Scene 1")
+				new Text("100vh")
 			),
 			Hot.section(
 				"scene-2",
 				{
-					lineHeight: "150vh",
-					height: "150vh",
+					lineHeight: "101vh",
+					height: "101vh",
 					zIndex: -1,
 					background: "linear-gradient(orange, crimson)",
+					outline: "20px solid blue",
+					outlineOffset: "-20px",
 				},
-				new Text("Scene 2")
+				new Text("101vh")
 			),
 			Hot.section(
 				"scene-3",
 				{
-					lineHeight: "100vh",
-					height: "100vh",
+					lineHeight: "120vh",
+					height: "120vh",
 					zIndex: -1,
 					background: "linear-gradient(green, aqua)",
 				},
-				new Text("Scene 3")
+				new Text("120vh")
 			),
 			Hot.section(
 				"scene-4",
 				{
-					lineHeight: "100vh",
-					height: "100vh",
+					lineHeight: "150vh",
+					height: "150vh",
+					zIndex: -1,
+					background: "linear-gradient(red, pink)",
+				},
+				new Text("150vh")
+			),
+			Hot.section(
+				"scene-5",
+				{
+					lineHeight: "200vh",
+					height: "200vh",
+					zIndex: -1,
+					background: "linear-gradient(blue, black)",
+				},
+				new Text("200vh")
+			),
+			Hot.section(
+				"scene-6",
+				{
+					lineHeight: "201vh",
+					height: "201vh",
 					zIndex: -1,
 					background: "linear-gradient(gold, violet)",
 				},
-				new Text("Scene 4")
+				new Text("201vh")
 			),
 		);
 		
 		document.body.append(scenery.head);
-		
-		scenery.addScrollComputer(s =>
-		{
-			// Snap to bottom
-			if (s.element.classList.contains("scene-2"))
-				return Math.max(window.innerHeight - s.elementHeight, s.elementTop);
-		});
 	}
 	
 	/** */

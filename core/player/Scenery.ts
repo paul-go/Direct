@@ -25,14 +25,11 @@ namespace Player
 				}),
 				Hot.css(`& > .${Class.spacer}`, {
 					scrollSnapAlign: "end",
+					backgroundColor: "gray",
 				}),
 				When.connected(() =>
 				{
-					Player.observeResize(this.head, () => this.handleResize());
-					const mo = new MutationObserver(() => this.recomputeHeights());
-					mo.observe(this.head, { childList: true });
-					this.recomputeHeights();
-					this.updateScroll();
+					this.setup();
 					
 					// The scroll-snapping is enabled after the scenes have
 					// been added to the Scenery. If we do this right away
@@ -83,6 +80,47 @@ namespace Player
 		}
 		
 		/** */
+		private setup()
+		{
+			this._viewportHeight = this.head.offsetHeight;
+			Player.observeResize(this.head, (w, height) => this._viewportHeight = height);
+			
+			for (const scene of this.scenes)
+				this.updateSceneHeight(scene, scene.element.offsetHeight);
+			
+			this.updateScroll();
+		}
+		
+		/** */
+		private isWithinAdjustRange(height: number)
+		{
+			return (
+				height > this.viewportHeight * viewportElementRatio && 
+				height <= this.viewportHeight * 2);
+		}
+		
+		/** */
+		private maybeAdjustHeight(height: number)
+		{
+			return this.isWithinAdjustRange(height) ? this.viewportHeight * 2.001 : height;
+		}
+		
+		/** */
+		private updateSceneHeight(scene: ISceneInternal, height: number)
+		{
+			scene.elementHeight = height;
+			height = this.maybeAdjustHeight(height);
+			scene.sceneHeight = height;
+			scene.spacer.style.height = height + "px";
+		}
+		
+		/** */
+		private streamSceneHeight(scene: ISceneInternal)
+		{
+			Player.observeResize(scene.element, (w, height) => this.updateSceneHeight(scene, height));
+		}
+		
+		/** */
 		insert(...elements: HTMLElement[]): Scenery;
 		insert(at: number, ...elements: HTMLElement[]): Scenery;
 		insert(a: number | HTMLElement, ...elements: HTMLElement[])
@@ -121,16 +159,17 @@ namespace Player
 						scrollSnapAlign: "end"
 					});
 					
-					this.synchronizeHeight(element, spacer);
 					newSceneElements.push(element);
 					newSupportElements.push(anchor, spacer);
 				}
 				
+				const elementHeight = element.offsetHeight;
 				const scene: ISceneInternal = {
 					anchor,
 					spacer,
 					element,
-					height: element.offsetHeight,
+					sceneHeight: this.maybeAdjustHeight(elementHeight),
+					elementHeight,
 				};
 				
 				newScenes.push(scene);
@@ -165,61 +204,7 @@ namespace Player
 			return this;
 		}
 		
-		/**
-		 * 
-		 */
-		private streamSceneHeight(scene: ISceneInternal)
-		{
-			Player.observeResize(scene.element, (width, height) =>
-			{
-				scene.height = height;
-			});
-		}
-		
-		/**
-		 * Synchronizes the height of the two elements.
-		 */
-		private synchronizeHeight(src: HTMLElement, dst: HTMLElement)
-		{
-			Player.observeResize(src, (width, height) =>
-			{
-				dst.style.height = height + "px";
-			});
-		}
-	
 		private anchorIndex = 0;
-		
-		/** */
-		private handleResize()
-		{
-			clearTimeout(this.resizeTimeout);
-			this.resizeTimeout = setTimeout(() =>
-			{
-				const contentElements = this.scenes.map(s => s.element);
-				const rect = this.head.getBoundingClientRect();
-				const elementsAtPoint = toHtmlElements(
-					document.elementsFromPoint(
-					rect.left + rect.width / 2,
-					rect.top + rect.height / 2)
-				);
-				
-				elementsAtPoint
-					.find(e => contentElements.includes(e))
-					?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-				
-				this.recomputeHeights();
-			},
-			80);
-		}
-		private resizeTimeout: any = -1;
-		
-		/** */
-		private recomputeHeights()
-		{
-			this._viewportHeight = this.head.offsetHeight;
-			for (const scene of this.scenes)
-				scene.height = scene.element.offsetHeight;
-		}
 		
 		/** */
 		private updateScroll()
@@ -232,9 +217,9 @@ namespace Player
 			for (const scene of this.scenes)
 			{
 				const viewportBottom = viewportTop + this._viewportHeight;
-				const sceneBottom = sceneTop + scene.height;
+				const sceneBottom = sceneTop + scene.sceneHeight;
 				
-				if (scene.height > this._viewportHeight &&
+				if (scene.sceneHeight > this._viewportHeight &&
 					viewportTop > sceneTop && 
 					viewportBottom < sceneBottom)
 					disable = true;
@@ -253,11 +238,29 @@ namespace Player
 						viewportBottom,
 						sceneBottom);
 					
-					const state: IVisibleElementState ={
+					let elementTop = sceneTop - viewportTop;
+					
+					if (this.isWithinAdjustRange(scene.elementHeight) && elementTop < 0)
+					{
+						const extra = scene.sceneHeight - scene.elementHeight;
+						
+						if (elementBottomRatio < 1)
+						{
+							elementTop += extra;
+						}
+						else
+						{
+							const factor = within(sceneTop, sceneBottom - this.viewportHeight, viewportTop);
+							elementTop += extra * factor;
+						}
+					}
+					
+					const state: IVisibleElementState = {
+						sceneHeight: scene.sceneHeight,
 						element: scene.element,
-						elementHeight: scene.height,
-						elementHeightRatio: scene.height / this._viewportHeight,
-						elementTop: sceneTop - viewportTop,
+						elementHeight: scene.sceneHeight,
+						elementHeightRatio: scene.sceneHeight / this._viewportHeight,
+						elementTop,
 						elementTopRatio,
 						elementBottom: sceneBottom - viewportBottom,
 						elementBottomRatio,
@@ -286,10 +289,8 @@ namespace Player
 					scene.element.style.visibility = "hidden";
 				}
 				
-				sceneTop += scene.height;
+				sceneTop += scene.sceneHeight;
 			}
-			
-			this.head.style.scrollSnapType = disable ? "none" : "y mandatory";
 			
 			for (const listenerFn of this.scrollListeners)
 				listenerFn(states);
@@ -321,6 +322,16 @@ namespace Player
 		private readonly scrollListeners: ScrollListenerFn[] = [];
 	}
 	
+	/**
+	 * Stores the maximum ratio of the height of the scene element to the
+	 * height of the viewport before the scene switches over to using
+	 * scroll speed reduction.
+	 */
+	const viewportElementRatio = 1.33333;
+	
+	/** */
+	const within = (low: number, high: number, mid: number) => (mid - low) / (high - low);
+	
 	/** */
 	export type ScrollComputerFn = (state: IVisibleElementState) => number | void;
 	
@@ -350,12 +361,18 @@ namespace Player
 	/** */
 	interface ISceneInternal extends IScene
 	{
-		height: number;
+		sceneHeight: number;
+		elementHeight: number;
 	}
 	
 	/** */
 	export interface IVisibleElementState
 	{
+		/**
+		 * 
+		 */
+		readonly sceneHeight: number;
+		
 		/**
 		 * A reference to the HTML element that is currently
 		 * visible on the screen, either in full or in part.
