@@ -68,11 +68,7 @@ namespace Player
 			);
 			
 			this.size = 4;
-			
-			Player.observeResize(this.head, () =>
-			{
-				this.updatePreviews();
-			});
+			Player.observeResize(this.head, () => this.updatePreviews());
 		}
 		
 		readonly head;
@@ -312,23 +308,25 @@ namespace Player
 				this.previewsContainer.append(...elements);
 			}
 			
-			this.updatePreviews();
+			await this.updatePreviews();
 			this.isPopulatingPreviews = false;
 		}
 		
 		/** */
-		private updatePreviews()
+		private async updatePreviews()
 		{
 			if (this.totalPreviewCount === 0)
 				return;
 			
-			const y = window.scrollY;
+			await new Promise<void>(r => window.requestAnimationFrame(() => r()));
+			
+			const y = window.scrollY - this.head.offsetTop;
 			const wh = window.innerHeight;
 			const rowHeight = wh / this.size;
 			const rowCount = this.totalPreviewCount / this.size;
 			const visibleRowStart = Math.floor(y / rowHeight);
 			const visibleItemStart = visibleRowStart * this.size;
-			const visibleItemEnd = visibleItemStart + this.size * (this.size + 1);
+			const visibleItemEnd = visibleItemStart + this.size * (this.size + 2);
 			const elementsWithTop = new Set(getByClass(Class.hasTop, this.previewsContainer));
 			const elementsVisible = new Set(getByClass(showClass, this.previewsContainer));
 			
