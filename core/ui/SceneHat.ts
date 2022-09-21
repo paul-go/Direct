@@ -63,26 +63,18 @@ namespace App
 				),
 				
 				//
-				Hot.div(
-					"config-buttons-footer",
+				this.configuratorButtonsContainer = Hot.div(
+					"config-buttons-width",
 					{
-						backgroundColor: UI.darkGrayBackground,
-						position: "sticky",
-						bottom: 0,
-					},
-					this.configuratorButtonsContainer = Hot.div(
-						"config-buttons-width",
-						{
-							width: "max-content",
-							maxWidth: "100%",
-							margin: "auto",
-							overflowX: "auto",
-							overflowY: "scroll",
-							color: "white",
-							textAlign: "center",
-							whiteSpace: "nowrap",
-						}
-					),
+						width: "max-content",
+						maxWidth: "100%",
+						margin: "auto",
+						overflowX: "auto",
+						overflowY: "scroll",
+						color: "white",
+						textAlign: "center",
+						whiteSpace: "nowrap",
+					}
 				),
 				
 				//
