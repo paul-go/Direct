@@ -212,20 +212,14 @@ namespace Player
 			const viewportTop = this.head.scrollTop;
 			const states: IVisibleElementState[] = [];
 			let sceneTop = 0;
-			let disable = false;
 			
 			for (const scene of this.scenes)
 			{
 				const viewportBottom = viewportTop + this._viewportHeight;
 				const sceneBottom = sceneTop + scene.sceneHeight;
-				
-				if (scene.sceneHeight > this._viewportHeight &&
-					viewportTop > sceneTop && 
-					viewportBottom < sceneBottom)
-					disable = true;
-				
 				const isAboveViewport = sceneBottom < viewportTop;
 				const isBelowViewport = sceneTop > viewportBottom;
+				
 				if (!isAboveViewport && !isBelowViewport)
 				{
 					const elementTopRatio = percentify(
@@ -369,7 +363,10 @@ namespace Player
 	export interface IVisibleElementState
 	{
 		/**
-		 * 
+		 * Stores the height of the scene, which may be greater
+		 * than the height of the element in the case when the
+		 * height of the element is within the adjustment-required
+		 * range.
 		 */
 		readonly sceneHeight: number;
 		
