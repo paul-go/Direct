@@ -7,7 +7,11 @@ namespace Cover
 		App.Css.append();
 		
 		const purview = new Player.Purview<Preview>();
-		document.body.append(purview.head);
+		
+		document.body.append(
+			Hot.div({ height: "50vh" }),
+			purview.head,
+			Hot.div({ height: "50vh" }));
 		
 		purview.handlePreviewRequest(async info =>
 		{
