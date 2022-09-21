@@ -69,6 +69,8 @@ namespace Player
 			
 			this.size = 4;
 			Player.observeResize(this.head, () => this.updatePreviews());
+			
+			this.beginOffsetTopTracking();
 		}
 		
 		readonly head;
@@ -308,19 +310,17 @@ namespace Player
 				this.previewsContainer.append(...elements);
 			}
 			
-			await this.updatePreviews();
+			this.updatePreviews();
 			this.isPopulatingPreviews = false;
 		}
 		
 		/** */
-		private async updatePreviews()
+		private updatePreviews()
 		{
 			if (this.totalPreviewCount === 0)
 				return;
 			
-			await new Promise<void>(r => window.requestAnimationFrame(() => r()));
-			
-			const y = window.scrollY - this.head.offsetTop;
+			const y = window.scrollY - this.offsetTop;
 			const wh = window.innerHeight;
 			const rowHeight = wh / this.size;
 			const rowCount = this.totalPreviewCount / this.size;
@@ -457,7 +457,7 @@ namespace Player
 			const col = this.columnOf(this._currentPreview.head);
 			const row = this.rowOf(this._currentPreview.head);
 			const wh = window.innerHeight;
-			const scrollYinVh = window.scrollY / wh * 100;
+			const scrollYinVh = (window.scrollY - this.offsetTop) / wh * 100;
 			this._scalerTranslateX = -100 / this.size * col;
 			this._scalerTranslateY = -100 * row + scrollYinVh;
 		}
@@ -606,6 +606,24 @@ namespace Player
 			this.reviewRequestFn = fn;
 		}
 		private reviewRequestFn?: GetReviewFn<THat>;
+		
+		/** */
+		private beginOffsetTopTracking()
+		{
+			const mo = new MutationObserver(() => this._offsetTop = minInt);
+			mo.observe(this.head, { childList: true, subtree: true, attributes: true });
+			When.disconnected(this.head, () => mo.disconnect());
+		}
+		
+		/** */
+		private get offsetTop()
+		{
+			if (this._offsetTop === minInt)
+				this._offsetTop = this.head.offsetTop;
+			
+			return this._offsetTop;
+		}
+		private _offsetTop = minInt;
 	}
 	
 	//# Utilities & Constants
