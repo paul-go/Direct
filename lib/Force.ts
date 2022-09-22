@@ -9,19 +9,29 @@ namespace Force
 	 */
 	export function create<TFormat extends (...args: any[]) => void>()
 	{
-		const callbacks: TFormat[] = [];
+		const fo = new ForceObject<TFormat>();
+		return [fo.connectorFn, fo.executorFn] as [
+			(callback: TFormat) => void, 
+			(...data: Parameters<TFormat>) => void,
+		];
+	}
+	
+	/** */
+	class ForceObject<TFormat extends (...args: any[]) => void>
+	{
+		private readonly callbacks: TFormat[] = [];
 		
-		const connector = (callback: TFormat) =>
+		/** */
+		readonly connectorFn = (callback: TFormat) =>
 		{
-			callbacks.push(callback);
+			this.callbacks.push(callback);
 		};
 		
-		const executor = (...data: Parameters<TFormat>) =>
+		/** */
+		readonly executorFn = (...data: Parameters<TFormat>) =>
 		{
-			for (const callback of callbacks)
+			for (const callback of this.callbacks)
 				callback(...data);
 		};
-		
-		return [connector, executor] as [typeof connector, typeof executor];
 	}
 }
