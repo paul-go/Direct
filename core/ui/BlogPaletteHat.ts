@@ -8,6 +8,7 @@ namespace App
 		constructor()
 		{
 			this.head = Hot.div(
+				"blog-palette-hat",
 				UI.fixed(),
 				UI.removeOnClick(),
 				UI.removeOnEscape(),

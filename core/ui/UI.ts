@@ -37,7 +37,7 @@ namespace App
 		export const darkGrayBackground = "rgb(20, 20, 20)";
 		
 		/** */
-		export const lightGrayBackground = "rgb(40, 40, 40)";
+		export const lightGrayBackground = "rgb(30, 30, 30)";
 		
 		/** */
 		export function white(alpha = 1)
@@ -469,19 +469,25 @@ namespace App
 		}
 		
 		/** */
-		export async function wait(ms = 0)
+		export function wait(ms = 0)
 		{
 			return new Promise(r => setTimeout(r, ms));
 		}
 		
 		/** */
-		export async function waitTransitionEnd(e: Element)
+		export function waitTransitionEnd(e: Element)
 		{
-			await new Promise<void>(r => e.addEventListener("transitionend", ev =>
+			return new Promise<void>(r => e.addEventListener("transitionend", ev =>
 			{
 				if (ev.target === e)
 					r();
 			}));
+		}
+		
+		/** */
+		export function waitAnimationFrame()
+		{
+			return new Promise<void>(r => window.requestAnimationFrame(() => r()));
 		}
 		
 		/** */
@@ -733,9 +739,11 @@ namespace App
 		export function actionButton(style: "filled" | "outline", ...params: Hot.Param[])
 		{
 			return Hot.div(
+				actionButton.name,
 				UI.clickable,
 				{
-					margin: "auto",
+					marginLeft: "auto",
+					marginRight: "auto",
 					textAlign: "center",
 					fontWeight: 800,
 					padding: "25px",

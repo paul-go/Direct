@@ -67,43 +67,12 @@ namespace App
 					this.toggleMaxClass();
 				})),
 				
-				Hot.on("keydown", ev =>
-				{
-					if (ev.key === "p" && ev.metaKey && !ev.ctrlKey && !ev.shiftKey && !ev.altKey)
-					{
-						ev.preventDefault();
-						this.showMainMenu();
-					}
-				}),
-				
-				this.menuButton = UI.circleButton(
-					{
-						position: "fixed",
-						bottom: "30px",
-						right: "30px",
-						zIndex: 2,
-						transitionProperty: "transform",
-						transitionDuration: "0.5s",
-						transform: "none",
-						color: "white",
-						letterSpacing: "-0.1em",
-						lineHeight: 3,
-					},
-					new Text("•••"),
-					UI.click(() => this.showMainMenu()),
-				)
+				new MainMenuHat()
 			);
 			
-			[this.showMenuFn, this._showMenuFn] = Force.create<() => void>();
 			this.toggleMaxClass();
 			Hat.wear(this);
 		}
-		
-		/** */
-		private readonly menuButton;
-		
-		readonly showMenuFn;
-		private readonly _showMenuFn;
 		
 		/** */
 		private toggleMaxClass()
@@ -143,18 +112,6 @@ namespace App
 			this.head.replaceChildren();
 			this.setBlog(blog);
 			this.head.append(new BlogHat().head);
-		}
-		
-		/** */
-		private async showMainMenu()
-		{
-			this._showMenuFn();
-			const pal = new BlogPaletteHat();
-			this.head.append(pal.head);
-			await UI.wait();
-			const s = this.menuButton.style;
-			s.transform = "translateY(100px)";
-			When.disconnected(pal.head, () => s.removeProperty("transform"));
 		}
 		
 		/** */
