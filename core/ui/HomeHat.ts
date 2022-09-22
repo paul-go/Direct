@@ -43,28 +43,6 @@ namespace App
 						)
 					),
 					this.homeListHat = this.createHomeListHat(),
-					Hot.div(
-						{
-							position: "sticky",
-							width: 0,
-							height: 0,
-							bottom: 0,
-							right: 0,
-							zIndex: 1,
-							float: "right",
-						},
-						UI.circleButton(
-							UI.anchorBottomRight(30),
-							{
-								color: "white",
-								letterSpacing: "-0.1em",
-								lineHeight: 3,
-								transform: "rotate(90deg)",
-							},
-							new Text("•••"),
-							UI.click(() => this.showMenu()),
-						)
-					)
 				)
 			);
 			

@@ -49,7 +49,7 @@ namespace App
 				),
 				Hot.on(UI.clickEvt, () =>
 				{
-					AppContainer.of(this).showBlogPalette();
+					
 				})
 			);
 		}

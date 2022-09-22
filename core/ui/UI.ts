@@ -37,6 +37,9 @@ namespace App
 		export const darkGrayBackground = "rgb(20, 20, 20)";
 		
 		/** */
+		export const lightGrayBackground = "rgb(40, 40, 40)";
+		
+		/** */
 		export function white(alpha = 1)
 		{
 			return alpha === 1 ? "white" : `rgba(255, 255, 255, ${alpha})`;

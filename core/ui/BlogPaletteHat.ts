@@ -11,14 +11,18 @@ namespace App
 				UI.fixed(),
 				UI.removeOnClick(),
 				UI.removeOnEscape(),
+				UI.backdropBlur(4),
 				{
-					backgroundColor: UI.white(0),
+					display: "flex",
+					alignItems: "end",
+					justifyContent: "center",
 					transitionProperty: "background-color",
 					transitionDuration: "0.3s",
+					backgroundColor: UI.black(0),
 				},
 				When.rendered(e =>
 				{
-					e.style.backgroundColor = UI.white(0.2);
+					e.style.backgroundColor = UI.black(0.33);
 				}),
 				Drop.here({
 					accept: [MimeType.zip],
@@ -28,13 +32,14 @@ namespace App
 				Hot.div(
 					"blog-palette-window",
 					{
+						position: "absolute",
 						margin: "auto",
 						padding: "10px",
 						width: "100%",
 						maxWidth: "600px",
-						borderRadius: "0 0 " + UI.borderRadius.large + " " + UI.borderRadius.large,
-						backgroundColor: UI.darkGrayBackground,
-						boxShadow: "0 0 100px " + UI.white(0.15),
+						borderRadius: UI.borderRadius.large + " " + UI.borderRadius.large + " 0 0",
+						backgroundColor: UI.lightGrayBackground,
+						boxShadow: "0 0 100px black",
 					},
 					Hot.div(
 						"blog-palette-header",
