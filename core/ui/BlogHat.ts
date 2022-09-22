@@ -9,7 +9,7 @@ namespace App
 		{
 			this.head = Hot.div(
 				CssClass.blogHat,
-				UI.appMaxWidth(),
+				UI.editorMaxWidth(),
 				this.headerElement = this.renderHeader(),
 				this.postList = Hot.div(
 					"post-list",

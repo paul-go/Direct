@@ -6,7 +6,7 @@ namespace Cover
 	{
 		const app = await App.createApp({ shell: true, clear: true });
 		
-		const posts = Sample.createPosts(4);
+		const posts = Sample.createPosts(1);
 		for (const post of posts)
 			await app.blog.retainPost(post);
 		

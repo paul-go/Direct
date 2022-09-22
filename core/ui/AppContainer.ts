@@ -89,7 +89,7 @@ namespace App
 		}
 		
 		/** */
-		inEditMode = false;
+		inEditMode = true;
 		
 		/** */
 		get blog()

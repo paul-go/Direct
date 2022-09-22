@@ -396,7 +396,7 @@ namespace App
 		}
 		
 		/** */
-		export function appMaxWidth(): Hot.Style
+		export function editorMaxWidth(): Hot.Style
 		{
 			return TAURI ? {} : {
 				maxWidth: ConstN.appMaxWidth + "px",
@@ -704,6 +704,26 @@ namespace App
 			
 			document.body.style.removeProperty("overflow");
 			document.body.style.removeProperty("pointer-events");
+		}
+		
+		/** */
+		export function circleButton(...params: Hot.Param[])
+		{
+			return Hot.div(
+				UI.clickable,
+				UI.backdropBlur(10),
+				Hot.css(" > *", {
+					...UI.anchorCenter()
+				}),
+				{
+					backgroundColor: UI.gray(128, 0.33),
+					borderRadius: "100%",
+					textAlign: "center",
+					width: "64px",
+					height: "64px",
+				},
+				...params,
+			);
 		}
 		
 		/** */

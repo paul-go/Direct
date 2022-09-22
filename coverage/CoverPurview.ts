@@ -2,7 +2,7 @@
 namespace Cover
 {
 	/** */
-	export function coverPurview()
+	export function coverPurviewInfinite()
 	{
 		App.Css.append();
 		

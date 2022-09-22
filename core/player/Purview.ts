@@ -4,6 +4,8 @@ namespace Player
 	/** */
 	export class Purview<THat extends Hot.HatLike = Hot.HatLike>
 	{
+		readonly head;
+		
 		/** */
 		constructor()
 		{
@@ -69,14 +71,23 @@ namespace Player
 			
 			this.size = 4;
 			Player.observeResize(this.head, () => this.updatePreviews());
+			[this.enterReviewFn, this._enterReviewFn] = Force.create<() => void>();
+			[this.exitReviewFn, this._exitReviewFn] = Force.create<() => void>();
 			
 			this.beginOffsetTopTracking();
 		}
 		
-		readonly head;
 		private readonly scalerElement;
 		private readonly previewsContainer;
 		private readonly reviewContainer;
+		
+		/** */
+		readonly enterReviewFn;
+		private readonly _enterReviewFn;
+		
+		/** */
+		readonly exitReviewFn;
+		private readonly _exitReviewFn;
 		
 		/**
 		 * Gets or sets whether the size of the purview can be
@@ -220,27 +231,17 @@ namespace Player
 		/** */
 		private async requestPreview(rr: IReviewRequestInfo)
 		{
-			const result = this.previewRequestFn?.(rr);
-			if (!result)
-				return;
-			
 			const requestedCount = rr.rangeEnd - rr.rangeStart;
-			const hats = await result;
-			
+			const promises = await this.previewRequestFn?.(rr) || [];
 			return {
-				promises: hats,
-				terminate: hats.length < requestedCount,
+				promises,
+				terminate: promises.length < requestedCount,
 			};
 		}
 		
 		/** */
 		private async populatePreviews(where: "above" | "below", screens: number = 3)
 		{
-			if (this.isPopulatingPreviews)
-				return;
-			
-			this.isPopulatingPreviews = true;
-			
 			const above = where === "above";
 			const mul = above ? -1 : 1;
 			const pullCount = this.size * this.size * screens;
@@ -252,9 +253,6 @@ namespace Player
 				rangeStart,
 				rangeEnd,
 			});
-			
-			if (!itemRequest)
-				return;
 			
 			const elements: HTMLElement[] = [];
 			
@@ -319,74 +317,86 @@ namespace Player
 				this.previewsContainer.append(...elements);
 			}
 			
-			this.updatePreviews();
-			this.isPopulatingPreviews = false;
+			const { isNearingTop, isNearingBottom } = this.updatePreviews();
+			
+			if (!itemRequest.terminate)
+			{
+				if (isNearingBottom)
+					this.populatePreviews("below", 1);
+				
+				if (0 && isNearingTop)
+					this.populatePreviews("above", 1);
+			}
 		}
 		
 		/** */
 		private updatePreviews()
 		{
-			if (this.totalPreviewCount === 0)
-				return;
-			
-			const y = window.scrollY - this.offsetTop;
-			const wh = window.innerHeight;
-			const rowHeight = wh / this.size;
-			const rowCount = this.totalPreviewCount / this.size;
-			const visibleRowStart = Math.floor(y / rowHeight);
-			const visibleItemStart = visibleRowStart * this.size;
-			const visibleItemEnd = visibleItemStart + this.size * (this.size + 2);
-			const elementsWithTop = new Set(getByClass(Class.hasTop, this.previewsContainer));
-			const elementsVisible = new Set(getByClass(showClass, this.previewsContainer));
-			
-			for (let i = visibleItemStart; i < visibleItemEnd; i++)
+			block:
 			{
-				const children = this.previewsContainer.children;
-				const e = children.item(i);
-				if (!(e instanceof HTMLElement))
+				if (this.totalPreviewCount === 0)
+					break block;
+				
+				const y = window.scrollY - this.offsetTop;
+				const wh = window.innerHeight;
+				const rowHeight = wh / this.size;
+				const rowCount = this.totalPreviewCount / this.size;
+				const visibleRowStart = Math.floor(y / rowHeight);
+				const visibleItemStart = visibleRowStart * this.size;
+				const visibleItemEnd = visibleItemStart + this.size * (this.size + 2);
+				const elementsWithTop = new Set(getByClass(Class.hasTop, this.previewsContainer));
+				const elementsVisible = new Set(getByClass(showClass, this.previewsContainer));
+				
+				for (let i = visibleItemStart; i < visibleItemEnd; i++)
 				{
-					if (i >= children.length)
-						break;
+					const children = this.previewsContainer.children;
+					const e = children.item(i);
+					if (!(e instanceof HTMLElement))
+					{
+						if (i >= children.length)
+							break;
+						
+						continue;
+					}
 					
-					continue;
+					const mul = getIndex(e) > 0 ? 1 : -1;
+					e.style.top = (100 * this.rowOf(e) * mul || 0).toFixed(5) + "vh";
+					e.classList.add(Class.hasTop, showClass);
+					
+					elementsWithTop.delete(e);
+					elementsVisible.delete(e);
 				}
 				
-				const mul = getIndex(e) > 0 ? 1 : -1;
-				e.style.top = (100 * this.rowOf(e) * mul || 0).toFixed(5) + "vh";
-				e.classList.add(Class.hasTop, showClass);
+				for (const e of elementsWithTop)
+				{
+					e.style.removeProperty("top");
+					e.classList.remove(Class.hasTop);
+				}
 				
-				elementsWithTop.delete(e);
-				elementsVisible.delete(e);
+				for (const e of elementsVisible)
+					e.classList.remove(showClass);
+				
+				this.head.style.height = (100 * rowCount / this.size).toFixed(5) + "vh";
+				this.scalerElement.style.height = (100 * rowCount).toFixed(5) + "vh";
+				
+				if (y === this.lastScrollY)
+					break block;
+				
+				this.lastScrollY = y;
+				
+				return {
+					isNearingTop: y < rowHeight,
+					isNearingBottom: (y + wh) > (rowCount - 1) * (wh / this.size),
+				};
 			}
 			
-			for (const e of elementsWithTop)
-			{
-				e.style.removeProperty("top");
-				e.classList.remove(Class.hasTop);
-			}
-			
-			for (const e of elementsVisible)
-				e.classList.remove(showClass);
-			
-			this.head.style.height = (100 * rowCount / this.size).toFixed(5) + "vh";
-			this.scalerElement.style.height = (100 * rowCount).toFixed(5) + "vh";
-			
-			if (y === this.lastScrollY)
-				return;
-			
-			this.lastScrollY = y;
-			const isNearingTop = y < rowHeight;
-			const isNearingBottom = (y + wh) > (rowCount - 1) * (wh / this.size);
-			
-			if (isNearingBottom)
-				this.populatePreviews("below", 1);
-			
-			if (0 && isNearingTop)
-				this.populatePreviews("above", 1);
+			return {
+				isNearingTop: false,
+				isNearingBottom: false,
+			};
 		}
 		
 		private lastScrollY = -1;
-		private isPopulatingPreviews = false;
 		
 		/** */
 		private columnOf(previewElement: Element)
@@ -495,6 +505,8 @@ namespace Player
 			const requestResult = await this.reviewRequestFn?.(previewHat);
 			if (!requestResult)
 				return;
+			
+			this._enterReviewFn();
 			
 			const scenery = requestResult instanceof Scenery ?
 				requestResult :
@@ -607,6 +619,8 @@ namespace Player
 			
 			for (const property of Array.from(this.reviewContainer.style))
 				this.reviewContainer.style.removeProperty(property);
+			
+			this._exitReviewFn();
 		}
 		
 		/** */
@@ -628,11 +642,36 @@ namespace Player
 		private get offsetTop()
 		{
 			if (this._offsetTop === minInt)
-				this._offsetTop = this.head.offsetTop;
+			{
+				if (this.scrollingAncestor === null)
+				{
+					this.scrollingAncestor = document.documentElement;
+					const ancestors = Query.ancestors(this.head);
+					
+					for (const e of ancestors)
+					{
+						if (!(e instanceof HTMLElement))
+							continue;
+						
+						const oy = window.getComputedStyle(e).overflowY;
+						if (oy === "auto" || oy === "scroll")
+						{
+							this.scrollingAncestor = e;
+							break;
+						}
+					}
+				}
+				
+				this._offsetTop = Query
+					.ancestors(this.head, this.scrollingAncestor)
+					.filter((e): e is HTMLElement => e instanceof HTMLElement)
+					.reduce((a, b) => a + b.offsetTop, 0);
+			}
 			
 			return this._offsetTop;
 		}
 		private _offsetTop = minInt;
+		private scrollingAncestor: HTMLElement | null = null;
 	}
 	
 	//# Utilities & Constants
@@ -737,7 +776,7 @@ namespace Player
 	
 	/** */
 	export type GetReviewFn<THat extends Hot.HatLike> = 
-		(hat: THat) => MaybePromise<HTMLElement | Scenery>;
+		(hat: THat) => MaybePromise<HTMLElement | Scenery | void>;
 	
 	/** */
 	export type MaybePromise<T> = Promise<T> | T;

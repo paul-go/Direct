@@ -2,6 +2,12 @@
 namespace Cover
 {
 	/** */
+	export async function coverPostFromStart()
+	{
+		await App.createApp({ shell: false, clear: true });
+	}
+	
+	/** */
 	export async function coverPostHatEmpty()
 	{
 		const app = await App.createApp({ shell: true, clear: true });

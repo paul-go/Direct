@@ -20,121 +20,91 @@ namespace App
 			})();
 			
 			this.isNewRecord = !record;
+			this._isKeepingRecord = !!record;
 			
 			this.head = Hot.div(
 				"post-hat",
-				Hot.on(window, "scroll", () => this.toggleHeader(window.scrollY > 0)),
-				
-				UI.anchorTop(),
-				UI.appMaxWidth(),
 				{
-					paddingBottom: "10px",
-					transitionDuration: "0.5s",
-					transitionProperty: "transform, opacity",
-					transformOrigin: "0 0",
-					opacity: 1,
+					backgroundColor: UI.darkGrayBackground,
 				},
-				minHeight,
-				this.scenesElement = Hot.div(
-					"scenes-element",
-					minHeight,
-				),
-				
 				Hot.div(
-					"no-scenes-message",
-					UI.anchor(),
-					UI.flexCenter,
-					UI.visibleWhenEmpty(this.scenesElement),
+					"post-hat-width",
+					UI.editorMaxWidth(),
+					{
+						paddingBottom: "10px",
+						transitionDuration: "0.5s",
+						transitionProperty: "transform, opacity",
+						transformOrigin: "0 0",
+						opacity: 1,
+					},
 					minHeight,
-					{
-						zIndex: 1,
-					},
-					(this.noScenesBox = new HeightBox(this.renderNoScenes())).head,
-				),
-				
-				this.footerElement = Hot.div(
-					"footer",
-					{
-						padding: "0 20px",
-					},
-					UI.visibleWhenNotEmpty(this.scenesElement),
+					this.scenesElement = Hot.div(
+						"scenes-element",
+						minHeight,
+					),
 					
 					Hot.div(
+						"no-scenes-message",
+						UI.anchor(),
+						UI.flexCenter,
+						UI.visibleWhenEmpty(this.scenesElement),
+						minHeight,
 						{
-							width: "fit-content",
-							minWidth: "400px",
-							margin: "auto",
+							zIndex: 1,
 						},
-						UI.actionButton(
-							"filled",
-							{ maxWidth: "400px" },
-							...UI.click(() => this.handlePreview()),
-							new Text("Preview")
-						),
-						UI.clickLabel(
-							"publish-button",
-							{
-								margin: "10px auto",
-								padding: "20px",
-								width: "min-content",
-							},
-							Hot.on(UI.clickEvt, () =>
-							{
-								this.tryPublish();
-							}),
-							...UI.text("Publish", 25, 800),
-							this.settingsButtonElement = Icon.settings(
-								CssClass.hide,
-								{
-									position: "absolute",
-									right: "-2.75em",
-									width: "30px",
-									height: "30px",
-								},
-								Hot.on(UI.clickEvt, ev =>
-								{
-									this.setupPublish();
-									ev.stopPropagation();
-								}),
-							)
-						)
+						(this.noScenesBox = new HeightBox(this.renderNoScenes())).head,
 					),
-					this.publishInfoElement = Hot.div("publish-info")
-				),
-				
-				this.headerScreen = Hot.div(
-					"header-screen",
-					{
-						position: "fixed",
-						top: 0,
-						height: SceneHat.headerHeight,
-						transitionDuration: "0.33s",
-						transitionProperty: "background-color",
-						padding: "25px",
-						// Elevate the chevron so that it goes above the "no scenes" message
-						zIndex: 1,
-						borderBottomRightRadius: UI.borderRadius.large,
-					},
-					!TAURI && Hot.css("." + CssClass.appContainerMaxed + " & !", {
-						borderBottomLeftRadius: UI.borderRadius.large
-					}),
 					
-					UI.clickable,
-					Hot.on("click", () => this.handleBack()),
-					Icon.chevron(
-						Origin.left,
-						TAURI && {
-							width: "20px",
-							height: "20px",
-							top: "20px",
-							left: "3px"
+					this.footerElement = Hot.div(
+						"footer",
+						{
+							padding: "0 20px",
 						},
-						!TAURI && {
-							top: "12px",
-							left: "5px",
-						},
+						UI.visibleWhenNotEmpty(this.scenesElement),
+						
+						Hot.div(
+							{
+								width: "fit-content",
+								minWidth: "400px",
+								margin: "auto",
+							},
+							UI.actionButton(
+								"filled",
+								{ maxWidth: "400px" },
+								...UI.click(() => this.handlePreview()),
+								new Text("Preview")
+							),
+							UI.clickLabel(
+								"publish-button",
+								{
+									margin: "10px auto",
+									padding: "20px",
+									width: "min-content",
+								},
+								Hot.on(UI.clickEvt, () =>
+								{
+									this.tryPublish();
+								}),
+								...UI.text("Publish", 25, 800),
+								this.settingsButtonElement = Icon.settings(
+									CssClass.hide,
+									{
+										position: "absolute",
+										right: "-2.75em",
+										width: "30px",
+										height: "30px",
+									},
+									Hot.on(UI.clickEvt, ev =>
+									{
+										this.setupPublish();
+										ev.stopPropagation();
+									}),
+								)
+							)
+						),
+						this.publishInfoElement = Hot.div("publish-info")
 					),
-				),
+				)
 			);
 			
 			this.scenes = new Hat.Array(this.scenesElement, SceneHat);
@@ -151,8 +121,7 @@ namespace App
 		
 		readonly head;
 		readonly scenes;
-		private readonly record;
-		private readonly headerScreen;
+		readonly record;
 		private readonly scenesElement;
 		private readonly footerElement;
 		private readonly settingsButtonElement;
@@ -194,8 +163,16 @@ namespace App
 		}
 		
 		/** */
+		get isKeepingRecord()
+		{
+			return this._isKeepingRecord;
+		}
+		private _isKeepingRecord = false;
+		
+		/** */
 		private save()
 		{
+			this._isKeepingRecord = true;
 			this.record.scenes = this.scenes.map(hat => hat.record);
 			AppContainer.of(this).blog.retainPost(this.record);
 		}
@@ -213,15 +190,6 @@ namespace App
 			this.backFn = fn;
 		}
 		private backFn = () => {};
-		
-		/** */
-		private toggleHeader(visible: boolean)
-		{
-			Hot.get(this.headerScreen)(
-				{ backgroundColor: visible ? UI.gray(128, 0.25) : "transparent" },
-				UI.backdropBlur(visible ? 8 : 0),
-			);
-		}
 		
 		/** */
 		private async handleBack()
