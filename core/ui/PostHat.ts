@@ -10,7 +10,7 @@ namespace App
 		 * omitted, this indicates that this PostHat should create it a new, 
 		 * unsaved record.
 		 */
-		constructor(record?: PostRecord)
+		constructor(record?: PostRecord, isHomePost?: "home")
 		{
 			this.record = record || (() =>
 			{
@@ -20,6 +20,7 @@ namespace App
 			})();
 			
 			this._isKeepingRecord = !!record;
+			const minHeight: Hot.Param = { minHeight: isHomePost ? "85vh" : "100vh" };
 			
 			this.head = Hot.div(
 				"post-hat",
@@ -58,6 +59,7 @@ namespace App
 						"footer",
 						{
 							padding: "0 20px",
+							display: "none",
 						},
 						UI.visibleWhenNotEmpty(this.scenesElement),
 						
@@ -299,6 +301,4 @@ namespace App
 		}
 		private slugInput: HTMLElement | null = null;
 	}
-	
-	const minHeight: Hot.Param = { minHeight: "85vh" };
 }
