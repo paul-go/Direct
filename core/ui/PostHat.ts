@@ -19,7 +19,6 @@ namespace App
 				return post;
 			})();
 			
-			this.isNewRecord = !record;
 			this._isKeepingRecord = !!record;
 			
 			this.head = Hot.div(
@@ -126,7 +125,6 @@ namespace App
 		private readonly footerElement;
 		private readonly settingsButtonElement;
 		private readonly noScenesBox;
-		private readonly isNewRecord: boolean;
 		private publishInfoElement;
 		
 		/** */
@@ -175,49 +173,6 @@ namespace App
 			this._isKeepingRecord = true;
 			this.record.scenes = this.scenes.map(hat => hat.record);
 			AppContainer.of(this).blog.retainPost(this.record);
-		}
-		
-		/** */
-		setKeepCallback(fn: (post: PostRecord) => void)
-		{
-			this.keepFn = fn;
-		}
-		private keepFn = (post: PostRecord) => {};
-		
-		/** */
-		setBackCallback(fn: () => void)
-		{
-			this.backFn = fn;
-		}
-		private backFn = () => {};
-		
-		/** */
-		private async handleBack()
-		{
-			this.save();
-			
-			// If there is no BlogHat sitting behind this PostHat, its because
-			// the application launched directly into a PostHat for editing the
-			// home page, and so we need to insert a new BlogHat.
-			if (!Query.find(CssClass.blogHat, AppContainer.of(this).head))
-			{
-				const blogHat = new BlogHat();
-				const app = AppContainer.of(this);
-				app.head.prepend(blogHat.head);
-				await UI.wait();
-				const s = this.head.style;
-				s.opacity = "0";
-				s.transform = "scale(0.3333)";
-				await UI.waitTransitionEnd(this.head);
-				this.head.remove();
-			}
-			else
-			{
-				if (this.isNewRecord && this.scenes.length > 0)
-					this.keepFn(this.record);
-				
-				this.backFn();
-			}
 		}
 		
 		/** */

@@ -38,14 +38,18 @@ namespace App
 			for (const [sceneKey, postKey] of tupleSlice)
 			{
 				results.push({
-					getScene: () =>
+					getScene()
 					{
 						return Model.get<SceneRecord>(sceneKey);
 					},
-					getPost:() =>
+					getPost()
 					{
 						return Model.get<PostRecord>(postKey);
-					}
+					},
+					async getPartialPost()
+					{
+						return await Model.get<PartialPostRecord>(postKey, "shallow");
+					},
 				});
 			}
 			
@@ -106,6 +110,7 @@ namespace App
 	{
 		getScene(): Promise<SceneRecord>;
 		getPost(): Promise<PostRecord>;
+		getPartialPost(): Promise<PartialPostRecord>;
 	}
 	
 	const tupleSeparator = ":";

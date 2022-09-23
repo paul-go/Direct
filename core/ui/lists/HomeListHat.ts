@@ -27,7 +27,7 @@ namespace App
 				for (const future of futures)
 				{
 					const rectangle = new EditorRectangleHat();
-					rectangle.setRecords(future);
+					rectangle.setFutureRecord(future);
 					rectangles.push(rectangle);
 				}
 				

@@ -66,10 +66,7 @@ namespace App
 		]);
 		
 		if (options?.shell !== true)
-		{
-			const hat = new App.HomeHat(app);
-			app.head.append(hat.head);
-		}
+			app.reset();
 		
 		return app;
 	}

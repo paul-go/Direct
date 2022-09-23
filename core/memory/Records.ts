@@ -14,9 +14,13 @@ namespace App
 		htmlFooter = "";
 		draft = true;
 		dateCreated = Date.now();
+		dateModified = Date.now();
 		datePublished = 0;
 		scenes = Model.array<SceneRecord>();
 	}
+	
+	/** */
+	export type PartialPostRecord = Omit<PostRecord, "scenes">;
 	
 	/** */
 	export abstract class SceneRecord extends Record

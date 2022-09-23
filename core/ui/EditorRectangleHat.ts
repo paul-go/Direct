@@ -13,9 +13,10 @@ namespace App
 		private future: PostStreamRecordFuture | null = null;
 		
 		/** */
-		async setRecords(future: PostStreamRecordFuture)
+		async setFutureRecord(future: PostStreamRecordFuture)
 		{
 			this.future = future;
+			this.updateDraftStatus();
 			const scene = await future.getScene();
 			const renderer = SceneRenderer.create(scene, true);
 			const section = this.html = await renderer.render();
@@ -49,5 +50,49 @@ namespace App
 			Not.reachable();
 		}
 		private _post: PostRecord | null = null;
+		
+		/** */
+		updateDraftStatus()
+		{
+			this.future?.getPartialPost().then(partial =>
+			{
+				this.isDraft = partial.dateModified > partial.datePublished;
+			});
+		}
+		
+		/** */
+		get isDraft()
+		{
+			return !!this.draftChip;
+		}
+		private set isDraft(isDraft: boolean)
+		{
+			if (isDraft && this.draftChip === null)
+			{
+				this.head.append(
+					this.draftChip = Hot.div(
+						UI.anchorTop(15),
+						{
+							zIndex: 1,
+							width: "max-content",
+							margin: "auto",
+							padding: UI.vw(0.5) + " " + UI.vw(1.5),
+							borderRadius: UI.borderRadius.max,
+							color: "white",
+							fontSize: UI.vw(2),
+							fontWeight: 700,
+							backgroundColor: UI.themeColor,
+						},
+						new Text("Draft"),
+					)
+				);
+			}
+			else if (!isDraft && this.draftChip)
+			{
+				this.draftChip.remove();
+				this.draftChip = null;
+			}
+		}
+		private draftChip: HTMLElement | null = null;
 	}
 }

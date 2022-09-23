@@ -74,6 +74,14 @@ namespace App
 			Hat.wear(this);
 		}
 		
+		/**
+		 * Sets the AppContainer to its default state (with the HomeHat visible).
+		 */
+		reset()
+		{
+			this.head.append(new HomeHat(this).head);
+		}
+		
 		/** */
 		private toggleMaxClass()
 		{
@@ -111,7 +119,7 @@ namespace App
 			
 			this.head.replaceChildren();
 			this.setBlog(blog);
-			this.head.append(new BlogHat().head);
+			this.reset();
 		}
 		
 		/** */
