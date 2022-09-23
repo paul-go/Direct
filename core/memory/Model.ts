@@ -141,7 +141,7 @@ namespace App.Model
 	}
 	
 	/** */
-	export async function get<T extends object = object>(key: Key): Promise<T> 
+	export async function get<T extends object = object>(key: Key, shallow?: "shallow"): Promise<T> 
 	{
 		if (!key)
 			throw "Key required.";
@@ -151,8 +151,8 @@ namespace App.Model
 			return existing as T;
 		
 		const object = await Store.current().get(key);
-		const result = object ? modelize(key, object) : null;
-		return result as T;
+		const model = object ? modelize(key, object, shallow) : null;
+		return model as T;
 	}
 	
 	/** */
@@ -191,7 +191,7 @@ namespace App.Model
 	}
 	
 	/** */
-	async function modelize<T extends object>(key: Key, plainObject: object): Promise<T>
+	async function modelize<T extends object>(key: Key, plainObject: object, shallow?: "shallow"): Promise<T>
 	{
 		const instance = Key.instantiate(key);
 		const instany = instance as any;
@@ -205,19 +205,19 @@ namespace App.Model
 			
 			const rawValue = (plainObject as any)[memberName];
 			
-			if (memberType === "model-array")
+			if (!shallow && memberType === "model-array")
 			{
 				const ids = rawValue as Key[];
 				if (Array.isArray(ids))
 					instany[memberName] = await pick(ids);
 			}
-			else if (memberType === "model-reference")
+			else if (!shallow && memberType === "model-reference")
 			{
 				instany[memberName] = rawValue ?
 					await get(rawValue) :
 					null;
 			}
-			else if (memberType === "blob")
+			else if (!shallow && memberType === "blob")
 			{
 				const key = BlobReference.parse(rawValue);
 				const blob = await Store.current().get(key);
@@ -225,6 +225,9 @@ namespace App.Model
 			}
 			else instany[memberName] = rawValue;
 		}
+		
+		if (!shallow)
+			heap.set(key, instance);
 		
 		return instance as T;
 	}
