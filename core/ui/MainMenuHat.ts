@@ -11,11 +11,11 @@ namespace App
 		{
 			this.head = Hot.div(
 				"main-menu-hat",
-				menuClosedClass,
 				UI.backdropBlur(4),
 				{
 					position: "fixed",
 					bottom: 0,
+					left: 0,
 					right: 0,
 					zIndex: 2,
 					transitionProperty: "background-color, filter",
@@ -23,20 +23,17 @@ namespace App
 				},
 				Hot.on(document.body, "keydown", ev => this.handleKeydown(ev)),
 				Hot.on("pointerdown", ev => ev.target === this.head && this.hide()),
-				this.menuButton = UI.circleButton(
+				this.openButton = UI.circleButton(
 					{
 						position: "fixed",
 						bottom: "30px",
 						right: "30px",
 						zIndex: 1,
-						opacity: 1,
-						transitionProperty: "transform, opacity",
-						transitionDuration: "0.5s",
-						transform: "none",
 						color: "white",
 						letterSpacing: "-0.1em",
 						lineHeight: 3,
 					},
+					visibleClass,
 					Hot.div(
 						{
 							transformOrigin: "50% 50%",
@@ -46,16 +43,20 @@ namespace App
 					),
 					UI.click(() => this.show()),
 				),
+				this.screens = Hot.div(
+					"screens",
+					UI.fixed(),
+				),
 			);
 			
 			Hat.wear(this);
 		}
 		
 		/** */
-		private readonly menuButton;
+		private readonly openButton;
 		
 		/** */
-		private menuContents: HTMLElement | null = null;
+		private readonly screens: HTMLElement;
 		
 		/** */
 		private handleKeydown(ev: KeyboardEvent)
@@ -84,25 +85,16 @@ namespace App
 			if (this.isVisible)
 				return;
 			
-			this._isVisible = true;
-			this.head.classList.remove(menuClosedClass);
-			this.head.classList.add(menuOpenClass);
-			await UI.wait();
-			
-			this.head.append(this.menuContents = Hot.div(
-				"menu-contents",
+			await this.setScreen(Hot.div(
+				invisibleForwardClass,
 				{
 					position: "fixed",
 					left: 0,
 					right: 0,
 					bottom: 0,
+					margin: "auto",
 					width: "100%",
 					maxWidth: "400px",
-					margin: "auto",
-					opacity: 0,
-					transform: "translateX(100px)",
-					transitionProperty: "transform, opacity",
-					transitionDuration: "0.5s",
 				},
 				Hot.css(" > ." + UI.actionButton.name, {
 					marginBottom: "20px",
@@ -127,59 +119,18 @@ namespace App
 					new Text("Manage Blogs")
 				)
 			));
-			
-			await UI.waitAnimationFrame();
-			await UI.wait(1);
-			
-			let s = this.menuButton.style;
-			s.transform = "translateX(-100px)";
-			s.opacity = "0";
-			
-			s = this.menuContents.style;
-			s.transform = "none";
-			s.opacity = "1";
-			
-			Hot.get(this.head)(
-				UI.backdropBlur(4),
-				{ backgroundColor: UI.black(0.33) }
-			);
 		}
 		
 		/** */
 		private async hide()
 		{
-			if (!this.isVisible)
-				return;
-			
-			this._isVisible = false;
-			let s = this.menuButton.style;
-			s.transform = "none";
-			s.opacity = "1";
-			
-			Hot.get(this.head)(
-				UI.backdropBlur(0),
-				{ backgroundColor: UI.black(0) }
-			);
-			
-			if (!this.menuContents)
-				return;
-			
-			s = this.menuContents.style;
-			s.transform = "translateX(100px)";
-			s.opacity = "0";
-			
-			await UI.waitTransitionEnd(this.menuContents);
-			this.menuContents?.remove();
-			this.menuContents = null;
-			
-			this.head.classList.remove(menuOpenClass);
-			this.head.classList.add(menuClosedClass);
+			this.setScreen(null);
 		}
 		
 		/** */
 		async showPalette()
 		{
-			
+			this.setScreen(new BlogPaletteHat().head);
 		}
 		
 		/** */
@@ -193,17 +144,88 @@ namespace App
 		{
 			
 		}
+		
+		/** */
+		private async setScreen(newScreen: HTMLElement | null)
+		{
+			if (newScreen)
+			{
+				this.expandHead(true);
+				await UI.wait();
+			}
+			
+			Hot.get(this.head)(
+				UI.backdropBlur(newScreen ? 4 : 0),
+				{ backgroundColor: UI.black(newScreen ? 0.33 : 0) }
+			);
+			
+			const currentScreen = this.screens.firstElementChild as HTMLElement;
+			const openList = this.openButton.classList;
+			
+			if (currentScreen)
+			{
+				const newClass = newScreen ? 
+					invisibleBackwardClass :
+					invisibleForwardClass;
+				
+				currentScreen.classList.replace(visibleClass, newClass);
+				UI.waitTransitionEnd(currentScreen).then(() => currentScreen.remove());
+			}
+			
+			if (newScreen)
+			{
+				if (openList.contains(visibleClass))
+					openList.add(invisibleBackwardClass);
+				
+				newScreen.classList.remove(visibleClass);
+				newScreen.classList.add(invisibleForwardClass);
+				this.screens.append(newScreen);
+				await UI.waitAnimationFrame();
+				await UI.wait(1);
+				newScreen.classList.replace(invisibleForwardClass, visibleClass);
+			}
+			else
+			{
+				openList.contains(invisibleBackwardClass) ?
+					openList.replace(invisibleBackwardClass, visibleClass) :
+					openList.add(visibleClass);
+				
+				this.expandHead(false);
+			}
+		}
+		
+		/** */
+		private expandHead(expanded: boolean)
+		{
+			this._isVisible = expanded;
+			this.head.style.top = expanded ? "0" : "auto";
+		}
 	}
 	
+	const transitionDuration = "0.5s";
+	
 	/** */
-	const menuOpenClass = Hot.css({
-		top: 0,
-		left: 0,
+	const transitionClassStyles: Hot.Style = {
+		transitionProperty: "transform, opacity",
+		transitionDuration,
+		opacity: 1,
+		transform: "translateX(0)",
+	};
+	
+	/** */
+	const invisibleForwardClass = Hot.css({
+		...transitionClassStyles,
+		opacity: 0,
+		transform: "translateX(100px)",
 	});
 	
 	/** */
-	const menuClosedClass = Hot.css({
-		width: 0,
-		height: 0,
+	const invisibleBackwardClass = Hot.css({
+		...transitionClassStyles,
+		opacity: 0,
+		transform: "translateX(-100px)",
 	});
+	
+	/** */
+	const visibleClass = Hot.css(transitionClassStyles);
 }

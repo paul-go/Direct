@@ -10,21 +10,6 @@ namespace App
 			this.head = Hot.div(
 				"blog-palette-hat",
 				UI.fixed(),
-				UI.removeOnClick(),
-				UI.removeOnEscape(),
-				UI.backdropBlur(4),
-				{
-					display: "flex",
-					alignItems: "end",
-					justifyContent: "center",
-					transitionProperty: "background-color",
-					transitionDuration: "0.3s",
-					backgroundColor: UI.black(0),
-				},
-				When.rendered(e =>
-				{
-					e.style.backgroundColor = UI.black(0.33);
-				}),
 				Drop.here({
 					accept: [MimeType.zip],
 					dropFn: files => files.length > 0 && this.importDatabase(files[0].data),
@@ -34,18 +19,23 @@ namespace App
 					"blog-palette-window",
 					{
 						position: "absolute",
+						left: 0,
+						right: 0,
+						bottom: "2vh",
 						margin: "auto",
-						padding: "10px",
+						maxHeight: "96vh",
 						width: "100%",
+						height: "fit-content",
 						maxWidth: "600px",
-						borderRadius: UI.borderRadius.large + " " + UI.borderRadius.large + " 0 0",
+						padding: "10px",
+						borderRadius: UI.borderRadius.large,
 						backgroundColor: UI.lightGrayBackground,
 						boxShadow: "0 0 100px black",
 					},
 					Hot.div(
 						"blog-palette-header",
 						{
-							padding: "20px"
+							padding: "20px 0"
 						},
 						UI.flexCenter,
 						UI.toolButton("filled",
