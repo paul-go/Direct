@@ -70,7 +70,7 @@ namespace Player
 			);
 			
 			this.size = 4;
-			Player.observeResize(this.head, () => this.updatePreviews());
+			Resize.watch(this.head, () => this.updatePreviews());
 			[this.enterReviewFn, this._enterReviewFn] = Force.create<() => void>();
 			[this.exitReviewFn, this._exitReviewFn] = Force.create<() => void>();
 			

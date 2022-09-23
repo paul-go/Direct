@@ -83,7 +83,7 @@ namespace Player
 		private setup()
 		{
 			this._viewportHeight = this.head.offsetHeight;
-			Player.observeResize(this.head, (w, height) => this._viewportHeight = height);
+			Resize.watch(this.head, (w, height) => this._viewportHeight = height);
 			
 			for (const scene of this.scenes)
 				this.updateSceneHeight(scene, scene.element.offsetHeight);
@@ -117,7 +117,7 @@ namespace Player
 		/** */
 		private streamSceneHeight(scene: ISceneInternal)
 		{
-			Player.observeResize(scene.element, (w, height) => this.updateSceneHeight(scene, height));
+			Resize.watch(scene.element, (w, height) => this.updateSceneHeight(scene, height));
 		}
 		
 		/** */

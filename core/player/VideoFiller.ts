@@ -86,7 +86,7 @@ namespace Player
 				container.style.width = filler.offsetWidth + "px";
 				container.style.height = filler.offsetHeight + "px";
 				
-				Player.observeResize(video, (width, height) =>
+				Resize.watch(video, (width, height) =>
 				{
 					container.style.width = width + "px";
 					container.style.height = height + "px";

@@ -1,11 +1,11 @@
 
-namespace Player
+namespace Resize
 {
 	/**
 	 * Observes the resizing of the particular element, and invokes
 	 * the specified callback when the element is resized.
 	 */
-	export function observeResize(
+	export function watch(
 		e: HTMLElement,
 		callback: (width: number, height: number) => void)
 	{
@@ -30,19 +30,14 @@ namespace Player
 				}
 			}).observe(e, { box: "border-box" });
 		}
-		else
+		else Hot.get(e)(Hot.on(window, "resize", () =>
 		{
-			Hot.get(e)(
-				Hot.on(window, "resize", () =>
-				{
-					window.requestAnimationFrame(() =>
-					{
-						const width = e.offsetWidth;
-						const height = e.offsetHeight;
-						callback(width, height);
-					});
-				})
-			);
-		}
+			window.requestAnimationFrame(() =>
+			{
+				const width = e.offsetWidth;
+				const height = e.offsetHeight;
+				callback(width, height);
+			});
+		}));
 	}
 }
