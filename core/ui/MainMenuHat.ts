@@ -22,7 +22,7 @@ namespace App
 					transitionDuration: "0.3s",
 				},
 				Hot.on(document.body, "keydown", ev => this.handleKeydown(ev)),
-				Hot.on("pointerdown", ev => ev.target === this.head && this.hide()),
+				Hot.on("pointerdown", ev => ev.target === this.screens && this.hide()),
 				this.openButton = UI.circleButton(
 					{
 						position: "fixed",
@@ -102,15 +102,15 @@ namespace App
 				}),
 				UI.actionButton(
 					"filled",
-					{ zIndex: 1 },
-					UI.click(() => this.showPreview()),
-					new Text("Preview")
-				),
-				UI.actionButton(
-					"filled",
 					{ zIndex: 2 },
 					UI.click(() => this.showPublish()),
 					new Text("Publish")
+				),
+				UI.actionButton(
+					"filled",
+					{ zIndex: 1 },
+					UI.click(() => this.showPreview()),
+					new Text("Preview")
 				),
 				UI.actionButton(
 					"filled",
