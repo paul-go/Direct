@@ -240,22 +240,15 @@ namespace Cover
 			Fs.copyFileSync(sourcePath, targetPath);
 		}
 		
-		const tsConfigPath = Path.join(Dir.temp, "tsconfig.json");
-		Fs.writeFileSync(tsConfigPath, JSON.stringify(
-			{
-				"compilerOptions": {
-					"outFile": "./" + ConstS.jsFileNamePlayer,
-					"module": "system",
-					"moduleResolution": "node",
-					"declaration": false,
-					"target": "es5",
-				},
-				"include": [
-					"*.ts"
-				]
-			},
-			null, "\t"));
+		const tsConfigPlayerPath = Path.join(Dir.player, "tsconfig.player.json");
+		if (!Fs.existsSync(tsConfigPlayerPath))
+			throw "File doesn't exist: " + tsConfigPlayerPath;
 		
+		const tsConfigText = Fs.readFileSync(tsConfigPlayerPath, "utf-8");
+		const tsConfigJson = JSON.parse(tsConfigText);
+		tsConfigJson.compilerOptions.outFile = "./" + ConstS.jsFileNamePlayer;
+		const tsConfigOutPath = Path.join(Dir.temp, "tsconfig.json");
+		Fs.writeFileSync(tsConfigOutPath, JSON.stringify(tsConfigJson, null, "\t"));
 		Proc.execSync("tsc", { cwd: Dir.temp });
 		
 		const inJsFilePath = Path.join(Dir.temp, ConstS.jsFileNamePlayer);
