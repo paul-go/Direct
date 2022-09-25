@@ -12,7 +12,6 @@ namespace App
 		slug = "";
 		htmlHeader = "";
 		htmlFooter = "";
-		draft = true;
 		dateCreated = Date.now();
 		dateModified = Date.now();
 		datePublished = 0;

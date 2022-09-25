@@ -4,6 +4,26 @@ namespace App
 	/** */
 	export class MainMenuHat
 	{
+		/** */
+		static getWindowStyle()
+		{
+			return {
+				position: "absolute",
+				left: 0,
+				right: 0,
+				bottom: "2vh",
+				margin: "auto",
+				maxHeight: "96vh",
+				width: "100%",
+				height: "fit-content",
+				maxWidth: "600px",
+				padding: "10px",
+				borderRadius: UI.borderRadius.large,
+				backgroundColor: UI.lightGrayBackground,
+				boxShadow: "0 0 100px black",
+			} as Hot.Style;
+		}
+		
 		readonly head;
 		
 		/** */
@@ -45,7 +65,7 @@ namespace App
 				),
 				this.screens = Hot.div(
 					"screens",
-					UI.fixed(),
+					UI.anchor(),
 				),
 			);
 			
@@ -100,25 +120,73 @@ namespace App
 					marginBottom: "20px",
 					boxShadow: "0 10px 20px " + UI.black(0.25)
 				}),
+				this.getPublishButtons(),
 				UI.actionButton(
 					"filled",
-					{ zIndex: 2 },
-					UI.click(() => this.showPublish()),
-					new Text("Publish")
-				),
-				UI.actionButton(
-					"filled",
-					{ zIndex: 1 },
 					UI.click(() => this.showPreview()),
 					new Text("Preview")
 				),
 				UI.actionButton(
 					"filled",
-					{ zIndex: 3 },
 					UI.click(() => this.showPalette()),
 					new Text("Manage Blogs")
 				)
 			));
+		}
+		
+		/** */
+		private getPublishButtons()
+		{
+			return Publishers.create(this.head).map((publisher, i) =>
+				UI.actionButton(
+					"filled",
+					UI.click(() => this.tryPublish(publisher, false)),
+					i === 0 && {
+						backgroundImage: "linear-gradient(160deg, orange, crimson)",
+						textShadow: "0 5px 12px " + UI.black(0.66)
+					},
+					new Text("Publish - " + publisher.name),
+					Hot.div(
+						"settings-button",
+						{
+							position: "absolute",
+							margin: "auto",
+							top: "10px",
+							bottom: "10px",
+							right: "10px",
+							width: "60px",
+							borderRadius: "100%",
+							transitionProperty: "box-shadow",
+							transitionDuration: "0.15s",
+							backgroundColor: UI.white(0.15)
+						},
+						
+						Hot.css(":hover !", {
+							boxShadow: "0 0 0 4px " + UI.white(0.5)
+						}),
+						UI.click(ev =>
+						{
+							ev.stopPropagation();
+							this.tryPublish(publisher, true);
+						}),
+						Icon.settings(
+							UI.anchorCenter(),
+							{
+								width: "30px",
+								height: "30px",
+								pointerEvents: "none",
+							}
+						)
+					)
+				));
+		}
+		
+		/** */
+		private async tryPublish(publisher: AbstractPublisher, showConfig: boolean)
+		{
+			const result = await publisher.tryPublish(showConfig);
+			if (result !== undefined)
+				this.setScreen(result);
 		}
 		
 		/** */
@@ -131,12 +199,6 @@ namespace App
 		async showPalette()
 		{
 			this.setScreen(new BlogPaletteHat().head);
-		}
-		
-		/** */
-		async showPublish()
-		{
-			
 		}
 		
 		/** */

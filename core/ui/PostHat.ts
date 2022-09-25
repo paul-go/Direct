@@ -192,7 +192,7 @@ namespace App
 			
 			if (publisher?.canPublish())
 			{
-				if (publisher.canHaveSlug &&  !Util.isSlugValid(this.slugInput?.textContent || ""))
+				if (publisher.canHaveSlug && !Util.isSlugValid(this.slugInput?.textContent || ""))
 				{
 					await Util.alert("Please enter a valid slug before publishing.");
 					

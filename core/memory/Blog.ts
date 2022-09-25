@@ -258,6 +258,12 @@ namespace App
 		}
 		
 		/** */
+		hasPublishParams(publisherKey: string)
+		{
+			return publisherKey in this.publishParams;
+		}
+		
+		/** */
 		private toJSON(): IBlogProperties
 		{
 			return {

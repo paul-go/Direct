@@ -8,58 +8,40 @@ namespace App
 		constructor()
 		{
 			this.head = Hot.div(
-				"blog-palette-hat",
-				UI.fixed(),
+				"blog-palette-window",
+				MainMenuHat.getWindowStyle(),
 				Drop.here({
 					accept: [MimeType.zip],
 					dropFn: files => files.length > 0 && this.importDatabase(files[0].data),
 					center: new Text("Import")
 				}),
 				Hot.div(
-					"blog-palette-window",
+					"blog-palette-header",
 					{
-						position: "absolute",
-						left: 0,
-						right: 0,
-						bottom: "2vh",
-						margin: "auto",
-						maxHeight: "96vh",
-						width: "100%",
-						height: "fit-content",
-						maxWidth: "600px",
-						padding: "10px",
-						borderRadius: UI.borderRadius.large,
-						backgroundColor: UI.lightGrayBackground,
-						boxShadow: "0 0 100px black",
+						padding: "20px 0"
 					},
-					Hot.div(
-						"blog-palette-header",
+					UI.flexCenter,
+					UI.toolButton("filled",
 						{
-							padding: "20px 0"
+							margin: "0 10px",
+							flex: "1 0",
 						},
-						UI.flexCenter,
-						UI.toolButton("filled",
-							{
-								margin: "0 10px",
-								flex: "1 0",
-							},
-							UI.click(() => this.handleNew()),
-							new Text("New"),
-						),
-						UI.toolButton("filled",
-							{
-								margin: "0 10px",
-								flex: "1 0",
-							},
-							UI.click(() => this.handleImport()),
-							new Text("Import"),
-						),
+						UI.click(() => this.handleNew()),
+						new Text("New"),
 					),
-					this.itemsElement = Hot.div(
-						"blog-palette-items",
-						Blog.getAll().map(b => new BlogPaletteItem(b))
-					)
+					UI.toolButton("filled",
+						{
+							margin: "0 10px",
+							flex: "1 0",
+						},
+						UI.click(() => this.handleImport()),
+						new Text("Import"),
+					),
 				),
+				this.itemsElement = Hot.div(
+					"blog-palette-items",
+					Blog.getAll().map(b => new BlogPaletteItem(b))
+				)
 			);
 			
 			Hat.wear(this);

@@ -165,6 +165,30 @@ namespace App
 			}
 		}
 		
+		//# File Path Related
+		
+		/** */
+		export function getFileName(path: string)
+		{
+			return path.split(/(\/|\\)/g).filter(s => !!s).slice(-1)[0] || "";
+		}
+		
+		/** */
+		export async function pathJoin(...parts: string[])
+		{
+			if (TAURI)
+				return await Tauri.path.join(...parts);
+			
+			if (ELECTRON)
+				return Electron.path.join(...parts);
+			
+			// Cheesy path join function, but should work for our purposes here.
+			return parts
+				.filter(s => !!s)
+				.map(s => s.replace(/\/$/, ""))
+				.join("/");
+		}
+		
 		//# Dialogs
 		
 		/** */
@@ -270,16 +294,6 @@ namespace App
 			}
 			
 			yield * recurse(via);
-		}
-		
-		//# Unsorted
-		
-		/**
-		 * 
-		 */
-		export function getFileName(path: string)
-		{
-			return path.split(/(\/|\\)/g).filter(s => !!s).slice(-1)[0] || "";
 		}
 	}
 }
