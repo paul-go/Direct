@@ -27,6 +27,10 @@ namespace Cover
 			for (let i = -1; ++i < count;)
 			{
 				const post = new App.PostRecord();
+				const num = Date.now().toString().slice(-8);
+				post.slug = "slug-" + num;
+				post.title = "Title " + num;
+				post.description = "This is the description for post " + num + ".";
 				const scene1 = createCanvasScene();
 				const scene2 = createCanvasScene();
 				const scene3 = createCanvasScene();
