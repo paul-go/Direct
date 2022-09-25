@@ -14,9 +14,7 @@ namespace App
 			
 			this.head = Hot.div(
 				"local-publisher",
-				
 				this.renderTitle("Publish folder:"),
-				
 				this.saveLocationElement = Hot.div(
 					{
 						padding: "10px 0",
