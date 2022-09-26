@@ -75,22 +75,13 @@ namespace App
 		tag(
 			tagName: string,
 			attributes: Literal<string, string | number> = {},
-			innerText?: string)
+			innerText = "")
 		{
 			let text = this.tagStart(tagName, attributes);
-			const hasClose = this.hasCloseTag(tagName);
 			
-			if (hasClose)
-			{
-				if (innerText)
-					text += innerText;
-				
-				text += "</" + tagName + ">";
-			}
-			else
-			{
-				text += this.formatAsXml ? "/>" : ">";
-			}
+			text += this.hasCloseTag(tagName) ?
+				">" + innerText + "</" + tagName + ">" :
+				this.formatAsXml ? "/>" : ">";
 			
 			this.line(text);
 		}
