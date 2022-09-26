@@ -17,12 +17,11 @@ namespace App.Model
 	export async function retain(object: object, keySegment = "")
 	{
 		const segment = keySegment || Key.segmentOf(object);
+		const entries: [Key, object][] = [];
 		
 		for (const sub of Model.recurse(object))
 			if (Key.set(sub, segment))
 				upgrade(sub);
-		
-		const entries: [Key, object][] = [];
 		
 		const relocateBlob = (blob: Blob) =>
 		{
@@ -34,30 +33,44 @@ namespace App.Model
 		for (const sub of Model.recurse(object))
 		{
 			const key = Key.of(sub);
-			const serializedObject: object = {};
+			const serializedObject: any = {};
 			entries.push([key, serializedObject]);
 			
 			for (const [memberName, memberType] of Model.inspect(sub))
 			{
 				const memberValue = (sub as any)[memberName];
+				let children: object[] = [];
 				let serializedValue: any = null;
 				
 				if (memberType === "model-array")
-					serializedValue = (memberValue as object[]).map(o => Key.of(o));
-				
+				{
+					children = memberValue;
+					serializedValue = children.map(o => Key.of(o));
+				}
 				else if (memberType === "model-reference")
-					serializedValue = memberValue ? Key.of(memberValue) : null;
-				
+				{
+					if (memberValue)
+					{
+						children.push(memberValue);
+						serializedValue = Key.of(memberValue);
+					}
+				}
 				else if (memberType === "blob")
+				{
 					serializedValue = memberValue instanceof Blob ?
 						relocateBlob(memberValue) :
 						null;
-				
+				}
 				else
+				{
 					// (Cloning necessary if the value is behind a Proxy)
 					serializedValue = JSON.parse(JSON.stringify(memberValue));
+				}
 				
-				(serializedObject as any)[memberName] = serializedValue;
+				serializedObject[memberName] = serializedValue;
+				
+				for (const child of children)
+					setOwner(sub, child);
 			}
 		}
 		
@@ -140,6 +153,27 @@ namespace App.Model
 			yield * inner(object);
 	}
 	
+	/**
+	 * Enumerates through the model children of the specified object.
+	 */
+	function * childrenOf(object: object)
+	{
+		for (const [memberName, memberType] of Model.inspect(object))
+		{
+			const memberValue = (object as any)[memberName];
+			if (!memberValue)
+				continue;
+			
+			if (memberType === "model-reference")
+				yield memberValue as object;
+			
+			else if (memberType === "model-array")
+				for (const arrayItem of memberValue)
+					if (arrayItem && typeof arrayItem === "object")
+						yield arrayItem as object;
+		}
+	}
+	
 	/** */
 	export async function get<T extends object = object>(key: Key, shallow?: "shallow"): Promise<T> 
 	{
@@ -191,7 +225,10 @@ namespace App.Model
 	}
 	
 	/** */
-	async function modelize<T extends object>(key: Key, plainObject: object, shallow?: "shallow"): Promise<T>
+	async function modelize<T extends object>(
+		key: Key,
+		plainObject: object,
+		shallow?: "shallow"): Promise<T>
 	{
 		const instance = Key.instantiate(key);
 		const instany = instance as any;
@@ -209,13 +246,24 @@ namespace App.Model
 			{
 				const ids = rawValue as Key[];
 				if (Array.isArray(ids))
-					instany[memberName] = await pick(ids);
+				{
+					const children = await pick(ids);
+					instany[memberName] = children;
+					
+					for (const child of children)
+						setOwner(instance, child);
+				}
 			}
 			else if (!shallow && memberType === "model-reference")
 			{
-				instany[memberName] = rawValue ?
+				const child = rawValue ?
 					await get(rawValue) :
 					null;
+				
+				instany[memberName] = child;
+				
+				if (child)
+					setOwner(instance, child);
 			}
 			else if (!shallow && memberType === "blob")
 			{
@@ -225,6 +273,9 @@ namespace App.Model
 			}
 			else instany[memberName] = rawValue;
 		}
+		
+		Key.overwrite(instance, key);
+		upgrade(instance);
 		
 		if (!shallow)
 			heap.set(key, instance);
@@ -438,6 +489,10 @@ namespace App.Model
 	/** */
 	function queueSave(object: object, container?: object)
 	{
+		if (container)
+			setOwner(container, object);
+		
+		watchTrigger(object);
 		dirtyObjects.add(object);
 		const marked = getMarkedKeys();
 		
@@ -496,6 +551,74 @@ namespace App.Model
 		return markedKeys ||= new LocalStorageSet("deletion");
 	}
 	let markedKeys: LocalStorageSet | null = null;
+	
+	//# Tracking Modified Objects
+	
+	const [watchConnect, watchTrigger] = Force.create<(object: object) => void>();
+	
+	/**
+	 * A force function that is invoked every time the properties of any
+	 * model object change. Use of this force function requires care, 
+	 * because making changes to models within the callback function
+	 * can cause infinite reinvoking of the force function.
+	 */
+	export const watch = watchConnect;
+	
+	//# Owner Management
+	
+	/**
+	 * Returns an array of objects that have the specified object
+	 * as a direct model child, either in a model property, or as a
+	 * member in a model array.
+	 */
+	export function ownersOf(child: object): object[];
+	export function ownersOf<T extends object>(child: object, targetType: new() => T): T[];
+	export function ownersOf<T extends object>(child: object, targetType?: new() => T): T[]
+	{
+		if (!targetType)
+			return (ownerTable.get(child) || []) as T[];
+		
+		const descendantOwners: T[] = [];
+		
+		const recurse = (via: object) =>
+		{
+			const immediateOwners = (ownerTable.get(via) || []) as T[];
+			for (const immediateOwner of immediateOwners)
+			{
+				if (immediateOwner instanceof targetType)
+					descendantOwners.push(immediateOwner);
+				else
+					recurse(immediateOwner);
+			}
+		};
+		
+		recurse(child);
+		return descendantOwners;
+	}
+	
+	/**
+	 * Establishes a parent-child relationship between
+	 * the two objects specified.
+	 */
+	function setOwner(owner: object, child: object)
+	{
+		const storedOwners = ownerTable.get(child);
+		if (storedOwners)
+		{
+			for (const storedOwner of storedOwners)
+			{
+				const actualChildren = new Set(childrenOf(storedOwner));
+				if (!actualChildren.has(child))
+					storedOwners.delete(storedOwner);
+			}
+			
+			storedOwners.add(owner);
+		}
+		
+		ownerTable.set(child, storedOwners || new Set([owner]));
+	}
+	
+	const ownerTable = new WeakMap<object, Set<object>>();
 	
 	//# Helpers
 	
