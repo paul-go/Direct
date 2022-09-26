@@ -14,14 +14,14 @@ namespace App
 		 * Creates instances of each available publisher, from an HTMLElement
 		 * that is within an AppContainer that contains the Blog being published.
 		 */
-		export function create(via: HTMLElement)
+		export function create(within: HTMLElement)
 		{
 			const publishers: AbstractPublisher[] = [];
 			for (const ctor of publisherCtors)
 			{
 				const publisher = new ctor();
 				publishers.push(publisher);
-				owners.set(publisher, via);
+				owners.set(publisher, within);
 			}
 			
 			return publishers;
@@ -52,6 +52,9 @@ namespace App
 		abstract tryPublish(showConfig: boolean): Promise<HTMLElement | null | undefined>;
 		
 		/** */
+		protected abstract transferFiles(files: IRenderedFile[]): Promise<string>;
+		
+		/** */
 		get storageKey()
 		{
 			return this.name.toLowerCase().replace(/\s/, "-");
@@ -79,6 +82,51 @@ namespace App
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
 			this.blog.setPublishParam(this.storageKey, paramKey, value);
+		}
+		
+		/** */
+		protected async publish()
+		{
+			const removeFn = PublishStatusHat.show(this.name);
+			const postsChanged: PostRecord[] = [];
+			const slugs: string[] = [];
+			
+			for (const future of this.blog.postStream.query())
+			{
+				const partial = await future.getPartialPost();
+				const published = partial.getPublishDate(this.name);
+				console.log(partial.datesPublished);
+				
+				if (partial.dateModified > published)
+				{
+					const post = await future.getPost();
+					postsChanged.push(post);
+				}
+				
+				slugs.push(partial.slug);
+			}
+			
+			if (postsChanged.length > 0)
+			{
+				const standardFiles = await Render.getStandardFiles();
+				const blogFiles = await Render.getBlogFiles(this.blog);
+				const postFiles: IRenderedFile[] = [];
+				
+				for (const post of postsChanged)
+					postFiles.push(...await Render.getPostFiles(post, this.blog));
+				
+				const files = [...standardFiles, ...blogFiles, ...postFiles];
+				if (files.length > 0)
+				{
+					const maybeError = await this.transferFiles(files);
+					if (maybeError)
+						alert(maybeError);
+					else
+						postsChanged.map(p => p.setPublishDate(this.name));
+				}
+			}
+			
+			removeFn();
 		}
 	}
 }

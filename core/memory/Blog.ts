@@ -285,23 +285,9 @@ namespace App
 		async retainPost(post: PostRecord)
 		{
 			await Model.retain(post, this.keySegment);
-			this.postStream.insert(post);
-		}
-		
-		/** */
-		async * eachPartialPost()
-		{
-			const range = Key.startsWith(this.keySegment, Key.stableOf(PostRecord));
-			for (const [key, result] of await Store.current().get(range))
-			{
-				const rawPost: PostRecord = result;
-				const pp = new PartialPost(
-					key.toString(),
-					rawPost.dateCreated,
-					rawPost.datePublished);
-				
-				yield pp;
-			}
+			
+			if (!this.postStream.has(post))
+				this.postStream.insert(post);
 		}
 		
 		/** */

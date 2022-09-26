@@ -182,7 +182,7 @@ namespace Cover
 			`</html>`
 		].join("\n");
 		
-		const targetPath = Path.join(saveDirectory, ConstS.htmlFileName);
+		const targetPath = Path.join(saveDirectory, ConstS.indexHtmlFileName);
 		Fs.writeFileSync(targetPath, lines);
 		log("Wrote HTML file to: " + targetPath);
 	}

@@ -56,7 +56,7 @@ namespace App
 		{
 			this.future?.getPartialPost().then(partial =>
 			{
-				this.isDraft = partial.dateModified > partial.datePublished;
+				this.isDraft = partial.isDraft;
 			});
 		}
 		

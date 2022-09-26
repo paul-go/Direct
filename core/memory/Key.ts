@@ -53,22 +53,21 @@ namespace App
 		 * key was set on the object. If a key already exists, the return
 		 * value will be false.
 		 */
-		export function set(object: object, segment: string | object = "")
+		export function set(object: object, segment: string = "")
 		{
 			if (Key.of(object))
 				return false;
-			
-			if (typeof segment === "object")
-			{
-				const ownerKey = Key.of(segment);
-				const parsed = parse(ownerKey);
-				segment = parsed.segment;
-			}
 			
 			const keyInfo = getKeyInfo(object);
 			const key = Key.create(segment, keyInfo.stable);
 			keyMap.set(object, key);
 			return true;
+		}
+		
+		/** */
+		export function overwrite(object: object, value: Key)
+		{
+			keyMap.set(object, value);
 		}
 		
 		const keyMap = new WeakMap<object, Key>();

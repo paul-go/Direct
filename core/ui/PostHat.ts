@@ -4,6 +4,8 @@ namespace App
 	/** */
 	export class PostHat
 	{
+		readonly head;
+		
 		/**
 		 * Creates a new PostHat instance, which is populated with data
 		 * from the specified PostRecord. If the PostRecord argument is
@@ -120,7 +122,6 @@ namespace App
 			Hat.wear(this);
 		}
 		
-		readonly head;
 		readonly scenes;
 		readonly record;
 		private readonly scenesElement;
@@ -175,6 +176,7 @@ namespace App
 			this._isKeepingRecord = true;
 			this.record.scenes = this.scenes.map(hat => hat.record);
 			AppContainer.of(this).blog.retainPost(this.record);
+			this.record.dateModified = Date.now();
 		}
 		
 		/** */

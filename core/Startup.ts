@@ -68,6 +68,8 @@ namespace App
 		if (options?.shell !== true)
 			app.reset();
 		
+		ModificationListener.startup();
+		
 		return app;
 	}
 	

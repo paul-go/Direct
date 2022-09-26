@@ -19,7 +19,7 @@ namespace App
 	export namespace Render
 	{
 		/** */
-		export async function getSupportFiles()
+		export async function getStandardFiles()
 		{
 			const files: IRenderedFile[] = [];
 			
@@ -73,22 +73,48 @@ namespace App
 		}
 		
 		/** */
+		export async function getBlogFiles(blog: Blog)
+		{
+			const blogFiles: IRenderedFile[] = [];
+			// Not implemented: This needs to return the 
+			// favicons, robots.txt, and other standard files
+			return blogFiles;
+		}
+		
+		/** */
 		export async function getPostFiles(post: PostRecord, blog: Blog)
 		{
-			const files: IRenderedFile[] = [];
 			const folderName = post === blog.homePost ? "" : post.slug;
+			const postFinal = await createPostFinal(post, blog);
+			const files: IRenderedFile[] = [];
 			
-			// HTML file
+			if (postFinal.scenes.length === 0)
+				return files;
+			
+			// Index HTML file
 			{
-				const postFinal = await createPostFinal(post, blog);
-				const htmlFile = new HtmlFile();
-				htmlFile.addCss(postFinal.cssText);
-				const htmlText = htmlFile.emit(postFinal.scenes, folderName ? 1 : 0);
+				const indexEmitter = new IndexHtmlEmitter();
+				indexEmitter.addInlineCss(postFinal.cssText);
+				const data = indexEmitter.emit(postFinal.scenes[0], folderName ? 1 : 0);
 				
 				files.push({
-					data: htmlText,
+					data,
 					mime: MimeType.html,
-					fileName: ConstS.htmlFileName,
+					fileName: ConstS.indexHtmlFileName,
+					folderName,
+				});
+			}
+			
+			// Indepth HTML file
+			if (postFinal.scenes.length > 1)
+			{
+				const indepthEmitter = new HtmlEmitter();
+				const data = indepthEmitter.emit(postFinal.scenes.slice(1));
+				
+				files.push({
+					data,
+					mime: MimeType.html,
+					fileName: ConstS.indepthHtmlFileName,
 					folderName,
 				});
 			}

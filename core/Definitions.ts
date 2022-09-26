@@ -13,7 +13,10 @@ const enum ConstS
 	backColorProperty = "--back-color",
 	backUncolorProperty = "--back-uncolor",
 	
-	htmlFileName = "index.html",
+	indexTextFileName = "index.txt",
+	indexHtmlFileName = "index.html",
+	indepthHtmlFileName = "indepth.html",
+	
 	cssFileNameGeneral = "index.general.css",
 	cssFileNameSpecific = "index.css",
 	jsFileNamePlayer = "player.js",

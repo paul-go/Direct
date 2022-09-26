@@ -29,7 +29,7 @@ namespace App
 		}
 		
 		/** */
-		query(rangeStart: number, rangeEnd: number)
+		query(rangeStart: number = 0, rangeEnd = this.tuples.length)
 		{
 			const slice = this.tuples.slice(rangeStart, rangeEnd);
 			const tupleSlice = slice.map(s => s.split(tupleSeparator) as [string, string]);
@@ -46,14 +46,29 @@ namespace App
 					{
 						return Model.get<PostRecord>(postKey);
 					},
-					async getPartialPost()
+					getPartialPost()
 					{
-						return await Model.get<PartialPostRecord>(postKey, "shallow");
+						return Model.get<PartialPostRecord>(postKey, "shallow");
 					},
 				});
 			}
 			
 			return results;
+		}
+		
+		/**
+		 * Returns whether the specified PostRecord is referenced
+		 * within this PostStream.
+		 */
+		has(postRecord: PostRecord)
+		{
+			const key = Key.of(postRecord);
+			
+			for (let i = 0; i < this.tuples.length; i += 2)
+				if (this.tuples[i + 1] === key)
+					return true;
+			
+			return false;
 		}
 		
 		/**

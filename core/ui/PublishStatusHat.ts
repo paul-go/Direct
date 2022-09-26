@@ -17,10 +17,12 @@ namespace App
 		{
 			this.head = Hot.div(
 				UI.flexCenter,
-				UI.anchorBottomRight(20),
+				UI.anchorBottom(20),
 				UI.spinner(),
 				{
 					position: "fixed",
+					width: "fit-content",
+					margin: "auto",
 					padding: "20px",
 					borderRadius: UI.borderRadius.large,
 					backgroundColor: UI.gray(75, 0.5),

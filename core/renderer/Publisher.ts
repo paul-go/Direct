@@ -166,7 +166,7 @@ namespace App
 		{
 			const files = [
 				...(await Render.getPostFiles(this.post, this.blog)),
-				...(await Render.getSupportFiles()),
+				...(await Render.getStandardFiles()),
 			];
 			
 			const removeFn = PublishStatusHat.show(this.label);

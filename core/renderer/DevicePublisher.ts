@@ -22,7 +22,7 @@ namespace App
 			if (showConfig)
 				return this.getConfigurator();
 			
-			this.beginPublish();
+			this.publish();
 			return null;
 		}
 		
@@ -69,7 +69,7 @@ namespace App
 					new Text("Change Publish Folder")
 				),
 				UI.actionButton("filled",
-					UI.click(() => this.beginPublish()),
+					UI.click(() => this.publish()),
 					new Text("Publish")
 				),
 			);
@@ -120,13 +120,7 @@ namespace App
 		}
 		
 		/** */
-		beginPublish()
-		{
-			
-		}
-		
-		/** */
-		protected async executePublish(files: IRenderedFile[])
+		protected async transferFiles(files: IRenderedFile[])
 		{
 			for (const file of files)
 			{

@@ -12,10 +12,42 @@ namespace App
 		slug = "";
 		htmlHeader = "";
 		htmlFooter = "";
+		isDraft = false;
 		dateCreated = Date.now();
 		dateModified = Date.now();
-		datePublished = 0;
+		datesPublished: string[] = [];
 		scenes = Model.array<SceneRecord>();
+		
+		/**
+		 * Gets the time at which this PostRecord was last published
+		 * to the specified target.
+		 */
+		getPublishDate(target: string)
+		{
+			for (let i = 0; i < this.datesPublished.length; i += 2)
+				if (this.datesPublished[i] === target)
+					return Number(this.datesPublished[i + 1]) || 0;
+			
+			return 0;
+		}
+		
+		/**
+		 * Sets the time that this PostRecord was last published
+		 * to the specified target to the current time.
+		 */
+		setPublishDate(target: string)
+		{
+			ModificationListener.runCovertly(() =>
+			{
+				const now = Date.now().toString();
+				
+				for (let i = 0; i < this.datesPublished.length; i += 2)
+					if (this.datesPublished[i] === target)
+						return void (this.datesPublished[i + 1] = now);
+				
+				this.datesPublished.push(target, now);
+			});
+		}
 	}
 	
 	/** */
