@@ -505,6 +505,29 @@ namespace Hot
 	}
 	
 	/** */
+	export interface MetaElementAttribute extends ElementAttribute
+	{
+		content: string;
+	}
+	
+	/** */
+	export interface LinkElementAttribute extends ElementAttribute
+	{
+		rel: string;
+		type: string;
+		href: string;
+		media: string;
+	}
+	
+	/** */
+	export interface ScriptElementAttribute extends ElementAttribute
+	{
+		type: string;
+		src: string;
+		defer: boolean;
+	}
+	
+	/** */
 	export interface InputElementAttribute extends ElementAttribute
 	{
 		type: string;
@@ -631,13 +654,13 @@ namespace Hot
 	export declare function label(...params: Param[]): HTMLLabelElement;
 	export declare function legend(...params: Param[]): HTMLLegendElement;
 	export declare function li(...params: Param[]): HTMLLIElement;
-	export declare function link(...params: Param[]): HTMLLinkElement;
+	export declare function link(...params: Param<LinkElementAttribute>[]): HTMLLinkElement;
 	export declare function main(...params: Param[]): HTMLElement;
 	export declare function map(...params: Param[]): HTMLMapElement;
 	export declare function mark(...params: Param[]): HTMLElement;
 	export declare function marquee(...params: Param[]): HTMLMarqueeElement;
 	export declare function menu(...params: Param[]): HTMLMenuElement;
-	export declare function meta(...params: Param[]): HTMLMetaElement;
+	export declare function meta(...params: Param<MetaElementAttribute>[]): HTMLMetaElement;
 	export declare function meter(...params: Param[]): HTMLMeterElement;
 	export declare function nav(...params: Param[]): HTMLElement;
 	export declare function noscript(...params: Param[]): HTMLElement;
@@ -657,7 +680,7 @@ namespace Hot
 	export declare function ruby(...params: Param[]): HTMLElement;
 	export declare function s(...params: Param[]): HTMLElement;
 	export declare function samp(...params: Param[]): HTMLElement;
-	export declare function script(...params: Param[]): HTMLScriptElement;
+	export declare function script(...params: Param<ScriptElementAttribute>[]): HTMLScriptElement;
 	export declare function section(...params: Param[]): HTMLElement;
 	export declare function select(...params: Param[]): HTMLSelectElement;
 	export declare function slot(...params: Param[]): HTMLSlotElement;
