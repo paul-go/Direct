@@ -10,8 +10,10 @@ namespace Force
 	export function create<TFormat extends (...args: any[]) => void>()
 	{
 		const fo = new ForceObject<TFormat>();
+		type TConnector = ((callback: TFormat) => void) & { off(callback: TFormat): void };
+		
 		return [fo.connectorFn, fo.executorFn] as [
-			(callback: TFormat) => void, 
+			TConnector,
 			(...data: Parameters<TFormat>) => void,
 		];
 	}
@@ -22,10 +24,10 @@ namespace Force
 		private readonly callbacks: TFormat[] = [];
 		
 		/** */
-		readonly connectorFn = (callback: TFormat) =>
-		{
-			this.callbacks.push(callback);
-		};
+		readonly connectorFn = Object.assign(
+			(callback: TFormat) => this.callbacks.push(callback),
+			{ off: (callback: TFormat) => this.callbacks.splice(this.callbacks.indexOf(callback), 1) }
+		);
 		
 		/** */
 		readonly executorFn = (...data: Parameters<TFormat>) =>
