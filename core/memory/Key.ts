@@ -122,7 +122,7 @@ namespace App
 				if (keyable.ctor === ctor)
 					return keyable;
 			
-			Not.reachable();
+			throw "Objects of this type have not been registered.";
 		}
 		
 		/** */
