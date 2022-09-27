@@ -17,7 +17,6 @@ namespace Player
 			});
 			
 			document.body.style.overflowX = "hidden";
-			document.body.style.overflowY = "auto";
 			
 			this.head = Hot.div(
 				"purview",
@@ -27,9 +26,6 @@ namespace Player
 					"scaler",
 					transitionClass,
 					{
-						position: "absolute",
-						top: 0,
-						left: 0,
 						transitionProperty: "transform",
 						transformOrigin: "0 0",
 					},
