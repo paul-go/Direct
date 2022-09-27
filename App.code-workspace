@@ -23,12 +23,12 @@
 			"index.*": true
 		},
 		"typescript.tsdk": "node_modules/typescript/lib",
-		"task.allowAutomaticTasks": true,
+		"task.allowAutomaticTasks": "on",
 	},
 	"launch": {
 		"configurations": [
 			{
-				"name": "Debug Application",
+				"name": "Debug Output",
 				"type": "chrome",
 				"request": "launch",
 				"cwd": "${workspaceRoot}",
