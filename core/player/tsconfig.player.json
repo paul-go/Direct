@@ -2,11 +2,19 @@
 	"compilerOptions": {
 		"module": "system",
 		"moduleResolution": "node",
+		"target": "es2015",
 		"declaration": false,
-		"target": "es5",
+		"inlineSourceMap": true,
+		"inlineSources": true,
+		"strict": true,
+		"stripInternal": true,
+		"lib": [
+			"dom",
+		]
 	},
 	"include": [
 		"../lib/Hot.ts",
+		"../lib/Query.ts",
 		"../lib/When.ts",
 		"../lib/Force.ts",
 		"../lib/Resize.ts",

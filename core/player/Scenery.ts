@@ -12,6 +12,7 @@ namespace Player
 				{
 					overflowX: "hidden",
 					overflowY: "auto",
+					height: "100vh",
 				},
 				Hot.css(`& > .${Class.anchor}, & > .${Class.spacer}`, {
 					zIndex: -1,
@@ -25,7 +26,6 @@ namespace Player
 				}),
 				Hot.css(`& > .${Class.spacer}`, {
 					scrollSnapAlign: "end",
-					backgroundColor: "gray",
 				}),
 				When.connected(() =>
 				{
@@ -265,9 +265,9 @@ namespace Player
 					for (const compFn of this.scrollComputers)
 					{
 						const yReturned = compFn(state);
-						if (yReturned !== undefined)
+						if (typeof yReturned === "number")
 						{
-							y = yReturned;
+							y = yReturned || 0;
 							break;
 						}
 					}

@@ -55,7 +55,7 @@ namespace App
 				{
 					(async () =>
 					{
-						const [width, height] = await RenderUtil.getDimensions(htmlSrc);
+						const [width, height] = await RenderUtil.getDimensions(frame.media!);
 						legend.style.aspectRatio = width + " / " + height;
 						frameDiv.append(legend);
 					})();

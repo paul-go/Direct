@@ -205,9 +205,9 @@ namespace App
 		/** */
 		private async addContentImage(mediaRecord: MediaRecord)
 		{
-			const src = mediaRecord.getBlobUrl();
-			const [width, height] = await RenderUtil.getDimensions(src);
+			const [width, height] = await RenderUtil.getDimensions(mediaRecord);
 			const existingContentImage = this.contentImage;
+			const src = mediaRecord.getBlobUrl();
 			
 			this.contentImage = Hot.img(CssClass.canvasSceneContentImage, { src });
 			this.contentImage.style.aspectRatio = width + " / " + height;

@@ -20,25 +20,18 @@ namespace Cover
 		}
 		
 		/** */
-		export function createPosts(count = 1)
+		export function createPost(slug?: string)
 		{
-			const posts: App.PostRecord[] = [];
-			
-			for (let i = -1; ++i < count;)
-			{
-				const post = new App.PostRecord();
-				const num = Date.now().toString().slice(-8);
-				post.slug = "slug-" + num;
-				post.title = "Title " + num;
-				post.description = "This is the description for post " + num + ".";
-				const scene1 = createCanvasScene();
-				const scene2 = createCanvasScene();
-				const scene3 = createCanvasScene();
-				post.scenes.push(scene1, scene2, scene3);
-				posts.push(post);
-			}
-			
-			return posts;
+			const post = new App.PostRecord();
+			const num = Date.now().toString().slice(-8);
+			post.slug = slug ?? "slug-" + num;
+			post.title = "Title " + num;
+			post.description = "This is the description for post " + num + ".";
+			const scene1 = createCanvasScene();
+			const scene2 = createCanvasScene();
+			const scene3 = createCanvasScene();
+			post.scenes.push(scene1, scene2, scene3);
+			return post;
 		}
 		
 		/** */

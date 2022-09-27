@@ -12,7 +12,7 @@ namespace App
 		 * Stores the sub-folder within the file system space where 
 		 * the rendered file should be written.
 		 */
-		folderName: string;
+		folderName?: string;
 	}
 	
 	/** */
@@ -30,7 +30,6 @@ namespace App
 					data: cssText,
 					mime: MimeType.css,
 					fileName: ConstS.cssFileNameGeneral,
-					folderName: "",
 				});
 			}
 			
@@ -42,7 +41,6 @@ namespace App
 					data: jsFileText,
 					mime: MimeType.js,
 					fileName: ConstS.jsFileNamePlayer,
-					folderName: "",
 				});
 			}
 			
@@ -70,15 +68,6 @@ namespace App
 			}
 			
 			return "";
-		}
-		
-		/** */
-		export async function getBlogFiles(blog: Blog)
-		{
-			const blogFiles: IRenderedFile[] = [];
-			// Not implemented: This needs to return the 
-			// favicons, robots.txt, and other standard files
-			return blogFiles;
 		}
 		
 		/** */

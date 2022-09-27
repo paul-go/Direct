@@ -22,7 +22,17 @@ namespace App
 					name: "apple-mobile-web-app-capable",
 					content: "yes"
 				}),
-				Hot.link("link", {
+				Hot.link({
+					rel: "hss-index",
+					type: "text/plain",
+					href: "/index.txt",
+				}),
+				Hot.link({
+					rel: "hss-indepth",
+					type: "text/html",
+					href: "indepth.html",
+				}),
+				Hot.link({
 					rel: "stylesheet",
 					type: "text/css",
 					href: relative + ConstS.cssFileNameGeneral + nocache,

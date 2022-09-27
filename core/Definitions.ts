@@ -1,6 +1,6 @@
 
 /** */
-const enum ConstS
+declare const enum ConstS
 {
 	baseFolderPrefix = "post-base-folder-",
 	mainDatabaseName = "main",
@@ -26,6 +26,9 @@ const enum ConstS
 	debugExportsFolderName = "+exports",
 	portableExtension = "zip",
 	appName = "Direct",
+	
+	hssIndex = "hss-index",
+	hssIndepth = "hss-indepth",
 }
 
 /** */

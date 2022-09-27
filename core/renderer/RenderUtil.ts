@@ -9,10 +9,14 @@ namespace App.RenderUtil
 	/**
 	 * Returns the aspect ratio of the specified image.
 	 */
-	export function getDimensions(src: string)
+	export function getDimensions(source: MediaRecord)
 	{
 		return new Promise<[number, number]>(r =>
 		{
+			const src = typeof source === "string" ? 
+				source : 
+				source.getBlobUrl();
+			
 			document.body.append(Hot.img(
 				{
 					src,

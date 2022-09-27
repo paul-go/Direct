@@ -312,7 +312,7 @@ namespace App
 						},
 						Hot.on("load", async () =>
 						{
-							[this.imgWidth, this.imgHeight] = await RenderUtil.getDimensions(this.img.src);
+							[this.imgWidth, this.imgHeight] = await RenderUtil.getDimensions(record.media!);
 							this.updateSize();
 						})
 					),

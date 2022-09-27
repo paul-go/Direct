@@ -135,7 +135,8 @@ namespace App
 			
 			const bpX = bg.position[0];
 			const bpY = bg.position[1];
-			const [x, y] = await RenderUtil.getDimensions(this.getMediaUrl(bg.media));
+			
+			const [x, y] = await RenderUtil.getDimensions(bg.media);
 			const isPortrait = y > x;
 			const max = ConstN.playerMaxWidth;
 			const sizePct = bg.size / 100;

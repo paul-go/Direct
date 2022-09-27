@@ -1,11 +1,13 @@
 
 namespace App
 {
+	export type PublisherConstructor = new(within: Element | Hat.IHat | Blog) => AbstractPublisher;
+	
 	/** */
 	export namespace Publishers
 	{
 		/** */
-		export function register(publisherCtor: new() => AbstractPublisher, position = 0)
+		export function register(publisherCtor: PublisherConstructor, position = 0)
 		{
 			publisherCtors.splice(position, 0, publisherCtor);
 		}
@@ -19,21 +21,34 @@ namespace App
 			const publishers: AbstractPublisher[] = [];
 			for (const ctor of publisherCtors)
 			{
-				const publisher = new ctor();
+				const publisher = new ctor(within);
 				publishers.push(publisher);
-				owners.set(publisher, within);
 			}
 			
 			return publishers;
 		}
 	}
 	
-	const publisherCtors: (new() => AbstractPublisher)[] = [];
-	const owners = new WeakMap<AbstractPublisher, HTMLElement>();
+	const publisherCtors: PublisherConstructor[] = [];
 	
 	/** */
 	export abstract class AbstractPublisher
 	{
+		/** */
+		constructor(within: Element | Hat.IHat | Blog)
+		{
+			if (within instanceof Blog)
+				this._blog = within;
+			
+			else if (within instanceof AppContainer)
+				this._blog = within.blog;
+			
+			else this.blogResolver = within;
+		}
+		
+		/** An object which is later used to resolve the Blog.  */
+		private blogResolver: Element | Hat.IHat | null = null;
+		
 		/** */
 		abstract readonly name: string;
 		
@@ -49,7 +64,7 @@ namespace App
 		 * If undefined is returned, this indicates that the operation
 		 * was canceled, and the current UI state should remain as-is.
 		 */
-		abstract tryPublish(showConfig: boolean): Promise<HTMLElement | null | undefined>;
+		abstract tryPublish(showConfig?: boolean): Promise<HTMLElement | null | undefined>;
 		
 		/** */
 		protected abstract transferFiles(files: IRenderedFile[]): Promise<string>;
@@ -65,8 +80,8 @@ namespace App
 		{
 			if (!this._blog)
 			{
-				const owner = Not.nullable(owners.get(this));
-				this._blog = AppContainer.of(owner).blog;
+				const resolver = Not.nullable(this.blogResolver);
+				this._blog = AppContainer.of(resolver).blog;
 			}
 			return this._blog;
 		}
@@ -95,7 +110,6 @@ namespace App
 			{
 				const partial = await future.getPartialPost();
 				const published = partial.getPublishDate(this.name);
-				console.log(partial.datesPublished);
 				
 				if (partial.dateModified > published)
 				{
@@ -106,24 +120,37 @@ namespace App
 				slugs.push(partial.slug);
 			}
 			
-			if (postsChanged.length > 0)
-			{
-				const standardFiles = await Render.getStandardFiles();
-				const blogFiles = await Render.getBlogFiles(this.blog);
-				const postFiles: IRenderedFile[] = [];
-				
-				for (const post of postsChanged)
-					postFiles.push(...await Render.getPostFiles(post, this.blog));
-				
-				const files = [...standardFiles, ...blogFiles, ...postFiles];
-				if (files.length > 0)
+			if (postsChanged.length === 0)
+				return void removeFn();
+			
+			const standardFiles = await Render.getStandardFiles();
+			
+			const blogFiles: IRenderedFile[] = [
 				{
-					const maybeError = await this.transferFiles(files);
-					if (maybeError)
-						alert(maybeError);
-					else
-						postsChanged.map(p => p.setPublishDate(this.name));
-				}
+					data: slugs.join("\n"),
+					fileName: ConstS.indexTextFileName,
+					mime: MimeType.txt,
+				},
+				{
+					data: ["User-agent: *", "Allow: /"].join("\n"),
+					fileName: "robots.txt",
+					mime: MimeType.txt,
+				},
+				// TODO: Add sitemap.xml (requires domain), as well as favicons
+			];
+			
+			const postFiles: IRenderedFile[] = [];
+			for (const post of postsChanged)
+				postFiles.push(...await Render.getPostFiles(post, this.blog));
+			
+			const files = [...standardFiles, ...blogFiles, ...postFiles];
+			if (files.length > 0)
+			{
+				const maybeError = await this.transferFiles(files);
+				if (maybeError)
+					alert(maybeError);
+				else
+					postsChanged.map(p => p.setPublishDate(this.name));
 			}
 			
 			removeFn();

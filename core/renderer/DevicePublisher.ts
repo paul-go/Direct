@@ -8,7 +8,7 @@ namespace App
 		readonly name = "Device";
 		
 		/** */
-		async tryPublish(showConfig: boolean)
+		async tryPublish(showConfig = false)
 		{
 			if (!this.folder)
 			{
@@ -124,7 +124,7 @@ namespace App
 		{
 			for (const file of files)
 			{
-				const folderPath = await Util.pathJoin(this.folder, file.folderName);
+				const folderPath = file.folderName ? await Util.pathJoin(this.folder) : this.folder;
 				const filePath = await Util.pathJoin(folderPath, file.fileName);
 				
 				if (TAURI)

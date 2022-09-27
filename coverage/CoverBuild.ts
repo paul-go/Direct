@@ -245,7 +245,7 @@ namespace Cover
 			throw "File doesn't exist: " + tsConfigPlayerPath;
 		
 		const tsConfigText = Fs.readFileSync(tsConfigPlayerPath, "utf-8");
-		const tsConfigJson = JSON.parse(tsConfigText);
+		const tsConfigJson = (new Function("return " + tsConfigText))();
 		tsConfigJson.compilerOptions.outFile = "./" + ConstS.jsFileNamePlayer;
 		const tsConfigOutPath = Path.join(Dir.temp, "tsconfig.json");
 		Fs.writeFileSync(tsConfigOutPath, JSON.stringify(tsConfigJson, null, "\t"));
@@ -265,7 +265,6 @@ namespace Cover
 		if (defs)
 		{
 			const minifiedCode = await minify(inJsCode, defs);
-			
 			if (saveDirectory)
 			{
 				const outJsFilePathMin = Path.join(saveDirectory, ConstS.jsFileNamePlayerMin);
@@ -310,6 +309,8 @@ namespace Cover
 				new Text(value)
 			);
 			
+			document.body.style.backgroundColor = "white";
+			document.body.style.color = "black";
 			document.body.append(logDiv);
 			setTimeout(() => logDiv.scrollIntoView({ behavior: "smooth" }));
 		}
@@ -336,13 +337,8 @@ namespace Cover
 	};
 	
 	/** */
-	class Defs
+	export class Defs
 	{
-		constructor(defs: Partial<Defs> = {})
-		{
-			Object.assign(this, defs);
-		}
-		
 		readonly DEBUG: boolean = false;
 		readonly ELECTRON: boolean = false;
 		readonly TAURI: boolean = false;
@@ -351,5 +347,11 @@ namespace Cover
 		readonly LINUX: boolean = false;
 		readonly IOS: boolean = false;
 		readonly ANDROID: boolean = false;
+		
+		/** */
+		constructor(defs: Partial<Defs> = {})
+		{
+			Object.assign(this, defs);
+		}
 	}
 }
