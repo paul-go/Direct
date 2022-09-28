@@ -50,6 +50,12 @@ namespace Cover
 		}
 		
 		/** */
+		export function createContentImage()
+		{
+			return readMedia("image-content-1.png");
+		}
+		
+		/** */
 		export function createBackgroundImage()
 		{
 			const bg = new App.BackgroundRecord();

@@ -18,6 +18,7 @@
 		"../lib/When.ts",
 		"../lib/Force.ts",
 		"../lib/Resize.ts",
+		"../lib/BlobUri.ts",
 		"*.ts",
 	]
 }

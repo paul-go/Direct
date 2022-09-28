@@ -40,7 +40,7 @@ namespace App.Css
 				"color": "inherit",
 				"font-size": "inherit",
 			}),
-			rule("HTML", {
+			rule(":root", {
 				"background-color": "black",
 				"color": "white",
 				"font-size": "20px",

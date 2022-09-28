@@ -12,7 +12,7 @@ namespace App
 		{
 			this.head = Hot.div(
 				"home-list-hat",
-				this.purview = new Player.Purview(),
+				this.purview = new Player.RectanglePurview(),
 			);
 			
 			this.purview.size = size;
@@ -84,7 +84,7 @@ namespace App
 					color: "rgba(255, 255, 255, 0.125)",
 				},
 				new Text("?"),
-			).outerHTML);
+			));
 			
 			return hat;
 		}

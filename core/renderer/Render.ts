@@ -158,40 +158,5 @@ namespace App
 		{
 			return new PostRenderer(post, blog).render(false);
 		}
-		
-		/**
-		 * Rasterizes the specified HTML content to a CanvasRenderingContext2D,
-		 * whose dimensions are equal to the specified viewport width and height.
-		 */
-		export async function rasterizeHtml(
-			html: string | HTMLElement,
-			viewportWidth: number,
-			viewportHeight: number)
-		{
-			const htmlContent = typeof html === "string" ? html : html.outerHTML;
-			const image = new Image();
-			const [w, h] = [viewportWidth, viewportHeight];
-			const canvas = Hot.canvas({ width: w, height: h });
-			const ctx = canvas.getContext("2d")!;
-			const svgText = 
-				`<svg xmlns="http://www.w3.org/2000/svg" width="${w}px" height="${h}px">` +
-					`<foreignObject width="100%" height="100%">` +
-						`<div xmlns="http://www.w3.org/1999/xhtml">` +
-							htmlContent +
-						`</div>` +
-					`</foreignObject>` +
-				`</svg>`;
-			
-			return new Promise<CanvasRenderingContext2D>(resolve =>
-			{
-				image.onload = () =>
-				{
-					ctx.drawImage(image, 0, 0, w, h);
-					resolve(ctx);
-				};
-				
-				image.src = `data:image/svg+xml;charset=utf-8,` + svgText;
-			});
-		}
 	}
 }

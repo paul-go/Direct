@@ -170,12 +170,7 @@ namespace App
 		/** */
 		getBlobUrl()
 		{
-			return blobUrls.get(this) || (() =>
-			{
-				const url = URL.createObjectURL(this.blob);
-				blobUrls.set(this, url);
-				return url;
-			})();
+			return BlobUri.create(this.blob);
 		}
 		
 		/** */
@@ -190,8 +185,6 @@ namespace App
 			return this.name || "unnamed-file";
 		}
 	}
-	
-	const blobUrls = new WeakMap<MediaRecord, string>();
 	
 	/** */
 	export const enum TextEffect

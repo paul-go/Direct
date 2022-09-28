@@ -20,13 +20,8 @@ namespace App
 			const scene = await future.getScene();
 			const renderer = SceneRenderer.create(scene, true);
 			const section = this.html = await renderer.render();
-			const width = 0;
-			const height = 0;
-			const ctx = await Render.rasterizeHtml(section, width, height);
-			const blob = await new Promise<Blob | "">(r =>
-				ctx.canvas.toBlob(blob => r(blob || ""), "image/jpeg"));
-			
-			this.image = blob;
+			const blob = await Player.rasterize(section);
+			this.image = BlobUri.create(blob);
 			this.setFidelity(this.fidelity || "performance");
 			this._scene = scene;
 		}

@@ -179,7 +179,7 @@ namespace App
 				element = Hot.div(
 					CssClass.canvasSceneBackground,
 					{
-						backgroundImage: "url(" + this.getMediaUrl(bg.media) + ")",
+						backgroundImage: this.getMediaUrl(bg.media, "css"),
 					},
 				);
 				

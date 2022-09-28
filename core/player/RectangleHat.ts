@@ -39,48 +39,61 @@ namespace Player
 				{
 					cursor: "pointer",
 				},
+				Hot.get(this)(
+					Hot.on(window, "resize", () => this.deferUpdateImage())
+				)
 			);
 		}
 		
 		/** */
-		setHtml(html: string | HTMLElement)
+		setHtml(element: HTMLElement)
 		{
-			if (typeof html === "string")
-			{
-				this.head.replaceChildren();
-				this.head.innerHTML = html;
-			}
-			else
-			{
-				this.head.replaceChildren(html);
-			}
-			
-			this.head.style.removeProperty("background-image");
-			this.html = html;
+			this.html = element;
+			return this.updateImage();
 		}
-		protected html: string | HTMLElement = "";
 		
 		/** */
-		setImage(image: string | Blob)
+		private showHtml()
 		{
-			const url = typeof image === "string" ? 
-				image : 
-				URL.createObjectURL(image);
-			
-			this.head.replaceChildren();
-			this.head.style.backgroundImage = `url(${url})`;
-			this.image = image;
+			this.head.replaceChildren(this.html);
+			this.head.style.removeProperty("background-image");
 		}
-		protected image: string | Blob = "";
+		protected html: HTMLElement = Hot.div("null");
+		
+		/** */
+		private showImage()
+		{
+			this.head.replaceChildren();
+			this.head.style.backgroundImage = `url(${this.image})`;
+		}
+		protected image: string = "";
+		
+		/** */
+		private deferUpdateImage()
+		{
+			clearTimeout(this.timeoutId);
+			this.timeoutId = setTimeout(() => this.updateImage(), 100);
+		}
+		private timeoutId: any = 0;
+		
+		/** */
+		private async updateImage()
+		{
+			if (this.image)
+				BlobUri.revoke(this.image);
+			
+			const blob = await Player.rasterize(this.html);
+			this.image = BlobUri.create(blob);
+		}
 		
 		/** */
 		setFidelity(fidelity: RectangleFidelity)
 		{
 			if (fidelity === "performance")
-				this.setHtml(this.html);
+				this.showHtml();
 			
 			else if (fidelity === "precision")
-				this.setImage(this.image);
+				this.showImage();
 			
 			this.fidelity = fidelity;
 		}

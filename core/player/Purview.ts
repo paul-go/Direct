@@ -67,7 +67,8 @@ namespace Player
 			
 			this.size = 4;
 			Resize.watch(this.head, () => this.updatePreviews());
-			[this.enterReviewFn, this._enterReviewFn] = Force.create<() => void>();
+			
+			[this.enterReviewFn, this._enterReviewFn] = Force.create<(hat: THat) => void>();
 			[this.exitReviewFn, this._exitReviewFn] = Force.create<() => void>();
 			
 			this.beginOffsetTopTracking();
@@ -498,11 +499,11 @@ namespace Player
 			if (this._mode === PurviewMode.review)
 				return;
 			
+			this._enterReviewFn(previewHat);
+			
 			const requestResult = await this.reviewRequestFn?.(previewHat);
 			if (!requestResult)
 				return;
-			
-			this._enterReviewFn();
 			
 			const scenery = requestResult instanceof Scenery ?
 				requestResult :
@@ -617,6 +618,7 @@ namespace Player
 				this.reviewContainer.style.removeProperty(property);
 			
 			this._exitReviewFn();
+			this._currentPreview = null;
 		}
 		
 		/** */
