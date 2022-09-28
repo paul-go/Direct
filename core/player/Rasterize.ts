@@ -43,8 +43,6 @@ namespace Player
 		
 		svgText = svgText.replace(/&quot;/g, "");
 		
-		(require("fs") as typeof import("fs")).writeFileSync(__dirname + "/svg.svg", svgText);
-		
 		return new Promise<Blob>(resolve =>
 		{
 			image.onload = () =>
