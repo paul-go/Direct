@@ -33,7 +33,7 @@ namespace App
 					"post-hat-width",
 					UI.editorMaxWidth(),
 					{
-						paddingBottom: "10px",
+						paddingBottom: "33vh",
 						transitionDuration: "0.5s",
 						transitionProperty: "transform, opacity",
 						transformOrigin: "0 0",
