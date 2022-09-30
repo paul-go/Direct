@@ -334,7 +334,7 @@ namespace Player
 				if (this.totalPreviewCount === 0)
 					break block;
 				
-				const y = window.scrollY - this.offsetTop;
+				const y = this.scrollTop - this.offsetTop;
 				const wh = window.innerHeight;
 				const rowHeight = wh / this.size;
 				const rowCount = this.totalPreviewCount / this.size;
@@ -641,25 +641,6 @@ namespace Player
 		{
 			if (this._offsetTop === minInt)
 			{
-				if (this.scrollingAncestor === null)
-				{
-					this.scrollingAncestor = document.documentElement;
-					const ancestors = Query.ancestors(this.head);
-					
-					for (const e of ancestors)
-					{
-						if (!(e instanceof HTMLElement))
-							continue;
-						
-						const oy = window.getComputedStyle(e).overflowY;
-						if (oy === "auto" || oy === "scroll")
-						{
-							this.scrollingAncestor = e;
-							break;
-						}
-					}
-				}
-				
 				this._offsetTop = Query
 					.ancestors(this.head, this.scrollingAncestor)
 					.filter((e): e is HTMLElement => e instanceof HTMLElement)
@@ -669,7 +650,41 @@ namespace Player
 			return this._offsetTop;
 		}
 		private _offsetTop = minInt;
-		private scrollingAncestor: HTMLElement | null = null;
+		
+		/** */
+		private get scrollTop()
+		{
+			const e = this.scrollingAncestor;
+			return e === document.documentElement ?
+				window.scrollY :
+				e.scrollTop;
+		}
+		
+		/** */
+		private get scrollingAncestor()
+		{
+			if (this._scrollingAncestor === null)
+			{
+				this._scrollingAncestor = document.documentElement;
+				const ancestors = Query.ancestors(this.head);
+				
+				for (const e of ancestors)
+				{
+					if (!(e instanceof HTMLElement))
+						continue;
+					
+					const oy = window.getComputedStyle(e).overflowY;
+					if (oy === "auto" || oy === "scroll")
+					{
+						this._scrollingAncestor = e;
+						break;
+					}
+				}
+			}
+			
+			return this._scrollingAncestor;
+		}
+		private _scrollingAncestor: HTMLElement | null = null;
 	}
 	
 	//# Utilities & Constants
