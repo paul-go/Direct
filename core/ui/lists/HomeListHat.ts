@@ -12,7 +12,7 @@ namespace App
 		{
 			this.head = Hot.div(
 				"home-list-hat",
-				this.purview = new Player.Purview(),
+				this.purview = new Player.Purview<EditorRectangleHat>(),
 			);
 			
 			this.purview.size = size;
@@ -21,7 +21,7 @@ namespace App
 			this.purview.handlePreviewRequest(request =>
 			{
 				const postStream = AppContainer.of(this).blog.postStream;
-				const rectangles: Player.RectangleHat[] = [];
+				const rectangles: EditorRectangleHat[] = [];
 				const futures = postStream.query(request.rangeStart, request.rangeEnd);
 				
 				for (const future of futures)
@@ -70,7 +70,7 @@ namespace App
 		/** */
 		private createFakePost()
 		{
-			const hat = new Player.RectangleHat();
+			const hat = new EditorRectangleHat();
 			
 			hat.setHtml(Hot.div(
 				UI.flexVCenter,
