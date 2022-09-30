@@ -87,18 +87,20 @@ namespace Cover
 		/** */
 		export function readImage(index?: number)
 		{
-			index ||= Math.floor(Math.random() * numImages) + 1;
+			index ||= ((imageIdx++) % numImages) + 1;
 			const fileName = "image-" + index + ".jpeg";
 			return readMedia(fileName);
 		}
+		let imageIdx = 0;
 		
 		/** */
 		export function readVideo(index?: number)
 		{
-			index ||= Math.floor(Math.random() * numVideos) + 1;
+			index ||= ((videoIdx++) % numVideos) + 1;
 			const fileName = "video-" + index + ".mp4";
 			return readMedia(fileName);
 		}
+		let videoIdx = 0;
 		
 		/** */
 		function readMedia(sampleFileName: string)
