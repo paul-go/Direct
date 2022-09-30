@@ -155,7 +155,6 @@ namespace Player
 					});
 					
 					spacer = Hot.span(Class.spacer);
-					
 					newSceneElements.push(element);
 					newSupportElements.push(anchor, spacer);
 				}
@@ -171,6 +170,7 @@ namespace Player
 					toggleSnapping(edge, enabled) { that.toggleSnapping(this, edge, enabled); }
 				};
 				
+				element.style.visibility = "hidden";
 				newScenes.push(scene);
 				this.streamSceneHeight(scene);
 				When.disconnected(element, () => anchor.remove());
@@ -200,6 +200,7 @@ namespace Player
 				this.scenes.splice(at, 0, ...newScenes);
 			}
 			
+			this.updateScroll();
 			return this;
 		}
 		
