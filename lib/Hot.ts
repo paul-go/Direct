@@ -505,6 +505,12 @@ namespace Hot
 	}
 	
 	/** */
+	export interface BaseElementAttribute extends ElementAttribute
+	{
+		href: string;
+	}
+	
+	/** */
 	export interface MetaElementAttribute extends ElementAttribute
 	{
 		content: string;
@@ -601,7 +607,7 @@ namespace Hot
 	export declare function aside(...params: Param[]): HTMLElement;
 	export declare function audio(...params: Param[]): HTMLAudioElement;
 	export declare function b(...params: Param[]): HTMLElement;
-	export declare function base(...params: Param[]): HTMLBaseElement;
+	export declare function base(...params: Param<BaseElementAttribute>[]): HTMLBaseElement;
 	export declare function bdi(...params: Param[]): HTMLElement;
 	export declare function bdo(...params: Param[]): HTMLElement;
 	export declare function blockquote(...params: Param[]): HTMLQuoteElement;
