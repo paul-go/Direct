@@ -124,7 +124,7 @@ namespace App
 		{
 			for (const file of files)
 			{
-				const folderPath = file.folderName ? await Util.pathJoin(this.folder) : this.folder;
+				const folderPath = await Util.pathJoin(this.folder, file.folderName || "");
 				const filePath = await Util.pathJoin(folderPath, file.fileName);
 				
 				if (TAURI)
