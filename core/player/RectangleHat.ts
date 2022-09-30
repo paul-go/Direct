@@ -49,7 +49,27 @@ namespace Player
 		setHtml(element: HTMLElement)
 		{
 			this.html = element;
-			return this.updateImage();
+			this.setFidelity("precision");
+			
+			/*
+			if (this.fidelity === "performance")
+			{
+				this.updateImage().then(() => this.setFidelity(this.fidelity!));
+			}
+			else if (this.fidelity === "precision")
+			{
+				this.setFidelity("performance");
+				this.updateImage();
+			}
+			else
+			{
+				this.setFidelity("precision");
+				this.updateImage().then(() =>
+				{
+					this.setFidelity("performance");
+				});
+			}
+			*/
 		}
 		
 		/** */
@@ -58,7 +78,7 @@ namespace Player
 			this.head.replaceChildren(this.html);
 			this.head.style.removeProperty("background-image");
 		}
-		protected html: HTMLElement = Hot.div("null");
+		private html: HTMLElement = Hot.div("null");
 		
 		/** */
 		private showImage()
@@ -66,7 +86,7 @@ namespace Player
 			this.head.replaceChildren();
 			this.head.style.backgroundImage = `url(${this.image})`;
 		}
-		protected image: string = "";
+		private image: string = "";
 		
 		/** */
 		private deferUpdateImage()
@@ -90,10 +110,10 @@ namespace Player
 		setFidelity(fidelity: RectangleFidelity)
 		{
 			if (fidelity === "performance")
-				this.showHtml();
+				this.showImage();
 			
 			else if (fidelity === "precision")
-				this.showImage();
+				this.showHtml();
 			
 			this.fidelity = fidelity;
 		}

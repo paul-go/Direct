@@ -8,10 +8,14 @@ namespace Cover
 		const [blog, friendlyName] = await Sample.createBlog();
 		const posts = [Sample.createPost("")];
 		
-		for (let i = -1; ++i < 9;)
+		for (let i = -1; ++i < 2;)
 			posts.push(Sample.createPost());
 		
 		await Promise.all(posts.map(p => blog.retainPost(p)));
+		
+		const folder = getExportsFolder(friendlyName);
+		Electron.fs.rmSync(folder, { force: true, recursive: true });
+		Electron.fs.mkdirSync(folder);
 		
 		// The player JS files (both the minified and the unminified)
 		// are written to build directory, rather than directly to the
@@ -21,7 +25,7 @@ namespace Cover
 		await Cover.emitPlayerJs(Dir.build, new Defs());
 		
 		const publisher = new App.DevicePublisher(blog);
-		publisher.folder = getExportsFolder(friendlyName);
+		publisher.folder = folder;
 		await publisher.tryPublish();
 		
 		Cover.log("Done");

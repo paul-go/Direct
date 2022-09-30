@@ -19,10 +19,8 @@ namespace App
 			this.updateDraftStatus();
 			const scene = await future.getScene();
 			const renderer = SceneRenderer.create(scene, true);
-			const section = this.html = await renderer.render();
-			const blob = await Player.rasterize(section);
-			this.image = BlobUri.create(blob);
-			this.setFidelity(this.fidelity || "performance");
+			const section = await renderer.render();
+			this.setHtml(section);
 			this._scene = scene;
 		}
 		

@@ -30,18 +30,17 @@ namespace Player
 			`<style>${options.cssRules.join("")}</style>` : 
 			"";
 		
-		let svgText = 
-			`<svg xmlns="http://www.w3.org/2000/svg" width="${w}px" height="${h}px">` +
-				`<foreignObject width="100%" height="100%">` +
-					`<div xmlns="http://www.w3.org/1999/xhtml">` +
-						surroundingStyle +
-						inlineStyle + 
-						htmlContent +
-					`</div>` +
-				`</foreignObject>` +
-			`</svg>`;
-		
-		svgText = svgText.replace(/&quot;/g, "");
+		const svgText = [
+			`<svg xmlns="http://www.w3.org/2000/svg" width="${w}px" height="${h}px">`,
+				`<foreignObject width="100%" height="100%">`,
+					`<div xmlns="http://www.w3.org/1999/xhtml">`,
+						surroundingStyle,
+						inlineStyle, 
+						htmlContent,
+					`</div>`,
+				`</foreignObject>`,
+			`</svg>`
+		].join("\n").replace(/&quot;/g, "")
 		
 		return new Promise<Blob>(resolve =>
 		{

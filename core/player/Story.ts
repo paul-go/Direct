@@ -14,43 +14,43 @@ namespace Player
 		{
 			if (indepthUrl)
 			{
-				this.insertIndepthSections(indepthUrl).then(sections =>
+				fetchText(indepthUrl).then(indepthHtml =>
 				{
-					this.constructScenery(heroElement, ...sections);
+					const locationBase = Url.baseOf(window.location.href);
+					const indepthBase = Url.baseOf(Url.toAbsolute(indepthUrl, locationBase));
+					const doc = new ForeignDocumentSanitizer(indepthHtml, indepthBase).read();
+					const sections = sectionsOf(doc);
+					this.construct(heroElement, ...sections);
 				});
 			}
-			else this.constructScenery(heroElement);
+			else this.construct(heroElement);
 		}
 		
 		/** */
-		private constructScenery(...scenes: HTMLElement[])
+		private async construct(...scenes: HTMLElement[])
 		{
-			this._scenery = new Scenery();
-			this._scenery.insert(...scenes);
-			document.body.append(this._scenery.head);
+			const scenery = new Scenery();
+			document.body.append(scenery.head);
+			scenery.insert(...scenes);
 			
-			if (this.indexUrl)
-				this.constructPurview();
-		}
-		
-		/** */
-		private async constructPurview()
-		{
+			if (!this.indexUrl)
+				return;
+			
 			const indexText = await fetchText(this.indexUrl);
-			const slugs = this._slugs = indexText.split("\n").filter(s => !!s);
-			
+			const slugs = indexText.split("\n").filter(s => !!s);
 			const purview = new Purview();
+			purview.size = 2;
 			
 			purview.handlePreviewRequest(req =>
 			{
 				const rectangles: RectangleHat[] = [];
+				const slugSlice = slugs.slice(req.rangeStart, req.rangeEnd);
 				
-				for (let i = req.rangeStart; i < req.rangeEnd; i++)
+				for (const slug of slugSlice)
 				{
 					const rect = new RectangleHat();
 					rectangles.push(rect);
-					const slug = slugs[i];
-					
+					this.loadSceneWhenAvailable(rect, slug);
 				}
 				
 				return rectangles;
@@ -61,75 +61,44 @@ namespace Player
 				
 			});
 			
-			document.body.append(purview.head);
+			purview.gotoPreviews().then(() => {});
+			
+			scenery.insert(purview.head);
+			await purview.gotoPreviews();
+			console.log("");
 		}
 		
 		/** */
-		get scenery()
+		private async loadSceneWhenAvailable(rect: RectangleHat, slug: string)
 		{
-			if (this._scenery === null)
-				throw new Error();
+			const htmlText = await fetchText(slug);
+			const baseHref = Url.toAbsolute(slug, Url.baseOf(window.location.href));
+			const doc = new ForeignDocumentSanitizer(htmlText, baseHref).read();
+			const sections = sectionsOf(doc);
+			const section = sections.length > 0 ? sections[0] : null;
 			
-			return this._scenery!;
+			if (section)
+				rect.setHtml(section);
 		}
-		private _scenery: Scenery | null = null;
+	}
+	
+	/** */
+	function sectionsOf(doc: Document)
+	{
+		const sections = Array.from(doc.body.children) as HTMLElement[];
 		
-		/** */
-		get slugs()
+		// Cut out everything that isn't a top-level <section>
+		for (let i = sections.length; i-- > 0;)
 		{
-			return this._slugs;
-		}
-		private _slugs: string[] = [];
-		
-		/** */
-		private async insertIndepthSections(relativePath: string)
-		{
-			const indepthHtml = await fetchText(relativePath);
-			const parser = new DOMParser();
-			const doc = parser.parseFromString(indepthHtml, "text/html");
-			const children = Array.from(doc.body.children);
-			
-			// Cut out all script tags
-			Array.from(doc.querySelectorAll("script")).map(e => e.remove());
-			
-			// Cut out everything that isn't a top-level <section>
-			for (let i = children.length; i-- > 0;)
+			const child = sections[i];
+			if (child.tagName !== "SECTION")
 			{
-				const child = children[i];
-				if (child.tagName !== "SECTION")
-				{
-					child.remove();
-					children.splice(i, 1);
-				}
+				child.remove();
+				sections.splice(i, 1);
 			}
-			
-			// Cut any attribute that starts with "on"
-			for (const walker = document.createTreeWalker(doc.body);;)
-			{
-				const node = walker.nextNode();
-				if (!node)
-					break;
-				
-				if (node.nodeType === Node.ATTRIBUTE_NODE)
-				{
-					const attr = node as Attr;
-					if (attr.name.startsWith("on"))
-						attr.parentElement?.removeAttributeNode(attr);
-				}
-			}
-			
-			return children as HTMLElement[];
 		}
 		
-		/** */
-		private async getHtmlFromSlug(slug: string)
-		{
-			const indexHtml = await fetchText(slug);
-			
-			// TODO: Is this handling page-specific CSS?
-			
-			return indexHtml;
-		}
+		return sections;
 	}
 	
 	/** */

@@ -12,7 +12,7 @@ namespace App
 		{
 			this.head = Hot.div(
 				"home-list-hat",
-				this.purview = new Player.RectanglePurview(),
+				this.purview = new Player.Purview(),
 			);
 			
 			this.purview.size = size;
