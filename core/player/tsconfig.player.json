@@ -19,6 +19,7 @@
 		"../lib/Force.ts",
 		"../lib/Resize.ts",
 		"../lib/BlobUri.ts",
+		"RectangleHat.ts",
 		"*.ts",
 	]
 }

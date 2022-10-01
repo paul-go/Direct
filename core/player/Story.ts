@@ -7,105 +7,67 @@ namespace Player
 	export class Story
 	{
 		/** */
-		constructor(
+		static async new(
 			heroElement: HTMLElement,
-			indepthUrl: string,
-			private readonly indexUrl: string)
+			indepthHtmlUrl: string,
+			indexTextUrl: string)
 		{
-			if (indepthUrl)
+			const story = new Story(indexTextUrl);
+			
+			if (indepthHtmlUrl)
 			{
-				fetchText(indepthUrl).then(indepthHtml =>
+				Util.fetch(indepthHtmlUrl).then(indepthHtml =>
 				{
 					const locationBase = Url.baseOf(window.location.href);
-					const indepthBase = Url.baseOf(Url.toAbsolute(indepthUrl, locationBase));
+					const indepthBase = Url.baseOf(Url.toAbsolute(indepthHtmlUrl, locationBase));
 					const doc = new ForeignDocumentSanitizer(indepthHtml, indepthBase).read();
-					const sections = sectionsOf(doc);
-					this.construct(heroElement, ...sections);
+					const sections = Util.sectionsOf(doc);
+					story.construct(heroElement, ...sections);
 				});
 			}
-			else this.construct(heroElement);
+			else story.construct(heroElement);
+			
+			return story;
 		}
+		
+		/** */
+		private constructor(private readonly indexUrl: string) { }
+		
+		/** */
+		readonly scenery = new Scenery();
 		
 		/** */
 		private async construct(...scenes: HTMLElement[])
 		{
-			const scenery = new Scenery();
-			document.body.append(scenery.head);
-			scenery.insert(...scenes);
+			document.body.append(this.scenery.head);
+			this.scenery.insert(...scenes);
 			
 			if (!this.indexUrl)
 				return;
 			
-			const indexText = await fetchText(this.indexUrl);
+			const indexText = await Util.fetch(this.indexUrl);
 			const slugs = indexText.split("\n").filter(s => !!s);
-			const purview = new Purview();
+			const purview = new Purview<AnchorRectangleHat>();
 			purview.size = 2;
 			
 			purview.handlePreviewRequest(req =>
 			{
-				const rectangles: RectangleHat[] = [];
-				const slugSlice = slugs.slice(req.rangeStart, req.rangeEnd);
-				
-				for (const slug of slugSlice)
-				{
-					const rect = new RectangleHat();
-					rectangles.push(rect);
-					this.loadSceneWhenAvailable(rect, slug);
-				}
-				
-				return rectangles;
+				return slugs
+					.slice(req.rangeStart, req.rangeEnd)
+					.map(slug => new AnchorRectangleHat(slug));
 			});
 			
 			purview.handleReviewRequest(async rectangle =>
 			{
-				
+				const story = await rectangle.createStory();
+				if (story)
+					return story.scenery;
 			});
 			
 			purview.gotoPreviews().then(() => {});
 			
-			scenery.insert(purview.head);
+			this.scenery.insert(purview.head);
 			await purview.gotoPreviews();
-			console.log("");
 		}
-		
-		/** */
-		private async loadSceneWhenAvailable(rect: RectangleHat, slug: string)
-		{
-			const htmlText = await fetchText(slug);
-			const baseHref = Url.toAbsolute(slug, Url.baseOf(window.location.href));
-			const doc = new ForeignDocumentSanitizer(htmlText, baseHref).read();
-			const sections = sectionsOf(doc);
-			const section = sections.length > 0 ? sections[0] : null;
-			
-			if (section)
-				rect.setHtml(section);
-		}
-	}
-	
-	/** */
-	function sectionsOf(doc: Document)
-	{
-		const sections = Array.from(doc.body.children) as HTMLElement[];
-		
-		// Cut out everything that isn't a top-level <section>
-		for (let i = sections.length; i-- > 0;)
-		{
-			const child = sections[i];
-			if (child.tagName !== "SECTION")
-			{
-				child.remove();
-				sections.splice(i, 1);
-			}
-		}
-		
-		return sections;
-	}
-	
-	/** */
-	async function fetchText(relativeUrl: string)
-	{
-		const fetchResult = await fetch(relativeUrl);
-		const resultText = await fetchResult.text();
-		return resultText;
 	}
 }

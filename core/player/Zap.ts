@@ -13,11 +13,10 @@ namespace Player
 				const getLinkHref = (rel: string) => 
 					document.head.querySelector(`LINK[rel=${rel}]`)?.getAttribute("href") || "";
 				
-				new Story(
+				Story.new(
 					heroElement,
 					getLinkHref(ConstS.hssIndepth),
-					getLinkHref(ConstS.hssIndex)
-				);
+					getLinkHref(ConstS.hssIndex));
 			}
 		}
 	}
