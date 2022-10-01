@@ -59,12 +59,12 @@ namespace App
 		{
 			const hat = new HomeListHat();
 			
-			hat.purview.enterReviewFn(() =>
+			hat.omniview.enterReviewFn(() =>
 			{
 				this.addPostButton.style.transform = "translateX(-128px)";
 			});
 			
-			hat.purview.exitReviewFn(() =>
+			hat.omniview.exitReviewFn(() =>
 			{
 				this.addPostButton.style.removeProperty("transform");
 			});

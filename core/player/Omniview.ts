@@ -2,7 +2,7 @@
 namespace Player
 {
 	/** */
-	export class Purview<THat extends Hot.HatLike = Hot.HatLike>
+	export class Omniview<THat extends Hot.HatLike = Hot.HatLike>
 	{
 		readonly head;
 		
@@ -19,7 +19,7 @@ namespace Player
 			document.body.style.overflowX = "hidden";
 			
 			this.head = Hot.div(
-				"purview",
+				"omniview",
 				Hot.on(window, "scroll", () => this.updatePreviews()),
 				Hot.on(document.body, "keydown", ev => this.handleKeyDown(ev)),
 				this.scalerElement = Hot.div(

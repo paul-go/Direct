@@ -83,7 +83,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverSceneryAsWorkingInsidePurview()
+	export async function coverSceneryAsWorkingInsideOmniview()
 	{
 		App.Css.append();
 		

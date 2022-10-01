@@ -47,27 +47,27 @@ namespace Player
 			
 			const indexText = await Util.fetch(this.indexUrl);
 			const slugs = indexText.split("\n").filter(s => !!s);
-			const purview = new Purview<AnchorRectangleHat>();
-			purview.size = 2;
+			const omniview = new Omniview<AnchorRectangleHat>();
+			omniview.size = 2;
 			
-			purview.handlePreviewRequest(req =>
+			omniview.handlePreviewRequest(req =>
 			{
 				return slugs
 					.slice(req.rangeStart, req.rangeEnd)
 					.map(slug => new AnchorRectangleHat(slug));
 			});
 			
-			purview.handleReviewRequest(async rectangle =>
+			omniview.handleReviewRequest(async rectangle =>
 			{
 				const story = await rectangle.createStory();
 				if (story)
 					return story.scenery;
 			});
 			
-			purview.gotoPreviews().then(() => {});
+			omniview.gotoPreviews().then(() => {});
 			
-			this.scenery.insert(purview.head);
-			await purview.gotoPreviews();
+			this.scenery.insert(omniview.head);
+			await omniview.gotoPreviews();
 		}
 	}
 }

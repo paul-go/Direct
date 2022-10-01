@@ -12,13 +12,13 @@ namespace App
 		{
 			this.head = Hot.div(
 				"home-list-hat",
-				this.purview = new Player.Purview<EditorRectangleHat>(),
+				this.omniview = new Player.Omniview<EditorRectangleHat>(),
 			);
 			
-			this.purview.size = size;
-			this.purview.enableKeyboardSizing = false;
+			this.omniview.size = size;
+			this.omniview.enableKeyboardSizing = false;
 			
-			this.purview.handlePreviewRequest(request =>
+			this.omniview.handlePreviewRequest(request =>
 			{
 				const postStream = AppContainer.of(this).blog.postStream;
 				const rectangles: EditorRectangleHat[] = [];
@@ -38,7 +38,7 @@ namespace App
 				return rectangles;
 			});
 			
-			this.purview.handleReviewRequest(async rectangle =>
+			this.omniview.handleReviewRequest(async rectangle =>
 			{
 				if (!(rectangle instanceof EditorRectangleHat))
 					return;
@@ -56,16 +56,16 @@ namespace App
 				return scenery;
 			});
 			
-			When.connected(this.purview.head, () =>
+			When.connected(this.omniview.head, () =>
 			{
-				this.purview.gotoPreviews();
+				this.omniview.gotoPreviews();
 			});
 			
 			Hat.wear(this);
 		}
 		
 		/** */
-		readonly purview;
+		readonly omniview;
 		
 		/** */
 		private createFakePost()

@@ -2,18 +2,18 @@
 namespace Cover
 {
 	/** */
-	export function coverPurviewInfinite()
+	export function coverOmniviewInfinite()
 	{
 		App.Css.append();
 		
-		const purview = new Player.Purview<Preview>();
+		const omniview = new Player.Omniview<Preview>();
 		
 		document.body.append(
 			Hot.div({ height: "50vh" }),
-			purview.head,
+			omniview.head,
 			Hot.div({ height: "50vh" }));
 		
-		purview.handlePreviewRequest(async info =>
+		omniview.handlePreviewRequest(async info =>
 		{
 			const count = info.rangeEnd - info.rangeStart;
 			const prefix = info.rangeStart < 0 ? "Pre" : "Post";
@@ -25,7 +25,7 @@ namespace Cover
 			return items;
 		});
 		
-		purview.handleReviewRequest(async preview =>
+		omniview.handleReviewRequest(async preview =>
 		{
 			const scenery = new Player.Scenery();
 			
@@ -51,7 +51,7 @@ namespace Cover
 			return scenery;
 		});
 		
-		purview.gotoPreviews();
+		omniview.gotoPreviews();
 	}
 	
 	/** */

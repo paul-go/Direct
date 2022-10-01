@@ -9,11 +9,11 @@ namespace App
 		{
 			this.head = Hot.div(
 				"list-hat",
-				this.purview = new Player.Purview<TRectangle>()
+				this.omniview = new Player.Omniview<TRectangle>()
 			);
 		}
 		
 		readonly head;
-		protected readonly purview;
+		protected readonly omniview;
 	}
 }

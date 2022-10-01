@@ -1,3 +1,4 @@
+/// <reference path="./RectangleHat.ts" />
 
 namespace Player
 {
