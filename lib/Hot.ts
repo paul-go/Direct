@@ -103,10 +103,10 @@ namespace Hot { { } }
 			cssPropertySet = new Set(propertyNames);
 		}
 		
-		// CAUTION: This code is performance critical. It uses constructor
-		// checks instead of instanceof and typeof for performance reasons.
-		// Be careful of changing this code without having full knowledge
-		// of what you're doing.
+		// CAUTION: This code is *very* performance sensitive. It uses
+		// constructor checks instead of instanceof and typeof in an effort
+		// to squeeze out maximum performance. Be careful of changing
+		// this code without  having full knowledge of what you're doing.
 		for (let i = -1, length = params.length; ++i < length;)
 		{
 			const param = params[i];
@@ -115,7 +115,7 @@ namespace Hot { { } }
 			
 			if (param instanceof Node)
 			{
-				e.append(param as Node);
+				e.append(param);
 			}
 			else if (Array.isArray(param))
 			{
@@ -149,6 +149,10 @@ namespace Hot { { } }
 				break; case String:
 				{
 					e.classList.add(param as string);
+				}
+				break; case Sheet:
+				{
+					e.classList.add((param as Sheet).class);
 				}
 				break; case Object:
 				{
@@ -209,6 +213,20 @@ namespace Hot { { } }
 	let cssPropertySet: Set<string> | null = null;
 	
 	/** */
+	class Sheet
+	{
+		/** */
+		constructor(
+			className: string,
+			readonly cssRules: readonly CSSStyleRule[])
+		{
+			this.class = className;
+		}
+		
+		readonly class: string = "";
+	}
+	
+	/** */
 	function css(...components: (string | Hot.Style)[])
 	{
 		if (!inlineRuleSheet)
@@ -236,18 +254,20 @@ namespace Hot { { } }
 				group.styles.push(cur);
 		}
 		
-		const generatedCssClass = "c" + (index++);
+		const cssClass = "c" + (index++);
+		const cssRules: CSSStyleRule[] = [];
 		
 		for (const group of groups)
 		{
 			const selectorParts = group.selector.split("&");
 			const [selector] = trimImportant(
 				selectorParts.length === 1 ?
-					"." + generatedCssClass + group.selector :
-					selectorParts.join("." + generatedCssClass));
+					"." + cssClass + group.selector :
+					selectorParts.join("." + cssClass));
 			
 			const idx = inlineRuleSheet.insertRule(selector + "{}");
 			const cssRule = inlineRuleSheet.cssRules.item(idx) as CSSStyleRule;
+			cssRules.push(cssRule);
 			
 			for (const stylesObject of group.styles)
 			{
@@ -262,7 +282,7 @@ namespace Hot { { } }
 			}
 		}
 		
-		return generatedCssClass;
+		return new Sheet(cssClass, cssRules);
 	}
 	
 	/** */
@@ -329,15 +349,39 @@ namespace Hot { { } }
 
 namespace Hot
 {
+	/** */
+	export type Param<T = ElementAttribute> =
+		// Single class name
+		string |
+		// Event connections
+		Event |
+		// Immediately invoked closure
+		Closure |
+		// Mini CSS style sheet, contains a small group of rules
+		Sheet |
+		// Arrays of Params
+		Param<T>[] |
+		// Conditionals
+		false | undefined | null | void |
+		NodeLike |
+		Style |
+		Partial<T> |
+		HatLike;
+	
+	/** */
+	export type Closure = ((e: HTMLElement) => Param | Param[]);
+	
+	/** */
+	export type HatLike = { readonly head: HTMLElement; };
+	
 	/**
-	 * Fake node class, which is compatible with the actual Node interface,
-	 * but done with minimal properties in order to not negatively affect
-	 * the quality of the autocompletion experience.
+	 * Creates a new Hot context from the specified Element or series of Elements.
 	 */
-	export interface NodeLike
-	{
-		readonly DOCUMENT_TYPE_NODE: number;
-	}
+	export declare function get<T extends Element | HatLike>(
+		e: T, ...others: Element[]
+	): (...params: Param[]) => T;
+	
+	//# Style Related Typings
 	
 	/**
 	 * 
@@ -493,6 +537,76 @@ namespace Hot
 	};
 	
 	/** */
+	export type Style = {
+		[P in keyof CSSStyleDeclaration]?: P extends keyof NumericStyleDeclaration ? 
+			NumericStyleDeclaration[P] : 
+			CSSStyleDeclaration[P]
+	};
+	
+	/** */
+	export declare class Sheet
+	{
+		constructor(
+			className: string,
+			cssRules: readonly CSSStyleRule[])
+		
+		readonly class: string;
+		readonly cssRules: readonly CSSStyleRule[];
+		private readonly private: undefined;
+	}
+	
+	/** */
+	export declare function css(...components: (string | Hot.Style)[]): Sheet;
+	
+	/**
+	 * 
+	 */
+	export declare function animation(name: string, style: Record<number, Hot.Style>): Hot.Style
+	
+	//# Event Related Typings
+	
+	/** */
+	export interface EventMap extends HTMLElementEventMap
+	{
+		"input": InputEvent;
+	}
+	
+	/** */
+	export declare function on<K extends keyof HTMLElementEventMap>(
+		type: K,
+		listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+		options?: boolean | EventListenerOptions): Event;
+	/** */
+	export declare function on<K extends keyof HTMLElementEventMap>(
+		remoteTarget: Node | Window,
+		type: K,
+		listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+		options?: boolean | EventListenerOptions): Event;
+	
+	/** */
+	export declare class Event
+	{
+		constructor(
+			eventName: string,
+			handler: (ev: Event) => void,
+			options?: EventListenerOptions)
+		
+		private readonly private: undefined;
+	}
+	
+	//# Element Related Typings
+	
+	/**
+	 * Fake node class, which is compatible with the actual Node interface,
+	 * but done with minimal properties in order to not negatively affect
+	 * the quality of the autocompletion experience.
+	 */
+	export interface NodeLike
+	{
+		readonly DOCUMENT_TYPE_NODE: number;
+	}
+	
+	/** */
 	export interface ElementAttribute
 	{
 		name: string;
@@ -568,36 +682,6 @@ namespace Hot
 		controls: boolean;
 		muted: boolean;
 	}
-	
-	/** */
-	export type Style = {
-		[P in keyof CSSStyleDeclaration]?: P extends keyof NumericStyleDeclaration ? 
-			NumericStyleDeclaration[P] : 
-			CSSStyleDeclaration[P]
-	};
-	
-	/** */
-	export type Closure = ((e: HTMLElement) => Param | Param[]);
-	
-	/** */
-	export type HatLike = { readonly head: HTMLElement; };
-	
-	/** */
-	export type Param<T = ElementAttribute> =
-		// Single class name
-		string |
-		// Event connections
-		Event |
-		// Immediately invoked closure
-		Closure |
-		// Arrays of Params
-		Param<T>[] |
-		// Conditionals
-		false | undefined | null | void |
-		NodeLike |
-		Style |
-		Partial<T> |
-		HatLike;
 	
 	export declare function a(...params: Param<AnchorElementAttribute>[]): HTMLAnchorElement;
 	export declare function abbr(...params: Param[]): HTMLElement;
@@ -715,50 +799,7 @@ namespace Hot
 	export declare function video(...params: Param<VideoElementAttribute>[]): HTMLVideoElement;
 	export declare function wbr(...params: Param[]): HTMLElement;
 	
-	/** */
-	export interface EventMap extends HTMLElementEventMap
-	{
-		"input": InputEvent;
-	}
-	
-	/** */
-	export declare function on<K extends keyof HTMLElementEventMap>(
-		type: K,
-		listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
-		options?: boolean | EventListenerOptions): Event;
-	/** */
-	export declare function on<K extends keyof HTMLElementEventMap>(
-		remoteTarget: Node | Window,
-		type: K,
-		listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
-		options?: boolean | EventListenerOptions): Event;
-	
-	/** */
-	export declare class Event
-	{
-		constructor(
-			eventName: string,
-			handler: (ev: Event) => void,
-			options?: EventListenerOptions)
-		
-		private readonly undefined: undefined;
-	}
-	
-	/** */
-	export declare function css(...components: (string | Hot.Style)[]): string;
-	
-	/**
-	 * 
-	 */
-	export declare function animation(name: string, style: Record<number, Hot.Style>): Hot.Style
-	
-	/**
-	 * Creates a new Hot context from the specified Element or series of Elements.
-	 */
-	export declare function get<T extends Element | HatLike>(
-		e: T, ...others: Element[]
-	): (...params: Param[]) => T;
-	
+	// CommonJS compatibility
 	declare var module: any;
 	if (typeof module === "object")
 		Object.assign(module.exports, { Hot });
