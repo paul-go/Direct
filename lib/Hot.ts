@@ -45,6 +45,13 @@ namespace Hot { { } }
 			readonly handler: (ev: Event) => void,
 			readonly options: AddEventListenerOptions = {})
 		{ }
+		
+		/**
+		 * Stores the element that "hosts" the event, which is not necessarily
+		 * the target event. When the host element is removed from the DOM,
+		 * the event handler is removed.
+		 */
+		host: Element | null = null;
 	}
 	
 	/** */
@@ -63,7 +70,23 @@ namespace Hot { { } }
 		const handler = typeof args[1] === "function" ? args[1] : args[2];
 		const last = args.pop();
 		const options: AddEventListenerOptions = typeof last === "function" ? {} : last;
-		return new HotEvent(target, eventName, handler, options);
+		const he = new HotEvent(target, eventName, handler, options);
+		
+		// If the event has a defined target, then add the event listener right away,
+		// and the apply() function will assign any host element, if present.
+		if (target)
+		{
+			let handler: (ev: Event) => void;
+			target.addEventListener(he.eventName, handler = (ev: Event) =>
+			{
+				if (he.host?.isConnected !== false)
+					he.handler(ev as any);
+				else
+					target.removeEventListener(he.eventName, handler);
+			});
+		}
+		
+		return he;
 	}
 	
 	/** */
@@ -125,26 +148,14 @@ namespace Hot { { } }
 			{
 				case HotEvent:
 				{
-					const evt = param as HotEvent;
-					const node = evt.target;
-					if (node)
-					{
-						let handler: (ev: Event) => void;
-						node.addEventListener(evt.eventName, handler = (ev: Event) =>
-						{
-							if (e.isConnected)
-								evt.handler(ev as any);
-							else
-								node.removeEventListener(evt.eventName, handler);
-						});
-					}
-					else
-					{
-						e.addEventListener(
-							evt.eventName,
-							evt.handler,
-							evt.options);
-					}
+					const he = param as HotEvent;
+					if (he.target)
+						he.host = e;
+					
+					else e.addEventListener(
+						he.eventName,
+						he.handler,
+						he.options);
 				}
 				break; case String:
 				{
@@ -586,12 +597,8 @@ namespace Hot
 	/** */
 	export declare class Event
 	{
-		constructor(
-			eventName: string,
-			handler: (ev: Event) => void,
-			options?: EventListenerOptions)
-		
-		private readonly private: undefined;
+		private constructor();
+		private private: undefined;
 	}
 	
 	//# Element Related Typings
