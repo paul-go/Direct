@@ -41,9 +41,9 @@ namespace Hot { { } }
 	{
 		constructor(
 			readonly target: Node | null,
-			readonly eventName: string,
+			readonly type: string,
 			readonly handler: (ev: Event) => void,
-			readonly options: AddEventListenerOptions = {})
+			readonly options: Readonly<AddEventListenerOptions> = {})
 		{ }
 		
 		/**
@@ -60,29 +60,29 @@ namespace Hot { { } }
 		/*
 		Actual argument structure looks like:
 			target?: Node,
-			eventName: string,
+			type: string,
 			handler: () => void,
 			options?: Hot.EventListenerOptions)
 		*/
 		
 		const target: Node | null = typeof args[0] === "string" ? null : args[0];
-		const eventName: string = typeof args[0] === "string" ? args[0] : args[1];
+		const type: string = typeof args[0] === "string" ? args[0] : args[1];
 		const handler = typeof args[1] === "function" ? args[1] : args[2];
 		const last = args.pop();
 		const options: AddEventListenerOptions = typeof last === "function" ? {} : last;
-		const he = new HotEvent(target, eventName, handler, options);
+		const he = new HotEvent(target, type, handler, options);
 		
 		// If the event has a defined target, then add the event listener right away,
 		// and the apply() function will assign any host element, if present.
 		if (target)
 		{
 			let handler: (ev: Event) => void;
-			target.addEventListener(he.eventName, handler = (ev: Event) =>
+			target.addEventListener(he.type, handler = (ev: Event) =>
 			{
 				if (he.host?.isConnected !== false)
 					he.handler(ev as any);
 				else
-					target.removeEventListener(he.eventName, handler);
+					target.removeEventListener(he.type, handler);
 			});
 		}
 		
@@ -153,7 +153,7 @@ namespace Hot { { } }
 						he.host = e;
 					
 					else e.addEventListener(
-						he.eventName,
+						he.type,
 						he.handler,
 						he.options);
 				}
