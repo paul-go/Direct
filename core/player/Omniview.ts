@@ -10,21 +10,15 @@ namespace Player
 		constructor()
 		{
 			this.sizeClasses = generateSizeClasses();
-			
-			const transitionClass = Hot.css({
-				transitionDuration: "0.33s",
-				transitionTimingFunction: "ease-in-out",
-			});
-			
 			document.body.style.overflowX = "hidden";
 			
 			this.head = Hot.div(
 				"omniview",
-				Hot.on(window, "scroll", () => this.updatePreviews()),
+				Hot.on(window, "scroll", () => this.updatePreviewVisibility(true)),
 				Hot.on(document.body, "keydown", ev => this.handleKeyDown(ev)),
 				this.scalerElement = Hot.div(
 					"scaler",
-					transitionClass,
+					transitionRule,
 					{
 						transitionProperty: "transform",
 						transformOrigin: "0 0",
@@ -49,7 +43,7 @@ namespace Player
 					),
 					this.reviewContainer = Hot.div(
 						"review-container",
-						transitionClass,
+						transitionRule,
 						Hot.css({
 							display: "none",
 							position: "absolute",
@@ -66,7 +60,7 @@ namespace Player
 			);
 			
 			this.size = 4;
-			Resize.watch(this.head, () => this.updatePreviews());
+			Resize.watch(this.head, () => this.updatePreviewVisibility());
 			
 			[this.enterReviewFn, this._enterReviewFn] = Force.create<(hat: THat) => void>();
 			[this.exitReviewFn, this._exitReviewFn] = Force.create<() => void>();
@@ -87,7 +81,7 @@ namespace Player
 		private readonly _exitReviewFn;
 		
 		/**
-		 * Gets or sets whether the size of the purview can be
+		 * Gets or sets whether the size of the Omniview can be
 		 * changed with keyboard control.
 		 */
 		enableKeyboardSizing = true;
@@ -112,7 +106,7 @@ namespace Player
 			}
 			else if (ev.key === "Escape")
 			{
-				if (this.mode === PurviewMode.review)
+				if (this.mode === OmniviewMode.review)
 					this.gotoPreviews();
 			}
 		}
@@ -122,32 +116,15 @@ namespace Player
 		{
 			return this._mode;
 		}
-		private _mode = PurviewMode.none;
+		private _mode = OmniviewMode.none;
 		
 		//# Preview Related
 		
 		/** */
-		get prependedPreviewCount()
-		{
-			const e = this.previewsContainer.firstElementChild;
-			if (!e)
-				return 0;
-			
-			const index = getIndex(e);
-			return index < 0 ? Math.abs(index) : 0;
-		}
-		
-		/** */
-		get appendedPreviewCount()
+		get previewCount()
 		{
 			const e = this.previewsContainer.lastElementChild;
 			return e ? getIndex(e) : 0;
-		}
-		
-		/** */
-		get totalPreviewCount()
-		{
-			return this.prependedPreviewCount + this.appendedPreviewCount;
 		}
 		
 		/** */
@@ -175,7 +152,7 @@ namespace Player
 					se.classList.add(cls);
 				}
 				
-				this.updatePreviews();
+				this.updatePreviewVisibility();
 			}
 			
 			const animate = async () =>
@@ -209,13 +186,13 @@ namespace Player
 		/** */
 		async gotoPreviews()
 		{
-			if (this._mode === PurviewMode.preview)
+			if (this._mode === OmniviewMode.preview)
 				return;
 			
-			if (this.mode === PurviewMode.review)
+			if (this.mode === OmniviewMode.review)
 				return void await this.exitReviewWithAnimation();
 			
-			this.populatePreviews("below");
+			this.tryAppendPreviews();
 		}
 		
 		/** */
@@ -232,24 +209,25 @@ namespace Player
 			const promises = await this.previewRequestFn?.(rr) || [];
 			return {
 				promises,
-				terminate: promises.length < requestedCount,
+				canContinue: promises.length >= requestedCount,
 			};
 		}
 		
 		/** */
-		private async populatePreviews(where: "above" | "below", screens: number = 3)
+		private async tryAppendPreviews(screens: number = 3)
 		{
-			const above = where === "above";
-			const mul = above ? -1 : 1;
 			const pullCount = this.size * this.size * screens;
-			const rangeStart = this.prependedPreviewCount * mul || 0;
-			const rangeEnd = rangeStart + (pullCount * mul);
+			const rangeStart = this.previewCount;
+			const rangeEnd = rangeStart + (pullCount);
 			
 			const itemRequest = await this.requestPreview({
 				cacheOnly: false,
 				rangeStart,
 				rangeEnd,
 			});
+			
+			if (itemRequest.promises.length === 0)
+				return;
 			
 			const elements: HTMLElement[] = [];
 			
@@ -295,49 +273,24 @@ namespace Player
 				}
 			}
 			
-			if (above)
-			{
-				const count = this.prependedPreviewCount;
-				const len = elements.length;
-				for (let i = -1; ++i < len;)
-					setIndex(elements[i], -(count + len + i + 1));
-				
-				// This thing needs to change the window.scrollY
-				//this.origin.prepend(...elements);
-				//this.prependedObjectCount += elements.length;
-			}
-			else
-			{
-				for (let i = -1; ++i < elements.length;)
-					setIndex(elements[i], this.appendedPreviewCount + i + 1);
-				
-				this.previewsContainer.append(...elements);
-			}
+			for (let i = -1; ++i < elements.length;)
+				setIndex(elements[i], this.previewCount + i + 1);
 			
-			const { isNearingTop, isNearingBottom } = this.updatePreviews();
-			
-			if (!itemRequest.terminate)
-			{
-				if (isNearingBottom)
-					this.populatePreviews("below", 1);
-				
-				if (0 && isNearingTop)
-					this.populatePreviews("above", 1);
-			}
+			this.previewsContainer.append(...elements);
+			this.updatePreviewVisibility(itemRequest.canContinue);
 		}
 		
 		/** */
-		private updatePreviews()
+		private updatePreviewVisibility(canContinue?: boolean)
 		{
-			block:
+			let isNearingBottom = false;
+			
+			if (this.previewCount > 0)
 			{
-				if (this.totalPreviewCount === 0)
-					break block;
-				
 				const y = this.scrollTop - this.offsetTop;
 				const wh = window.innerHeight;
 				const rowHeight = wh / this.size;
-				const rowCount = this.totalPreviewCount / this.size;
+				const rowCount = this.previewCount / this.size;
 				const visibleRowStart = Math.floor(y / rowHeight);
 				const visibleItemStart = visibleRowStart * this.size;
 				const visibleItemEnd = visibleItemStart + this.size * (this.size + 2);
@@ -376,24 +329,18 @@ namespace Player
 				this.head.style.height = (100 * rowCount / this.size).toFixed(5) + "vh";
 				this.scalerElement.style.height = (100 * rowCount).toFixed(5) + "vh";
 				
-				if (y === this.lastScrollY)
-					break block;
-				
-				this.lastScrollY = y;
-				
-				return {
-					isNearingTop: y < rowHeight,
-					isNearingBottom: (y + wh) > (rowCount - 1) * (wh / this.size),
-				};
+				if (y !== this.lastY)
+				{
+					this.lastY = y;
+					isNearingBottom = (y + wh) > (rowCount - 1) * (wh / this.size);
+				}
 			}
 			
-			return {
-				isNearingTop: false,
-				isNearingBottom: false,
-			};
+			if (canContinue && isNearingBottom)
+				this.tryAppendPreviews(1);
 		}
 		
-		private lastScrollY = -1;
+		private lastY = -1;
 		
 		/** */
 		private columnOf(previewElement: Element)
@@ -435,6 +382,13 @@ namespace Player
 		}
 		private _currentPreview: THat | null = null;
 		
+		/**
+		 * Stores a reference to the HTMLElement that takes the place
+		 * of the actual preview element, in the case when the preview
+		 * is used as a portal rather than a preview.
+		 */
+		private portalPlaceholder: HTMLElement | null = null;
+		
 		/** */
 		private setScalerTransform(progress: number)
 		{
@@ -467,15 +421,19 @@ namespace Player
 		/** */
 		private recomputeTranslate()
 		{
-			if (!this._currentPreview)
-				return;
-			
-			const col = this.columnOf(this._currentPreview.head);
-			const row = this.rowOf(this._currentPreview.head);
-			const wh = window.innerHeight;
-			const scrollYinVh = (window.scrollY - this.offsetTop) / wh * 100;
-			this._scalerTranslateX = -100 / this.size * col;
-			this._scalerTranslateY = -100 * row + scrollYinVh;
+			if (this._currentPreview)
+			{
+				const col = this.columnOf(this._currentPreview.head);
+				const row = this.rowOf(this._currentPreview.head);
+				const wh = window.innerHeight;
+				const scrollYinVh = (window.scrollY - this.offsetTop) / wh * 100;
+				this._scalerTranslateX = -100 / this.size * col;
+				this._scalerTranslateY = -100 * row + scrollYinVh;
+			}
+			else
+			{
+				this._scalerTranslateX = this._scalerTranslateY = 0;
+			}
 		}
 		
 		/** */
@@ -496,22 +454,36 @@ namespace Player
 		/** */
 		async gotoReview(previewHat: THat)
 		{
-			if (this._mode === PurviewMode.review)
+			if (this._mode === OmniviewMode.review)
 				return;
 			
 			this._enterReviewFn(previewHat);
+			let scenery: Scenery;
 			
-			const requestResult = await this.reviewRequestFn?.(previewHat);
-			if (!requestResult)
-				return;
-			
-			const scenery = requestResult instanceof Scenery ?
-				requestResult :
-				new Scenery().insert(requestResult);
+			// If the previewHat is already a scenery, then we just need
+			// to do a reviewRequest in order to provide an opportunity
+			// for the scenery to be augmented before being converted
+			// into review mode.
+			if (previewHat instanceof Scenery)
+			{
+				await this.reviewRequestFn?.(previewHat);
+				scenery = previewHat;
+				this.portalPlaceholder = Hot.div("portal-placeholder");
+			}
+			else
+			{
+				const requestResult = await this.reviewRequestFn?.(previewHat);
+				if (!requestResult)
+					return;
+				
+				scenery = requestResult instanceof Scenery ?
+					requestResult :
+					new Scenery().insert(requestResult);
+			}
 			
 			// Make sure the first visible frame is shown (not the exitUpElement)
-			const sectionFirst = scenery.getScene(0);
-			const sectionLast = scenery.getScene(-1);
+			const sectionFirst = scenery.get(0);
+			const sectionLast = scenery.get(-1);
 			
 			const exitHeight = 60;
 			const exitHeightRatio = exitHeight / 100;
@@ -527,10 +499,15 @@ namespace Player
 			
 			this._currentScenery = scenery;
 			this._currentPreview = previewHat;
-			this._mode = PurviewMode.review;
-			this.reviewContainer.replaceChildren(scenery.head);
+			this._mode = OmniviewMode.review;
 			
-			this.setScalerTransform(1);
+			// Insert an empty div so that the CSS nth-child selector doesn't get screwed up.
+			if (this.portalPlaceholder)
+			{
+				previewHat.head.replaceWith(this.portalPlaceholder);
+				this.reviewContainer.replaceChildren(previewHat.head);
+			}
+			else this.reviewContainer.replaceChildren(scenery.head);
 			
 			Hot.get(scenery)({
 				position: "absolute",
@@ -544,16 +521,20 @@ namespace Player
 				display: "block",
 				left: Math.abs(this.scalerTranslateX) + "%",
 				top: (100 * this.rowOf(previewHat.head)) + "vh",
-				opacity: 0,
+				opacity: this.portalPlaceholder ? 1 : 0,
 			});
 			
 			await new Promise(r => setTimeout(r));
 			scenery.head.scrollTo({ top: sectionFirst.anchor.offsetTop });
-			this.reviewContainer.style.opacity = "1";
-			await waitTransitionEnd(this.reviewContainer);
+			this.setScalerTransform(1);
+			
+			if (!this.portalPlaceholder)
+				this.reviewContainer.style.opacity = "1";
+			
+			await waitTransitionEnd(this.scalerElement);
 			this.toggleScalerTransitions(false);
 			
-			scenery.addScrollComputer(state =>
+			scenery.addScrollComputer(this.currentSceneryScrollComputer = state =>
 			{
 				if (state.element === sectionFirst.element)
 					if (state.elementTopRatio >= 0 && state.elementTopRatio <= exitHeightRatio)
@@ -564,7 +545,7 @@ namespace Player
 						return Math.max(window.innerHeight - state.elementHeight, state.elementTop);
 			});
 			
-			scenery.addScrollListener(states =>
+			scenery.addScrollListener(this.currentSceneryScrollListener = states =>
 			{
 				const state = states.find(s => 
 					s.element === exitUpElement || 
@@ -584,31 +565,103 @@ namespace Player
 				}
 				
 				this.setScalerTransform(mul);
-				this.reviewContainer.style.opacity = mul.toString();
+				
+				if (!this.portalPlaceholder)
+					this.reviewContainer.style.opacity = mul.toString();
+				
+				else if (state?.element === exitDownElement)
+				{
+					const scene = scenery.get(1);
+					const opacity = 1 - mul;
+					scene.draw(opacity);
+				}
 				
 				// Actually exit
 				if (mul < 0.005)
 					this.exitReview();
 			});
 			
-			this._mode = PurviewMode.review;
+			this._mode = OmniviewMode.review;
 		}
+		
+		private currentSceneryScrollComputer: ScrollComputerFn | null = null;
+		private currentSceneryScrollListener: ScrollListenerFn | null = null;
 		
 		/** */
 		private async exitReviewWithAnimation()
 		{
 			this.toggleScalerTransitions(true);
 			this.setScalerTransform(0);
-			this.reviewContainer.style.opacity = "0";
-			await waitTransitionEnd(this.reviewContainer);
+			
+			if (this.portalPlaceholder)
+			{
+				const scene = this.currentScenery?.get(1);
+				if (scene)
+				{
+					if (scene.visibilityState)
+					{
+						scene.draw(1);
+						await waitTransitionEnd(this.scalerElement);
+						scene.draw(-1);
+					}
+					else
+					{
+						scene.draw(0.001);
+						await new Promise(r => setTimeout(r));
+						const e = scene.element;
+						e.classList.add(transitionRule.class);
+						e.style.transitionProperty = "opacity";
+						scene.draw(1);
+						await waitTransitionEnd(e);
+						e.classList.remove(transitionRule.class);
+						e.style.removeProperty("transition-property");
+					}
+				}
+			}
+			else
+			{
+				this.reviewContainer.style.opacity = "0";
+				await waitTransitionEnd(this.reviewContainer);
+			}
+			
 			this.exitReview();
 		}
 		
 		/** */
-		private exitReview()
+		private async exitReview()
 		{
+			if (this.currentScenery)
+			{
+				if (this.currentSceneryScrollComputer)
+					this.currentScenery.removeScrollComputer(this.currentSceneryScrollComputer);
+				
+				if (this.currentSceneryScrollListener)
+					this.currentScenery.removeScrollListener(this.currentSceneryScrollListener);
+			}
+			
+			if (this.portalPlaceholder)
+			{
+				const e = this.reviewContainer.firstElementChild;
+				if (e)
+					this.portalPlaceholder.replaceWith(e);
+				
+				const sc = this.currentScenery;
+				if (sc)
+				{
+					// Delete the first and last scenes, as they aren't real scenes,
+					// but rather the padding that is used for entry / exit.
+					sc.delete(0);
+					sc.delete(-1);
+					
+					while (sc.length > 1)
+						sc.delete(1);
+				}
+				
+				this.portalPlaceholder = null;
+			}
+			
 			this._currentScenery = null;
-			this._mode = PurviewMode.preview;
+			this._mode = OmniviewMode.preview;
 			this._scalerTranslateX = minInt;
 			this._scalerTranslateY = minInt;
 			this.scalerElement.style.removeProperty("transition-duration");
@@ -631,10 +684,15 @@ namespace Player
 		/** */
 		private beginOffsetTopTracking()
 		{
-			const mo = new MutationObserver(() => this._offsetTop = minInt);
+			const mo = new MutationObserver(() =>
+			{
+				clearTimeout(this.timeoutId);
+				this.timeoutId = setTimeout(() => this._offsetTop = minInt, 1);
+			});
 			mo.observe(this.head, { childList: true, subtree: true, attributes: true });
 			When.disconnected(this.head, () => mo.disconnect());
 		}
+		private timeoutId: any = 0;
 		
 		/** */
 		private get offsetTop()
@@ -655,7 +713,7 @@ namespace Player
 		private get scrollTop()
 		{
 			const e = this.scrollingAncestor;
-			return e === document.documentElement ?
+			return e === document.documentElement || e === document.body ?
 				window.scrollY :
 				e.scrollTop;
 		}
@@ -714,7 +772,7 @@ namespace Player
 				);
 			}
 			
-			sizeClasses.set(size, Hot.css(...params));
+			sizeClasses.set(size, Hot.css(...params).class);
 		};
 		
 		return sizeClasses;
@@ -750,7 +808,7 @@ namespace Player
 	/** */
 	const showClass = Hot.css("&&", {
 		display: "block",
-	});
+	}).class;
 	
 	/** */
 	const disableScrollBarsClass = Hot.css(
@@ -765,6 +823,12 @@ namespace Player
 			width: 0
 		}
 	);
+	
+	/** */
+	const transitionRule = Hot.css({
+		transitionDuration: "0.33s",
+		transitionTimingFunction: "ease-in-out",
+	});
 	
 	/** */
 	function getByClass(cls: string, element?: Element)
@@ -804,7 +868,7 @@ namespace Player
 	}
 	
 	/** */
-	export const enum PurviewMode
+	export const enum OmniviewMode
 	{
 		none,
 		review,

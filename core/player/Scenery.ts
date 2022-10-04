@@ -4,6 +4,8 @@ namespace Player
 	/** */
 	export class Scenery
 	{
+		readonly head: HTMLElement;
+		
 		/** */
 		constructor(...params: Hot.Param[])
 		{
@@ -58,26 +60,8 @@ namespace Player
 			);
 		}
 		
-		readonly head: HTMLElement;
 		readonly content: HTMLElement;
 		private readonly scenes: ISceneInternal[] = [];
-		
-		/** */
-		get viewportHeight()
-		{
-			return this._viewportHeight;
-		}
-		private _viewportHeight = 0;
-		
-		/** */
-		getScene(index: number)
-		{
-			if (index < 0)
-				index = this.scenes.length + index;
-			
-			index = Math.max(0, Math.min(this.scenes.length - 1, index));
-			return this.scenes[index] as IScene;
-		}
 		
 		/** */
 		private setup()
@@ -89,6 +73,26 @@ namespace Player
 				this.updateSceneHeight(scene, scene.element.offsetHeight);
 			
 			this.updateScroll();
+		}
+		
+		/** */
+		get viewportHeight()
+		{
+			return this._viewportHeight;
+		}
+		private _viewportHeight = 0;
+		
+		/** */
+		get(index: number)
+		{
+			if (this.scenes.length === 0)
+				throw new Error();
+			
+			if (index < 0)
+				index = this.scenes.length + index;
+			
+			index = Math.max(0, Math.min(this.scenes.length - 1, index));
+			return this.scenes[index] as IScene;
 		}
 		
 		/** */
@@ -165,9 +169,11 @@ namespace Player
 					anchor,
 					spacer,
 					element,
+					visibilityState: null,
 					sceneHeight: this.maybeAdjustHeight(elementHeight),
 					elementHeight,
-					toggleSnapping(edge, enabled) { that.toggleSnapping(this, edge, enabled); }
+					toggleSnapping(edge, enabled) { that.toggleSnapping(this, edge, enabled); },
+					draw(opacity) { that.drawScene(this, opacity); },
 				};
 				
 				element.style.visibility = "hidden";
@@ -202,6 +208,31 @@ namespace Player
 			
 			this.updateScroll();
 			return this;
+		}
+		
+		/** */
+		delete(index: number)
+		{
+			const count = this.length;
+			
+			if (index < 0)
+				index = count + index;
+			
+			index = Math.max(0, Math.min(count - 1, index));
+			const scene = this.get(index);
+			scene.anchor.remove();
+			scene.spacer.remove();
+			scene.element.remove();
+			
+			for (const [i, s] of this.scenes.entries())
+				if (s === scene)
+					this.scenes.splice(i, 1);
+		}
+		
+		/** */
+		get length()
+		{
+			return this.content.childElementCount;
 		}
 		
 		private anchorIndex = 0;
@@ -261,8 +292,9 @@ namespace Player
 					};
 					
 					states.push(state);
+					(scene as NotReadonly<ISceneInternal>).visibilityState = state;
 					
-					let y = state.elementTop;
+					let y = elementTop;
 					for (const compFn of this.scrollComputers)
 					{
 						const yReturned = compFn(state);
@@ -277,10 +309,17 @@ namespace Player
 					const s = e.style;
 					s.top = (y || 0) + "px";
 					s.removeProperty("visibility");
+					
+					// If the scene was drawn as an overlay, make sure
+					// this has been cancelled before presenting the
+					// scene normally.
+					if (this.overlaySceneSheet)
+						e.classList.remove(this.overlaySceneSheet.class);
 				}
 				else
 				{
 					scene.element.style.visibility = "hidden";
+					(scene as NotReadonly<ISceneInternal>).visibilityState = null;
 				}
 				
 				sceneTop += scene.sceneHeight;
@@ -308,6 +347,27 @@ namespace Player
 		}
 		
 		/**
+		 * Draws a non-interactive representation of the scene on top of all other scenes.
+		 */
+		private drawScene(scene: IScene, opacity: number)
+		{
+			this.overlaySceneSheet ||= Hot.css({
+				top: "0 !",
+				visibility: "visible !",
+				zIndex: "9 !",
+				pointerEvents: "none !",
+			});
+			
+			const cls = this.overlaySceneSheet.class;
+			if (opacity < 0)
+				return scene.element.classList.remove(cls);
+			
+			this.overlaySceneSheet.cssRules[0].style.opacity = opacity.toString();
+			scene.element.classList.add(cls);
+		}
+		private overlaySceneSheet: Hot.Sheet | null = null;
+		
+		/**
 		 * Adds a computation function that returns a numeric Y value,
 		 * which is used to calculate the display position of a scene. 
 		 * This function will be called for every visible scene, unless
@@ -319,6 +379,15 @@ namespace Player
 		{
 			this.scrollComputers.push(computerFn);
 		}
+		
+		/** */
+		removeScrollComputer(computerFn: ScrollComputerFn)
+		{
+			for (let i = this.scrollComputers.length; i-- > 0;)
+				if (this.scrollComputers[i] === computerFn)
+					this.scrollComputers.splice(i, 1);
+		}
+		
 		private readonly scrollComputers: ScrollComputerFn[] = [];
 		
 		/**
@@ -330,6 +399,15 @@ namespace Player
 		{
 			this.scrollListeners.push(listenerFn);
 		}
+		
+		/** */
+		removeScrollListener(listenerFn: ScrollListenerFn)
+		{
+			for (let i = this.scrollListeners.length; i-- > 0;)
+				if (this.scrollListeners[i] === listenerFn)
+					this.scrollListeners.splice(i, 1);
+		}
+		
 		private readonly scrollListeners: ScrollListenerFn[] = [];
 	}
 	
@@ -367,11 +445,17 @@ namespace Player
 		readonly anchor: HTMLAnchorElement;
 		readonly spacer: HTMLElement;
 		readonly element: HTMLElement;
+		readonly visibilityState: IVisibleElementState | null;
 		
 		/**
 		 * Enables or disables snapping of the scene to the specified edge.
 		 */
 		toggleSnapping(edge: SceneEdge, enabled: boolean): void;
+		
+		/**
+		 * Draws a non-interactive representation of the scene on top of all other scenes.
+		 */
+		draw(opacity: number): void;
 	}
 	
 	/** */
@@ -444,4 +528,9 @@ namespace Player
 		spacer = "spacer",
 		intersector = "intersector",
 	}
+	
+	/**
+	 * Make all properties in T not readonly.
+	 */
+	type NotReadonly<T> = { -readonly [P in keyof T]: T[P]; };
 }
