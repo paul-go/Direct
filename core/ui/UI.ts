@@ -162,7 +162,7 @@ namespace App
 		 */
 		export function createPublishButton(label: string, clickFn: () => void)
 		{
-			toolButtonCls ||= Hot.css(":not(:first-child) !", { marginTop: "10px" });
+			toolButtonCls ||= Hot.css(":not(:first-child) !", { marginTop: "10px" }).class;
 			
 			return UI.toolButton(
 				toolButtonCls,
@@ -970,12 +970,12 @@ namespace App
 			const clsVisible = Hot.css("& !", {
 				opacity: 1,
 				transform: "translateY(0)",
-			});
+			}).class;
 			
 			const clsInvisible = Hot.css("& !", {
 				opacity: 0,
 				transform: "translateY(20px)",
-			});
+			}).class;
 			
 			const notificationDiv = Hot.div(
 				UI.anchorTop(10),

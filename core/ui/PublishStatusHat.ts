@@ -54,13 +54,13 @@ namespace App
 		private readonly show = Hot.css("& !", {
 			opacity: 1,
 			transform: "translateY(0) scale(1)",
-		});
+		}).class;
 		
 		/** */
 		private readonly hide = Hot.css("& !", {
 			opacity: 0,
 			transform: "translateY(10px) scale(0.8)",
-		});
+		}).class;
 		
 		/** */
 		private async remove()

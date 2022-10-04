@@ -279,15 +279,15 @@ namespace App
 		...transitionClassStyles,
 		opacity: 0,
 		transform: "translateX(100px)",
-	});
+	}).class;
 	
 	/** */
 	const invisibleBackwardClass = Hot.css({
 		...transitionClassStyles,
 		opacity: 0,
 		transform: "translateX(-100px)",
-	});
+	}).class;
 	
 	/** */
-	const visibleClass = Hot.css(transitionClassStyles);
+	const visibleClass = Hot.css(transitionClassStyles).class;
 }

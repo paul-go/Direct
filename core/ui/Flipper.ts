@@ -30,7 +30,7 @@ namespace App
 		
 		for (const [name, style] of Object.entries(states))
 		{
-			const cssClassName = Hot.css(style);
+			const cssClassName = Hot.css(style).class;
 			cssClasses.push(cssClassName);
 			
 			const fn = () =>
