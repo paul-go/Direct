@@ -234,6 +234,20 @@ namespace Hot { { } }
 			this.class = className;
 		}
 		
+		/** */
+		remove()
+		{
+			if (!inlineRuleSheet)
+				return;
+			
+			for (let i = inlineRuleSheet.cssRules.length; i-- > 0;)
+			{
+				const rule = inlineRuleSheet.cssRules.item(i)!;
+				if (rule instanceof CSSStyleRule && this.cssRules.includes(rule))
+					inlineRuleSheet.deleteRule(i);
+			}
+		}
+		
 		readonly class: string = "";
 	}
 	
@@ -288,7 +302,7 @@ namespace Hot { { } }
 						v = String(v || 0);
 					
 					if (typeof v === "string")
-						setProperty(cssRule, n, v, selector);
+						setProperty(cssRule, n, v, group.selector);
 				}
 			}
 		}
@@ -563,6 +577,10 @@ namespace Hot
 		
 		readonly class: string;
 		readonly cssRules: readonly CSSStyleRule[];
+		
+		/** */
+		remove(): void;
+		
 		private readonly private: undefined;
 	}
 	
