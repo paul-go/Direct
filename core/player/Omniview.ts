@@ -4,6 +4,27 @@ namespace Player
 	/** */
 	export class Omniview<THat extends Hot.HatLike = Hot.HatLike>
 	{
+		/** */
+		static get defaultBackground()
+		{
+			if (this._defaultBackground)
+				return this._defaultBackground;
+			
+			const canvas = Hot.canvas({ width: 32, height: 32 });
+			const ctx = canvas.getContext("2d")!;
+			const grad = ctx.createLinearGradient(0, 0, 32, 32);
+			grad.addColorStop(0, "rgb(50, 50, 50)");
+			grad.addColorStop(1, "rgb(0, 0, 0)");
+			ctx.fillStyle = grad;
+			ctx.fillRect(0, 0, 32, 32);
+			
+			return this._defaultBackground = Hot.css({
+				backgroundImage: `url(${canvas.toDataURL()})`,
+				backgroundSize: "100% 100%",
+			});;
+		}
+		private static _defaultBackground: Hot.Sheet | null = null;
+		
 		readonly head;
 		
 		/** */
@@ -235,7 +256,10 @@ namespace Player
 			{
 				if (maybePromise instanceof Promise)
 				{
-					const shim = Hot.div("element-placeholder");
+					const shim = Hot.div(
+						"element-placeholder",
+						Omniview.defaultBackground);
+					
 					elements.push(shim);
 					
 					maybePromise.then(hat =>
@@ -380,14 +404,12 @@ namespace Player
 		{
 			return this._currentPreview;
 		}
+		private set currentPreview(value: THat | null)
+		{
+			this._currentPreview = value;
+			this._scalerTranslateX = this._scalerTranslateY = minInt;
+		}
 		private _currentPreview: THat | null = null;
-		
-		/**
-		 * Stores a reference to the HTMLElement that takes the place
-		 * of the actual preview element, in the case when the preview
-		 * is used as a portal rather than a preview.
-		 */
-		private portalPlaceholder: HTMLElement | null = null;
 		
 		/** */
 		private setScalerTransform(progress: number)
@@ -426,9 +448,9 @@ namespace Player
 				const col = this.columnOf(this._currentPreview.head);
 				const row = this.rowOf(this._currentPreview.head);
 				const wh = window.innerHeight;
-				const scrollYinVh = (window.scrollY - this.offsetTop) / wh * 100;
-				this._scalerTranslateX = -100 / this.size * col;
-				this._scalerTranslateY = -100 * row + scrollYinVh;
+				const scrollYinVh = (this.scrollTop - this.offsetTop) / wh * 100;
+				this._scalerTranslateX = (-100 / this.size * col) || 0;
+				this._scalerTranslateY = (-100 * row + scrollYinVh) || 0;
 			}
 			else
 			{
@@ -451,6 +473,13 @@ namespace Player
 			}
 		}
 		
+		/**
+		 * Stores a reference to the HTMLElement that takes the place
+		 * of the actual preview element, in the case when the preview
+		 * is used as a portal rather than a preview.
+		 */
+		private portalPlaceholder: HTMLElement | null = null;
+		
 		/** */
 		async gotoReview(previewHat: THat)
 		{
@@ -466,8 +495,18 @@ namespace Player
 			// into review mode.
 			if (previewHat instanceof Scenery)
 			{
-				await this.reviewRequestFn?.(previewHat);
 				scenery = previewHat;
+				
+				const scenes = 
+					this.scenesCache.get(previewHat) ||
+					await this.scenesRequestFn?.(previewHat);
+				
+				if (scenes)
+				{
+					this.scenesCache.set(previewHat, scenes);
+					scenery.insert(...scenes);
+				}
+				
 				this.portalPlaceholder = Hot.div("portal-placeholder");
 			}
 			else
@@ -481,10 +520,8 @@ namespace Player
 					new Scenery().insert(requestResult);
 			}
 			
-			// Make sure the first visible frame is shown (not the exitUpElement)
 			const sectionFirst = scenery.get(0);
 			const sectionLast = scenery.get(-1);
-			
 			const exitHeight = 60;
 			const exitHeightRatio = exitHeight / 100;
 			const exitStyles: Hot.Style = {
@@ -494,11 +531,11 @@ namespace Player
 			
 			const exitUpElement = Hot.div("exit-up", exitStyles);
 			const exitDownElement = Hot.div("exit-down", exitStyles);
-			scenery.insert(0, exitUpElement);
-			scenery.insert(exitDownElement);
+			scenery.insert(SceneName.enter, 0, exitUpElement);
+			scenery.insert(SceneName.exit, -1, exitDownElement);
 			
+			this.currentPreview = previewHat;
 			this._currentScenery = scenery;
-			this._currentPreview = previewHat;
 			this._mode = OmniviewMode.review;
 			
 			// Insert an empty div so that the CSS nth-child selector doesn't get screwed up.
@@ -509,20 +546,15 @@ namespace Player
 			}
 			else this.reviewContainer.replaceChildren(scenery.head);
 			
-			Hot.get(scenery)({
-				position: "absolute",
-				top: 0,
-				left: 0,
-				right: 0,
-				bottom: 0,
-			});
-			
 			Hot.get(this.reviewContainer)({
 				display: "block",
 				left: Math.abs(this.scalerTranslateX) + "%",
 				top: (100 * this.rowOf(previewHat.head)) + "vh",
 				opacity: this.portalPlaceholder ? 1 : 0,
 			});
+			
+			if (this.portalPlaceholder)
+				scenery.head.classList.add(zeroTopRule.class);
 			
 			await new Promise(r => setTimeout(r));
 			scenery.head.scrollTo({ top: sectionFirst.anchor.offsetTop });
@@ -584,6 +616,7 @@ namespace Player
 			this._mode = OmniviewMode.review;
 		}
 		
+		private readonly scenesCache = new WeakMap<Scenery, HTMLElement[]>();
 		private currentSceneryScrollComputer: ScrollComputerFn | null = null;
 		private currentSceneryScrollListener: ScrollListenerFn | null = null;
 		
@@ -643,18 +676,18 @@ namespace Player
 			{
 				const e = this.reviewContainer.firstElementChild;
 				if (e)
+				{
+					e.classList.remove(zeroTopRule.class);
 					this.portalPlaceholder.replaceWith(e);
+				}
 				
 				const sc = this.currentScenery;
 				if (sc)
 				{
-					// Delete the first and last scenes, as they aren't real scenes,
-					// but rather the padding that is used for entry / exit.
-					sc.delete(0);
-					sc.delete(-1);
-					
-					while (sc.length > 1)
-						sc.delete(1);
+					// Delete everything other than the hero scene.
+					sc.get(SceneName.enter)?.delete();
+					sc.get(SceneName.exit)?.delete();
+					sc.get().slice(1).map(sc => sc.delete());
 				}
 				
 				this.portalPlaceholder = null;
@@ -680,6 +713,13 @@ namespace Player
 			this.reviewRequestFn = fn;
 		}
 		private reviewRequestFn?: GetReviewFn<THat>;
+		
+		/** */
+		handleScenesRequest(fn: GetScenesFn<THat>)
+		{
+			this.scenesRequestFn = fn;
+		}
+		private scenesRequestFn?: GetScenesFn<THat>;
 		
 		/** */
 		private beginOffsetTopTracking()
@@ -830,6 +870,21 @@ namespace Player
 		transitionTimingFunction: "ease-in-out",
 	});
 	
+	/**
+	 * This rule must be added to portals when they're moved from the preview
+	 * container into the review container. This is necessary because portals are
+	 * the same element as previews, and when they're moved into the review 
+	 * container, they still hold their inline CSS top value which is necessary to
+	 * position the preview at it's proper position in the omniview. However,
+	 * when the portal is in the review container, it's top edge needs to be aligned
+	 * with the top edge of the review container. And also, the top value needs to
+	 * be reset back to its original value when it's moved back into the preview
+	 * container.
+	 */
+	const zeroTopRule = Hot.css("& !", {
+		top: 0,
+	});
+	
 	/** */
 	function getByClass(cls: string, element?: Element)
 	{
@@ -856,6 +911,10 @@ namespace Player
 		(hat: THat) => MaybePromise<HTMLElement | Scenery | void>;
 	
 	/** */
+	export type GetScenesFn<THat extends Hot.HatLike> = 
+		(scenery: THat) => MaybePromise<HTMLElement[]>;
+	
+	/** */
 	export type MaybePromise<T> = Promise<T> | T;
 	
 	/** */
@@ -873,5 +932,13 @@ namespace Player
 		none,
 		review,
 		preview,
+	}
+	
+	/** */
+	export const enum SceneName
+	{
+		enter = "enter",
+		exit = "exit",
+		hero = "hero",
 	}
 }

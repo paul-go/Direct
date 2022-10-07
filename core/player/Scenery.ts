@@ -83,16 +83,25 @@ namespace Player
 		private _viewportHeight = 0;
 		
 		/** */
-		get(index: number)
+		get(): readonly IScene[];
+		get(index: number): IScene;
+		get(name: string): IScene | null;
+		get(via?: number | string): readonly IScene[] | IScene | null
 		{
+			if (via === undefined)
+				return this.scenes;
+			
+			if (typeof via === "string")
+				return this.scenes.find(sc => sc.name === via) || null;
+			
 			if (this.scenes.length === 0)
 				throw new Error();
 			
-			if (index < 0)
-				index = this.scenes.length + index;
+			if (via < 0)
+				via = this.scenes.length + via;
 			
-			index = Math.max(0, Math.min(this.scenes.length - 1, index));
-			return this.scenes[index] as IScene;
+			via = Math.max(0, Math.min(this.scenes.length - 1, via));
+			return this.scenes[via] as IScene;
 		}
 		
 		/** */
@@ -127,12 +136,32 @@ namespace Player
 		/** */
 		insert(...elements: HTMLElement[]): Scenery;
 		insert(at: number, ...elements: HTMLElement[]): Scenery;
-		insert(a: number | HTMLElement, ...elements: HTMLElement[])
+		insert(name: string, at: number, element: HTMLElement): Scenery;
+		insert(
+			a: string | number | HTMLElement,
+			b: number | HTMLElement,
+			...elements: HTMLElement[])
 		{
 			elements = elements.slice();
+			
+			if (b instanceof HTMLElement)
+				elements.unshift(b);
+			
 			if (a instanceof HTMLElement)
 				elements.unshift(a);
 			
+			const anchors = toHtmlElements(this.head.childNodes)
+				.filter((n): n is HTMLAnchorElement => n instanceof HTMLAnchorElement);
+			
+			let at = 
+				typeof b === "number" ? b : 
+				typeof a === "number" ? a :
+				-1;
+			
+			if (at < 0)
+				at += anchors.length + 2;
+			
+			const name = typeof a === "string" ? a : "";
 			const newSceneElements: HTMLElement[] = [];
 			const newSupportElements: HTMLElement[] = [];
 			const newScenes: ISceneInternal[] = [];
@@ -166,6 +195,7 @@ namespace Player
 				const elementHeight = element.offsetHeight;
 				const that = this;
 				const scene: ISceneInternal = {
+					name,
 					anchor,
 					spacer,
 					element,
@@ -174,6 +204,7 @@ namespace Player
 					elementHeight,
 					toggleSnapping(edge, enabled) { that.toggleSnapping(this, edge, enabled); },
 					draw(opacity) { that.drawScene(this, opacity); },
+					delete() { that.delete(this); }
 				};
 				
 				element.style.visibility = "hidden";
@@ -182,12 +213,7 @@ namespace Player
 				When.disconnected(element, () => anchor.remove());
 			}
 			
-			const anchors = toHtmlElements(this.head.childNodes)
-				.filter((n): n is HTMLAnchorElement => n instanceof HTMLAnchorElement);
-			
-			const at = typeof a === "number" ? a : anchors.length;
-			
-			if (at === 0 || at <= -anchors.length)
+			if (at <= 1)
 			{
 				this.content.prepend(...newSceneElements);
 				this.content.after(...newSupportElements);
@@ -210,16 +236,11 @@ namespace Player
 			return this;
 		}
 		
+		private anchorIndex = 0;
+		
 		/** */
-		delete(index: number)
+		private delete(scene: ISceneInternal)
 		{
-			const count = this.length;
-			
-			if (index < 0)
-				index = count + index;
-			
-			index = Math.max(0, Math.min(count - 1, index));
-			const scene = this.get(index);
 			scene.anchor.remove();
 			scene.spacer.remove();
 			scene.element.remove();
@@ -234,8 +255,6 @@ namespace Player
 		{
 			return this.content.childElementCount;
 		}
-		
-		private anchorIndex = 0;
 		
 		/** */
 		private updateScroll()
@@ -360,10 +379,16 @@ namespace Player
 			
 			const cls = this.overlaySceneSheet.class;
 			if (opacity < 0)
-				return scene.element.classList.remove(cls);
-			
-			this.overlaySceneSheet.cssRules[0].style.opacity = opacity.toString();
-			scene.element.classList.add(cls);
+			{
+				this.overlaySceneSheet.remove();
+				this.overlaySceneSheet = null;
+				scene.element.classList.remove(cls);
+			}
+			else
+			{
+				this.overlaySceneSheet.cssRules[0].style.opacity = opacity.toString();
+				scene.element.classList.add(cls);
+			}
 		}
 		private overlaySceneSheet: Hot.Sheet | null = null;
 		
@@ -442,6 +467,7 @@ namespace Player
 	/** */
 	export interface IScene
 	{
+		readonly name: string;
 		readonly anchor: HTMLAnchorElement;
 		readonly spacer: HTMLElement;
 		readonly element: HTMLElement;
@@ -456,6 +482,11 @@ namespace Player
 		 * Draws a non-interactive representation of the scene on top of all other scenes.
 		 */
 		draw(opacity: number): void;
+		
+		/**
+		 * Deletes this scene from the view.
+		 */
+		delete(): void;
 	}
 	
 	/** */
