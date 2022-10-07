@@ -8,7 +8,7 @@ namespace Cover
 		const [blog, friendlyName] = await Sample.createBlog();
 		const posts = [Sample.createPost("")];
 		
-		for (let i = -1; ++i < 2;)
+		for (let i = -1; ++i < 4;)
 			posts.push(Sample.createPost());
 		
 		await Promise.all(posts.map(p => blog.retainPost(p)));

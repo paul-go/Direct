@@ -90,26 +90,63 @@ namespace Cover
 			return sceneries;
 		});	
 		
-		omniview.handleReviewRequest(async scenery =>
+		omniview.handleScenesRequest(() => [
+			Hot.div(
+				squareClass,
+				{
+					background: "linear-gradient(maroon, crimson)",
+					height: "100vh",
+				},
+				new Text("Middle Screen")
+			),
+			Hot.div(
+				squareClass,
+				{
+					background: "linear-gradient(yellow, crimson)",
+					height: "100vh",
+				},
+				new Text("Last Screen")
+			)
+		]);
+		
+		document.body.append(omniview.head);
+		omniview.gotoPreviews();
+	}
+	
+	/** */
+	export async function coverOmniviewDefaultBackground()
+	{
+		App.Css.append();
+		const omniview = new Player.Omniview<Player.Scenery>();
+		
+		omniview.handlePreviewRequest(async req =>
 		{
-			scenery.insert(Hot.div(
-					squareClass,
+			const count = req.rangeEnd - req.rangeStart;
+			const sceneries: Promise<Player.Scenery>[] = [];
+			
+			for (let i = -1; ++i < count;)
+			{
+				sceneries.push(new Promise<Player.Scenery>(resolve =>
+				{
+					setTimeout(() =>
 					{
-						background: "linear-gradient(maroon, crimson)",
-						height: "100vh",
+						resolve(new Player.Scenery().insert(
+							Hot.div(
+								squareClass,
+								{
+									backgroundImage: randomBackground(),
+									height: "100vh",
+								},
+								new Text("Post " + i)
+							),
+						));
 					},
-					new Text("Middle Screen")
-				),
-				Hot.div(
-					squareClass,
-					{
-						background: "linear-gradient(yellow, crimson)",
-						height: "100vh",
-					},
-					new Text("Last Screen")
-				)
-			);
-		});
+					i * 500);
+				}));
+			}
+			
+			return sceneries;
+		});	
 		
 		document.body.append(omniview.head);
 		omniview.gotoPreviews();

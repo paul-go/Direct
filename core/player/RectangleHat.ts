@@ -4,28 +4,6 @@ namespace Player
 	/** */
 	export class RectangleHat
 	{
-		/** */
-		static get defaultBackground()
-		{
-			if (!this._defaultBackground)
-			{
-				const canvas = Hot.canvas({ width: 32, height: 32 });
-				const ctx = canvas.getContext("2d")!;
-				const grad = ctx.createLinearGradient(0, 0, 32, 32);
-				grad.addColorStop(0, "rgb(50, 50, 50)");
-				grad.addColorStop(1, "rgb(0, 0, 0)");
-				ctx.fillStyle = grad;
-				ctx.fillRect(0, 0, 32, 32);
-				
-				this._defaultBackground = {
-					backgroundImage: `url(${canvas.toDataURL()})`,
-					backgroundSize: "100% 100%",
-				};
-			}
-			return this._defaultBackground;
-		}
-		private static _defaultBackground: Hot.Style | null = null;
-		
 		readonly head;
 		
 		/** */
@@ -35,7 +13,7 @@ namespace Player
 				Hot.css("& > *", {
 					pointerEvents: "none",
 				}),
-				RectangleHat.defaultBackground,
+				Omniview.defaultBackground,
 				{
 					cursor: "pointer",
 				},

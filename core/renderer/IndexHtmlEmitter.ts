@@ -23,12 +23,12 @@ namespace App
 					content: "yes"
 				}),
 				Hot.link({
-					rel: "hss-index",
+					rel: ConstS.essIndexKey,
 					type: "text/plain",
 					href: "/index.txt",
 				}),
 				Hot.link({
-					rel: "hss-indepth",
+					rel: ConstS.essIndepthKey,
 					type: "text/html",
 					href: "indepth.html",
 				}),

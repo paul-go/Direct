@@ -103,7 +103,7 @@ namespace App
 				files.push({
 					data,
 					mime: MimeType.html,
-					fileName: ConstS.indepthHtmlFileName,
+					fileName: ConstS.essIndepthDefaultFileName,
 					folderName,
 				});
 			}

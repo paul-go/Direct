@@ -13,9 +13,7 @@ declare const enum ConstS
 	backColorProperty = "--back-color",
 	backUncolorProperty = "--back-uncolor",
 	
-	indexTextFileName = "index.txt",
 	indexHtmlFileName = "index.html",
-	indepthHtmlFileName = "indepth.html",
 	
 	cssFileNameGeneral = "index.general.css",
 	cssFileNameSpecific = "index.css",
@@ -27,8 +25,10 @@ declare const enum ConstS
 	portableExtension = "zip",
 	appName = "Direct",
 	
-	hssIndex = "hss-index",
-	hssIndepth = "hss-indepth",
+	essIndexKey = "ess-index",
+	essIndexTextDefaultName = "index.txt",
+	essIndepthKey = "ess-indepth",
+	essIndepthDefaultFileName = "indepth.html",
 }
 
 /** */

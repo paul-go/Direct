@@ -74,7 +74,7 @@ namespace App
 			
 			hat.setHtml(Hot.div(
 				UI.flexVCenter,
-				Player.RectangleHat.defaultBackground,
+				Player.Omniview.defaultBackground,
 				{
 					justifyContent: "center",
 					width: "100%",

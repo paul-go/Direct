@@ -13,18 +13,24 @@ namespace Player
 		}
 		
 		/** */
-		export function join(a: string, b: string)
+		export function join(...parts: string[])
 		{
-			return a.replace(/\/$/, "") + "/" + b.replace(/^\//, "");
+			for (let i = -1; ++i < parts.length - 1;)
+				parts[i] = parts[i].replace(/\/$/, "");
+			
+			for (let i = 0; ++i < parts.length;)
+				parts[i] = parts[i].replace(/^\//, "");
+			
+			return parts.join("/");
 		}
 		
 		/** */
-		export function toAbsolute(url: string, base: string)
+		export function toAbsolute(relativePathOrUrl: string, base: string)
 		{
 			if (!base.endsWith("/"))
 				base += "/";
 			
-			return new URL(url, base).toString();
+			return new URL(relativePathOrUrl, base).toString();
 		}
 	}
 }
