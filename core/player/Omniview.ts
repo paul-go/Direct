@@ -60,7 +60,11 @@ namespace Player
 							overflow: "hidden",
 							width: "100vw",
 							height: "100vh",
-						})
+							cursor: "pointer",
+						}),
+						Hot.css(" > DIV *", {
+							pointerEvents: "none"
+						}),
 					),
 					this.reviewContainer = Hot.div(
 						"review-container",
