@@ -84,10 +84,37 @@ namespace Player
 		
 		omniview.handleScenesRequest(async scenery =>
 		{
-			const indepthUrl = indepthUrls.get(scenery);
-			return indepthUrl ?
-				getIndepthSections(indepthUrl) :
+			const info = sceneryInfo.get(scenery);
+			return info ?
+				getIndepthSections(info.indepthUrl) :
 				[];
+		});
+		
+		let lastEnteredScenery: Scenery | null = null;
+		
+		omniview.enterReviewFn(scenery =>
+		{
+			lastEnteredScenery = scenery;
+			const info = sceneryInfo.get(scenery);
+			if (info)
+				History.push(info.slugUrl);
+		});
+		
+		omniview.exitReviewFn(reason =>
+		{
+			if (reason === ExitReason.swipeUp || reason === ExitReason.swipeDown)
+				History.back();
+		});
+		
+		History.on("back", () =>
+		{
+			omniview.gotoPreviews();
+		});
+		
+		History.on("forward", () =>
+		{
+			if (lastEnteredScenery)
+				omniview.gotoReview(lastEnteredScenery);
 		});
 		
 		omniview.gotoPreviews().then(() => {});
@@ -98,7 +125,6 @@ namespace Player
 	function createScenery(slugUrl: string)
 	{
 		const scenery = new Scenery();
-		indepthUrls.set(scenery, slugUrl);
 		
 		(async () =>
 		{
@@ -106,14 +132,15 @@ namespace Player
 			const heroDoc = new ForeignDocumentSanitizer(heroHtml, slugUrl).read();
 			const sections = getSections(heroDoc);
 			const indepthUrl = getIndepthUrl(heroDoc, slugUrl);
-			indepthUrls.set(scenery, indepthUrl);
+			sceneryInfo.set(scenery, { slugUrl, indepthUrl });
 			scenery.insert(...sections);
 		})();
 		
 		return scenery;
 	}
 	
-	const indepthUrls = new WeakMap<Scenery, string>();
+	type TSceneryInfo = { slugUrl: string, indepthUrl: string };
+	const sceneryInfo = new WeakMap<Scenery, TSceneryInfo>();
 	
 	/**
 	 * Main entry point.

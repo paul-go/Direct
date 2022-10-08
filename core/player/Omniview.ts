@@ -88,7 +88,7 @@ namespace Player
 			Resize.watch(this.head, () => this.updatePreviewVisibility());
 			
 			[this.enterReviewFn, this._enterReviewFn] = Force.create<(hat: THat) => void>();
-			[this.exitReviewFn, this._exitReviewFn] = Force.create<() => void>();
+			[this.exitReviewFn, this._exitReviewFn] = Force.create<(reason: ExitReason) => void>();
 			
 			this.beginOffsetTopTracking();
 		}
@@ -215,7 +215,7 @@ namespace Player
 				return;
 			
 			if (this.mode === OmniviewMode.review)
-				return void await this.exitReviewWithAnimation();
+				return void await this.exitReviewWithAnimation(ExitReason.other);
 			
 			this.tryAppendPreviews();
 		}
@@ -587,6 +587,8 @@ namespace Player
 					s.element === exitUpElement || 
 					s.element === exitDownElement);
 				
+				const isExitingDown = state?.element === exitDownElement
+				
 				let mul = 1;
 				if (state)
 				{
@@ -605,7 +607,7 @@ namespace Player
 				if (!this.portalPlaceholder)
 					this.reviewContainer.style.opacity = mul.toString();
 				
-				else if (state?.element === exitDownElement)
+				else if (isExitingDown)
 				{
 					const scene = scenery.get(1);
 					const opacity = 1 - mul;
@@ -614,7 +616,11 @@ namespace Player
 				
 				// Actually exit
 				if (mul < 0.005)
-					this.exitReview();
+				{
+					this.exitReview(isExitingDown ? 
+						ExitReason.swipeDown : 
+						ExitReason.swipeUp);
+				}
 			});
 			
 			this._mode = OmniviewMode.review;
@@ -625,7 +631,7 @@ namespace Player
 		private currentSceneryScrollListener: ScrollListenerFn | null = null;
 		
 		/** */
-		private async exitReviewWithAnimation()
+		private async exitReviewWithAnimation(exitReason: ExitReason)
 		{
 			this.toggleScalerTransitions(true);
 			this.setScalerTransform(0);
@@ -661,11 +667,11 @@ namespace Player
 				await waitTransitionEnd(this.reviewContainer);
 			}
 			
-			this.exitReview();
+			this.exitReview(exitReason);
 		}
 		
 		/** */
-		private async exitReview()
+		private async exitReview(exitReason: ExitReason)
 		{
 			if (this.currentScenery)
 			{
@@ -707,7 +713,7 @@ namespace Player
 			for (const property of Array.from(this.reviewContainer.style))
 				this.reviewContainer.style.removeProperty(property);
 			
-			this._exitReviewFn();
+			this._exitReviewFn(exitReason);
 			this._currentPreview = null;
 		}
 		
@@ -936,6 +942,14 @@ namespace Player
 		none,
 		review,
 		preview,
+	}
+	
+	/** */
+	export const enum ExitReason
+	{
+		swipeUp,
+		swipeDown,
+		other,
 	}
 	
 	/** */
