@@ -11,6 +11,7 @@
 		"renderer/SceneRenderer.ts",
 		"ui/PublisherConfigurator.ts",
 		"ui/SceneHat.ts",
+		"ui/RectangleHat.ts",
 		"ui/*.ts",
 		"**/*.ts",
 		"**/*.tsx",

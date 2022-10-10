@@ -23,7 +23,7 @@ namespace App
 						transitionDuration: "inherit",
 						filter: "brightness(1)",
 					},
-					this.homePostHat = new PostHat(app.homePost, "home"),
+					new PostHat(app.homePost, "home"),
 					this.addPostButton = Hot.div(
 						{
 							position: "sticky",
@@ -50,7 +50,6 @@ namespace App
 		}
 		
 		private readonly homeHatCore;
-		private homePostHat;
 		private homeListHat;
 		private addPostButton;
 		

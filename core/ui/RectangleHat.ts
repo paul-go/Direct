@@ -1,5 +1,5 @@
 
-namespace Player
+namespace App
 {
 	/** */
 	export class RectangleHat
@@ -13,7 +13,7 @@ namespace Player
 				Hot.css("& > *", {
 					pointerEvents: "none",
 				}),
-				Omniview.defaultBackground,
+				Player.Omniview.defaultBackground,
 				{
 					cursor: "pointer",
 				},
@@ -80,7 +80,7 @@ namespace Player
 			if (this.image)
 				BlobUri.revoke(this.image);
 			
-			const blob = await Player.rasterize(this.html);
+			const blob = await App.rasterize(this.html);
 			this.image = BlobUri.create(blob);
 		}
 		

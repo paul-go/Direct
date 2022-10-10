@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export class EditorRectangleHat extends Player.RectangleHat
+	export class EditorRectangleHat extends RectangleHat
 	{
 		/**
 		 * For reasons that cannot be explained, this property needs to
@@ -17,11 +17,11 @@ namespace App
 		{
 			this.future = future;
 			this.updateDraftStatus();
-			const scene = await future.getScene();
-			const renderer = SceneRenderer.create(scene, true);
-			const section = await renderer.render();
-			this.setHtml(section);
-			this._scene = scene;
+			const sceneRecord = await future.getScene();
+			const renderer = SceneRenderer.new(sceneRecord, true);
+			const sceneElement = await renderer.render();
+			this.setHtml(sceneElement);
+			this._scene = sceneRecord;
 		}
 		
 		/** */

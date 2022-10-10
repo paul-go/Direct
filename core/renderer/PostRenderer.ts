@@ -21,7 +21,7 @@ namespace App
 			
 			for (const scene of this.post.scenes)
 			{
-				const renderer = SceneRenderer.create(scene, forEditor);
+				const renderer = SceneRenderer.new(scene, forEditor);
 				renderer.classGenerator = classGenerator;
 				scenes.push(await renderer.render());
 				rules.push(...renderer.cssRules);

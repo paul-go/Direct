@@ -2,7 +2,7 @@
 namespace App
 {
 	/** */
-	export abstract class ListHat<TRectangle extends Player.RectangleHat = Player.RectangleHat>
+	export abstract class ListHat<TRectangle extends RectangleHat = RectangleHat>
 	{
 		/** */
 		constructor()

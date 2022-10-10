@@ -1,5 +1,5 @@
 
-namespace Player
+namespace App
 {
 	/**
 	 * Rasterizes the specified HTML content to a CanvasRenderingContext2D,

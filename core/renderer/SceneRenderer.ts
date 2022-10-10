@@ -7,7 +7,7 @@ namespace App
 	export abstract class SceneRenderer<TScene extends SceneRecord>
 	{
 		/** */
-		static create<TScene extends SceneRecord>(scene: TScene, isPreview = true)
+		static new<TScene extends SceneRecord>(scene: TScene, isPreview = true)
 		{
 			if (scene instanceof CanvasSceneRecord)
 				return new CanvasSceneRenderer(scene, isPreview);

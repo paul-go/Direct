@@ -21,8 +21,8 @@ namespace App
 			this.omniview.handlePreviewRequest(request =>
 			{
 				const postStream = AppContainer.of(this).blog.postStream;
-				const rectangles: EditorRectangleHat[] = [];
 				const futures = postStream.query(request.rangeStart, request.rangeEnd);
+				const rectangles: EditorRectangleHat[] = [];
 				
 				for (const future of futures)
 				{

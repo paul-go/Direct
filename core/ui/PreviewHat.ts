@@ -30,16 +30,7 @@ namespace App
 						overflowY: "auto",
 						borderRadius: "inherit",
 					},
-					When.connected(async () =>
-					{
-						/*
-						const postPreview = await Render.createPostPreview(post, blog);
-						const styleElement = Hot.style(new Text(postPreview.cssText));
-						this.previewRoot.replaceChildren(
-							postPreview.storyElement,
-							styleElement);
-						*/
-					})
+					When.connected(() => this.renderPreview(post, blog)),
 				),
 				
 				Hot.div(
@@ -70,5 +61,61 @@ namespace App
 		
 		readonly head;
 		private readonly previewRoot;
+		private readonly classGenerator = new CssClassGenerator();
+		
+		/** */
+		private async renderPreview(post: PostRecord, blog: Blog)
+		{
+			const postPreview = await Render.createPostPreview(post, blog);
+			const scenery = new Player.Scenery().insert(...postPreview.scenes);
+			const styleElement = Hot.style(new Text(postPreview.cssText));
+			const futuresMap = new WeakMap<Player.Scenery, PostStreamRecordFuture>();
+			const elements = [styleElement, scenery.head];
+			
+			if (blog.postStream.length > 1)
+			{
+				const omniview = new Player.Omniview<Player.Scenery>();
+				omniview.size = 2;
+				
+				omniview.handlePreviewRequest(async req =>
+				{
+					const postStream = blog.postStream;
+					const futures = postStream.query(req.rangeStart, req.rangeEnd);
+					return futures.map(future =>
+					{
+						const scenery = this.createScenery(future);
+						futuresMap.set(scenery, future);
+						return scenery;
+					});
+				});
+				
+				omniview.handleScenesRequest(async () =>
+				{
+					const renderer = new PostRenderer(post, blog);
+					const renderResult = await renderer.render(true);
+					return renderResult.scenes.slice(1);
+				});
+				
+				elements.push(omniview.head);
+			}
+			
+			this.previewRoot.replaceChildren(...elements);
+		}
+		
+		/** */
+		private createScenery(future: PostStreamRecordFuture)
+		{
+			const scenery = new Player.Scenery();
+			
+			future.getScene().then(async scene =>
+			{
+				const renderer = SceneRenderer.new(scene, true);
+				renderer.classGenerator = this.classGenerator;
+				const sceneElement = await renderer.render();
+				scenery.insert(sceneElement);
+			});
+			
+			return scenery;
+		}
 	}
 }

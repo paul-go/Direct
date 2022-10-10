@@ -33,7 +33,7 @@ namespace App
 					"post-hat-width",
 					UI.editorMaxWidth(),
 					{
-						paddingBottom: "33vh",
+						paddingBottom: isHomePost ? 0 : "33vh",
 						transitionDuration: "0.5s",
 						transitionProperty: "transform, opacity",
 						transformOrigin: "0 0",
@@ -57,6 +57,7 @@ namespace App
 						(this.noScenesBox = new HeightBox(this.renderNoScenes())).head,
 					),
 					
+					/*
 					this.footerElement = Hot.div(
 						"footer",
 						{
@@ -107,6 +108,7 @@ namespace App
 						),
 						this.publishInfoElement = Hot.div("publish-info")
 					),
+					*/
 				)
 			);
 			
@@ -114,7 +116,7 @@ namespace App
 			this.scenes.insert(...this.record.scenes.map(b => SceneHat.new(b)));
 			this.scenes.observe(() =>
 			{
-				this.footerElement.style.display = this.scenes.length > 0 ? "block" : "none";
+				//this.footerElement.style.display = this.scenes.length > 0 ? "block" : "none";
 				this.save();
 			});
 			
@@ -125,10 +127,10 @@ namespace App
 		readonly scenes;
 		readonly record;
 		private readonly scenesElement;
-		private readonly footerElement;
-		private readonly settingsButtonElement;
+		//private readonly footerElement;
+		//private readonly settingsButtonElement;
 		private readonly noScenesBox;
-		private publishInfoElement;
+		//private publishInfoElement;
 		
 		/** */
 		private renderNoScenes()
@@ -180,13 +182,6 @@ namespace App
 		}
 		
 		/** */
-		private handlePreview()
-		{
-			const blog = AppContainer.of(this).blog;
-			new PreviewHat(this.record, blog);
-		}
-		
-		/** */
 		private async tryPublish()
 		{
 			const blog = AppContainer.of(this).blog;
@@ -221,6 +216,7 @@ namespace App
 		/** */
 		async updatePublishInfo()
 		{
+			/*
 			When.connected(this.publishInfoElement, () =>
 			{
 				const blog = AppContainer.of(this).blog;
@@ -273,6 +269,7 @@ namespace App
 				
 				UI.toggle(this.settingsButtonElement, !!publisher);
 			});
+			*/
 		}
 		
 		/** */

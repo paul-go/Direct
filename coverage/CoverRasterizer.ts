@@ -8,10 +8,10 @@ namespace Cover
 		const sceneRecord = Sample.createCanvasScene();
 		sceneRecord.contentImage = Sample.createContentImage();
 		
-		const sceneRenderer = App.SceneRenderer.create(sceneRecord);
+		const sceneRenderer = App.SceneRenderer.new(sceneRecord);
 		const renderResult = await sceneRenderer.render();
 		
-		const blob = await Player.rasterize(renderResult, {
+		const blob = await App.rasterize(renderResult, {
 			cssRules: sceneRenderer.cssRules.map(r => r.toString())
 		});
 		
