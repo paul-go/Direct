@@ -1,4 +1,4 @@
-![Screenshot](readme-logo.svg)
+![Screenshot](readme-logo.png)
 
 # Direct
 
