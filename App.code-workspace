@@ -169,7 +169,7 @@
 				"type": "shell",
 				"command": "ts-node build.ts 'copyResources()'",
 				"problemMatcher": []
-			},
+			}
 		]
 	}
 }
