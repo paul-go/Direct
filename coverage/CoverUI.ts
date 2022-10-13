@@ -145,11 +145,37 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverPublishStatusHat()
+	export function coverPublishStatusHat()
 	{
 		App.Css.append();
-		const remover = App.PublishStatusHat.show("Local");
-		setTimeout(remover, 2500);
+		const psh = App.PublishStatusHat.get("Nowhere");
+		const files: string[] = [];
+		
+		for (let i = 0; i < 100; i++)
+			files.push("image" + i + ".png");
+		
+		setTimeout(async () =>
+		{
+			let canceled = false;
+			psh.cancelFn(() => canceled = true);
+			
+			outer: for (const file of files)
+			{
+				psh.setFile(file);
+				
+				for (let i = 0; i <= 1; i += 0.0123)
+				{
+					if (canceled)
+						break outer;
+					
+					psh.setProgress(i);
+					await new Promise<void>(r => setTimeout(r, 50));
+				}
+			}
+			
+			await psh.remove();
+			console.log("Done - " + canceled ? "Cancelled" : "Completed");
+		});
 	}
 	
 	/** */
