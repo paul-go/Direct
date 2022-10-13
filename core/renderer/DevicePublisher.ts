@@ -120,7 +120,17 @@ namespace App
 		}
 		
 		/** */
-		protected async transferFiles(files: IRenderedFile[])
+		protected async getPostFiles(postsChanged: PostRecord[])
+		{
+			const postFiles = await super.getPostFiles(postsChanged);
+			if (typeof postFiles === "string")
+				return postFiles;
+			
+			return [...await Render.getStandardFiles(), ...postFiles];
+		}
+		
+		/** */
+		protected async transferFiles(files: IRenderedFile[], statusHat: PublishStatusHat)
 		{
 			for (const file of files)
 			{

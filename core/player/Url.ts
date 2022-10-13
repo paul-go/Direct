@@ -13,8 +13,10 @@ namespace Player
 		}
 		
 		/** */
-		export function join(...parts: string[])
+		export function join(...components: (string | undefined)[])
 		{
+			const parts = components.filter((s): s is string => !!s);
+			
 			for (let i = -1; ++i < parts.length - 1;)
 				parts[i] = parts[i].replace(/\/$/, "");
 			

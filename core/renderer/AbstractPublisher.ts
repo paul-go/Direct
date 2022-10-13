@@ -67,13 +67,7 @@ namespace App
 		abstract tryPublish(showConfig?: boolean): Promise<HTMLElement | null | undefined>;
 		
 		/** */
-		protected abstract transferFiles(files: IRenderedFile[]): Promise<string>;
-		
-		/** */
-		get storageKey()
-		{
-			return this.name.toLowerCase().replace(/\s/, "-");
-		}
+		protected abstract transferFiles(files: IRenderedFile[], hat: PublishStatusHat): Promise<string>;
 		
 		/** */
 		protected get blog()
@@ -90,19 +84,21 @@ namespace App
 		/** */
 		protected getPublishParam<T extends string | number | boolean>(paramKey: string, fallback: T): T
 		{
-			return this.blog.getPublishParam(this.storageKey, paramKey, fallback);
+			return this.blog.getPublishParam(this.name, paramKey, fallback);
 		}
 		
 		/** */
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
-			this.blog.setPublishParam(this.storageKey, paramKey, value);
+			this.blog.setPublishParam(this.name, paramKey, value);
 		}
 		
 		/** */
 		protected async publish()
 		{
-			const removeFn = PublishStatusHat.show(this.name);
+			Hat.nearest(this.blogResolver || document.body, MainMenuHat)?.hide();
+			
+			const statusHat = PublishStatusHat.get(this.name);
 			const postsChanged: PostRecord[] = [];
 			const slugs: string[] = [];
 			
@@ -121,9 +117,7 @@ namespace App
 			}
 			
 			if (postsChanged.length === 0)
-				return void removeFn();
-			
-			const standardFiles = await Render.getStandardFiles();
+				return void statusHat.remove();
 			
 			const blogFiles: IRenderedFile[] = [
 				{
@@ -139,21 +133,45 @@ namespace App
 				// TODO: Add sitemap.xml (requires domain), as well as favicons
 			];
 			
+			let error = "";
+			
+			block:
+			{
+				const postFiles = await this.getPostFiles(postsChanged);
+				if (typeof postFiles === "string")
+				{
+					error = postFiles;
+					break block;
+				}
+				
+				const files = [...blogFiles, ...postFiles];
+				if (files.length === 0)
+					break block;
+				
+				const maybeError = await this.transferFiles(files, statusHat);
+				if (maybeError)
+				{
+					error = maybeError;
+					break block;
+				}
+				
+				postsChanged.map(p => p.setPublishDate(this.name));
+			}
+			
+			if (error)
+				alert(error);
+			
+			statusHat.remove();
+		}
+		
+		/** */
+		protected async getPostFiles(postsChanged: PostRecord[]): Promise<IRenderedFile[] | string>
+		{
 			const postFiles: IRenderedFile[] = [];
 			for (const post of postsChanged)
 				postFiles.push(...await Render.getPostFiles(post, this.blog));
 			
-			const files = [...standardFiles, ...blogFiles, ...postFiles];
-			if (files.length > 0)
-			{
-				const maybeError = await this.transferFiles(files);
-				if (maybeError)
-					alert(maybeError);
-				else
-					postsChanged.map(p => p.setPublishDate(this.name));
-			}
-			
-			removeFn();
+			return postFiles;
 		}
 	}
 }

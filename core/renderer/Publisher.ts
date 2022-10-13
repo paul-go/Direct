@@ -169,13 +169,13 @@ namespace App
 				...(await Render.getStandardFiles()),
 			];
 			
-			const removeFn = PublishStatusHat.show(this.label);
+			const hat = PublishStatusHat.get(this.label);
 			const maybeError = await this.executePublish(files);
 			
 			if (maybeError)
 				alert(maybeError);
 			
-			removeFn();
+			hat.remove();
 		}
 		
 		/** */

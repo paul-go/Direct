@@ -87,7 +87,7 @@ namespace App
 		/** */
 		function compose(segment: string, stable?: number, unique?: string)
 		{
-			return [segment, stable, unique].filter(s => s !== undefined).join();
+			return [segment, stable, unique].filter(s => s !== undefined).join(sep);
 		}
 		
 		/** */
@@ -130,7 +130,7 @@ namespace App
 		{
 			Not.falsey(key);
 			
-			const parts = key.split(`,`);
+			const parts = key.split(sep);
 			const unique = parseInt(parts.pop() || "", 36);
 			const stable = Number(parts.pop()) || 0;
 			const segment = parts.pop() || "";
@@ -152,5 +152,6 @@ namespace App
 		}
 		
 		const incKey = "__inc__";
+		const sep = ".";
 	}
 }

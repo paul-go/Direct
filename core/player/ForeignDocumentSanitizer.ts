@@ -23,7 +23,11 @@ namespace Player
 			{
 				const t = e.tagName.toLowerCase();
 				
-				if (t === "script" || t === "iframe" || t === "portal")
+				if (t === "script" || 
+					t === "iframe" || 
+					t === "portal" ||
+					t === "frame" ||
+					t === "frameset")
 					return null;
 				
 				if (t === "noscript")

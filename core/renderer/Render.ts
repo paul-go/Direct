@@ -13,6 +13,12 @@ namespace App
 		 * the rendered file should be written.
 		 */
 		folderName?: string;
+		
+		/**
+		 * Stores the HTTP URL from where the file ought to be downloaded.
+		 * This value will be set for resources.
+		 */
+		url?: string;
 	}
 	
 	/** */
@@ -111,6 +117,7 @@ namespace App
 			// Generate any images
 			
 			const records: MediaRecord[] = [];
+			const urls: string[] = [];
 			const promises: Promise<ArrayBuffer>[] = [];
 			
 			for (const record of Model.recurse(post))
@@ -118,6 +125,7 @@ namespace App
 				if (record instanceof MediaRecord)
 				{
 					records.push(record);
+					urls.push(record.getHttpUrl());
 					promises.push(record.blob.arrayBuffer());
 				}
 			}
@@ -126,13 +134,12 @@ namespace App
 			
 			for (let i = -1; ++i < records.length;)
 			{
-				const record = records[i];
-				const buffer = buffers[i];
 				files.push({
-					data: buffer,
-					mime: record.type,
-					fileName: record.name,
+					data: buffers[i],
+					mime: records[i].type,
+					fileName: records[i].name,
 					folderName,
+					url: urls[i],
 				});
 			}
 			

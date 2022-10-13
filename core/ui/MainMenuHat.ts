@@ -142,7 +142,7 @@ namespace App
 					"filled",
 					UI.click(() => this.tryPublish(publisher, false)),
 					i === 0 && {
-						backgroundImage: "linear-gradient(160deg, orange, crimson)",
+						backgroundImage: UI.themeGradient(160),
 						textShadow: "0 5px 12px " + UI.black(0.66)
 					},
 					new Text("Publish - " + publisher.name),
@@ -186,19 +186,19 @@ namespace App
 		{
 			const result = await publisher.tryPublish(showConfig);
 			if (result !== undefined)
-				this.setScreen(result);
+				await this.setScreen(result);
 		}
 		
 		/** */
-		private async hide()
+		hide()
 		{
-			this.setScreen(null);
+			return this.setScreen(null);
 		}
 		
 		/** */
-		async showPalette()
+		showPalette()
 		{
-			this.setScreen(new BlogPaletteHat().head);
+			return this.setScreen(new BlogPaletteHat().head);
 		}
 		
 		/** */

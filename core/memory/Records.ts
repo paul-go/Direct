@@ -15,7 +15,15 @@ namespace App
 		isDraft = false;
 		dateCreated = Date.now();
 		dateModified = Date.now();
+		
+		/**
+		 * Stores a flattened tuple array of values, where the even
+		 * indexes store the name of a publish target, and the odd
+		 * indexes store a string representation of the time this
+		 * PostRecord was published to the publish target.
+		 */
 		datesPublished: string[] = [];
+		
 		scenes = Model.array<SceneRecord>();
 		
 		/**
@@ -182,8 +190,18 @@ namespace App
 		/** */
 		getHttpUrl()
 		{
+			if (MediaRecord.getHttpUrlFn)
+				return MediaRecord.getHttpUrlFn(this);
+			
 			return this.name || "unnamed-file";
 		}
+		
+		/** */
+		static overrideGetHttpUrl(fn: ((record: MediaRecord) => string) | null)
+		{
+			this.getHttpUrlFn = fn;
+		}
+		private static getHttpUrlFn: ((record: MediaRecord) => string) | null = null;
 	}
 	
 	/** */

@@ -34,6 +34,12 @@ namespace App
 		export const themeColor = UI.color({ s: 90, l: 33 });
 		
 		/** */
+		export function themeGradient(deg = 90)
+		{
+			return `linear-gradient(${deg}deg, orange, crimson)`;
+		}
+		
+		/** */
 		export const darkGrayBackground = "rgb(20, 20, 20)";
 		
 		/** */
@@ -898,12 +904,14 @@ namespace App
 					animationDuration: "1s",
 					animationIterationCount: "infinite",
 					animationTimingFunction: "linear",
-					
 					width: "50px",
 					height: "50px",
 					borderRadius: "100%",
 					backgroundImage: `conic-gradient(${color}, transparent)`,
 					webkitMaskImage: `radial-gradient(
+						transparent 0, transparent 50%, black 51%, black 100%
+					)`,
+					maskImage: `radial-gradient(
 						transparent 0, transparent 50%, black 51%, black 100%
 					)`,
 				},
