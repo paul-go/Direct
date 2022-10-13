@@ -319,7 +319,11 @@ namespace Hot { { } }
 	{
 		const [, selectorImportant] = trimImportant(selectorOfContainingRule);
 		const [v, valueImportant] = trimImportant(String(value));
-		const n = property.replace(/[A-Z]/g, char => "-" + char.toLowerCase());
+		let n = property.replace(/[A-Z]/g, char => "-" + char.toLowerCase());
+		
+		if (n.slice(0, 6) === "webkit" || n.slice(0, 3) === "moz" || n.slice(0, 2) === "ms")
+			n = "-" + n;
+		
 		styleable.style.setProperty(n, v, selectorImportant || valueImportant);
 	}
 	
@@ -639,6 +643,7 @@ namespace Hot
 		class: string;
 		style: string;
 		contentEditable: boolean | string;
+		spellcheck: boolean;
 		tabIndex: number;
 		data: Record<string, string | number | boolean>;
 	}
@@ -680,7 +685,11 @@ namespace Hot
 		disabled: boolean;
 		webkitdirectory: boolean;
 		multiple: boolean;
+		maxLength: number;
 		accept: string;
+		autocapitalize: boolean;
+		autocorrect: boolean;
+		autocomplete: boolean;
 	}
 	
 	/** */
