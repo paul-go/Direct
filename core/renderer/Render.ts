@@ -5,7 +5,7 @@ namespace App
 	export interface IRenderedFile
 	{
 		data: string | ArrayBuffer;
-		mime: MimeType;
+		mime: Mime.Type;
 		fileName: string;
 		
 		/**
@@ -34,7 +34,7 @@ namespace App
 				const cssText = Css.createGeneral();
 				files.push({
 					data: cssText,
-					mime: MimeType.css,
+					mime: Mime.Type.css,
 					fileName: ConstS.cssFileNameGeneral,
 				});
 			}
@@ -45,7 +45,7 @@ namespace App
 				
 				files.push({
 					data: jsFileText,
-					mime: MimeType.js,
+					mime: Mime.Type.js,
 					fileName: ConstS.jsFileNamePlayer,
 				});
 			}
@@ -94,7 +94,7 @@ namespace App
 				
 				files.push({
 					data,
-					mime: MimeType.html,
+					mime: Mime.Type.html,
 					fileName: ConstS.indexHtmlFileName,
 					folderName,
 				});
@@ -108,7 +108,7 @@ namespace App
 				
 				files.push({
 					data,
-					mime: MimeType.html,
+					mime: Mime.Type.html,
 					fileName: ConstS.essIndepthDefaultFileName,
 					folderName,
 				});

@@ -11,7 +11,7 @@ namespace App
 				"blog-palette-window",
 				MainMenuHat.getWindowStyle(),
 				Drop.here({
-					accept: [MimeType.zip],
+					accept: [Mime.Type.zip],
 					dropFn: files => files.length > 0 && this.importDatabase(files[0].data),
 					center: new Text("Import")
 				}),

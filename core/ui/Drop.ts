@@ -20,7 +20,7 @@ namespace App
 				
 				fileLikes.push(new FileLike(
 					droppedFile.name,
-					droppedFile.type as MimeType,
+					droppedFile.type as Mime.Type,
 					buffer
 				));
 			}
@@ -31,7 +31,7 @@ namespace App
 		/** */
 		constructor(
 			readonly name: string,
-			readonly type: MimeType,
+			readonly type: Mime.Type,
 			readonly data: ArrayBuffer)
 		{ }
 	}
@@ -122,7 +122,7 @@ namespace App
 							if (Array.isArray(ev.payload))
 							{
 								const paths = ev.payload.filter((s): s is string => typeof s === "string");
-								const types = paths.map(path => MimeType.fromFileName(path));
+								const types = paths.map(path => Mime.fromPath(path));
 								draggingTypes.length = 0;
 								draggingTypes.push(...types);
 							}
@@ -142,7 +142,7 @@ namespace App
 							for (let i = -1; ++i < filePaths.length;)
 							{
 								const fileName = filePaths[i].split("/").slice(-1)[0];
-								const type = MimeType.fromFileName(fileName);
+								const type = Mime.fromPath(fileName);
 								if (!acceptedMimes.includes(type))
 									continue;
 								

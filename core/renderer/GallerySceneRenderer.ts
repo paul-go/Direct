@@ -23,7 +23,7 @@ namespace App
 			
 			const frameDiv = Hot.div(CssClass.galleryFrame);
 			const htmlSrc = this.getMediaUrl(frame.media);
-			const isImage = MimeType.getClass(frame.media.type) === MimeClass.image;
+			const isImage = Mime.classOf(frame.media.type) === Mime.Class.image;
 			
 			if (isImage)
 			{

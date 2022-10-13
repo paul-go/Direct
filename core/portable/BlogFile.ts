@@ -80,7 +80,7 @@ namespace App
 			for (const [path, file] of contents)
 			{
 				const buffer = await file.async("arraybuffer");
-				const blob = new Blob([buffer], { type: MimeType.fromFileName(path) });
+				const blob = new Blob([buffer], { type: Mime.fromPath(path) });
 				blogObject.blobs.push([path, blob]);
 			}
 			

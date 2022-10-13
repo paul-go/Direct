@@ -168,7 +168,7 @@ namespace App
 		/**
 		 * The mime type of the media object.
 		 */
-		type = MimeType.unknown;
+		type = Mime.Type.unknown;
 		
 		/** 
 		 * A blob that stores the actual data of the media object.

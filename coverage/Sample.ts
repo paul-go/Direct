@@ -112,7 +112,7 @@ namespace Cover
 			
 			const buffer =  Electron.fs.readFileSync(path);
 			const media = new App.MediaRecord();
-			const type = App.MimeType.fromFileName(path);
+			const type = Mime.fromPath(path);
 			media.blob = new Blob([buffer], { type });
 			media.name = path.split("/").slice(-1)[0];
 			media.type = type;

@@ -27,7 +27,7 @@ namespace App
 				),
 				
 				Drop.here({
-					accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
+					accept: Mime.each(Mime.Class.image, Mime.Class.video),
 					dropFn: (files, x) => this.importMedia(files, x),
 					left: [
 						new Text("Add to the left"),
@@ -92,7 +92,7 @@ namespace App
 		/** */
 		async importMedia(files: FileLike[], dropOffsetX = 0)
 		{
-			const mediaRecords = Util.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
+			const mediaRecords = Util.createMediaRecords(files, [Mime.Class.image, Mime.Class.video]);
 			if (mediaRecords.length === 0)
 				return;
 			
@@ -163,7 +163,7 @@ namespace App
 		constructor(readonly record: FrameRecord)
 		{
 			const media = record.media!;
-			const isImage = MimeType.getClass(media.type) === MimeClass.image;
+			const isImage = Mime.classOf(media.type) === Mime.Class.image;
 			let filler: HTMLElement | null = null;
 			
 			if (isImage)

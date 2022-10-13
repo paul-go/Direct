@@ -10,7 +10,7 @@ namespace App
 			this.head = Hot.div(UI.anchor());
 			
 			let configurators: HTMLElement;
-			const mimeClasses = [MimeClass.image, MimeClass.video];
+			const mimeClasses = [Mime.Class.image, Mime.Class.video];
 			
 			this.configuratorElement = Hot.div(
 				"configurator-element",
@@ -23,7 +23,7 @@ namespace App
 					},
 				),
 				Drop.here({
-					accept: MimeType.ofClass(...mimeClasses),
+					accept: Mime.each(...mimeClasses),
 					center: new Text("Add Background"),
 					dropFn: files =>
 					{
@@ -167,7 +167,7 @@ namespace App
 		{
 			const cls = Util.getMimeClass(record);
 			
-			if (cls === MimeClass.image)
+			if (cls === Mime.Class.image)
 			{
 				return {
 					backgroundColor: UI.gray(50),
@@ -178,7 +178,7 @@ namespace App
 				};
 			}
 			
-			if (cls === MimeClass.video)
+			if (cls === Mime.Class.video)
 			{
 				return RenderUtil.createVideoBackground(
 					record.media!.getBlobUrl(),
@@ -247,7 +247,7 @@ namespace App
 		/** */
 		static new(record: BackgroundRecord)
 		{
-			return Util.getMimeClass(record) === MimeClass.video ?
+			return Util.getMimeClass(record) === Mime.Class.video ?
 				new BackgroundVideoPreviewHat(record) :
 				new BackgroundImagePreviewHat(record);
 		}

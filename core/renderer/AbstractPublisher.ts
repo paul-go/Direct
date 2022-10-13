@@ -123,12 +123,12 @@ namespace App
 				{
 					data: slugs.join("\n"),
 					fileName: ConstS.essIndexTextDefaultName,
-					mime: MimeType.txt,
+					mime: Mime.Type.txt,
 				},
 				{
 					data: ["User-agent: *", "Allow: /"].join("\n"),
 					fileName: "robots.txt",
-					mime: MimeType.txt,
+					mime: Mime.Type.txt,
 				},
 				// TODO: Add sitemap.xml (requires domain), as well as favicons
 			];

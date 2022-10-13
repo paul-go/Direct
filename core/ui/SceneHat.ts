@@ -42,7 +42,7 @@ namespace App
 					"scene-header",
 					(this.headerBox = new HeightBox(this.renderDefaultHeader())).head,
 					Drop.here({
-						accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
+						accept: Mime.each(Mime.Class.image, Mime.Class.video),
 						dropFn: files => this.insertGalleryScene(files),
 						center: new Text("Add Here")
 					})

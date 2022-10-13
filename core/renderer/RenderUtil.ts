@@ -114,7 +114,7 @@ namespace App.RenderUtil
 	 */
 	export function createVideo(
 		src: string,
-		mimeType: MimeType,
+		mimeType: Mime.Type,
 		size: SizeMethod = "contain")
 	{
 		return Hot.video({

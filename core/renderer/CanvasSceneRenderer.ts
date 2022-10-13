@@ -173,8 +173,8 @@ namespace App
 			
 			let element: HTMLElement;
 			
-			const mimeClass = MimeType.getClass(bg.media.type);
-			if (mimeClass === MimeClass.image)
+			const mimeClass = Mime.classOf(bg.media.type);
+			if (mimeClass === Mime.Class.image)
 			{
 				element = Hot.div(
 					CssClass.canvasSceneBackground,
@@ -217,7 +217,7 @@ namespace App
 					);
 				}
 			}
-			else if (mimeClass === MimeClass.video)
+			else if (mimeClass === Mime.Class.video)
 			{
 				element = Hot.video(
 					CssClass.canvasSceneBackground,

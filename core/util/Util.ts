@@ -218,17 +218,17 @@ namespace App
 		/** */
 		export function createMediaRecords(
 			files: FileLike[],
-			guardedMimes?: MimeClass[])
+			guardedMimes?: Mime.Class[])
 		{
 			const records: MediaRecord[] = [];
 			
 			for (const file of files)
 			{
-				const mimeType = MimeType.from(file.type);
+				const mimeType = Mime.from(file.type);
 				if (!mimeType)
 					continue;
 				
-				if (guardedMimes && !guardedMimes.includes(MimeType.getClass(file.type)))
+				if (guardedMimes && !guardedMimes.includes(Mime.classOf(file.type)))
 					continue;
 				
 				const record = new MediaRecord();
@@ -248,7 +248,7 @@ namespace App
 		{
 			const media = record.media;
 			return media ?
-				MimeType.getClass(media.type) :
+				Mime.classOf(media.type) :
 				null;
 		}
 		

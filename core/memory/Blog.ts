@@ -305,7 +305,7 @@ namespace App
 			{
 				if (object instanceof Blob)
 				{
-					const ext = MimeType.getExtension(object.type) || "txt";
+					const ext = Mime.extensionOf(object.type) || "txt";
 					const blobFileName = key + "." + ext;
 					blogObject.blobs.push([blobFileName, object]);
 				}

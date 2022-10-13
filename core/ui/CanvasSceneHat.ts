@@ -16,7 +16,7 @@ namespace App
 			
 			Hot.get(this.sceneContainer)(
 				Drop.here({
-					accept: MimeType.ofClass(MimeClass.image, MimeClass.video),
+					accept: Mime.each(Mime.Class.image, Mime.Class.video),
 					dropFn: (files, x, y) => this.handleMediaDrop(files, x, y),
 					top: new Text("Add Content Image"),
 					bottom: new Text("Add Background"),
@@ -145,7 +145,7 @@ namespace App
 				
 				const fileName = Util.getFileName(dialogResult);
 				const imageBytes = await Tauri.fs.readBinaryFile(dialogResult);
-				const mime = MimeType.fromFileName(fileName);
+				const mime = Mime.fromPath(fileName);
 				const fileLike = new FileLike(fileName, mime, imageBytes);
 				const mediaRecord = Util.createMediaRecords([fileLike]);
 				await this.addContentImage(mediaRecord[0]);
@@ -158,7 +158,7 @@ namespace App
 						visibility: "hidden",
 						position: "absolute",
 						multiple: false,
-						accept: [MimeType.gif, MimeType.jpg, MimeType.png, MimeType.svg].join()
+						accept: [Mime.Type.gif, Mime.Type.jpg, Mime.Type.png, Mime.Type.svg].join()
 					},
 					Hot.on("change", async () =>
 					{
@@ -170,7 +170,7 @@ namespace App
 							const fileLike: FileLike = { 
 								name: nativeFile.name,
 								data: await nativeFile.arrayBuffer(),
-								type: Not.nullable(MimeType.from(nativeFile.type))
+								type: Not.nullable(Mime.from(nativeFile.type))
 							};
 							
 							const mediaRecords = Util.createMediaRecords([fileLike]);
@@ -189,7 +189,7 @@ namespace App
 		/** */
 		private handleMediaDrop(files: FileLike[], layerX: number, layerY: number)
 		{
-			const mediaRecords = Util.createMediaRecords(files, [MimeClass.image, MimeClass.video]);
+			const mediaRecords = Util.createMediaRecords(files, [Mime.Class.image, Mime.Class.video]);
 			if (mediaRecords.length === 0)
 				return;
 			
