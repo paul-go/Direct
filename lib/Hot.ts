@@ -690,6 +690,17 @@ namespace Hot
 		autocapitalize: boolean;
 		autocorrect: boolean;
 		autocomplete: boolean;
+		placeholder: string;
+	}
+	
+	/** */
+	export interface TextAreaElementAttribute extends ElementAttribute
+	{
+		value: string;
+		disabled: boolean;
+		placeholder: string;
+		cols: number;
+		rows: number;
 	}
 	
 	/** */
