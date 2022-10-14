@@ -55,7 +55,7 @@ namespace App
 						minHeight,
 						
 						// Put some space at the bottom, to make exiting less annoying
-						!isHome && Hot.css(" :last-child", { paddingBottom: "33vh" }),
+						!isHome && Hot.css("> :last-child", { paddingBottom: "33vh" }),
 					),
 					
 					Hot.div(
