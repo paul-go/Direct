@@ -207,7 +207,10 @@ namespace App
 			const blog = AppContainer.of(this).blog;
 			const post = Hat.nearest(this, PostHat);
 			if (post)
+			{
 				new PreviewHat(post.record, blog);
+				this.hide();
+			}
 		}
 		
 		/** */
