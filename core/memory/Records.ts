@@ -10,8 +10,6 @@ namespace App
 		title = "";
 		description = "";
 		slug = "";
-		htmlHeader = "";
-		htmlFooter = "";
 		isDraft = false;
 		dateCreated = Date.now();
 		dateModified = Date.now();
