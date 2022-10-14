@@ -453,6 +453,17 @@ namespace App
 			];
 		}
 		
+		/** */
+		export function heading(text: string)
+		{
+			return Hot.div(
+				{
+					marginBottom: "1em",
+				},
+				...UI.text(text, 30, 700)
+			);
+		}
+		
 		/**
 		 * Returns a placeholder DOM Node that is replaced with the contents
 		 * of the specified function, when the attached element is connected

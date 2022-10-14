@@ -4,6 +4,15 @@ namespace App
 	/** */
 	export class PostHat
 	{
+		/**
+		 * Returns the active PostHat that exists near the specified Node or Hat.
+		 */
+		static find(via: Node | Hat.IHat)
+		{
+			const hat = Not.nullable(Hat.nearest(via, PostHat));
+			return hat.isHome ? Hat.down(hat, PostHat) || hat : hat;
+		}
+		
 		readonly head;
 		
 		/**
@@ -12,17 +21,19 @@ namespace App
 		 * omitted, this indicates that this PostHat should create it a new, 
 		 * unsaved record.
 		 */
-		constructor(record?: PostRecord, isHomePost?: "home")
+		constructor(record?: PostRecord, isHome?: "home")
 		{
+			this.isHome = !!isHome;
+			
 			this.record = record || (() =>
 			{
 				const post = new PostRecord();
-				post.slug = Util.generatePostSlug();
+				post.slug = isHome ? "" : Util.generatePostSlug();
 				return post;
 			})();
 			
 			this._isKeepingRecord = !!record;
-			const minHeight: Hot.Param = { minHeight: isHomePost ? "85vh" : "100vh" };
+			const minHeight: Hot.Param = { minHeight: isHome ? "85vh" : "100vh" };
 			
 			this.head = Hot.div(
 				"post-hat",
@@ -33,7 +44,7 @@ namespace App
 					"post-hat-width",
 					UI.editorMaxWidth(),
 					{
-						paddingBottom: isHomePost ? 0 : "33vh",
+						paddingBottom: isHome ? 0 : "33vh",
 						transitionDuration: "0.5s",
 						transitionProperty: "transform, opacity",
 						transformOrigin: "0 0",
@@ -124,6 +135,7 @@ namespace App
 			Hat.wear(this);
 		}
 		
+		readonly isHome;
 		readonly scenes;
 		readonly record;
 		private readonly scenesElement;

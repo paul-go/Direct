@@ -128,6 +128,11 @@ namespace App
 				),
 				UI.actionButton(
 					"filled",
+					UI.click(() => this.showPostOptions()),
+					new Text("Post Options")
+				),
+				UI.actionButton(
+					"filled",
 					UI.click(() => this.showPalette()),
 					new Text("Manage Blogs")
 				)
@@ -196,21 +201,26 @@ namespace App
 		}
 		
 		/** */
-		showPalette()
+		async showPostOptions()
 		{
-			return this.setScreen(new BlogPaletteHat().head);
+			const postHat = PostHat.find(this);
+			const [post, isHome] = [postHat.record, postHat.isHome];
+			this.setScreen(new PostOptionsHat(post, isHome).head);
 		}
 		
 		/** */
 		async showPreview()
 		{
 			const blog = AppContainer.of(this).blog;
-			const post = Hat.nearest(this, PostHat);
-			if (post)
-			{
-				new PreviewHat(post.record, blog);
-				this.hide();
-			}
+			const post = PostHat.find(this);
+			new PreviewHat(post.record, blog);
+			this.hide();
+		}
+		
+		/** */
+		showPalette()
+		{
+			return this.setScreen(new BlogPaletteHat().head);
 		}
 		
 		/** */

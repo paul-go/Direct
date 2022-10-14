@@ -12,6 +12,7 @@
 		"ui/PublisherConfigurator.ts",
 		"ui/SceneHat.ts",
 		"ui/RectangleHat.ts",
+		"ui/UI.ts",
 		"ui/*.ts",
 		"**/*.ts",
 		"**/*.tsx",
