@@ -8,7 +8,6 @@ namespace App
 		constructor()
 		{
 			this.head = Hot.div(
-				"blog-palette-window",
 				MainMenuHat.getWindowStyle(),
 				Drop.here({
 					accept: [Mime.Type.zip],
