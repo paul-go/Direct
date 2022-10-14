@@ -32,10 +32,10 @@ namespace App
 				},
 				
 				// Hide the transition configurator for the first scene hat
-				Hot.css(":first-of-type .transition-configurator !", { visibility: "hidden" }),
+				Hot.css(":first-of-type .transition-configurator", { visibility: "hidden !" }),
 				
 				// 
-				Hot.css(":not(:last-of-type) .footer-box !", { display: "none" }),
+				Hot.css(":not(:last-of-type) .footer-box", { display: "none !" }),
 				
 				// Controls header
 				Hot.div(

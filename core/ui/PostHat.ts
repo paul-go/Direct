@@ -44,7 +44,6 @@ namespace App
 					"post-hat-width",
 					UI.editorMaxWidth(),
 					{
-						paddingBottom: isHome ? 0 : "33vh",
 						transitionDuration: "0.5s",
 						transitionProperty: "transform, opacity",
 						transformOrigin: "0 0",
@@ -54,6 +53,9 @@ namespace App
 					this.scenesElement = Hot.div(
 						"scenes-element",
 						minHeight,
+						
+						// Put some space at the bottom, to make exiting less annoying
+						!isHome && Hot.css(" :last-child", { paddingBottom: "33vh" }),
 					),
 					
 					Hot.div(
