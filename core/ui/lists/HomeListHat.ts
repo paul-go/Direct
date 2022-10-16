@@ -45,6 +45,8 @@ namespace App
 				
 				const app = AppContainer.of(this);
 				const post = await rectangle.getPost();
+				if (!post)
+					return;
 				
 				if (app.inEditMode)
 					return new PostHat(post).head;

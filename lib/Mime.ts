@@ -13,7 +13,7 @@ namespace Mime
 	/** */
 	export enum Type
 	{
-		unknown = "",
+		none = "",
 		
 		gif = "image/gif",
 		jpg = "image/jpeg",
@@ -101,6 +101,6 @@ namespace Mime
 		if (ext === "jpeg")
 			ext = "jpg";
 		
-		return (mimes.get(ext) || "") as Type;
+		return (mimes.get(ext) || Type.none) as Type;
 	}
 }

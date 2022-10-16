@@ -1,49 +1,6 @@
 
 /** */
-declare const enum ConstS
-{
-	baseFolderPrefix = "post-base-folder-",
-	mainDatabaseName = "main",
-	contrastProperty = "--contrast",
-	
-	darkColorProperty = "--dark-color",
-	lightColorProperty = "--light-color",
-	foreColorProperty = "--fore-color",
-	foreUncolorProperty = "--fore-uncolor",
-	backColorProperty = "--back-color",
-	backUncolorProperty = "--back-uncolor",
-	
-	indexHtmlFileName = "index.html",
-	
-	cssFileNameGeneral = "index.general.css",
-	cssFileNameSpecific = "index.css",
-	jsFileNamePlayer = "player.js",
-	jsFileNamePlayerMin = "player.min.js",
-	jsFileNameApp = "app.js",
-	jsFileNameAppMin = "app.min.js",
-	debugExportsFolderName = "+exports",
-	portableExtension = "zip",
-	appName = "Direct",
-	
-	essIndexKey = "ess-index",
-	essIndexTextDefaultName = "index.txt",
-	essIndepthKey = "ess-indepth",
-	essIndepthDefaultFileName = "indepth.html",
-}
-
-/** */
-const enum ConstN
-{
-	foregroundEdgeVmin = 4,
-	descriptionFontWeight = 500,
-	descriptionLineHeight = 1.5,
-	fillerContentBlur = 40,
-	appMaxWidth = 1000,
-	playerMaxWidth = 1900,
-}
-
-/** */
-const enum CssClass
+declare const enum CssClass
 {
 	// Editor classes
 	dragOverScreen = "drag-over-screen",

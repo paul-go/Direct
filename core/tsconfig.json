@@ -4,6 +4,7 @@
 		"outFile": "../build/app.js"
 	},
 	"include": [
+		"../const/*.ts",
 		"../lib/*.ts",
 		"player/*.ts",
 		"renderer/Publisher.ts",

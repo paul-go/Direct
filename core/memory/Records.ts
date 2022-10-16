@@ -133,16 +133,16 @@ namespace App
 	}
 	
 	/** */
-	export class GallerySceneRecord extends SceneRecord
-	{
-		frames = Model.array<FrameRecord>();
-	}
-	
-	/** */
 	export class ProseSceneRecord extends SceneRecord
 	{
 		content: ITrixSerializedObject | null = null;
 		hasColorAccents = false;
+	}
+	
+	/** */
+	export class GallerySceneRecord extends SceneRecord
+	{
+		frames = Model.array<FrameRecord>();
 	}
 	
 	/** */
@@ -166,7 +166,7 @@ namespace App
 		/**
 		 * The mime type of the media object.
 		 */
-		type = Mime.Type.unknown;
+		type = Mime.Type.none;
 		
 		/** 
 		 * A blob that stores the actual data of the media object.

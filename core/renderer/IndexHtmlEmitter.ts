@@ -35,11 +35,11 @@ namespace App
 				Hot.link({
 					rel: "stylesheet",
 					type: "text/css",
-					href: relative + ConstS.cssFileNameGeneral + nocache,
+					href: "/" + ConstS.cssFileNameGeneral + nocache,
 				}),
 				sceneElement,
 				Hot.script({
-					src: relative + ConstS.jsFileNamePlayer + nocache
+					src: "/" + ConstS.jsFileNamePlayer + nocache
 				}),
 			]);
 		}

@@ -40,7 +40,7 @@ namespace App
 			if (this.future)
 				return this.future.getPost();
 			
-			Not.reachable();
+			return null;
 		}
 		private _post: PostRecord | null = null;
 		
