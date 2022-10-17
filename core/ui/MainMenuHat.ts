@@ -203,7 +203,7 @@ namespace App
 		/** */
 		async showPostOptions()
 		{
-			const postHat = PostHat.find(this);
+			const postHat = this.getVisiblePost();
 			this.setScreen(new PostOptionsHat(postHat.record).head);
 		}
 		
@@ -211,8 +211,8 @@ namespace App
 		async showPreview()
 		{
 			const blog = AppContainer.of(this).blog;
-			const post = PostHat.find(this);
-			new PreviewHat(post.record, blog);
+			const postHat = this.getVisiblePost();
+			new PreviewHat(postHat.record, blog);
 			this.hide();
 		}
 		
@@ -220,6 +220,18 @@ namespace App
 		showPalette()
 		{
 			return this.setScreen(new BlogPaletteHat().head);
+		}
+		
+		/** */
+		private getVisiblePost()
+		{
+			const app = AppContainer.of(this.head);
+			const postHats = Hat.under(app, PostHat);
+			const postHatHome = Not.nullable(postHats.find(h => h.record.isHomePost));
+			const postHatsNotHome = postHats.filter(h => !h.record.isHomePost);
+			return postHatsNotHome.length > 0 ?
+				postHatsNotHome[0] : 
+				postHatHome;
 		}
 		
 		/** */

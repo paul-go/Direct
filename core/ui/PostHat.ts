@@ -4,15 +4,6 @@ namespace App
 	/** */
 	export class PostHat
 	{
-		/**
-		 * Returns the active PostHat that exists near the specified Node or Hat.
-		 */
-		static find(via: Node | Hat.IHat)
-		{
-			const hat = Not.nullable(Hat.nearest(via, PostHat));
-			return hat.record.isHomePost ? Hat.down(hat, PostHat) || hat : hat;
-		}
-		
 		readonly head;
 		
 		/**
@@ -41,7 +32,7 @@ namespace App
 						opacity: 1,
 					},
 					minHeight,
-					this.exitChevron = Hot.div(
+					!record.isHomePost && Hot.div(
 						"exit-chevron",
 						{
 							position: "sticky",
@@ -107,7 +98,6 @@ namespace App
 		readonly scenes;
 		private readonly scenesElement;
 		private readonly noScenesBox;
-		private readonly exitChevron;
 		
 		readonly exitFn;
 		private readonly _exitFn;
