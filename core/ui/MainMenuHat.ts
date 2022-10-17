@@ -105,6 +105,8 @@ namespace App
 			if (this.isVisible)
 				return;
 			
+			const hasScenes = this.getVisiblePost().scenes.length > 0;
+			
 			await this.setScreen(Hot.div(
 				invisibleForwardClass,
 				{
@@ -123,6 +125,10 @@ namespace App
 				this.getPublishButtons(),
 				UI.actionButton(
 					"filled",
+					{
+						opacity: hasScenes ? 1 : 0.333,
+						pointerEvents: hasScenes ? "all" : "none",
+					},
 					UI.click(() => this.showPreview()),
 					new Text("Preview")
 				),
