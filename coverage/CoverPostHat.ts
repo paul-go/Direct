@@ -11,7 +11,7 @@ namespace Cover
 	export async function coverPostHatEmpty()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostHat(app.homePost);
+		const pv = new App.PostHat(app.blog.homePost);
 		Cover.display(pv);
 	}
 	
@@ -19,7 +19,7 @@ namespace Cover
 	export async function coverPostHatExisting()
 	{
 		const app = await App.createApp({ shell: true });
-		const pv = new App.PostHat(app.homePost);
+		const pv = new App.PostHat(app.blog.homePost);
 		Cover.display(pv);
 	}
 	
@@ -27,7 +27,7 @@ namespace Cover
 	export async function coverPostHatWithProse()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostHat(app.homePost);
+		const pv = new App.PostHat(app.blog.homePost);
 		const sv = new App.ProseSceneHat();
 		pv.scenes.insert(sv);
 		Cover.display(pv);
@@ -37,7 +37,7 @@ namespace Cover
 	export async function coverPostHatWithCanvas()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostHat(app.homePost);
+		const pv = new App.PostHat(app.blog.homePost);
 		const sv = new App.CanvasSceneHat();
 		pv.scenes.insert(sv);
 		Cover.display(pv);
@@ -47,7 +47,7 @@ namespace Cover
 	export async function coverPostHatWithMultipleCanvas()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostHat(app.homePost);
+		const pv = new App.PostHat(app.blog.homePost);
 		const sv1 = new App.CanvasSceneHat();
 		const sv2 = new App.CanvasSceneHat();
 		pv.scenes.insert(sv1);
@@ -59,7 +59,7 @@ namespace Cover
 	export async function coverPostHatWithGallery()
 	{
 		const app = await App.createApp({ shell: true, clear: true });
-		const pv = new App.PostHat(app.homePost);
+		const pv = new App.PostHat(app.blog.homePost);
 		const sv = new App.GallerySceneHat();
 		pv.scenes.insert(sv);
 		Cover.display(pv);

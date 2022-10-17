@@ -22,14 +22,29 @@ namespace App
 			private readonly tuples: string[])
 		{ }
 		
-		/** */
+		/**
+		 * Returns the number of posts in the PostStream.
+		 */
 		get length()
 		{
 			return this.tuples.length;
 		}
 		
-		/** */
-		query(rangeStart: number = 0, rangeEnd = this.tuples.length)
+		/**
+		 * Returns an array of PostStreamRecordFuture objects within
+		 * the given range, ignoring the home post;
+		 */
+		query(rangeStart: number = 0, rangeEnd?: number)
+		{
+			rangeEnd = Math.min(this.tuples.length, (rangeEnd || rangeStart) + 1);
+			return this.queryAll(rangeStart + 1, rangeEnd);
+		}
+		
+		/**
+		 * Returns an array of PostStreamRecordFuture objects within
+		 * the given range, potentially including the home post;
+		 */
+		queryAll(rangeStart: number = 0, rangeEnd = this.tuples.length)
 		{
 			const slice = this.tuples.slice(rangeStart, rangeEnd);
 			const tupleSlice = slice.map(s => s.split(tupleSeparator) as [string, string]);

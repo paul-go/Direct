@@ -217,6 +217,7 @@ namespace App.Css
 				"white-space": "nowrap",
 			}),
 			rule("." + CssClass.galleryFrame, {
+				"overflow": "hidden",
 				"display": "inline-block",
 				"scroll-snap-align": "start",
 				"scroll-snap-stop": "always",

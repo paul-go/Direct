@@ -79,7 +79,7 @@ namespace App
 		/** */
 		export async function getPostFiles(post: PostRecord, blog: Blog)
 		{
-			const folderName = post === blog.homePost ? "" : post.slug;
+			const folderName = post.slug;
 			const postFinal = await createPostFinal(post, blog);
 			const files: IRenderedFile[] = [];
 			

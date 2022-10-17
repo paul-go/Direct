@@ -518,6 +518,17 @@ namespace App.Model
 			
 			for (const dirtyObject of dirtyObjectsCopy)
 			{
+				// Make sure there isn't already another dirtyObject
+				// that is an ancestor of the current dirtyObject. The
+				// Model.retain() function is recursive, so explicitly
+				// saving child objects is unnecessary.
+				const ownerAncestry = ownersOf(dirtyObject);
+				for (let i = -1; ++i < ownerAncestry.length;)
+					ownerAncestry.push(...ownersOf(ownerAncestry[i]));
+				
+				if (ownerAncestry.some(ob => dirtyObjectsCopy.includes(ob)))
+					continue;
+				
 				const seg = tempSegmentStorage.get(dirtyObject);
 				tempSegmentStorage.delete(dirtyObject);
 				Model.retain(dirtyObject, seg || "");

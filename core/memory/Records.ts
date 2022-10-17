@@ -9,7 +9,7 @@ namespace App
 	{
 		title = "";
 		description = "";
-		slug = "";
+		slug = Util.generatePostSlug();
 		isDraft = false;
 		dateCreated = Date.now();
 		dateModified = Date.now();
@@ -21,6 +21,12 @@ namespace App
 		 * PostRecord was published to the publish target.
 		 */
 		datesPublished: string[] = [];
+		
+		/** */
+		get isHomePost()
+		{
+			return this.slug === "";
+		}
 		
 		scenes = Model.array<SceneRecord>();
 		

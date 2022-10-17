@@ -204,8 +204,7 @@ namespace App
 		async showPostOptions()
 		{
 			const postHat = PostHat.find(this);
-			const [post, isHome] = [postHat.record, postHat.isHome];
-			this.setScreen(new PostOptionsHat(post, isHome).head);
+			this.setScreen(new PostOptionsHat(postHat.record).head);
 		}
 		
 		/** */

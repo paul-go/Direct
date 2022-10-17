@@ -148,7 +148,7 @@ namespace App
 		protected setPublishParam(paramKey: string, value: string | number | boolean)
 		{
 			this.blog.setPublishParam(this.key, paramKey, value);
-			When.connected(this.head, () => Hat.over(this, PostHat).updatePublishInfo());
+			//When.connected(this.head, () => Hat.over(this, PostHat).updatePublishInfo());
 		}
 		
 		/** */

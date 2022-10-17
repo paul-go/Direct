@@ -101,9 +101,15 @@ namespace App
 				]);
 			}
 			
-			blog._homePost = blogObject.homePost ? 
-				await store.get(blogObject.homePost) :
-				new PostRecord();
+			if (blogObject.homePost)
+			{
+				blog._homePost = await store.get(blogObject.homePost);
+			}
+			else
+			{
+				blog._homePost = new PostRecord();
+				blog._homePost.slug = "";
+			}
 			
 			this.blogs.push(blog);
 			return blog;

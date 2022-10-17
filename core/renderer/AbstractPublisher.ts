@@ -102,7 +102,7 @@ namespace App
 			const postsChanged: PostRecord[] = [];
 			const slugs: string[] = [];
 			
-			for (const future of this.blog.postStream.query())
+			for (const future of this.blog.postStream.queryAll())
 			{
 				const partial = await future.getPartialPost();
 				const published = partial.getPublishDate(this.name);

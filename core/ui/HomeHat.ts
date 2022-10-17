@@ -23,7 +23,7 @@ namespace App
 						transitionDuration: "inherit",
 						filter: "brightness(1)",
 					},
-					new PostHat(app.homePost, "home"),
+					new PostHat(app.blog.homePost),
 					this.addPostButton = Hot.div(
 						{
 							position: "sticky",

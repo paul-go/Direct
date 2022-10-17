@@ -105,12 +105,6 @@ namespace App
 		private _blog: Blog | null = null;
 		
 		/** */
-		get homePost()
-		{
-			return Not.nullable(this.blog.homePost);
-		}
-		
-		/** */
 		async changeDatabase(fixedName: string)
 		{
 			const blog = Blog.get({ fixedName });

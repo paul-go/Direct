@@ -10,7 +10,7 @@ namespace App
 		static find(via: Node | Hat.IHat)
 		{
 			const hat = Not.nullable(Hat.nearest(via, PostHat));
-			return hat.isHome ? Hat.down(hat, PostHat) || hat : hat;
+			return hat.record.isHomePost ? Hat.down(hat, PostHat) || hat : hat;
 		}
 		
 		readonly head;
@@ -21,19 +21,10 @@ namespace App
 		 * omitted, this indicates that this PostHat should create it a new, 
 		 * unsaved record.
 		 */
-		constructor(record?: PostRecord, isHome?: "home")
+		constructor(readonly record = new PostRecord())
 		{
-			this.isHome = !!isHome;
-			
-			this.record = record || (() =>
-			{
-				const post = new PostRecord();
-				post.slug = isHome ? "" : Util.generatePostSlug();
-				return post;
-			})();
-			
 			this._isKeepingRecord = !!record;
-			const minHeight: Hot.Param = { minHeight: isHome ? "85vh" : "100vh" };
+			const minHeight: Hot.Param = { minHeight: record.isHomePost ? "85vh" : "100vh" };
 			
 			this.head = Hot.div(
 				"post-hat",
@@ -54,8 +45,9 @@ namespace App
 						"scenes-element",
 						minHeight,
 						
-						// Put some space at the bottom, to make exiting less annoying
-						!isHome && Hot.css("> :last-child", { paddingBottom: "33vh" }),
+						Hot.css("> :last-child", {
+							paddingBottom: record.isHomePost ? "50px" : "33vh"
+						}),
 					),
 					
 					Hot.div(
@@ -68,60 +60,7 @@ namespace App
 							zIndex: 1,
 						},
 						(this.noScenesBox = new HeightBox(this.renderNoScenes())).head,
-					),
-					
-					/*
-					this.footerElement = Hot.div(
-						"footer",
-						{
-							padding: "0 20px",
-							display: "none",
-						},
-						UI.visibleWhenNotEmpty(this.scenesElement),
-						
-						Hot.div(
-							{
-								width: "fit-content",
-								minWidth: "400px",
-								margin: "auto",
-							},
-							UI.actionButton(
-								"filled",
-								{ maxWidth: "400px" },
-								...UI.click(() => this.handlePreview()),
-								new Text("Preview")
-							),
-							UI.clickLabel(
-								"publish-button",
-								{
-									margin: "10px auto",
-									padding: "20px",
-									width: "min-content",
-								},
-								Hot.on(UI.clickEvt, () =>
-								{
-									this.tryPublish();
-								}),
-								...UI.text("Publish", 25, 800),
-								this.settingsButtonElement = Icon.settings(
-									CssClass.hide,
-									{
-										position: "absolute",
-										right: "-2.75em",
-										width: "30px",
-										height: "30px",
-									},
-									Hot.on(UI.clickEvt, ev =>
-									{
-										this.setupPublish();
-										ev.stopPropagation();
-									}),
-								)
-							)
-						),
-						this.publishInfoElement = Hot.div("publish-info")
-					),
-					*/
+					)
 				)
 			);
 			
@@ -133,18 +72,12 @@ namespace App
 				this.save();
 			});
 			
-			this.updatePublishInfo();
 			Hat.wear(this);
 		}
 		
-		readonly isHome;
 		readonly scenes;
-		readonly record;
 		private readonly scenesElement;
-		//private readonly footerElement;
-		//private readonly settingsButtonElement;
 		private readonly noScenesBox;
-		//private publishInfoElement;
 		
 		/** */
 		private renderNoScenes()
@@ -194,126 +127,5 @@ namespace App
 			AppContainer.of(this).blog.retainPost(this.record);
 			this.record.dateModified = Date.now();
 		}
-		
-		//! TODO: Delete everything below this line.
-		
-		/** */
-		private async tryPublish()
-		{
-			const blog = AppContainer.of(this).blog;
-			const publisher = Publisher.getCurrentPublisher(this.record, blog);
-			
-			if (publisher?.canPublish())
-			{
-				if (publisher.canHaveSlug && !Util.isSlugValid(this.slugInput?.textContent || ""))
-				{
-					await Util.alert("Please enter a valid slug before publishing.");
-					
-					// Need to wait after the alert has been closed
-					// before setting the focus, or it won't work.
-					setTimeout(() => this.slugInput?.focus(), 100);
-				}
-				else
-				{
-					publisher.publish();
-				}
-			}
-			else this.setupPublish();
-		}
-		
-		/** */
-		private setupPublish()
-		{
-			const app = AppContainer.of(this);
-			const publishSetupHat = new PublishSetupHat(this.record, app);
-			this.head.append(publishSetupHat.head);
-		}
-		
-		/** */
-		async updatePublishInfo()
-		{
-			/*
-			When.connected(this.publishInfoElement, () =>
-			{
-				const blog = AppContainer.of(this).blog;
-				const publisher = Publisher.getCurrentPublisher(this.record, blog);
-				const dstRoot = publisher?.getPublishDestinationRoot();
-				
-				this.publishInfoElement.replaceWith(this.publishInfoElement = Hot.div(
-					"publish-info",
-					{
-						margin: "40px auto",
-						paddingBottom: "50px",
-						color: UI.white(0.5),
-						textAlign: "center",
-						lineHeight: 1.5,
-						verticalAlign: "top",
-					},
-					
-					dstRoot && Hot.span(
-						{
-							paddingRight: "10px",
-							opacity: 0.66,
-							whiteSpace: "nowrap",
-							verticalAlign: "bottom",
-						},
-						...UI.text("Publishes to:", 24, 600)
-					),
-					
-					dstRoot && Hot.span(
-						{
-							display: "inline-block",
-							maxWidth: (ConstN.appMaxWidth - 250) + "px",
-							fontSize: "24px",
-							fontWeight: 800,
-							verticalAlign: "bottom",
-							textAlign: "left",
-							wordBreak: "break-all"
-						},
-						new Text(dstRoot),
-						
-						publisher?.canHaveSlug && this.renderSlugEditor(),
-						dstRoot && Icon.openExternal(
-							{
-								top: "0.25em",
-								left: "0.75em",
-							},
-							...UI.click(() => publisher?.openOutput())
-						)
-					),
-				));
-				
-				UI.toggle(this.settingsButtonElement, !!publisher);
-			});
-			*/
-		}
-		
-		/** */
-		private renderSlugEditor()
-		{
-			return this.slugInput = Hot.span(e => [
-				Editable.single({
-					placeholderText: "...Enter a slug...",
-					placeholderCss: {
-						opacity: 1
-					}
-				}),
-				{
-					color: "white",
-					textAlign: "left",
-				},
-				Hot.on("input", () =>
-				{
-					const slug = e.textContent = (e.textContent || "").toLocaleLowerCase();
-					const valid = Util.isSlugValid(slug);
-					e.style.color = !slug || valid ? "white" : "red";
-					
-					if (valid)
-						this.record.slug = slug;
-				}),
-				this.record.slug ? new Text(this.record.slug) : null
-			]);
-		}
-		private slugInput: HTMLElement | null = null;
 	}
 }

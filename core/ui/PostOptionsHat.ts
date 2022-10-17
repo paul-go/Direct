@@ -7,7 +7,7 @@ namespace App
 		readonly head;
 		
 		/** */
-		constructor(post: PostRecord, isHome: boolean)
+		constructor(private readonly post: PostRecord)
 		{
 			this.head = Hot.div(
 				MainMenuHat.getWindowStyle(),
@@ -17,14 +17,8 @@ namespace App
 				
 				heading1("Post Options"),
 				
-				!isHome && UI.heading("Slug"),
-				!isHome && Hot.input(
-					textBoxRule,
-					{
-						value: post.slug,
-						placeholder: "Slug",
-					}
-				),
+				!post.isHomePost && UI.heading("Slug"),
+				!post.isHomePost && (this.slugInput = this.renderSlugInput()),
 				
 				heading2("Title"),
 				this.titleInput = Hot.input(
@@ -78,7 +72,6 @@ namespace App
 				
 				When.disconnected(() =>
 				{
-					post.slug = this.slugInput?.value || "";
 					post.title = this.titleInput.value;
 					post.description = this.descriptionInput.value;
 				})
@@ -90,6 +83,36 @@ namespace App
 		private readonly slugInput?: HTMLInputElement;
 		private readonly titleInput;
 		private readonly descriptionInput;
+		
+		/** */
+		private renderSlugInput()
+		{
+			const storedSlug = this.post.slug;
+			
+			const e = Hot.input(
+				textBoxRule,
+				{
+					value: this.post.slug,
+					placeholder: "Slug",
+				},
+				Hot.on("input", () =>
+				{
+					const slug = e.value = e.value.toLocaleLowerCase();
+					const valid = Util.isSlugValid(slug);
+					e.style.color = !slug || valid ? "white" : "red";
+					
+					if (valid)
+						this.post.slug = slug;
+				}),
+				When.disconnected(() =>
+				{
+					// The slug cannot be set to an empty value.
+					this.post.slug = this.slugInput?.textContent || storedSlug;
+				})
+			);
+			
+			return e;
+		}
 		
 		/** */
 		private delete()
