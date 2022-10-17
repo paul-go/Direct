@@ -17,8 +17,17 @@ namespace App
 				
 				heading1("Post Options"),
 				
-				!post.isHomePost && UI.heading("Slug"),
+				!post.isHomePost && heading2("Slug"),
 				!post.isHomePost && (this.slugInput = this.renderSlugInput()),
+				!post.isHomePost && Hot.div(
+					{
+						fontStyle: "italic",
+						opacity: 0.5,
+						top: "-2.25em"
+					},
+					UI.text("https://" + ConstS.premiumDomain + "/", 15, 600),
+					this.urlHint = new Text()
+				),
 				
 				heading2("Title"),
 				this.titleInput = Hot.input(
@@ -77,10 +86,12 @@ namespace App
 				})
 			);
 			
+			this.updateUrlHint();
 			Hat.wear(this);
 		}
 		
 		private readonly slugInput?: HTMLInputElement;
+		private readonly urlHint;
 		private readonly titleInput;
 		private readonly descriptionInput;
 		
@@ -102,7 +113,10 @@ namespace App
 					e.style.color = !slug || valid ? "white" : "red";
 					
 					if (valid)
+					{
 						this.post.slug = slug;
+						this.updateUrlHint();
+					}
 				}),
 				When.disconnected(() =>
 				{
@@ -112,6 +126,13 @@ namespace App
 			);
 			
 			return e;
+		}
+		
+		/** */
+		private updateUrlHint()
+		{
+			if (this.urlHint)
+				this.urlHint.textContent = this.post.slug;
 		}
 		
 		/** */
