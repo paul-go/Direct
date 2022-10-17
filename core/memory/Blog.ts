@@ -109,6 +109,7 @@ namespace App
 			{
 				blog._homePost = new PostRecord();
 				blog._homePost.slug = "";
+				await blog.retainPost(blog._homePost);
 			}
 			
 			this.blogs.push(blog);
