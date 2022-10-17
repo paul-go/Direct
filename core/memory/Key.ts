@@ -49,19 +49,19 @@ namespace App
 		 * Sets an internal key on the specified object. The key may be
 		 * optionally derived from the key of the specified owner.
 		 * 
-		 * @returns A boolean value that indicates whether a new
-		 * key was set on the object. If a key already exists, the return
-		 * value will be false.
+		 * @returns An empty string in the case when a key was already
+		 * set on the specified object, or a string containing the assigned
+		 * key case when a new key was set on the object.
 		 */
 		export function set(object: object, segment: string = "")
 		{
 			if (Key.of(object))
-				return false;
+				return "";
 			
 			const keyInfo = getKeyInfo(object);
 			const key = Key.create(segment, keyInfo.stable);
 			keyMap.set(object, key);
-			return true;
+			return key;
 		}
 		
 		/** */

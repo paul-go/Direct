@@ -20,8 +20,14 @@ namespace App.Model
 		const entries: [Key, object][] = [];
 		
 		for (const sub of Model.recurse(object))
-			if (Key.set(sub, segment))
-				upgrade(sub);
+		{
+			const key = Key.set(sub, segment);
+			if (key)
+			{
+				defineProperties(sub);
+				heap.set(key, sub);
+			}
+		}
 		
 		const relocateBlob = (blob: Blob) =>
 		{
@@ -185,8 +191,15 @@ namespace App.Model
 			return existing as T;
 		
 		const object = await Store.current().get(key);
-		const model = object ? modelize(key, object, shallow) : null;
-		return model as T;
+		if (!object)
+			throw "No object found with key: " + key;
+		
+		const instance = await createInstanceFromPlain(key, object, shallow);
+		
+		if (!shallow)
+			heap.set(key, instance);
+		
+		return instance as T;
 	}
 	
 	/** */
@@ -210,22 +223,23 @@ namespace App.Model
 				keysOfNeeded.push(key);
 		}
 		 
-		const modelObjects: object[] = [];
+		const instances: object[] = [];
 		const plainObjects = await Store.current().get(keysOfNeeded);
 		
 		for (let i = -1; ++i < keysOfNeeded.length;)
 		{
 			const key = keysOfNeeded[i];
 			const plainObject = plainObjects[i];
-			const modelized = await modelize(key, plainObject);
-			modelObjects.push(modelized);
+			const instance = await createInstanceFromPlain(key, plainObject);
+			instances.push(instance);
+			heap.set(key, instance);
 		}
 		
-		return modelObjects;
+		return instances;
 	}
 	
 	/** */
-	async function modelize<T extends object>(
+	async function createInstanceFromPlain<T extends object>(
 		key: Key,
 		plainObject: object,
 		shallow?: "shallow"): Promise<T>
@@ -275,11 +289,7 @@ namespace App.Model
 		}
 		
 		Key.overwrite(instance, key);
-		upgrade(instance);
-		
-		if (!shallow)
-			heap.set(key, instance);
-		
+		defineProperties(instance);
 		return instance as T;
 	}
 	
@@ -287,7 +297,7 @@ namespace App.Model
 	 * Converts the members of the object to properties
 	 * that access the underlying Keyva. 
 	 */
-	function upgrade<T extends Object>(object: T)
+	function defineProperties<T extends Object>(object: T)
 	{
 		for (const [name, memberType] of Model.inspect(object))
 		{
