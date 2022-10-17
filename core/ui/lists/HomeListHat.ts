@@ -81,11 +81,9 @@ namespace App
 					justifyContent: "center",
 					width: "100%",
 					height: "100%",
-					fontSize: "40vw",
-					fontWeight: 700,
 					color: "rgba(255, 255, 255, 0.125)",
 				},
-				new Text("?"),
+				UI.text("?", "40vw", 700),
 			));
 			
 			return hat;
