@@ -69,11 +69,10 @@ namespace App
 			app.reset();
 		
 		ModificationListener.startup();
-		
 		return app;
 	}
 	
 	if (typeof document !== "undefined" && 
-		document.documentElement.hasAttribute("data-autostart"))
+		document.documentElement.hasAttribute(ConstS.appAttribute))
 		setTimeout(() => createApp());
 }

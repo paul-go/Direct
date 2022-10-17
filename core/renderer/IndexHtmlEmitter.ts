@@ -23,14 +23,14 @@ namespace App
 					content: "yes"
 				}),
 				Hot.link({
-					rel: ConstS.essIndexKey,
+					rel: ConstS.essIndexListKey,
 					type: "text/plain",
-					href: "/index.txt",
+					href: relative + ConstS.essIndexListDefaultValue,
 				}),
 				Hot.link({
 					rel: ConstS.essIndepthKey,
 					type: "text/html",
-					href: "indepth.html",
+					href: ConstS.essIndepthDefaultValue,
 				}),
 				Hot.link({
 					rel: "stylesheet",

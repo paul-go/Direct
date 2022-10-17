@@ -29,7 +29,8 @@ namespace Player
 	}
 	
 	/**
-	 * 
+	 * Returns the fully qualified URL that points to the indepth.html
+	 * file specified as meta data in the HTML document.
 	 */
 	function getIndepthUrl(
 		doc: Document = window.document,
@@ -42,13 +43,27 @@ namespace Player
 	}
 	
 	/**
+	 * Returns the fully qualified URL that points to the index.txt
+	 * file specified as meta data in the HTML document.
+	 */
+	function getIndexListUrl(
+		doc: Document = window.document,
+		docHref = window.location.href)
+	{
+		const indexListHref = getLinkHref(doc, ConstS.essIndexListKey);
+		return indexListHref ?
+			Url.toAbsolute(indexListHref, docHref) :
+			"";
+	}
+	
+	/**
 	 * Loads the indepth scenes that are referenced within the specified Document.
 	 */
 	async function getIndepthSections(indepthUrl = getIndepthUrl())
 	{
 		const indepthHtml = await getHttpFile(indepthUrl);
-		const indepthBase = Url.baseOf(indepthUrl);
-		const indepthDoc = new ForeignDocumentSanitizer(indepthHtml, indepthBase).read();
+		const indepthFolder = Url.folderOf(indepthUrl);
+		const indepthDoc = new ForeignDocumentSanitizer(indepthHtml, indepthFolder).read();
 		const indepthSections = getSections(indepthDoc);
 		return indepthSections;
 	}
@@ -59,18 +74,22 @@ namespace Player
 	 */
 	async function maybeCreateOmniview()
 	{
-		const indexListHref = getLinkHref(document, ConstS.essIndexKey);
-		if (!indexListHref)
+		const indexListUrl = getIndexListUrl();
+		if (!indexListUrl)
 			return null;
 		
-		const locationBaseUrl = Url.baseOf(window.location.href);
-		const indexListUrl = Url.toAbsolute(indexListHref, locationBaseUrl);
-		const indexListBase = Url.baseOf(indexListUrl);
 		const indexList = await getHttpFile(indexListUrl);
+		if (!indexList)
+			return null;
+		
+		const indexListFolder = Url.folderOf(indexListUrl);
 		const slugUrls = indexList
 			.split("\n")
 			.filter(s => !!s)
-			.map(slug => Url.toAbsolute(slug, indexListBase));
+			.map(slug => Url.toAbsolute(slug, indexListFolder));
+		
+		if (slugUrls.length === 0)
+			return null;
 		
 		const omniview = new Omniview<Scenery>();
 		omniview.size = 2;

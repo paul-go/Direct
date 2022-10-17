@@ -3,6 +3,7 @@
 declare const enum ConstS
 {
 	appName = "Direct",
+	appAttribute = "data-app",
 	baseFolderPrefix = "post-base-folder-",
 	mainDatabaseName = "main",
 	contrastProperty = "--contrast",
@@ -21,10 +22,10 @@ declare const enum ConstS
 	jsFileNameAppMin = "app.min.js",
 	debugExportsFolderName = "+exports",
 	portableExtension = "zip",
-	essIndexKey = "ess-index",
-	essIndexTextDefaultName = "index.txt",
+	essIndexListKey = "ess-index",
+	essIndexListDefaultValue = "index.txt",
 	essIndepthKey = "ess-indepth",
-	essIndepthDefaultFileName = "indepth.html",
+	essIndepthDefaultValue = "indepth.html",
 }
 
 /** */
