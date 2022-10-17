@@ -38,7 +38,14 @@ namespace App
 				return Promise.resolve(this._post);
 			
 			if (this.future)
-				return this.future.getPost();
+			{
+				const future = this.future;
+				return new Promise<PostRecord>(async resolve =>
+				{
+					this._post = await future.getPost();
+					resolve(this._post);
+				});
+			}
 			
 			return null;
 		}
