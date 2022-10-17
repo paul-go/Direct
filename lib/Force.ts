@@ -7,14 +7,15 @@ namespace Force
 	 * The first function is used to retain callback functions that
 	 * are triggered when the second function is invoked,
 	 */
-	export function create<TFormat extends (...args: any[]) => void>()
+	export function create<TFormat extends (...args: any[]) => void = () => void>()
 	{
-		const fo = new ForceObject<TFormat>();
+		type TExecutor = (...data: Parameters<TFormat>) => void;
 		type TConnector = ((callback: TFormat) => void) & { off(callback: TFormat): void };
+		const fo = new ForceObject<TFormat>();
 		
-		return [fo.connectorFn, fo.executorFn] as [
+		return [fo.connectorFn, fo.executorFn] as any as [
 			TConnector,
-			(...data: Parameters<TFormat>) => void,
+			TExecutor,
 		];
 	}
 	
