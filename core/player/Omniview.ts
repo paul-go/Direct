@@ -91,6 +91,9 @@ namespace Player
 			[this.exitReviewFn, this._exitReviewFn] = Force.create<(reason: ExitReason) => void>();
 			
 			this.beginOffsetTopTracking();
+			
+			if (typeof Hat !== "undefined")
+				Hat.wear(this);
 		}
 		
 		private readonly scalerElement;

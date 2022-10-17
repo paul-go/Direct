@@ -89,31 +89,7 @@ namespace App
 				zIndex: 1,
 			});
 			
-			const exitChevron = Hot.div(
-				{
-					position: "sticky",
-					width: 0,
-					height: 0,
-					left: 0,
-					right: 0,
-					margin: "auto",
-					zIndex: 3,
-				},
-				Hot.div(
-					{
-						width: "64px",
-						height: "64px",
-						left: "-32px",
-						paddingTop: "48px",
-					},
-					Icon.chevron(Origin.top, {
-						margin: "auto",
-					}),
-					UI.click(() => this.hideNewPost()),
-				)
-			);
-			
-			this.newPostHat.head.prepend(exitChevron);
+			this.newPostHat.exitFn(() => this.hideNewPost());
 			this.head.append(this.newPostHat.head);
 			await UI.wait(1);
 			
@@ -142,9 +118,7 @@ namespace App
 				return;
 			
 			if (newPostHat.isKeepingRecord)
-			{
 				this.createHomeListHat();
-			}
 			
 			this.homeHatCore.style.display = "block";
 			await UI.wait();

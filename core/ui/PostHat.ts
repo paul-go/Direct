@@ -41,6 +41,30 @@ namespace App
 						opacity: 1,
 					},
 					minHeight,
+					this.exitChevron = Hot.div(
+						"exit-chevron",
+						{
+							position: "sticky",
+							width: 0,
+							height: 0,
+							left: 0,
+							right: 0,
+							margin: "auto",
+							zIndex: 3,
+						},
+						Hot.div(
+							{
+								width: "64px",
+								height: "64px",
+								left: "-32px",
+								paddingTop: "48px",
+							},
+							Icon.chevron(Origin.top, {
+								margin: "auto",
+							}),
+							UI.click(() => this._exitFn()),
+						)
+					),
 					this.scenesElement = Hot.div(
 						"scenes-element",
 						minHeight,
@@ -49,7 +73,6 @@ namespace App
 							paddingBottom: record.isHomePost ? "50px" : "33vh"
 						}),
 					),
-					
 					Hot.div(
 						"no-scenes-message",
 						UI.anchor(),
@@ -72,12 +95,22 @@ namespace App
 				AppContainer.of(this).blog.postStream.update(this.record);
 			});
 			
+			const fns = Force.create();
+			[this.exitFn, this._exitFn] = fns;
+			
+			if (!this.record.isHomePost)
+				this.exitFn(() => Hat.up(this, Player.Omniview)?.gotoPreviews());
+			
 			Hat.wear(this);
 		}
 		
 		readonly scenes;
 		private readonly scenesElement;
 		private readonly noScenesBox;
+		private readonly exitChevron;
+		
+		readonly exitFn;
+		private readonly _exitFn;
 		
 		/** */
 		private renderNoScenes()
