@@ -533,6 +533,7 @@ namespace App.Model
 				// Model.retain() function is recursive, so explicitly
 				// saving child objects is unnecessary.
 				const ownerAncestry = ownersOf(dirtyObject);
+				
 				for (let i = -1; ++i < ownerAncestry.length;)
 					ownerAncestry.push(...ownersOf(ownerAncestry[i]));
 				
@@ -628,18 +629,19 @@ namespace App.Model
 		{
 			for (const storedOwner of storedOwners)
 			{
-				const actualChildren = new Set(childrenOf(storedOwner));
-				if (!actualChildren.has(child))
-					storedOwners.delete(storedOwner);
+				const actualChildren = Array.from(childrenOf(storedOwner));
+				const childIdx = actualChildren.indexOf(child);
+				if (childIdx >= 0)
+					storedOwners.splice(childIdx, 1);
 			}
 			
-			storedOwners.add(owner);
+			storedOwners.push(owner);
 		}
 		
-		ownerTable.set(child, storedOwners || new Set([owner]));
+		ownerTable.set(child, storedOwners || [owner]);
 	}
 	
-	const ownerTable = new WeakMap<object, Set<object>>();
+	const ownerTable = new WeakMap<object, object[]>();
 	
 	//# Helpers
 	
