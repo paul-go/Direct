@@ -101,6 +101,10 @@ namespace App
 			const statusHat = PublishStatusHat.get(this.name);
 			const postsChanged: PostRecord[] = [];
 			const slugs: string[] = [];
+			const home = this.blog.homePost;
+			
+			if (home.dateModified > home.getPublishDate(this.name))
+				postsChanged.push(home);
 			
 			for (const future of this.blog.postStream.query())
 			{
