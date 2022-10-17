@@ -72,7 +72,7 @@ namespace App
 			const futuresMap = new WeakMap<Player.Scenery, PostStreamRecordFuture>();
 			const elements = [styleElement, scenery.head];
 			
-			if (blog.postStream.length > 1)
+			if (blog.postStream.length > 2)
 			{
 				const omniview = new Player.Omniview<Player.Scenery>();
 				omniview.size = 2;

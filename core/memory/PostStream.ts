@@ -31,20 +31,10 @@ namespace App
 		}
 		
 		/**
-		 * Returns an array of PostStreamRecordFuture objects within
-		 * the given range, ignoring the home post;
+		 * Returns an array of PostStreamRecordFuture objects
+		 * within the given range.
 		 */
-		query(rangeStart: number = 0, rangeEnd?: number)
-		{
-			rangeEnd = Math.min(this.tuples.length, (rangeEnd || rangeStart) + 1);
-			return this.queryAll(rangeStart + 1, rangeEnd);
-		}
-		
-		/**
-		 * Returns an array of PostStreamRecordFuture objects within
-		 * the given range, potentially including the home post;
-		 */
-		queryAll(rangeStart: number = 0, rangeEnd = this.tuples.length)
+		query(rangeStart: number = 0, rangeEnd = this.tuples.length)
 		{
 			const slice = this.tuples.slice(rangeStart, rangeEnd);
 			const tupleSlice = slice.map(s => s.split(tupleSeparator) as [string, string]);
@@ -96,6 +86,32 @@ namespace App
 			const tuple = [sceneKey, postKey].join(tupleSeparator);
 			this.tuples.unshift(tuple);
 			this.queueSave();
+		}
+		
+		/**
+		 * This method should be called when the list of scenes has
+		 * changed within a PostRecord, so that the PostStream can
+		 * be updated accordingly, 
+		 */
+		update(post: PostRecord)
+		{
+			const postKey = Key.of(post);
+			
+			for (let i = -1; ++i < this.tuples.length;)
+			{
+				let [sceneKey, currentPostKey] = this.tuples[i].split(tupleSeparator);
+				
+				if (currentPostKey === postKey)
+				{
+					sceneKey = "";
+					if (post.scenes.length > 0)
+						sceneKey = Key.of(post.scenes[0]);
+					
+					this.tuples[i] = [sceneKey, postKey].join(tupleSeparator);
+					this.queueSave();
+					break;
+				}
+			}
 		}
 		
 		/** */

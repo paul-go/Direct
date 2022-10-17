@@ -165,11 +165,5 @@ namespace App
 		}
 		
 		private newPostHat: PostHat | null = null;
-		
-		/** */
-		private showMenu()
-		{
-			
-		}
 	}
 }

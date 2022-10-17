@@ -66,10 +66,10 @@ namespace App
 			
 			this.scenes = new Hat.Array(this.scenesElement, SceneHat);
 			this.scenes.insert(...this.record.scenes.map(b => SceneHat.new(b)));
-			this.scenes.observe(() =>
+			this.scenes.observe(async () =>
 			{
-				//this.footerElement.style.display = this.scenes.length > 0 ? "block" : "none";
-				this.save();
+				await this.save();
+				AppContainer.of(this).blog.postStream.update(this.record);
 			});
 			
 			Hat.wear(this);
@@ -120,11 +120,11 @@ namespace App
 		private _isKeepingRecord = false;
 		
 		/** */
-		private save()
+		private async save()
 		{
 			this._isKeepingRecord = true;
 			this.record.scenes = this.scenes.map(hat => hat.record);
-			AppContainer.of(this).blog.retainPost(this.record);
+			await AppContainer.of(this).blog.retainPost(this.record);
 			this.record.dateModified = Date.now();
 		}
 	}

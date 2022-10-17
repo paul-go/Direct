@@ -293,7 +293,7 @@ namespace App
 		{
 			await Model.retain(post, this.keySegment);
 			
-			if (!this.postStream.has(post))
+			if (!post.isHomePost && !this.postStream.has(post))
 				this.postStream.insert(post);
 		}
 		
