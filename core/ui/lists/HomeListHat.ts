@@ -32,15 +32,15 @@ namespace App
 				}
 				
 				if (request.rangeStart === 0)
-					for (let i = futures.length; i < size * size; i++)
-						rectangles.push(this.createFakePost());
+					for (let i = futures.length; i < size * 2; i++)
+						rectangles.push(new FakeEditorRectangleHat());
 				
 				return rectangles;
 			});
 			
 			this.omniview.handleReviewRequest(async rectangle =>
 			{
-				if (!(rectangle instanceof EditorRectangleHat))
+				if (rectangle instanceof FakeEditorRectangleHat)
 					return;
 				
 				const app = AppContainer.of(this);
@@ -68,13 +68,19 @@ namespace App
 		
 		/** */
 		readonly omniview;
-		
+	}
+	
+	/** */
+	class FakeEditorRectangleHat extends EditorRectangleHat
+	{
 		/** */
-		private createFakePost()
+		constructor()
 		{
-			const hat = new EditorRectangleHat();
+			super();
 			
-			hat.setHtml(Hot.div(
+			this.head.style.cursor = "default";
+			
+			this.setHtml(Hot.div(
 				UI.flexVCenter,
 				Player.Omniview.defaultBackground,
 				{
@@ -85,8 +91,6 @@ namespace App
 				},
 				UI.text("?", "40vw", 700),
 			));
-			
-			return hat;
 		}
 	}
 	

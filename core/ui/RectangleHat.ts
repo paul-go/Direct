@@ -14,9 +14,6 @@ namespace App
 					pointerEvents: "none",
 				}),
 				Player.Omniview.defaultBackground,
-				{
-					cursor: "pointer",
-				},
 				Hot.get(this)(
 					Hot.on(window, "resize", () => this.deferUpdateImage())
 				)

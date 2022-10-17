@@ -490,7 +490,6 @@ namespace Player
 			if (this._mode === OmniviewMode.review)
 				return;
 			
-			this._enterReviewFn(previewHat);
 			let scenery: Scenery;
 			
 			// If the previewHat is already a scenery, then we just need
@@ -505,6 +504,8 @@ namespace Player
 					this.scenesCache.get(previewHat) ||
 					await this.scenesRequestFn?.(previewHat);
 				
+				this._enterReviewFn(previewHat);
+				
 				if (scenes)
 				{
 					this.scenesCache.set(previewHat, scenes);
@@ -518,6 +519,8 @@ namespace Player
 				const requestResult = await this.reviewRequestFn?.(previewHat);
 				if (!requestResult)
 					return;
+				
+				this._enterReviewFn(previewHat);
 				
 				scenery = requestResult instanceof Scenery ?
 					requestResult :
