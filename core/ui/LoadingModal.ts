@@ -12,6 +12,7 @@ namespace App
 				UI.anchor(),
 				UI.flexCenter,
 				{
+					position: "fixed",
 					borderRadius: "inherit",
 					transitionDuration: "0.75s",
 					zIndex: 999,
