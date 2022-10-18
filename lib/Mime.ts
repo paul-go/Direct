@@ -24,7 +24,7 @@ namespace Mime
 		
 		// Videos
 		mp4 = "video/mp4",
-		webm = "video/av1",
+		webm = "video/webm",
 		
 		// Zip
 		zip = "application/zip",
