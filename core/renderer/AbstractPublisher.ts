@@ -98,13 +98,20 @@ namespace App
 		{
 			Hat.nearest(this.blogResolver || document.body, MainMenuHat)?.hide();
 			
-			const statusHat = PublishStatusHat.get(this.name);
 			const postsChanged: PostRecord[] = [];
 			const slugs: string[] = [];
 			const home = this.blog.homePost;
 			
 			if (home.dateModified > home.getPublishDate(this.name))
 				postsChanged.push(home);
+			
+			if (postsChanged.length === 0)
+			{
+				alert("Everything is up to date.");
+				return;
+			}
+			
+			const statusHat = PublishStatusHat.get(this.name);
 			
 			for (const future of this.blog.postStream.query())
 			{
