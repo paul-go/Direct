@@ -17,19 +17,17 @@ namespace App
 		{
 			this.future = future;
 			this.updateDraftStatus();
-			const sceneRecord = await future.getScene();
-			const renderer = SceneRenderer.new(sceneRecord, true);
-			const sceneElement = await renderer.render();
-			this.setHtml(sceneElement);
-			this._scene = sceneRecord;
+			this.repaint();
 		}
 		
 		/** */
-		getScene()
+		async repaint()
 		{
-			return Not.nullable(this._scene);
+			const scene = await Not.nullable(this.future).getScene();
+			const renderer = SceneRenderer.new(scene, true);
+			const sceneElement = await renderer.render();
+			this.setHtml(sceneElement);
 		}
-		private _scene: SceneRecord | null = null;
 		
 		/** */
 		getPost()

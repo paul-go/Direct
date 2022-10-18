@@ -58,6 +58,11 @@ namespace App
 				return scenery;
 			});
 			
+			this.omniview.exitReviewFn(() =>
+			{
+				this.omniview.currentPreview?.repaint();
+			});
+			
 			When.connected(this.omniview.head, () =>
 			{
 				this.omniview.gotoPreviews();
