@@ -593,7 +593,7 @@ namespace Player
 					s.element === exitUpElement || 
 					s.element === exitDownElement);
 				
-				const isExitingDown = state?.element === exitDownElement
+				const isExitingDown = state?.element === exitDownElement;
 				
 				let mul = 1;
 				if (state)
@@ -611,13 +611,15 @@ namespace Player
 				this.setScalerTransform(mul);
 				
 				if (!this.portalPlaceholder)
+				{
 					this.reviewContainer.style.opacity = mul.toString();
-				
+				}
 				else if (isExitingDown)
 				{
 					const scene = scenery.get(1);
-					const opacity = 1 - mul;
-					scene.draw(opacity);
+					const scene0State = states.find(state => state.element === scene.element);
+					if (!scene0State)
+						scene.draw(1 - mul);
 				}
 				
 				// Actually exit

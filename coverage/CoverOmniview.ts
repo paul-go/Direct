@@ -61,7 +61,7 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverOmniviewPortal()
+	export async function coverOmniviewPortalMultipleScenes()
 	{
 		App.Css.append();
 		const omniview = new Player.Omniview<Player.Scenery>();
@@ -108,6 +108,40 @@ namespace Cover
 				new Text("Last Screen")
 			)
 		]);
+		
+		document.body.append(omniview.head);
+		omniview.gotoPreviews();
+	}
+	
+	/** */
+	export async function coverOmniviewPortalOneScene()
+	{
+		App.Css.append();
+		const omniview = new Player.Omniview<Player.Scenery>();
+		
+		omniview.handlePreviewRequest(async req =>
+		{
+			const count = req.rangeEnd - req.rangeStart;
+			const sceneries: Promise<Player.Scenery>[] = [];
+			
+			for (let i = -1; ++i < count;)
+			{
+				const scenery = new Player.Scenery();
+				scenery.insert(
+					Hot.div(
+						squareClass,
+						{
+							backgroundImage: randomBackground(),
+							height: "100vh",
+						},
+						new Text("Post " + i)
+					),
+				);
+				sceneries.push(Promise.resolve(scenery));
+			}
+			
+			return sceneries;
+		});	
 		
 		document.body.append(omniview.head);
 		omniview.gotoPreviews();
