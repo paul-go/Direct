@@ -25,9 +25,8 @@ namespace App
 				this.previewRoot = Hot.div(
 					"preview-root",
 					UI.anchor(),
+					UI.overflow("hidden", "overlay"),
 					{
-						overflowX: "hidden",
-						overflowY: "auto",
 						borderRadius: "inherit",
 					},
 					When.connected(() => this.renderPreview(post, blog)),

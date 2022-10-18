@@ -712,6 +712,40 @@ namespace App
 		const prefixes = new Map<Literal<string, string>, string>();
 		
 		/** */
+		export function overflow(
+			overflowX: "hidden" | "auto" | "overlay",
+			overflowY = overflowX)
+		{
+			if (overflowX !== "overlay" && overflowY !== "overlay")
+			{
+				return overflowX === overflowY ? 
+					{ overflow: overflowX } :
+					{ overflow: overflowX + " " + overflowY };
+			}
+			
+			if (overflowX === overflowY)
+			{
+				return [
+					{ overflow: "auto" },
+					{ overflow: "overlay" }
+				];
+			}
+			
+			if (overflowX === "overlay")
+			{
+				return [
+					{ overflow: "auto hidden" },
+					{ overflow: "overlay hidden" },
+				];
+			}
+			
+			return [
+				{ overflow: "hidden auto" },
+				{ overflow: "hidden overlay" },
+			];
+		}
+		
+		/** */
 		export async function lockBody(innerFn: () => Promise<void>)
 		{
 			document.body.style.overflow = "hidden";

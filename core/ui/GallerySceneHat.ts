@@ -13,11 +13,10 @@ namespace App
 				
 				this.galleryContainer = Hot.div(
 					"gallery-container",
+					UI.overflow("overlay", "hidden"),
 					{
 						height: "100%",
 						scrollSnapType: "x mandatory",
-						overflowX: "auto",
-						overflowY: "hidden",
 						whiteSpace: "nowrap",
 						borderRadius: "inherit",
 					},

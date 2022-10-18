@@ -221,7 +221,7 @@ namespace App.Css
 			rule("." + CssClass.galleryScene, {
 				"height": "100%",
 				"scroll-snap-type": "x mandatory",
-				"overflow-x": "auto",
+				"overflow-x": ["auto", "overlay"],
 				"overflow-y": "hidden",
 				"background-color": "black",
 				"white-space": "nowrap",

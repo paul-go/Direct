@@ -12,10 +12,11 @@ namespace Player
 			this.head = Hot.div(
 				"scenery",
 				{
-					overflowX: "hidden",
-					overflowY: "auto",
 					height: "100vh",
+					overflowX: "hidden",
 				},
+				{ overflowY: "auto" },
+				{ overflowY: "overlay" },
 				Hot.css(`& > .${Class.anchor}, & > .${Class.spacer}`, {
 					zIndex: -1,
 					position: "relative",

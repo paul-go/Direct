@@ -78,18 +78,20 @@ namespace App
 		/** */
 		private async addNewPost()
 		{
-			this.newPostHat = Hot.get(new PostHat())({
-				position: "fixed",
-				top: 0,
-				left: 0,
-				right: 0,
-				height: "100%",
-				overflowY: "auto",
-				transform: "translateY(100vh)",
-				transitionProperty: "inherit",
-				transitionDuration: "inherit",
-				zIndex: 1,
-			});
+			this.newPostHat = Hot.get(new PostHat())(
+				UI.overflow("hidden", "overlay"),
+				{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					right: 0,
+					height: "100%",
+					transform: "translateY(100vh)",
+					transitionProperty: "inherit",
+					transitionDuration: "inherit",
+					zIndex: 1,
+				}
+			);
 			
 			this.newPostHat.exitFn(() => this.hideNewPost());
 			this.head.append(this.newPostHat.head);
