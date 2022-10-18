@@ -82,6 +82,7 @@ namespace App
 			const folderName = post.slug;
 			const postFinal = await createPostFinal(post, blog);
 			const files: IRenderedFile[] = [];
+			const hasIndepth = postFinal.scenes.length > 1;
 			
 			if (postFinal.scenes.length === 0)
 				return files;
@@ -90,7 +91,11 @@ namespace App
 			{
 				const indexEmitter = new IndexHtmlEmitter();
 				indexEmitter.addInlineCss(postFinal.cssText);
-				const data = indexEmitter.emit(postFinal.scenes[0], folderName ? 1 : 0);
+				const data = indexEmitter.emit(postFinal.scenes[0], {
+					folderDepth: folderName ? 1 : 0,
+					hasIndepth,
+					hasIndexList: blog.postStream.length > 1
+				});
 				
 				files.push({
 					data,
@@ -101,7 +106,7 @@ namespace App
 			}
 			
 			// Indepth HTML file
-			if (postFinal.scenes.length > 1)
+			if (hasIndepth)
 			{
 				const indepthEmitter = new HtmlEmitter();
 				const data = indepthEmitter.emit(postFinal.scenes.slice(1));

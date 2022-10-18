@@ -5,33 +5,45 @@ namespace App
 	export class IndexHtmlEmitter extends HtmlEmitter
 	{
 		/** */
-		emit(sceneElement: HTMLElement, folderDepth = 0)
+		emit(sceneElement: HTMLElement, options: IndexHtmlEmitterOptions = {})
 		{
 			const nocache = this.minify ? "" : "?" + Date.now();
-			const relative = "../".repeat(folderDepth);
+			const relative = "../".repeat(options.folderDepth || 0);
 			const metaCharset = Hot.meta();
 			metaCharset.setAttribute("charset", "utf-8");
 			
-			return super.emit([
+			const elements: HTMLElement[] = [
 				metaCharset,
 				Hot.meta({ name: "theme-color", content: "#000000" }),
 				Hot.meta({
 					name: "viewport",
-					content: "width=device-width, initial-scale=1, user-scalable=no" }),
+					content: "width=device-width, initial-scale=1, user-scalable=no"
+				}),
 				Hot.meta({
 					name: "apple-mobile-web-app-capable",
 					content: "yes"
 				}),
-				Hot.link({
+			];
+			
+			if (options.hasIndexList)
+			{
+				elements.push(Hot.link({
 					rel: ConstS.essIndexListKey,
 					type: "text/plain",
 					href: relative + ConstS.essIndexListDefaultValue,
-				}),
-				Hot.link({
+				}));
+			}
+			
+			if (options.hasIndepth)
+			{
+				elements.push(Hot.link({
 					rel: ConstS.essIndepthKey,
 					type: "text/html",
 					href: ConstS.essIndepthDefaultValue,
-				}),
+				}));
+			}
+			
+			elements.push(
 				Hot.link({
 					rel: "stylesheet",
 					type: "text/css",
@@ -41,7 +53,17 @@ namespace App
 				Hot.script({
 					src: "/" + ConstS.jsFileNamePlayer + nocache
 				}),
-			]);
+			);
+			
+			return super.emit(elements);
 		}
+	}
+	
+	/** */
+	export interface IndexHtmlEmitterOptions
+	{
+		folderDepth?: number;
+		hasIndexList?: boolean;
+		hasIndepth?: boolean;
 	}
 }

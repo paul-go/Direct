@@ -61,6 +61,9 @@ namespace Player
 	 */
 	async function getIndepthSections(indepthUrl = getIndepthUrl())
 	{
+		if (!indepthUrl)
+			return [];
+		
 		const indepthHtml = await getHttpFile(indepthUrl);
 		const indepthFolder = Url.folderOf(indepthUrl);
 		const indepthDoc = new ForeignDocumentSanitizer(indepthHtml, indepthFolder).read();

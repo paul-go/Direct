@@ -5,23 +5,17 @@ namespace Player
 	export namespace Url
 	{
 		/**
-		 * Returns the URL to the containing folder of the specified URL.
-		 * 
+		 * Returns the URL of the containing folder of the specified URL.
+		 * The provided URL must be valid, or an exception will be thrown.
 		 */
 		export function folderOf(url: string)
 		{
-			{
-				const lo = new URL(url);
-				const parts = lo.pathname.split("/");
-				if (parts[parts.length - 1].includes("."))
-					parts.pop();
-				
-				const path = parts.join("/");
-				return join(lo.protocol + "//" + lo.host, path);
-			}
-			
 			const lo = new URL(url);
-			const path = lo.pathname.slice(0, Math.max(0, lo.pathname.lastIndexOf("/")));
+			const parts = lo.pathname.split("/");
+			if (parts[parts.length - 1].includes("."))
+				parts.pop();
+			
+			const path = parts.join("/");
 			return join(lo.protocol + "//" + lo.host, path);
 		}
 		
