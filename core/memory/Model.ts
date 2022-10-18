@@ -489,7 +489,7 @@ namespace App.Model
 			},
 			set(target, p, value, receiver)
 			{
-				throw "The .length property is not writable.";
+				throw `The ${String(p)} property is not writable.`;
 			},
 		});
 	}
