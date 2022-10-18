@@ -12,13 +12,16 @@ namespace App
 		 * omitted, this indicates that this PostHat should create it a new, 
 		 * unsaved record.
 		 */
-		constructor(readonly record = new PostRecord())
+		constructor(record?: PostRecord)
 		{
-			this._isKeepingRecord = !!record;
+			this.didCreateRecord = !record;
+			if (!record)
+				record = new PostRecord();
+			
+			this.record = record;
 			const minHeight: Hot.Param = { minHeight: record.isHomePost ? "85vh" : "100vh" };
 			
 			this.head = Hot.div(
-				"post-hat",
 				{
 					backgroundColor: UI.darkGrayBackground,
 				},
@@ -79,25 +82,28 @@ namespace App
 			);
 			
 			this.scenes = new Hat.Array(this.scenesElement, SceneHat);
-			this.scenes.insert(...this.record.scenes.map(b => SceneHat.new(b)));
-			this.scenes.observe(async () =>
-			{
-				await this.save();
-				AppContainer.of(this).blog.postStream.update(this.record);
-			});
+			this.scenes.insert(...record.scenes.map(b => SceneHat.new(b)));
+			this.scenes.observe(() => this.save());
 			
 			const fns = Force.create();
 			[this.exitFn, this._exitFn] = fns;
 			
-			if (!this.record.isHomePost)
-				this.exitFn(() => Hat.up(this, Player.Omniview)?.gotoPreviews());
+			if (!record.isHomePost)
+			{
+				this.exitFn(() => 
+				{
+					Hat.up(this, Player.Omniview)?.gotoPreviews();
+				});
+			}
 			
 			Hat.wear(this);
 		}
 		
 		readonly scenes;
+		readonly record;
 		private readonly scenesElement;
 		private readonly noScenesBox;
+		private readonly didCreateRecord;
 		
 		readonly exitFn;
 		private readonly _exitFn;
@@ -135,20 +141,29 @@ namespace App
 			);
 		}
 		
-		/** */
-		get isKeepingRecord()
+		/**
+		 * Gets whether a new PostRecord is being created by this PostHat,
+		 * and whether that new PostRecord should be stored. Note that
+		 * PostRecords shouldn't be stored unless at least a single scene
+		 * has been added.
+		 */
+		get isStoringNewPost()
 		{
-			return this._isKeepingRecord;
+			return this._isStoringNewPost;
 		}
-		private _isKeepingRecord = false;
+		private _isStoringNewPost = false;
 		
 		/** */
 		private async save()
 		{
-			this._isKeepingRecord = true;
+			if (this.didCreateRecord)
+				this._isStoringNewPost = true;
+			
+			const blog = AppContainer.of(this).blog;
 			this.record.scenes = this.scenes.map(hat => hat.record);
-			await AppContainer.of(this).blog.retainPost(this.record);
+			await blog.retainPost(this.record);
 			this.record.dateModified = Date.now();
+			blog.postStream.update(this.record);
 		}
 	}
 }

@@ -215,6 +215,27 @@ namespace App
 		
 		//# Record Related
 		
+		/**
+		 * Generates a default slug that is unique to the 
+		 * list of PostRecords in this PostStream.
+		 */
+		export function createSlug()
+		{
+			const epoch = 1666048500000;
+			const date = new Date();
+			
+			const slug = 
+				date.getFullYear() + 
+				"-" + 
+				("0" + (date.getMonth() + 1)).slice(-2) + 
+				"-" +
+				("0" + (date.getDate() + 1)).slice(-2) +
+				"-" +
+				(Date.now() - epoch);
+			
+			return slug;
+		}
+		
 		/** */
 		export function createMediaRecords(
 			files: FileLike[],
@@ -250,20 +271,6 @@ namespace App
 			return media ?
 				Mime.classOf(media.type) :
 				null;
-		}
-		
-		/**
-		 * 
-		 */
-		export function generatePostSlug()
-		{
-			const date = new Date();
-			return (
-				date.getFullYear() + 
-				"-" + 
-				("0" + (date.getMonth() + 1)).slice(-2) + 
-				"-" +
-				("0" + (date.getDate() + 1)).slice(-2));
 		}
 		
 		/** */

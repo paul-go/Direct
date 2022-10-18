@@ -9,7 +9,7 @@ namespace App
 	{
 		title = "";
 		description = "";
-		slug = Util.generatePostSlug();
+		slug = Util.createSlug();
 		isDraft = false;
 		dateCreated = Date.now();
 		dateModified = Date.now();
