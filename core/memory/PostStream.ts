@@ -27,21 +27,23 @@ namespace App
 		 */
 		get length()
 		{
-			return this.tuples.length;
+			return this.tuples.length / 2;
 		}
 		
 		/**
 		 * Returns an array of PostStreamRecordFuture objects
 		 * within the given range.
 		 */
-		query(rangeStart: number = 0, rangeEnd = this.tuples.length)
+		query(rangeStart: number = 0, rangeEnd = this.tuples.length / 2)
 		{
-			const slice = this.tuples.slice(rangeStart, rangeEnd);
-			const tupleSlice = slice.map(s => s.split(tupleSeparator) as [string, string]);
+			const slice = this.tuples.slice(rangeStart * 2, rangeEnd * 2);
 			const results: PostStreamRecordFuture[] = [];
 			
-			for (const [sceneKey, postKey] of tupleSlice)
+			for (let i = 0; i < slice.length; i += 2)
 			{
+				const sceneKey = slice[i];
+				const postKey = slice[i +1];
+				
 				results.push({
 					getScene()
 					{
@@ -83,8 +85,7 @@ namespace App
 		{
 			const sceneKey = post.scenes.length ? Key.of(post.scenes[0]) : "";
 			const postKey = Not.falsey(Key.of(post));
-			const tuple = [sceneKey, postKey].join(tupleSeparator);
-			this.tuples.unshift(tuple);
+			this.tuples.unshift(sceneKey, postKey);
 			this.queueSave();
 		}
 		
@@ -97,17 +98,11 @@ namespace App
 		{
 			const postKey = Key.of(post);
 			
-			for (let i = -1; ++i < this.tuples.length;)
+			for (let i = 0; i < this.tuples.length; i += 2)
 			{
-				let [sceneKey, currentPostKey] = this.tuples[i].split(tupleSeparator);
-				
-				if (currentPostKey === postKey)
+				if (this.tuples[i + 1] === postKey)
 				{
-					sceneKey = "";
-					if (post.scenes.length > 0)
-						sceneKey = Key.of(post.scenes[0]);
-					
-					this.tuples[i] = [sceneKey, postKey].join(tupleSeparator);
+					this.tuples[i] = post.scenes.length > 0 ? Key.of(post.scenes[0]) : "";
 					this.queueSave();
 					break;
 				}
@@ -117,7 +112,7 @@ namespace App
 		/** */
 		delete(index: number)
 		{
-			const count = this.tuples.splice(index, 1).length;
+			const count = this.tuples.splice(index, 2).length;
 			if (count > 0)
 				this.queueSave();
 		}
@@ -128,12 +123,15 @@ namespace App
 			if (targetIndex === newIndex)
 				return;
 			
-			const tuple = this.tuples.splice(targetIndex, 1)[0];
-			if (!tuple)
+			targetIndex *= 2;
+			newIndex *= 2;
+			
+			const tuple = this.tuples.splice(targetIndex, 2);
+			if (tuple.length !== 2)
 				return;
 			
-			const idx = newIndex + (targetIndex < newIndex ? 0 : 1);
-			this.tuples.splice(idx, 0, tuple);
+			const idx = newIndex + (targetIndex < newIndex ? 0 : 2);
+			this.tuples.splice(idx, 0, ...tuple);
 			this.queueSave();
 		}
 		
@@ -158,6 +156,4 @@ namespace App
 		getPost(): Promise<PostRecord>;
 		getPartialPost(): Promise<PartialPostRecord>;
 	}
-	
-	const tupleSeparator = ":";
 }
