@@ -83,6 +83,8 @@ namespace App
 				top: 0,
 				left: 0,
 				right: 0,
+				height: "100%",
+				overflowY: "auto",
 				transform: "translateY(100vh)",
 				transitionProperty: "inherit",
 				transitionDuration: "inherit",
@@ -117,7 +119,9 @@ namespace App
 			if (!newPostHat)
 				return;
 			
-			if (newPostHat.isKeepingRecord)
+			// Re-create the HomeListHat, because it will have a modified set
+			// of posts if the user has decided to keep the newly created post.
+			if (newPostHat.isStoringNewPost)
 				this.createHomeListHat();
 			
 			this.homeHatCore.style.display = "block";
