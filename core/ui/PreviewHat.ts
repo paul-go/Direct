@@ -25,7 +25,7 @@ namespace App
 				this.previewRoot = Hot.div(
 					"preview-root",
 					UI.anchor(),
-					UI.overflow("hidden", "overlay"),
+					Player.scrollable("y"),
 					{
 						borderRadius: "inherit",
 					},

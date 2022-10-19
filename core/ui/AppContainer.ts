@@ -37,6 +37,7 @@ namespace App
 			
 			Hot.get(head)(
 				CssClass.appContainer,
+				Player.scrollable("y"),
 				{
 					minHeight: "100%",
 				},

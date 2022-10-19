@@ -79,7 +79,7 @@ namespace App
 		private async addNewPost()
 		{
 			this.newPostHat = Hot.get(new PostHat())(
-				UI.overflow("hidden", "overlay"),
+				Player.scrollable("y"),
 				{
 					position: "fixed",
 					top: 0,

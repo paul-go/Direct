@@ -43,13 +43,6 @@ namespace App.Css
 				"color": "inherit",
 				"font-size": "inherit",
 			}),
-			rule("::-webkit-scrollbar", {
-				"background-color": UI.darkGrayBackground,
-			}),
-			rule("::-webkit-scrollbar-thumb", {
-				"background-color": UI.gray(128, 0.5),
-				"border-radius": "99px",
-			}),
 			rule(":root", {
 				"background-color": "black",
 				"color": "white",

@@ -189,6 +189,9 @@ namespace Player
 		else
 			marker.after(scenery.head);
 		
+		// Convert the <body> tag to use overlay scrollbars.
+		Hot.get(document.body)(scrollable("y"));
+		
 		(async () =>
 		{
 			const indepthSections = await getIndepthSections();
