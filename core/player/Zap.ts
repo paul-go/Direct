@@ -95,7 +95,6 @@ namespace Player
 			return null;
 		
 		const omniview = new Omniview<Scenery>();
-		omniview.size = 2;
 		
 		omniview.handlePreviewRequest(async req =>
 		{

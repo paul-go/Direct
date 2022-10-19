@@ -74,7 +74,6 @@ namespace App
 			if (blog.postStream.length > 2)
 			{
 				const omniview = new Player.Omniview<Player.Scenery>();
-				omniview.size = 2;
 				
 				omniview.handlePreviewRequest(async req =>
 				{

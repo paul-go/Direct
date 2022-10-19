@@ -21,7 +21,7 @@ namespace Player
 			return this._defaultBackground = Hot.css({
 				backgroundImage: `url(${canvas.toDataURL()})`,
 				backgroundSize: "100% 100%",
-			});;
+			});
 		}
 		private static _defaultBackground: Hot.Sheet | null = null;
 		
@@ -84,8 +84,17 @@ namespace Player
 				)
 			);
 			
-			this.size = 4;
-			Resize.watch(this.head, () => this.updatePreviewVisibility());
+			this.setSizeInner(calculateNaturalSize());
+			Resize.watch(this.head, async () =>
+			{
+				if (!this.userHasSetSize)
+				{
+					this.setSizeInner(calculateNaturalSize());
+					await new Promise(r => setTimeout(r));
+				}
+				
+				this.updatePreviewVisibility();
+			});
 			
 			[this.enterReviewFn, this._enterReviewFn] = Force.create<(hat: THat) => void>();
 			[this.exitReviewFn, this._exitReviewFn] = Force.create<(reason: ExitReason) => void>();
@@ -162,6 +171,13 @@ namespace Player
 		}
 		set size(size: number)
 		{
+			this.setSizeInner(size);
+			this.userHasSetSize = true;
+		}
+		
+		/** */
+		private setSizeInner(size: number)
+		{
 			size = Math.max(minSize, Math.min(size, maxSize));
 			if (size === this._size)
 				return;
@@ -207,7 +223,9 @@ namespace Player
 				animate().then(() => updateClass());
 			}
 		}
+		
 		private _size = -1;
+		private userHasSetSize = false;
 		
 		private readonly sizeClasses: ReadonlyMap<number, string>;
 		
@@ -834,6 +852,28 @@ namespace Player
 		};
 		
 		return sizeClasses;
+	}
+	
+	/**
+	 * Calculates a comfortable preview size based on the size and pixel density
+	 * of the screen. (The technique used is probably quite faulty, but good enough
+	 * for most scenarios).
+	 */
+	function calculateNaturalSize()
+	{
+		const dp1 = window.devicePixelRatio === 1;
+		const logicalWidth = window.innerWidth / window.devicePixelRatio;
+		
+		if (logicalWidth <= (dp1 ? 900 : 450))
+			return 2;
+		
+		if (logicalWidth <= (dp1 ? 1400 : 700))
+			return 3;
+		
+		if (logicalWidth <= 1800)
+			return 4;
+		
+		return 5;
 	}
 	
 	const minSize = 2;
