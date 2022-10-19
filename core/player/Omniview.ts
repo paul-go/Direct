@@ -930,20 +930,6 @@ namespace Player
 	}).class;
 	
 	/** */
-	const disableScrollBarsClass = Hot.css(
-		"&",
-		{
-			scrollbarWidth: "none",
-			msOverflowStyle: "none",
-		},
-		"&::-webkit-scrollbar",
-		{
-			background: "transparent",
-			width: 0
-		}
-	);
-	
-	/** */
 	const transitionRule = Hot.css({
 		transitionDuration: "0.33s",
 		transitionTimingFunction: "ease-in-out",
