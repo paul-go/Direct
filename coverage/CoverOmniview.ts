@@ -187,6 +187,74 @@ namespace Cover
 	}
 	
 	/** */
+	export async function coverOmniviewConstrainedTo1()
+	{
+		createConstainedOmniview(1);
+	}
+	
+	/** */
+	export async function coverOmniviewConstrainedTo2()
+	{
+		createConstainedOmniview(2);
+	}
+	
+	/** */
+	export async function coverOmniviewConstrainedTo3()
+	{
+		createConstainedOmniview(3);
+	}
+	
+	/** */
+	export async function coverOmniviewConstrainedTo4()
+	{
+		createConstainedOmniview(4);
+	}
+	
+	/** */
+	export async function coverOmniviewConstrainedTo5()
+	{
+		createConstainedOmniview(5);
+	}
+	
+	/** */
+	export async function createConstainedOmniview(count: number)
+	{
+		App.Css.append();
+		const omniview = new Player.Omniview<Player.Scenery>();
+		
+		omniview.handlePreviewRequest(async () =>
+		{
+			const sceneries: Promise<Player.Scenery>[] = [];
+			
+			for (let i = -1; ++i < count;)
+			{
+				sceneries.push(new Promise<Player.Scenery>(resolve =>
+				{
+					setTimeout(() =>
+					{
+						resolve(new Player.Scenery().insert(
+							Hot.div(
+								squareClass,
+								{
+									backgroundImage: randomBackground(),
+									height: "100vh",
+								},
+								new Text("Post " + i)
+							),
+						));
+					},
+					i * 500);
+				}));
+			}
+			
+			return sceneries;
+		});	
+		
+		document.body.append(omniview.head);
+		omniview.gotoPreviews();
+	}
+	
+	/** */
 	class Preview
 	{
 		constructor(text: string)

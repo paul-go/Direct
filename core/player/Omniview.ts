@@ -89,7 +89,8 @@ namespace Player
 			{
 				if (!this.userHasSetSize)
 				{
-					this.setSizeInner(calculateNaturalSize());
+					const size = Math.min(this.constrainedSize || 99, calculateNaturalSize());
+					this.setSizeInner(size);
 					await new Promise(r => setTimeout(r));
 				}
 				
@@ -227,6 +228,13 @@ namespace Player
 		private _size = -1;
 		private userHasSetSize = false;
 		
+		/**
+		 * Gets the maximum possible size of the Omniview, 
+		 * given the number of previews that are available.
+		 * A value of 0 indicates that there is no constrained size.
+		 */
+		private constrainedSize = 0;
+		
 		private readonly sizeClasses: ReadonlyMap<number, string>;
 		
 		/** */
@@ -272,8 +280,21 @@ namespace Player
 				rangeEnd,
 			});
 			
-			if (itemRequest.promises.length === 0)
+			const previewCount = itemRequest.promises.length;
+			if (previewCount === 0)
 				return;
+			
+			if (rangeStart === 0 && previewCount < this.size)
+			{
+				// The constrained size cannot go below 2. This means that if there
+				// is only 1 preview returned, the Omniview is going to look a bit
+				// awkward with a preview on the left side of the screen, and an
+				// empty space on the right. If this is undesirable, the component
+				// that owns the Omniview is responsible for avoiding this situation
+				// by it's own means.
+				this.constrainedSize = Math.max(2, previewCount);
+				this.setSizeInner(this.constrainedSize);
+			}
 			
 			const elements: HTMLElement[] = [];
 			
