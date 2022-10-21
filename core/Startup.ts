@@ -72,7 +72,8 @@ namespace App
 		return app;
 	}
 	
-	if (typeof document !== "undefined" && 
-		document.documentElement.hasAttribute(ConstS.appAttribute))
+	if (TAURI ||
+		(typeof document !== "undefined" && 
+		document.documentElement.hasAttribute(ConstS.appAttribute)))
 		setTimeout(() => createApp());
 }
