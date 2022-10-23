@@ -841,9 +841,10 @@ namespace App
 			}
 			
 			const overlay = Hot.div(
+				"spring-menu-overlay",
 				UI.fixed(),
 				{
-					zIndex: 0,
+					zIndex: 5,
 				},
 				Hot.on(document.body, "pointerdown", ev =>
 				{
