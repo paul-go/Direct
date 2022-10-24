@@ -118,7 +118,9 @@ namespace App
 						fontWeight: 600,
 						marginBottom: "30px",
 					},
-					new Text("This post has no scenes."),
+					new Text(this.record.isHomePost ?
+						"Your home page has no scenes." :
+						"This post has no scenes."),
 				),
 				UI.actionButton("filled", 
 					{
