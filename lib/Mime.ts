@@ -59,6 +59,7 @@ namespace Mime
 		{
 			case Class.image: return Class.image;
 			case Class.video: return Class.video;
+			case Class.text: return Class.text;
 		}
 		
 		return Class.other;
