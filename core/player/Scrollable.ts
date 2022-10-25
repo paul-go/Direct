@@ -1,6 +1,9 @@
 
 namespace Player
 {
+	/** Fake */
+	declare const Hat: { wear(target: object): void; };
+	
 	/**
 	 * Converts the element to use custom "overlay" scroll bars 
 	 * (scroll bars that don't take up space), in the case when the

@@ -17,6 +17,12 @@ namespace App
 		formatAsXml = false;
 		
 		/** */
+		themeColor = "";
+		
+		/** */
+		faviconRoot = "";
+		
+		/** */
 		addInlineCss(cssText: string)
 		{
 			if (cssText !== "")
@@ -33,7 +39,34 @@ namespace App
 			em.line("<!DOCTYPE html>");
 			
 			if (this.language)
-				em.tag("html", { lang: this.language });
+				em.open("html", { lang: this.language });
+			
+			em.tag("meta", { charset: "utf-8" });
+			em.tag("meta", { name: "apple-mobile-web-app-capable", content: "yes" });
+			em.tag("meta", {
+				name: "viewport",
+				content: "width=device-width, initial-scale=1, user-scalable=no",
+			});
+			
+			if (this.themeColor)
+			{
+				em.tag("meta", { name: "theme-color", content: this.themeColor });
+				em.tag("meta", { name: "msapplication-TileColor", content: this.themeColor });
+			}
+			
+			if (this.faviconRoot)
+			{
+				em.tag("meta", {
+					name: "msapplication-TileImage",
+					content: RenderUtil.getFaviconUrl(this.faviconRoot, 144),
+				});
+				
+				for (const size of [57, 60, 72, 76, 114, 120, 144, 152, 180])
+					this.createIconLink(em, "apple-touch-icon", size);
+				
+				for (const size of [16, 32, 96, 192])
+					this.createIconLink(em, "icon", size);
+			}
 			
 			if (this.title)
 				em.tag("title", {}, this.title);
@@ -94,7 +127,21 @@ namespace App
 			for (const e of elements)
 				recurse(e);
 			
+			if (this.language)
+				em.close("html");
+			
 			return em.toString();
+		}
+		
+		/** */
+		private createIconLink(em: Emitter, rel: string, size: number)
+		{
+			em.tag("link", {
+				rel,
+				sizes: size + "x" + size,
+				type: "image/png",
+				href: RenderUtil.getFaviconUrl(this.faviconRoot, size),
+			});
 		}
 	}
 }

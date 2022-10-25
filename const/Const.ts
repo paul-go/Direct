@@ -3,7 +3,7 @@
 declare const enum ConstS
 {
 	appName = "Direct",
-	appAttribute = "data-app",
+	launchAppClass = "launch-app",
 	baseFolderPrefix = "post-base-folder-",
 	mainDatabaseName = "main",
 	contrastProperty = "--contrast",

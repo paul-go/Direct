@@ -25,7 +25,7 @@ namespace App
 						opacity: 0.5,
 						top: "-2.25em"
 					},
-					UI.text("https://" + ConstS.premiumDomain + "/", 15, 600),
+					UI.text(ConstS.publicDomain + "/", 15, 600),
 					this.urlHint = new Text()
 				),
 				

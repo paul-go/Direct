@@ -1,6 +1,9 @@
 
 namespace Player
 {
+	/** Fake */
+	declare const Hat: { wear(target: object): void; };
+	
 	/** */
 	export class Omniview<THat extends Hot.HatLike = Hot.HatLike>
 	{

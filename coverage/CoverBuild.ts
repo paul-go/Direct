@@ -11,7 +11,13 @@ namespace Cover
 	{
 		log("Building the development version...");
 		
-		emitHtml(Dir.build, ConstS.jsFileNameApp);
+		const emitter = new App.HtmlEmitter();
+		const htmlText = emitter.emit([
+			Hot.body(),
+			Hot.script({ src: ConstS.jsFileNameApp }),
+		]);
+		
+		emitHtml(Dir.build, htmlText);
 		const defs = new Defs();
 		await emitPlayerJs(Dir.build, defs);
 		copyDependencies(Dir.build);
@@ -22,23 +28,57 @@ namespace Cover
 	export async function coverBuildWeb()
 	{
 		log("Building minified web version...");
-		
-		emitHtml(Dir.bundleWeb, ConstS.jsFileNameAppMin, "favicons");
-		const defs = new Defs();
-		await emitAppJs(Dir.bundleWeb, defs);
-		await emitPlayerJs(Dir.bundleWeb, defs);
-		copyDependencies(Dir.bundleWeb);
-		log("Done.");
+		await innerBuildWeb();
 	}
 	
 	/** */
 	export async function coverBuildWebDebuggable()
 	{
 		log("Building non-minified web version...");
+		await innerBuildWeb("debuggable");
+	}
+	
+	/** */
+	async function innerBuildWeb(debuggable?: "debuggable")
+	{
+		const homePage = new HomePage();
+		const homePageElement = homePage.getElement();
 		
-		emitHtml(Dir.bundleWeb, ConstS.jsFileNameApp, "favicons");
-		await emitAppJs(Dir.bundleWeb);
-		await emitPlayerJs(Dir.bundleWeb);
+		const emitter = new App.HtmlEmitter();
+		emitter.title = "Direct";
+		emitter.themeColor = "#000000";
+		emitter.faviconRoot = "/";
+		
+		emitHtml(Dir.bundleWeb, emitter.emit([
+			Hot.meta({ name: "description", content: "" }),
+			Hot.link({ rel: "stylesheet", type: "text/css", href: "/home.css" }),
+			Hot.link({ rel: "preconnect", href: "https://fonts.bunny.net" }),
+			Hot.link({ rel: "stylesheet", href: "https://fonts.bunny.net/css?family=reggae-one:400" }),
+			Hot.body(
+				ConstS.launchAppClass,
+				homePageElement,
+			),
+			Hot.script({ src: debuggable ? ConstS.jsFileNameApp : ConstS.jsFileNameAppMin }),
+		]));
+		
+		for (const path of Cover.readDirectory(Dir.home))
+			Fs.copyFileSync(path, Dir.bundleWeb + Path.basename(path));
+		
+		const defs = new Defs();
+		await emitAppJs(Dir.bundleWeb, defs);
+		await emitPlayerJs(Dir.bundleWeb, defs);
+		
+		const generalCss = App.Css.createGeneral(true);
+		Fs.writeFileSync(Dir.bundleWeb + ConstS.cssFileNameGeneral, generalCss);
+		
+		const manifest = new App.ManifestJsonEmitter().emit();
+		Fs.writeFileSync(Dir.bundleWeb + "manifest.json", manifest);
+		
+		const faviconPngBlob = Cover.readBlob("resources/icon/icon-16x16.png");
+		const faviconEmitter = new App.FaviconEmitter();
+		const faviconIcoBlob = await faviconEmitter.emitIco(faviconPngBlob);
+		writeBlob(faviconIcoBlob, Dir.bundleWeb, "favicon.ico");
+		
 		copyDependencies(Dir.bundleWeb);
 		log("Done.");
 	}
@@ -50,10 +90,10 @@ namespace Cover
 		
 		const defs = new Defs({
 			TAURI: true,
-			MACOS: true
+			MACOS: true,
 		});
 		
-		emitHtml(Dir.bundleMacOS, ConstS.jsFileNameApp);
+		emitHtmlForDesktop(Dir.bundleMacOS);
 		await emitAppJs(Dir.bundleMacOS, defs);
 		await emitPlayerJs(Dir.bundleMacOS, defs);
 		await emitMacInstaller(Dir.bundleMacOS);
@@ -68,13 +108,30 @@ namespace Cover
 		
 		const defs = new Defs({
 			TAURI: true,
-			WINDOWS: true
+			WINDOWS: true,
 		});
 		
-		emitHtml(Dir.bundleWindows, ConstS.jsFileNameApp);
+		emitHtmlForDesktop(Dir.bundleWindows);
 		await emitAppJs(Dir.bundleWindows, defs);
 		await emitPlayerJs(Dir.bundleWindows, defs);
 		copyDependencies(Dir.bundleWindows);
+		log("Done.");
+	}
+	
+	/** */
+	export async function coverBuildLinux()
+	{
+		log("Building Linux desktop app (this may take a while)...");
+		
+		const defs = new Defs({
+			TAURI: true,
+			LINUX: true,
+		});
+		
+		emitHtmlForDesktop(Dir.bundleLinux);
+		await emitAppJs(Dir.bundleLinux, defs);
+		await emitPlayerJs(Dir.bundleLinux, defs);
+		copyDependencies(Dir.bundleLinux);
 		log("Done.");
 	}
 	
@@ -103,24 +160,32 @@ namespace Cover
 	//# Helper Functions
 	
 	/** */
+	function emitHtmlForDesktop(dir: string)
+	{
+		const emitter = new App.HtmlEmitter();
+		emitHtml(dir, emitter.emit([
+			Hot.body(),
+			Hot.script({ src: ConstS.jsFileNameApp }),
+		]));
+	}
+	
+	/** */
 	function copyDependencies(targetDirectory: string)
 	{
-		const copyOne = (fileName: string) =>
+		const copyOne = (dir: string, fileName: string) =>
 		{
 			const targetPath = Path.join(targetDirectory, fileName);
-			Fs.copyFileSync(Path.join(Dir.lib, fileName), targetPath);
+			const sourcePath = Path.join(dir, fileName);
+			Fs.copyFileSync(sourcePath, targetPath);
 			log("Copied dependency to: " + targetPath);
 		}
 		
-		copyOne("trix.js");
-		copyOne("jszip.js");
-		copyOne("res.blur-black.png");
-		copyOne("res.blur-white.png");
-		copyOne("favicon.ico");
+		for (const jsFile of Fs.readdirSync(Dir.lib))
+			if (jsFile.endsWith(".js"))
+				copyOne(Dir.lib, jsFile);
 		
-		for (const fontFile of Fs.readdirSync(Dir.lib))
-			if (fontFile.startsWith("font-"))
-				copyOne(fontFile);
+		for (const fontFile of Fs.readdirSync(Dir.fonts))
+			copyOne(Dir.fonts, fontFile);
 	}
 	
 	/** */
@@ -149,45 +214,11 @@ namespace Cover
 	}
 	
 	/** */
-	function emitHtml(saveDirectory: string, appJsFileName: string, favicons?: "favicons")
+	function emitHtml(saveDirectory: string, htmlText: string)
 	{
 		Fs.mkdirSync(saveDirectory, { recursive: true });
-		
-		const lines = [
-			`<!DOCTYPE html>`,
-			`<html lang="en-us" ${ConstS.appAttribute}>`,
-			`<meta charset="utf-8">`,
-			`<meta name="theme-color" content="#000000">`,
-			`<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">`,
-			`<meta name="apple-mobile-web-app-capable" content="yes">`,
-			
-			...(() => !favicons ? [] : [
-				`<link rel="apple-touch-icon" sizes="57x57" href="/icon-apple-57x57.png">`,
-				`<link rel="apple-touch-icon" sizes="60x60" href="/icon-apple-60x60.png">`,
-				`<link rel="apple-touch-icon" sizes="72x72" href="/icon-apple-72x72.png">`,
-				`<link rel="apple-touch-icon" sizes="76x76" href="/icon-apple-76x76.png">`,
-				`<link rel="apple-touch-icon" sizes="114x114" href="/icon-apple-114x114.png">`,
-				`<link rel="apple-touch-icon" sizes="120x120" href="/icon-apple-120x120.png">`,
-				`<link rel="apple-touch-icon" sizes="144x144" href="/icon-apple-144x144.png">`,
-				`<link rel="apple-touch-icon" sizes="152x152" href="/icon-apple-152x152.png">`,
-				`<link rel="apple-touch-icon" sizes="180x180" href="/icon-apple-180x180.png">`,
-				`<link rel="icon" type="image/png" sizes="192x192"  href="/icon-android-192x192.png">`,
-				`<link rel="icon" type="image/png" sizes="32x32" href="/icon-fav32x32.png">`,
-				`<link rel="icon" type="image/png" sizes="96x96" href="/icon-fav96x96.png">`,
-				`<link rel="icon" type="image/png" sizes="16x16" href="/icon-fav16x16.png">`,
-				`<link rel="manifest" href="/manifest.json">`,
-				`<meta name="msapplication-TileColor" content="#000000">`,
-				`<meta name="msapplication-TileImage" content="/icon-ms-144x144.png">`,
-				`<meta name="theme-color" content="#000000">`,
-			])(),
-			
-			`<body></body>`,
-			`<script src="${appJsFileName}"></script>`,
-			`</html>`
-		].join("\n");
-		
 		const targetPath = Path.join(saveDirectory, ConstS.indexHtmlFileName);
-		Fs.writeFileSync(targetPath, lines);
+		Fs.writeFileSync(targetPath, htmlText);
 		log("Wrote HTML file to: " + targetPath);
 	}
 	
@@ -198,12 +229,15 @@ namespace Cover
 		
 		Proc.execSync("tsc");
 		const inJsFilePath = Path.join(Dir.build, ConstS.jsFileNameApp);
+		replaceConsts(inJsFilePath);
+		
 		const date = new Date();
 		const inJsCode = Fs.readFileSync(inJsFilePath, "utf8")
 			// Assign the build message
 			.replace(
 				/const\s+consoleWelcomeMessage\s*=\s*""/g,
-				`const consoleWelcomeMessage = "Welcome to Direct. Last updated: ${date.toDateString()} ${date.toLocaleTimeString()}"`);
+				`const consoleWelcomeMessage = ` +
+				`"Welcome to Direct. Last updated: ${date.toDateString()} ${date.toLocaleTimeString()}"`);
 		
 		const targetPath = Path.join(saveDirectory, ConstS.jsFileNameApp);
 		Fs.writeFileSync(targetPath, inJsCode);
@@ -256,6 +290,8 @@ namespace Cover
 		Proc.execSync("tsc", { cwd: Dir.temp });
 		
 		const inJsFilePath = Path.join(Dir.temp, ConstS.jsFileNamePlayer);
+		replaceConsts(inJsFilePath);
+		
 		const inJsCode = Fs.readFileSync(inJsFilePath, "utf8");
 		
 		if (saveDirectory)
@@ -279,6 +315,57 @@ namespace Cover
 		}
 		
 		return inJsCode;
+	}
+	
+	/**
+	 * Changes all const enum values in the specified JavaScript file to their "live" variants. 
+	 * A value's live variant is determined by taking the name of the constant and appending
+	 * the "Live" suffix.
+	 */
+	export function replaceConsts(jsFilePath: string)
+	{
+		log("Fixing constants for file: " + jsFilePath);
+		
+		const constFileText = readDirectory(Dir.constants)
+			.map(path => Fs.readFileSync(path, "utf8"))
+			.join("\n");
+		
+		const reg = /\n\s+([a-z0-9]+)\s*=\s*"(.+)"/gi;
+		const matches = Array.from(constFileText.matchAll(reg));
+		const defaultConsts = new Map<string, string>();
+		const liveConsts = new Map<string, string>();
+		
+		for (const match of matches)
+		{
+			const name = match[1];
+			const value = match[2];
+			
+			defaultConsts.set(name, value);
+			
+			if (name.endsWith("Live"))
+				liveConsts.set(name.slice(0, -4), value);
+			else
+				defaultConsts.set(name, value);
+		}
+		
+		const consts = new Map<string, { default: string, live: string }>();
+		
+		for (const [key, defaultValue] of Array.from(defaultConsts.entries()))
+		{
+			const liveValue = liveConsts.get(key) || "";
+			if (liveConsts.has(key))
+				consts.set(key, { default: defaultValue, live: liveValue });
+		}
+		
+		let jsCode = Fs.readFileSync(jsFilePath, "utf8");
+		
+		for (const [key, values] of Array.from(consts.entries()))
+		{
+			const reg = new RegExp(`"([^"]+)" \\/\\* ConstS.${key} \\*\\/`, "g");
+			jsCode = jsCode.replace(reg, `"${values.live}"`);
+		}
+		
+		Fs.writeFileSync(jsFilePath, jsCode, "utf8");
 	}
 	
 	/** */
@@ -323,21 +410,23 @@ namespace Cover
 	/** */
 	export namespace Dir
 	{
-		export const cwd = process.cwd();
-		
-		export const build = Path.join(cwd, "build");
-		export const player = Path.join(cwd, "core", "player");
-		export const temp = Path.join(cwd, "+");
-		export const bundle = Path.join(cwd, "+bundle");
-		export const tauriDmg = Path.join(Dir.cwd, "src-tauri", "target", "release", "bundle", "dmg");
-		export const lib = Path.join(cwd, "lib");
-		
-		export const bundleWeb = Path.join(bundle, "web");
-		export const bundleMacOS = Path.join(bundle, "macOS");
-		export const bundleWindows = Path.join(bundle, "windows");
-		export const bundleLinux = Path.join(bundle, "linux");
-		export const bundleIOS = Path.join(bundle, "iOS");
-		export const bundleAndroid = Path.join(bundle, "android");
+		export const cwd = process.cwd() + "/";
+		export const build = cwd + "build/";
+		export const player = cwd + "core/player/";
+		export const temp = cwd + "+/";
+		export const bundle = cwd + "+bundle/";
+		export const tauriDmg = cwd + "src-tauri/target/release/bundle/dmg/";
+		export const constants = cwd + "const/";
+		export const lib = cwd + "lib/";
+		export const resources = cwd + "resources/";
+		export const fonts = resources + "fonts/";
+		export const home = resources + "home/";
+		export const bundleWeb = bundle + "web/";
+		export const bundleMacOS = bundle + "macOS/";
+		export const bundleWindows = bundle + "windows/";
+		export const bundleLinux = bundle + "linux/";
+		export const bundleIOS = bundle + "iOS/";
+		export const bundleAndroid = bundle + "android/";
 	};
 	
 	/** */

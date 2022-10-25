@@ -105,17 +105,14 @@ namespace Cover
 		/** */
 		function readMedia(sampleFileName: string)
 		{
-			const path = Electron.path.join(
-				__dirname,
+			const blob = readBlob(Electron.path.join(
 				"../coverage/+sample-media",
-				sampleFileName);
+				sampleFileName));
 			
-			const buffer =  Electron.fs.readFileSync(path);
 			const media = new App.MediaRecord();
-			const type = Mime.fromPath(path);
-			media.blob = new Blob([buffer], { type });
-			media.name = path.split("/").slice(-1)[0];
-			media.type = type;
+			media.blob = blob;
+			media.name = sampleFileName;
+			media.type = Mime.from(blob.type)!;
 			return media;
 		}
 		

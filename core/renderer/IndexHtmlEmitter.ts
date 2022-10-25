@@ -9,21 +9,7 @@ namespace App
 		{
 			const nocache = this.minify ? "" : "?" + Date.now();
 			const relative = "../".repeat(options.folderDepth || 0);
-			const metaCharset = Hot.meta();
-			metaCharset.setAttribute("charset", "utf-8");
-			
-			const elements: HTMLElement[] = [
-				metaCharset,
-				Hot.meta({ name: "theme-color", content: "#000000" }),
-				Hot.meta({
-					name: "viewport",
-					content: "width=device-width, initial-scale=1, user-scalable=no"
-				}),
-				Hot.meta({
-					name: "apple-mobile-web-app-capable",
-					content: "yes"
-				}),
-			];
+			const elements: HTMLElement[] = []
 			
 			if (options.hasIndexList)
 			{
@@ -44,6 +30,10 @@ namespace App
 			}
 			
 			elements.push(
+				Hot.link({
+					rel: "stylesheet",
+					href: "https://fonts.bunny.net/css?family=inter:100,200,300,400,500,600,700,800,900:400"
+				}),
 				Hot.link({
 					rel: "stylesheet",
 					type: "text/css",

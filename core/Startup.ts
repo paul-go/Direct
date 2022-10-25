@@ -68,12 +68,20 @@ namespace App
 		if (options?.shell !== true)
 			app.reset();
 		
+		const link = Hot.link({
+			rel: "stylesheet",
+			type: "text/css",
+			href: "https://fonts.googleapis.com/css2?family=Inter:wght@200..900",
+		});
+		
+		document.head.append(link);
+		
 		ModificationListener.startup();
 		return app;
 	}
 	
 	if (TAURI ||
 		(typeof document !== "undefined" && 
-		document.documentElement.hasAttribute(ConstS.appAttribute)))
+		document.body.classList.contains(ConstS.launchAppClass)))
 		setTimeout(() => createApp());
 }

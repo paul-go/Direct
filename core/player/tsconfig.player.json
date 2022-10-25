@@ -13,6 +13,7 @@
 		]
 	},
 	"include": [
+		"../const/Const.ts",
 		"../lib/Hot.ts",
 		"../lib/Query.ts",
 		"../lib/When.ts",

@@ -1,6 +1,7 @@
 .DS_Store
 +*
 build
+resources/icon/icon-*x*.png
 src-tauri/target/*
 node_modules
 package-lock.json

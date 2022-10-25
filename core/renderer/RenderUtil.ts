@@ -230,4 +230,12 @@ namespace App.RenderUtil
 		
 		return elements;
 	}
+	
+	/** */
+	export function getFaviconUrl(relativePath: string, size?: number)
+	{
+		return size ?
+			relativePath + `icon-${size}x${size}.png` :
+			relativePath + `favicon.ico`;
+	}
 }

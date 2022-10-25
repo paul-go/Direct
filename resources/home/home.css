@@ -1,0 +1,57 @@
+.section-home, .section-home *
+{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	position: relative;
+}
+
+.section-home 
+{
+	min-height: 100vh;
+	background: #272727 url(home-splashes.png);
+	background-position: 50% calc(50% - 15vmin);
+	background-size: 70vmin 70vmin;
+	font-family: "Reggae One";
+	color: white;
+	text-align: center;
+	
+	display: flex;
+	align-items: center;
+	align-content: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.section-home IMG
+{
+	max-width: 60vmin;
+	margin-bottom: -3em;
+}
+
+.section-home P
+{
+	font-size: 2.5vmin;
+	max-width: 17em;
+	margin: auto;
+	transform: rotate(-10deg);
+}
+
+.section-home A
+{
+	display: block;
+	max-width: 16.34em;
+	aspect-ratio: 1634/610;
+	margin: 1.5vmin auto 3vmin;
+	background-image: url(home-button.svg);
+	background-size: 100% auto;
+	text-decoration: none;
+	color: white;
+	font-size: 3vmin;
+}
+
+.section-home A SPAN
+{
+	transform: rotate(-8deg) translateY(8vmin);
+	display: block;
+}

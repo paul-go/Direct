@@ -10,6 +10,7 @@ namespace App
 		global["When"] = When;
 		global["Player"] = Player;
 		global["BlobUri"] = BlobUri;
+		global["Mime"] = Mime;
 		(global as any)["Origin"] = Origin;
 	}
 }
