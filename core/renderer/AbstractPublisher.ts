@@ -133,7 +133,7 @@ namespace App
 			const blogFiles: IRenderedFile[] = [
 				{
 					data: slugs.join("\n"),
-					fileName: ConstS.essIndexListDefaultValue,
+					fileName: ConstS.yessIndexListDefaultValue,
 					mime: Mime.Type.txt,
 				},
 				{

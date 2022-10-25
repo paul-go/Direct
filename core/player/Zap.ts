@@ -36,7 +36,7 @@ namespace Player
 		doc: Document = window.document,
 		docHref = window.location.href)
 	{
-		const indepthHref = getLinkHref(doc, ConstS.essIndepthKey);
+		const indepthHref = getLinkHref(doc, ConstS.yessIndepthKey);
 		return indepthHref ?
 			Url.toAbsolute(indepthHref, docHref) :
 			"";
@@ -50,7 +50,7 @@ namespace Player
 		doc: Document = window.document,
 		docHref = window.location.href)
 	{
-		const indexListHref = getLinkHref(doc, ConstS.essIndexListKey);
+		const indexListHref = getLinkHref(doc, ConstS.yessIndexListKey);
 		return indexListHref ?
 			Url.toAbsolute(indexListHref, docHref) :
 			"";

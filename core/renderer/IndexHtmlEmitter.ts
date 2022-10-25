@@ -14,18 +14,18 @@ namespace App
 			if (options.hasIndexList)
 			{
 				elements.push(Hot.link({
-					rel: ConstS.essIndexListKey,
+					rel: ConstS.yessIndexListKey,
 					type: "text/plain",
-					href: relative + ConstS.essIndexListDefaultValue,
+					href: relative + ConstS.yessIndexListDefaultValue,
 				}));
 			}
 			
 			if (options.hasIndepth)
 			{
 				elements.push(Hot.link({
-					rel: ConstS.essIndepthKey,
+					rel: ConstS.yessIndepthKey,
 					type: "text/html",
-					href: ConstS.essIndepthDefaultValue,
+					href: ConstS.yessIndepthDefaultValue,
 				}));
 			}
 			

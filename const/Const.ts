@@ -22,10 +22,10 @@ declare const enum ConstS
 	jsFileNameAppMin = "app.min.js",
 	debugExportsFolderName = "+exports",
 	portableExtension = "zip",
-	essIndexListKey = "ess-index",
-	essIndexListDefaultValue = "index.txt",
-	essIndepthKey = "ess-indepth",
-	essIndepthDefaultValue = "indepth.html",
+	yessIndexListKey = "yess-index",
+	yessIndexListDefaultValue = "index.txt",
+	yessIndepthKey = "yess-indepth",
+	yessIndepthDefaultValue = "indepth.html",
 }
 
 /** */

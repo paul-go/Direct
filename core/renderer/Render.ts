@@ -114,7 +114,7 @@ namespace App
 				files.push({
 					data,
 					mime: Mime.Type.html,
-					fileName: ConstS.essIndepthDefaultValue,
+					fileName: ConstS.yessIndepthDefaultValue,
 					folderName,
 				});
 			}
