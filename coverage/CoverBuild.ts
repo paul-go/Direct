@@ -186,6 +186,9 @@ namespace Cover
 		
 		for (const fontFile of Fs.readdirSync(Dir.fonts))
 			copyOne(Dir.fonts, fontFile);
+		
+		for (const iconFile of Fs.readdirSync(Dir.icon))
+			copyOne(Dir.icon, iconFile);
 	}
 	
 	/** */
@@ -421,6 +424,7 @@ namespace Cover
 		export const resources = cwd + "resources/";
 		export const fonts = resources + "fonts/";
 		export const home = resources + "home/";
+		export const icon = resources + "icon/";
 		export const bundleWeb = bundle + "web/";
 		export const bundleMacOS = bundle + "macOS/";
 		export const bundleWindows = bundle + "windows/";
