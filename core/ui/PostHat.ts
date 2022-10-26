@@ -79,8 +79,9 @@ namespace App
 				)
 			);
 			
+			const scenes = record.scenes.map(b => SceneHat.new(b));
 			this.scenes = new Hat.Array(this.scenesElement, SceneHat);
-			this.scenes.insert(...record.scenes.map(b => SceneHat.new(b)));
+			this.scenes.insert(...scenes);
 			this.scenes.observe(() => this.save());
 			
 			const fns = Force.create();

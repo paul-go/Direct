@@ -18,14 +18,6 @@ namespace App
 		}
 		
 		/**
-		 * Generates a globally unique string value containing the base 36 character set.
-		 */
-		export function unique()
-		{
-			return Date.now().toString(36) + "-" + Util.randomChars(16);
-		}
-		
-		/**
 		 * Generates a string of the specified length containing 
 		 * cryptographically random alpha-numeric characters,
 		 * in both upper and lower case.

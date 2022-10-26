@@ -11,7 +11,7 @@ namespace App
 	/** */
 	export interface IBlogProperties extends IBlogName
 	{
-		homePost: string | null;
+		homePostKey: string | null;
 		publishMethod?: string;
 		publishParams?: Literal<string, Literal<string, string | number | boolean>>;
 	}
@@ -48,7 +48,8 @@ namespace App
 	export class Blog
 	{
 		/**
-		 * Called at startup. Loads all Blog objects from the database into memory.
+		 * Called once at startup.
+		 * Loads all Blog objects from the database into memory.
 		 */
 		static async init()
 		{
@@ -63,35 +64,72 @@ namespace App
 				{ ctor: App.ActionRecord, stable: 8 },
 			);
 			
-			const blogResults = await Store.current().get(
+			const blogsList = await Store.current().get(
 				Keyva.unbound,
 				Store.indexes.fixedName);
 			
-			for (const [key, object] of blogResults)
+			for (const [key, object] of blogsList)
 			{
-				const segment = Key.segmentOf(key as string);
-				await Blog.create(object, segment);
+				const blogInfo = object as Partial<IBlogProperties>;
+				const segment = blogInfo.fixedName ?
+					this.parseFixedName(blogInfo.fixedName).segment :
+					Key.segmentOf(key as string);
+				
+				await Blog.fromObject(object, segment);
 			}
 		}
 		
-		/** */
+		/**
+		 * Creates a new Blog instance from the specified IBlogExport object.
+		 * 
+		 * If there exists a blog in the database with a name that matches the
+		 * fixed name specified in the IBlogExport, then the existing blog
+		 * is returned.
+		 * 
+		 * Otherwise, a new blog is created, which is populated with the data
+		 * found in the provided IBlogExport object, and stored in the database.
+		 */
 		static async new(blogObject: Partial<IBlogExport>)
 		{
-			const blog = await this.create(blogObject, Key.next());
+			if (blogObject.fixedName)
+			{
+				const existing = this.get(blogObject);
+				if (existing)
+					return existing;
+			}
+			
+			const blog = await this.fromObject(blogObject, Key.next());
 			await blog.save();
 			return blog;
 		}
 		
-		/** */
-		private static async create(blogObject: Partial<IBlogExport>, segment: string)
+		/**
+		 * Creates a volatile Blog instance from the specified IBlogExport object,
+		 * which is not immediately saved within the database.
+		 */
+		private static async fromObject(blogObject: Partial<IBlogExport>, segment: string)
 		{
 			const store = Store.current();
 			const blog = new Blog(segment);
 			
-			blog._fixedName = blogObject.fixedName || Util.unique();
+			blog._fixedName = blogObject.fixedName || this.createFixedName();
 			blog._friendlyName = blogObject.friendlyName || "Untitled";
 			blog._publishMethod = blogObject.publishMethod || "";
 			blog._postStream = await PostStream.new(segment);
+			
+			if (blogObject.homePostKey)
+			{
+				const homePost = await Model.get(blogObject.homePostKey);
+				if (homePost instanceof PostRecord)
+					blog._homePost = homePost;
+			}
+			
+			if (!blog._homePost)
+			{
+				blog._homePost = new PostRecord();
+				blog._homePost.slug = "";
+				await blog.retainPost(blog._homePost);
+			}
 			
 			if (blogObject.objects?.length)
 			{
@@ -99,17 +137,6 @@ namespace App
 					...Object.entries(blogObject.objects),
 					...(blogObject.blobs?.entries() || []),
 				]);
-			}
-			
-			if (blogObject.homePost)
-			{
-				blog._homePost = await store.get(blogObject.homePost);
-			}
-			else
-			{
-				blog._homePost = new PostRecord();
-				blog._homePost.slug = "";
-				await blog.retainPost(blog._homePost);
 			}
 			
 			this.blogs.push(blog);
@@ -125,11 +152,11 @@ namespace App
 		/** */
 		static get(name: Partial<IBlogName>): Blog | null
 		{
-			if (name.friendlyName)
-				return this.blogs.find(b => name.friendlyName === b.friendlyName) || null;
-			
 			if (name.fixedName)
 				return this.blogs.find(b => name.fixedName === b.fixedName) || null;
+			
+			if (name.friendlyName)
+				return this.blogs.find(b => name.friendlyName === b.friendlyName) || null;
 			
 			return null;
 		}
@@ -158,6 +185,33 @@ namespace App
 				return false;
 			
 			return /^[a-z0-9\s]+$/gi.test(name);
+		}
+		
+		/**
+		 * Creates a "fixed" name for the blog, which is an internal name
+		 * that doesn't change, is globally unique, and contains information
+		 * about the blog.
+		 */
+		private static createFixedName()
+		{
+			const segment = Key.next();
+			const time = Date.now().toString(36);
+			const rnd = Util.randomChars(16);
+			return  [segment, time, rnd].join("-");
+		}
+		
+		/**
+		 * Parses a fixed name created with the .createFixedName() method
+		 * into it's components.
+		 */
+		private static parseFixedName(fixedName: string)
+		{
+			const parts = fixedName.split("-");
+			return {
+				segment: parts[0] || "",
+				time: new Date(Number(parts[1]) || 0),
+				rnd: parts[2] || ""
+			};
 		}
 		
 		/** */
@@ -276,7 +330,7 @@ namespace App
 			return {
 				friendlyName: this.friendlyName,
 				fixedName: this.fixedName,
-				homePost: this._homePost ? Key.of(this._homePost) : null,
+				homePostKey: this._homePost ? Key.of(this._homePost) : null,
 				publishMethod: this._publishMethod,
 			};
 		}
