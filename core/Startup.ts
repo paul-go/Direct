@@ -68,14 +68,6 @@ namespace App
 		if (options?.shell !== true)
 			app.reset();
 		
-		const link = Hot.link({
-			rel: "stylesheet",
-			type: "text/css",
-			href: "https://fonts.googleapis.com/css2?family=Inter:wght@200..900",
-		});
-		
-		document.head.append(link);
-		
 		ModificationListener.startup();
 		return app;
 	}
