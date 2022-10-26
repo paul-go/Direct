@@ -975,47 +975,6 @@ namespace App
 		}
 		
 		/** */
-		export function overlay(...children: Hot.Param[])
-		{
-			const flipper = createFlipper({
-				invisible: {
-					backgroundColor: UI.black(0),
-					backdropFilter: "blur(0)",
-				},
-				visible: {
-					backgroundColor: UI.black(0.5),
-					backdropFilter: "blur(5px)",
-				}
-			});
-			
-			const hide = async (e: HTMLElement) =>
-			{
-				flipper.invisible();
-				await UI.waitTransitionEnd(e);
-				e.remove();
-			}
-			
-			const element = Hot.div(
-				UI.fixed(),
-				...UI.escape(e => hide(e)),
-				Hot.on("click", async ev =>
-				{
-					if (ev.target === ev.currentTarget)
-						hide(ev.target as HTMLElement);
-				}),
-				{
-					transitionDuration: "0.33s",
-					transitionProperty: "background-color",
-				},
-				flipper.install(),
-				When.rendered(() => flipper.visible()),
-				...children,
-			);
-			
-			return { element, flipper };
-		}
-		
-		/** */
 		export async function showInlineNotification(
 			container: HTMLElement,
 			message: string,

@@ -28,18 +28,18 @@ namespace Cover
 	export async function coverBuildWeb()
 	{
 		log("Building minified web version...");
-		await innerBuildWeb();
+		await buildWeb();
 	}
 	
 	/** */
 	export async function coverBuildWebDebuggable()
 	{
 		log("Building non-minified web version...");
-		await innerBuildWeb("debuggable");
+		await buildWeb("debuggable");
 	}
 	
 	/** */
-	async function innerBuildWeb(debuggable?: "debuggable")
+	async function buildWeb(debuggable?: "debuggable")
 	{
 		const homePage = new HomePage();
 		const homePageElement = homePage.getElement();

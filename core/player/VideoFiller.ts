@@ -94,8 +94,11 @@ namespace Player
 			});
 		}
 		
-		const mo = new MutationObserver(findVideos);
-		mo.observe(document.body, { childList: true, subtree: true });
-		findVideos();
+		if (typeof MutationObserver !== "undefined")
+		{
+			const mo = new MutationObserver(findVideos);
+			mo.observe(document.body, { childList: true, subtree: true });
+			findVideos();
+		}
 	}
 }

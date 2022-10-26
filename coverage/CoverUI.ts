@@ -179,37 +179,6 @@ namespace Cover
 	}
 	
 	/** */
-	export async function coverFlipper()
-	{
-		const flipper = App.createFlipper({
-			red: {
-				backgroundColor: "red"
-			},
-			blue: {
-				backgroundColor: "blue"
-			},
-		});
-		
-		const div = Hot.div(
-			flipper.install(),
-			{ padding: "100px" },
-			Hot.on("click", () =>
-			{
-				if (flipper.value === flipper.red)
-					flipper.blue();
-				else
-					flipper.red();
-			}),
-			
-			new Text("Click me")
-		);
-		
-		document.body.style.backgroundColor = "white";
-		document.body.style.padding = "100px";
-		document.body.append(div);
-	}
-	
-	/** */
 	export async function coverWhen()
 	{
 		let nested: HTMLElement;

@@ -129,20 +129,6 @@
 				"problemMatcher": []
 			},
 			{
-				"label": "Serve HTTP site",
-				"type": "shell",
-				"command": "http-server",
-				"args": [
-					"--port",
-					"2222"
-				],
-				"runOptions": {
-					"runOn": "folderOpen"
-				},
-				"isBackground": true,
-				"problemMatcher": []
-			},
-			{
 				"label": "Set Active Cover Function",
 				"type": "shell",
 				"command": "npx",
@@ -162,12 +148,6 @@
 					"moduless",
 					"all"
 				],
-				"problemMatcher": []
-			},
-			{
-				"label": "Copy Resources",
-				"type": "shell",
-				"command": "ts-node build.ts 'copyResources()'",
 				"problemMatcher": []
 			}
 		]
