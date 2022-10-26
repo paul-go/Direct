@@ -55,13 +55,13 @@ namespace App
 		// the trix editor, to improve load time where possible.
 		await Promise.all([
 			App.Util.include("trix.js"),
-			new Promise<void>(async r =>
+			new Promise<void>(async resolve =>
 			{
 				Css.append();
 				await Blog.init();
 				const container = options?.container ?? document.body;
 				app = await AppContainer.new(container, name);
-				r();
+				resolve();
 			})
 		]);
 		
