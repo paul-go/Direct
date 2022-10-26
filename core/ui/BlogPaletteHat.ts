@@ -363,7 +363,6 @@ namespace App
 		private async tryAcceptEdit(isBlurring?: "blurring")
 		{
 			const friendlyName = (this.nameElement.textContent || "").trim();
-			//this.isEditing = false;
 			
 			if (Blog.isValidFriendlyName(friendlyName))
 			{
